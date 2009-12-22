@@ -23,6 +23,9 @@ setup(name='fernlehrgang',
                         'grokui.admin',
                         'z3c.testsetup',
                         'grokcore.startup',
+                        'megrok.traject',
+                        'z3c.saconfig',
+                        'psycopg2',
                         # Add extra requirements here
                         ],
       entry_points = """
