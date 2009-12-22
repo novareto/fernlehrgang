@@ -1,6 +1,6 @@
 import grok
 
-class Fernlehrgang(grok.Application, grok.Container):
+class FernlehrgangApp(grok.Application, grok.Container):
     pass
 
 class Index(grok.View):

@@ -1,0 +1,12 @@
+Datenbank Konfiguration
+=======================
+
+:Test-Layer: functional
+
+Utility's werden koennen nur innerhalb einer instanzierten Klasse aufgerufen werden. Deshalb erstellen wir zuerst eine Instanz vom Fernlehrgang:
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> root = getRootFolder()
+   >>> root['app'] = FernlehrgangApp()
+   
+   >>> from zope.component import getUtility
