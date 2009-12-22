@@ -7,8 +7,11 @@ Let's first create an instance of Fernlehrgang at the top level:
 
    >>> from fernlehrgang.app import FernlehrgangApp
    >>> root = getRootFolder()
-   >>> root['app'] = FernlehrgangApp()
+   >>> root['app'] = app = FernlehrgangApp()
 
+   >>> from fernlehrgang.interfaces import IFernlehrgangApp
+   >>> IFernlehrgangApp.providedBy(app)
+   True
 
 Run tests in the testbrowser
 ----------------------------
