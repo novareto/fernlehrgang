@@ -8,5 +8,8 @@ Utility's werden koennen nur innerhalb einer instanzierten Klasse aufgerufen wer
    >>> from fernlehrgang.app import FernlehrgangApp
    >>> root = getRootFolder()
    >>> root['app'] = FernlehrgangApp()
-   
-   >>> from zope.component import getUtility
+  
+   >>> from z3c.saconfig import Session
+   >>> session = Session()
+   >>> session
+   <sqlalchemy.orm.session.Session object at ...>
