@@ -1,0 +1,47 @@
+Testen des Datenbankschemas
+===========================
+
+:Test-Layer: functional
+
+Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
+uma alle Utilities zur Verfügung zu haben.
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+
+Für unsere Tests brauchen wir auch das Session Objekt:
+
+   >>> from z3c.saconfig import Session
+   >>> session = Session()
+
+
+Fernlehrgang
+------------
+
+Wir starten mit einer Instanz vom Fernlehrgang; diesen werden wir dann DB-Technisch durchtesten.
+
+   >>> from fernlehrgang.models import Fernlehrgang
+   >>> fernlehrgang = Fernlehrgang(jahr=2009, titel='Fernlehrgang', 
+   ...                             beschreibung='Beschreibugn', start="01.01.2009", ende="31.12.2009")
+
+Zuerst prüfen wir ob wir schon Fernlehrgänge in der Datenbank haben.
+
+   >>> int(session.query(Fernlehrgang).count())
+   0
+
+Ok wir haben noch keinen Fernlehrgang in unserer Datenbank; legen wir einen an.
+
+   >>> session.add(fernlehrgang)
+
+Wir sollten nun einen Fernlehrgang in der DB haben:
+
+   >>> int(session.query(Fernlehrgang).count())
+   1
+
+Wenn wir gezielt nach unseren Fernlehrgang suchen sollten wir erneut unsere Instanz bekommen.
+
+   >>> fernlehrgang = session.query(Fernlehrgang).one()
+   >>> fernlehrgang
+   <Fernlehrgang(id='1', jahr='2009', titel='Fernlehrgang')>
+   
