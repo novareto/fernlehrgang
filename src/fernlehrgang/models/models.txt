@@ -23,7 +23,7 @@ Wir starten mit einer Instanz vom Fernlehrgang; diesen werden wir dann DB-Techni
 
    >>> from fernlehrgang.models import Fernlehrgang
    >>> fernlehrgang = Fernlehrgang(jahr=2009, titel='Fernlehrgang', 
-   ...                             beschreibung='Beschreibugn', start="01.01.2009", ende="31.12.2009")
+   ...                               beschreibung='Beschreibugn', start="01.01.2009", ende="31.12.2009")
 
 Zuerst prüfen wir ob wir schon Fernlehrgänge in der Datenbank haben.
 
@@ -43,5 +43,36 @@ Wenn wir gezielt nach unseren Fernlehrgang suchen sollten wir erneut unsere Inst
 
    >>> fernlehrgang = session.query(Fernlehrgang).one()
    >>> fernlehrgang
-   <Fernlehrgang(id='1', jahr='2009', titel='Fernlehrgang')>
+   <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
+   >>> import transaction; transaction.commit() 
+
+Nun können wir für unseren Fernlehrgang Verschiedene Lehrhefte anlegen.
+
+   >>> session = Session()
+   >>> fernlehrgang = session.query(Fernlehrgang).one()
+   >>> from fernlehrgang.models import Lehrheft
+   >>> lehrheft1 = Lehrheft(nummer=1)
+   >>> lehrheft1
+   <Lehrgang(id='None', nummer='1', fernlehrgangid='None')>
+
+   >>> lehrheft2 = Lehrheft(nummer=2)
+   >>> lehrheft2
+   <Lehrgang(id='None', nummer='2', fernlehrgangid='None')>
    
+Diese Lehrhefte können wir jetzt unserem Fernlehrgang zuweisen
+
+   >>> fernlehrgang.lehrhefte.append(lehrheft1)
+   >>> fernlehrgang.lehrhefte.append(lehrheft2)
+
+   >>> import transaction; transaction.commit() 
+
+Um die Session sauber zu haben machenn wir mal einen Commit. Wir sollten dann
+alle Referenzen auf die Objekte bekommen.
+
+   >>> session = Session()
+   >>> fernlehrgang = session.query(Fernlehrgang).one()
+   >>> fernlehrgang
+   <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
+ 
+   >>> session.delete(fernlehrgang)
+   >>> import transaction; transaction.commit() 
