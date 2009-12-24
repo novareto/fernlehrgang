@@ -16,7 +16,7 @@ def setUpDatabase(event):
 
 Base = declarative_base()
 
-class Fernlehrgaenge(Base, grok.Context):
+class Fernlehrgang(Base, grok.Context):
     __tablename__ = 'fernlehrgang'
 
     id = Column(Integer, primary_key=True)
@@ -34,14 +34,14 @@ class Fernlehrgaenge(Base, grok.Context):
         return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" %(self.id, self.jahr, self.titel)
 
 
-class Lehrhefte(Base, grok.Context):
-    __table_name__ = 'lehrheft'
+class Lehrheft(Base, grok.Context):
+    __tablename__ = 'lehrheft'
 
     id = Column(Integer, primary_key=True)
-    nummer = Colum(Integer)
-    fernlehrgang_id = Column(Integer, ForeignKey('Fernlehrgaenge.id'))
+    nummer = Column(Integer)
+    fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
-    lehrheft = relation(Fernlehrgaenge, backref = backref('lehrhefte', order_by=nummer))
+    lehrheft = relation(Fernlehrgang, backref = backref('lehrhefte', order_by=nummer))
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
