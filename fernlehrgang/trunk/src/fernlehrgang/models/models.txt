@@ -73,6 +73,13 @@ alle Referenzen auf die Objekte bekommen.
    >>> fernlehrgang = session.query(Fernlehrgang).one()
    >>> fernlehrgang
    <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
- 
+
+   >>> lehrheft = fernlehrgang.lehrhefte[0]
+   >>> lehrheft
+
+   >>> from fernlehrgang.models import Resultat
+   >>> resultat = Resultat(frage=1, antwortschema="abac")
+   >>> import pdb; pdb.set_trace() 
+
    >>> session.delete(fernlehrgang)
    >>> import transaction; transaction.commit() 
