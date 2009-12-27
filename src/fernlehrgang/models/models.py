@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2007-2008 NovaReto GmbH
+# cklinger@novareto.de 
+
 
 import grok
 
@@ -6,7 +10,7 @@ from sqlalchemy.orm import relation, backref
 from sqlalchemy.ext.declarative import declarative_base
 
 from z3c.saconfig.interfaces import IEngineCreatedEvent
-
+from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 
 @grok.subscribe(IEngineCreatedEvent)
 def setUpDatabase(event):
@@ -17,6 +21,7 @@ def setUpDatabase(event):
 Base = declarative_base()
 
 class Fernlehrgang(Base, grok.Context):
+    grok.implements(IFernlehrgang)
     __tablename__ = 'fernlehrgang'
 
     id = Column(Integer, primary_key=True)
