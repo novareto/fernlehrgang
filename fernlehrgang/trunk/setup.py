@@ -26,6 +26,11 @@ setup(name='fernlehrgang',
                         'megrok.traject',
                         'z3c.saconfig',
                         'psycopg2',
+                        'uvc.skin',
+                        'uvc.layout',
+                        'z3c.menu.simple',
+                        'megrok.z3cform.base',
+                        'megrok.z3cform.ui',
                         # Add extra requirements here
                         ],
       entry_points = """
