@@ -9,4 +9,5 @@ ftesting_zcml = os.path.join(
 FunctionalLayer = ZCMLLayer(ftesting_zcml, __name__, 'FunctionalLayer',
                             allow_teardown=True)
 
+
 test_suite = z3c.testsetup.register_all_tests('fernlehrgang')

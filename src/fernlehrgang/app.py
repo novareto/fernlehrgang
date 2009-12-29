@@ -4,6 +4,7 @@
 
 import grok
 
+from megrok.traject import locate
 from fernlehrgang import Page
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
@@ -29,6 +30,8 @@ class Index(Page):
         session = Session()
         return session.query(Fernlehrgang).all() 
 
+    def createLink(self, name):
+        return "%s/fernlehrgang/%s" % (self.url(self.context), name)
 
 class AddMenu(MenuItem):
     grok.context(IFernlehrgangApp)
