@@ -9,27 +9,78 @@ Let's first create an instance of Fernlehrgang at the top level:
    >>> root = getRootFolder()
    >>> root['app'] = app = FernlehrgangApp()
 
-   >>> from fernlehrgang.interfaces import IFernlehrgangApp
+   >>> from fernlehrgang.interfaces.app import IFernlehrgangApp
    >>> IFernlehrgangApp.providedBy(app)
    True
 
 Run tests in the testbrowser
 ----------------------------
 
-The zope.testbrowser.browser module exposes a Browser class that
-simulates a web browser similar to Mozilla Firefox or IE.  We use that
-to test how our application behaves in a browser.  For more
-information, see http://pypi.python.org/pypi/zope.testbrowser.
-
 Create a browser and visit the instance you just created:
 
    >>> from zope.testbrowser.testing import Browser
    >>> browser = Browser()
+   >>> browser.handleErrors = False
    >>> browser.open('http://localhost/app')
 
-Check some basic information about the page you visit:
+Bekommen wir den richtigen Status?
 
    >>> browser.url
    'http://localhost/app'
    >>> browser.headers.get('Status').upper()
    '200 OK'
+
+Ist der Link für das anlegen eines Fernlehrgangs vorhanden?
+
+   >>> 'Fernlehrgang anlegen' in browser.contents
+   True
+
+Klicken wir auf den Link Fernlehrgang!
+
+   >>> anlegen = browser.getLink('Fernlehrgang anlegen')
+   >>> anlegen.url
+   'http://localhost/app/add'
+
+   >>> anlegen.click()
+
+Nun befinden wir uns auf der Add-Form für den Fernlehrgang!
+   
+   >>> browser.url
+   'http://localhost/app/add'
+   
+Wir können jetzt die Eingabeform für den Fernlehrgang ausfüllen.
+
+   >>> form = browser.getForm()
+   >>> form.getControl(name='form.widgets.jahr').value = "2010"
+   >>> form.getControl(name='form.widgets.titel').value = "Fernlehrgang 2010"
+   >>> form.getControl(name='form.widgets.beschreibung').value = "Handel mit Schwerpunkt Tiere."
+   >>> form.getControl(name='form.widgets.start').value = "10/01/01"
+   >>> form.getControl(name='form.widgets.ende').value = "10/12/31"
+   >>> form.submit(u'Add')
+
+   >>> browser.url
+   'http://localhost/app'
+
+   >>> print browser.contents
+   <!DOCTYPE
+   ...
+         <ul>
+           <li>
+             <a href="http://localhost/app/fernlehrgang/1">
+                   Fernlehrgang 2010 2010
+             </a>
+           </li>
+         </ul>
+   ...
+   </html>
+
+Nun können wir auf die Display Seite unseres Fernlehrgangs wechseln!
+
+
+   >>> display = browser.getLink('Fernlehrgang 2010 2010')
+   >>> display.url
+   'http://localhost/app/fernlehrgang/1'
+
+   >>> display.click()
+
+   >>> print browser.contents

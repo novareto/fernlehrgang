@@ -20,5 +20,5 @@ class FernlehrgangTraject(traject.Traject):
         session = Session()
         return session.query(Fernlehrgang).filter(Fernlehrgang.id == int(fernlehrgang_id)).one()
 
-    def arguments(user):
+    def arguments(fernlehrgang):
         return dict(fernlehrgang_id = fernlehrgang.id)

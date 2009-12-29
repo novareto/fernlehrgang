@@ -75,11 +75,22 @@ alle Referenzen auf die Objekte bekommen.
    <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
 
    >>> lehrheft = fernlehrgang.lehrhefte[0]
-   >>> lehrheft
 
    >>> from fernlehrgang.models import Resultat
    >>> resultat = Resultat(frage=1, antwortschema="abac")
-   >>> import pdb; pdb.set_trace() 
+
 
    >>> session.delete(fernlehrgang)
    >>> import transaction; transaction.commit() 
+
+Cleaning
+--------
+
+   >>> session = Session()
+   >>> from fernlehrgang.models.models import Base
+   >>> mt = Base.metadata
+   >>> mt.bind = session.connection().engine
+   >>> mt
+   MetaData(Engine(postgres://cklinger@localhost:5432/fernlehrgang))
+
+   >>> mt.drop_all()
