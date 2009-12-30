@@ -10,15 +10,15 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.models import Fernlehrgang
 
 
-class FernlehrgangTraject(traject.Traject):
-    grok.context(IFernlehrgangApp)
+#class FernlehrgangTraject(traject.Model):
+#    grok.context(IFernlehrgangApp)
+#
+#    traject.pattern("fernlehrgang/:fernlehrgang_id")
+#    model = Fernlehrgang
+#
+#    def factory(fernlehrgang_id):
+#        session = Session()
+#        return session.query(Fernlehrgang).filter(Fernlehrgang.id == int(fernlehrgang_id)).one()
 
-    pattern = "fernlehrgang/:fernlehrgang_id"
-    model = Fernlehrgang
-
-    def factory(fernlehrgang_id):
-        session = Session()
-        return session.query(Fernlehrgang).filter(Fernlehrgang.id == int(fernlehrgang_id)).one()
-
-    def arguments(fernlehrgang):
-        return dict(fernlehrgang_id = fernlehrgang.id)
+# #   def arguments(fernlehrgang):
+#        return dict(fernlehrgang_id = fernlehrgang.id)

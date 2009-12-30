@@ -4,6 +4,7 @@
 
 import grok
 
+from megrok.layout import Page as basePage
 from z3c.menu.simple.menu import GlobalMenuItem
 from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
 
@@ -14,3 +15,7 @@ class MenuItem(grok.Viewlet, GlobalMenuItem):
 
     def render(self):
         return self.template()
+
+
+class Page(basePage, grok.View):
+    grok.baseclass()

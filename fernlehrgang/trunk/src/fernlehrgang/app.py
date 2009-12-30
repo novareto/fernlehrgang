@@ -32,36 +32,3 @@ class Index(Page):
 
     def createLink(self, name):
         return "%s/fernlehrgang/%s" % (self.url(self.context), name)
-
-class AddMenu(MenuItem):
-    grok.context(IFernlehrgangApp)
-    grok.name(u'Fernlehrgang anlegen')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "add"
-    viewURL = "add"
-
-
-class Add(PageAddForm, grok.View):
-    grok.context(IFernlehrgangApp)
-    title = u'Fernlehrgang'
-    label = u'Fernlehrgang anlegen'
-
-    fields = Fields(IFernlehrgang).omit('id')
-
-    def create(self, data):
-        return Fernlehrgang(**data)
-
-    def add(self, object):
-        session = Session()
-        session.add(object)
-
-    def nextURL(self):
-        url = self.url(self.context)
-        return url
-
-class FIndex(PageDisplayForm, grok.View):
-    grok.context(IFernlehrgang)
-    grok.name('index')
-
-    fields = Fields(IFernlehrgang).omit('id')
