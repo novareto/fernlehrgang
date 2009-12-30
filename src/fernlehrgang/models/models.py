@@ -5,12 +5,18 @@
 
 import grok
 
+from megrok import traject
+
 from sqlalchemy import *
 from sqlalchemy.orm import relation, backref
 from sqlalchemy.ext.declarative import declarative_base
 
+from z3c.saconfig import Session
 from z3c.saconfig.interfaces import IEngineCreatedEvent
+
+from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
+
 
 @grok.subscribe(IEngineCreatedEvent)
 def setUpDatabase(event):
@@ -20,8 +26,11 @@ def setUpDatabase(event):
 
 Base = declarative_base()
 
-class Fernlehrgang(Base, grok.Context):
+class Fernlehrgang(Base, traject.Model):
     grok.implements(IFernlehrgang)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("fernlehrgang/:fernlehrgang_id")
+
     __tablename__ = 'fernlehrgang'
 
     id = Column(Integer, primary_key=True)
@@ -38,6 +47,12 @@ class Fernlehrgang(Base, grok.Context):
     def __repr__(self):
         return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" %(self.id, self.jahr, self.titel)
 
+    def factory(fernlehrgang_id):
+        session = Session()
+        return session.query(Fernlehrgang).filter(Fernlehrgang.id == int(fernlehrgang_id)).one()
+
+    def arguments(fernlehrgang):
+        return dict(fernlehrgang_id = fernlehrgang.id)
 
 class Lehrheft(Base, grok.Context):
     __tablename__ = 'lehrheft'
