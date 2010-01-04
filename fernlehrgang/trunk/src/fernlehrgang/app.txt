@@ -75,12 +75,44 @@ Wir können jetzt die Eingabeform für den Fernlehrgang ausfüllen.
    </html>
 
 Nun können wir auf die Display Seite unseres Fernlehrgangs wechseln!
-
+Zunächst holen wir den Link. Anschließend klicken wir auf diesen Link.
 
    >>> display = browser.getLink('Fernlehrgang 2010 2010')
    >>> display.url
    'http://localhost/app/fernlehrgang/1'
-
    >>> display.click()
 
-   >>> print browser.contents
+Wir sollten den 200'er Status bekommen.
+
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+
+Im Kontext des Fernlehrgangs haben wir nun die Möglichkeit Lehrhefte für unseren 
+Fernlehrgang anzulegen.
+
+   >>> lehrhefte = browser.getLink('Lehrhefte verwalten')
+   >>> lehrhefte.url
+   'http://localhost/app/fernlehrgang/1/lehrhefte'
+   >>> lehrhefte.click()
+
+Ok auf dieser Seite sollten wir eine Übersicht über die Lehrgänge unseres Fernlehrgangs
+erhlaten, da wir noch keine Lehrhefte angelegt haben ist diese Seite noch ziemlich 
+uninteressant... Und wir legen zunächst eine Lehrheft an.
+
+   >>> button = browser.getControl(name='deleteFormTable.buttons.4c6568726865667420616e6c6567656e')
+   >>> button.click()
+
+Nun sollten wir eine Eingabeform für das Lehrheft erhalten.
+
+   >>> form = browser.getForm()
+   >>> form.getControl(name='form.widgets.nummer').value = "1"
+   >>> form.submit(u'Add')
+
+Nachdem wir das Lehrheft erfolgreich angelegt haben werden wir wieder auf die Übersichts-
+seite geleitet. Nun sollten wir das Lehrheft in einer Tabelle sehen.
+
+   >>> edit_lehrheft = browser.getLink('edit')
+   >>> edit_lehrheft.url
+   'http://localhost/app/fernlehrgang/1/lehrheft/1'
+
+   >>> edit_lehrheft.click()

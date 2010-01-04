@@ -87,7 +87,7 @@ Cleaning
 --------
 
    >>> session = Session()
-   >>> from fernlehrgang.models.models import Base
+   >>> from fernlehrgang.models import Base
    >>> mt = Base.metadata
    >>> mt.bind = session.connection().engine
    >>> mt
