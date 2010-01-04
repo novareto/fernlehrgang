@@ -12,7 +12,7 @@ from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 
-from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields
+from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button
 from z3c.saconfig import Session
 
 grok.templatedir('templates')
@@ -51,5 +51,14 @@ class Index(PageDisplayForm, grok.View):
 
     fields = Fields(IFernlehrgang).omit('id')
 
-    def update(self):
-        import pdb; pdb.set_trace() 
+class Edit(PageEditForm, grok.View):
+    grok.context(IFernlehrgang)
+    grok.name('edit')
+
+    fields = Fields(IFernlehrgang).omit('id')
+
+    @button.buttonAndHandler(u'Fernlehrgang entfernen')
+    def handleDeleteFernlehrgang(self, action):
+        session = Session()
+        session.delete(self.context)
+        self.redirect(self.url(self.context.__parent__)) 

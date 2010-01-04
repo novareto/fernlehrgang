@@ -10,8 +10,9 @@ from megrok.traject.components import DefaultModel
 from fernlehrgang.utils import Page
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
-from fernlehrgang.models import Lehrheft 
+from fernlehrgang.models import Resultat 
 from fernlehrgang.interfaces.lehrheft import ILehrheft
+from fernlehrgang.interfaces.resultat import IResultat
 from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 
 from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields, button, extends
@@ -26,46 +27,46 @@ from megrok.z3ctable.ftests import Container, Content
 grok.templatedir('templates')
 
 class AddMenu(MenuItem):
-    grok.context(IFernlehrgang)
-    grok.name(u'Lehrhefte verwalten')
+    grok.context(ILehrheft)
+    grok.name(u'Resultset verwalten')
     grok.viewletmanager(ISidebar)
 
-    urlEndings = "lehrhefte"
-    viewURL = "lehrhefte"
+    urlEndings = "resultate"
+    viewURL = "resultate"
 
     @property
     def url(self):
         return "%s/%s" % (url(self.request, self.context), self.viewURL)
 
 
-class AddLehrheft(PageAddForm, grok.View):
-    grok.context(IFernlehrgang)
-    title = u'Lehrheft'
-    label = u'Lehrheft anlegen'
+class AddResultat(PageAddForm, grok.View):
+    grok.context(ILehrheft)
+    title = u'Resultat'
+    label = u'Resultat anlegen'
 
-    fields = Fields(ILehrheft).omit('id')
+    fields = Fields(IResultat).omit('id')
 
     def create(self, data):
-        return Lehrheft(**data)
+        return Resultat(**data)
 
     def add(self, object):
         self.object = object
-        self.context.lehrhefte.append(object)
+        self.context.resultate.append(object)
 
     def nextURL(self):
-        return self.url(self.context, 'lehrhefte')
+        return self.url(self.context, 'resultate')
 
 
 class Index(PageDisplayForm, grok.View):
+    grok.context(IResultat)
+
+    fields = Fields(IResultat).omit('id')
+
+
+
+class Resultate(DeleteFormTablePage, grok.View):
     grok.context(ILehrheft)
-
-    fields = Fields(ILehrheft).omit(id)
-
-
-
-class Lehrhefte(DeleteFormTablePage, grok.View):
-    grok.context(IFernlehrgang)
-    grok.name('lehrhefte')
+    grok.name('resultate')
     extends(DeleteFormTablePage)
 
     status = None
@@ -73,14 +74,14 @@ class Lehrhefte(DeleteFormTablePage, grok.View):
     @property
     def values(self):
         root = getSite()
-        for x in self.context.lehrhefte:
+        for x in self.context.resultate:
             locate(root, x, DefaultModel)
-        return self.context.lehrhefte
+        return self.context.resultate
 
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
-        self.nextURL = self.url(self.context, 'lehrhefte')
+        self.nextURL = self.url(self.context, 'resultate')
 
     def render(self):
         if self.nextURL is not None:
@@ -89,20 +90,20 @@ class Lehrhefte(DeleteFormTablePage, grok.View):
             return ""
         return self.renderFormTable()
 
-    @button.buttonAndHandler(u'Lehrheft anlegen')
+    @button.buttonAndHandler(u'Resultat anlegen')
     def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addlehrheft')) 
+         self.redirect(self.url(self.context, 'addresultat')) 
 
 
 
 
 class CheckBox(CheckBoxColumn):
     grok.name('checkBox')
-    grok.context(IFernlehrgang)
+    grok.context(ILehrheft)
     weight = 0
 
 class Name(LinkColumn):
     grok.name('Nummer')
-    grok.context(IFernlehrgang)
+    grok.context(ILehrheft)
     weight = 99
     linkContent = "edit"
