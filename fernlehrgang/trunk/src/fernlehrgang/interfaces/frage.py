@@ -7,7 +7,7 @@ import grok
 from zope.schema import *
 from zope.interface import Interface
 
-class IResultat(Interface):
+class IFrage(Interface):
 
     id = Int(
         title = u'Id',
@@ -25,5 +25,11 @@ class IResultat(Interface):
     antwortschema = TextLine(
         title = u'Antwortschema',
         description = u'Bitte geben Sie Antwortmöglichkeiten ein.',
+        required = True,
+        )
+
+    eingangsdatum = Date(
+        title = u'Eingangsdatum',
+        description = u'Bitte geben Sie das Eingangsdatum der Antwort an.',
         required = True,
         )

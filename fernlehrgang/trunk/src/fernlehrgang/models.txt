@@ -76,8 +76,8 @@ alle Referenzen auf die Objekte bekommen.
 
    >>> lehrheft = fernlehrgang.lehrhefte[0]
 
-   >>> from fernlehrgang.models import Resultat
-   >>> resultat = Resultat(frage=1, antwortschema="abac")
+   >>> from fernlehrgang.models import Frage
+   >>> frage = Frage(frage=1, antwortschema="abac")
 
 
    >>> session.delete(fernlehrgang)

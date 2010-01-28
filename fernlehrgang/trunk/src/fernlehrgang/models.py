@@ -17,7 +17,9 @@ from z3c.saconfig.interfaces import IEngineCreatedEvent
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
-from fernlehrgang.interfaces.resultat import IResultat
+from fernlehrgang.interfaces.frage import IFrage
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
 
 from zope.container.contained import Contained
 
@@ -59,6 +61,31 @@ class Fernlehrgang(Base, traject.Model, Contained):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
+class Unternehmen(Base, traject.Model, Contained):
+    grok.implements(IUnternehmen)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("unternehmen/:mnr")
+
+    __tablename__ = 'unternehmen'
+
+    mnr = Column(String, primary_key=True)
+    name = Column(String)
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def __repr__(self):
+        return "<Unternehmen(mnr='%s')>" %(self.mnr)
+
+    def factory(mnr):
+        session = Session()
+        return session.query(Unternehmen).filter(
+            Unternehmen.id == mnr).one()
+
+    def arguments(unternehmen):
+        return dict(mnr = unternehmen.mnr)
+
 
 class Lehrheft(Base, traject.Model, Contained):
     grok.implements(ILehrheft)
@@ -92,8 +119,8 @@ class Lehrheft(Base, traject.Model, Contained):
 
 
 
-class Resultat(Base, traject.Model, Contained):
-    grok.implements(IResultat)
+class Frage(Base, traject.Model, Contained):
+    grok.implements(IFrage)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/resultat/:resultat_id")
 
@@ -111,15 +138,49 @@ class Resultat(Base, traject.Model, Contained):
             setattr(self, key, value)
 
     def __repr__(self):
-        return "<Resultat(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
+        return "<Frage(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
 
     def factory(fernlehrgang_id, lehrheft_id, resultat_id):
         session = Session()
-        return  session.query(Resultat).filter(
-            and_( Resultat.id == int(resultat_id),
-                  Resultat.lehrheft_id == int(lehrheft_id))).one()
+        return  session.query(Frage).filter(
+            and_( Frage.id == int(resultat_id),
+                  Frage.lehrheft_id == int(lehrheft_id))).one()
 
     def arguments(resultat):
         return dict(resultat_id = resultat.id,
                     lehrheft_id = resultat.lehrheft_id,
                     fernlehrgang_id = resultat.lehrheft.fernlehrgang.id)
+
+
+class Kursteilnehmer(Base, traject.Model, Contained):
+    grok.implements(IKursteilnehmer)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id")
+
+    __tablename__ = 'kursteilnehmer'
+
+    id = Column(Integer, primary_key=True)
+    status = Column(String)
+    fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
+    #teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
+    #unternehmen_mnr = Column(Integer, ForeignKey('unternehmen.id',))
+
+    fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def __repr__(self):
+        return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" %(self.id, self.fernlehrgang_id)
+
+    def factory(fernlehrgang_id, id):
+        session = Session()
+        return  session.query(Kursteilnehmer).filter(
+            and_( Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
+                  Kursteilnehmer.id == int(id))).one()
+
+    def arguments(kursteilnehmer):
+        return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
+                    id = kursteilnehmer.id)
+
