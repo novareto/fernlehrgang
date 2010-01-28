@@ -1,0 +1,96 @@
+======
+Ablauf
+======
+
+:Test-Layer: functional
+
+Dieser Doctest soll mal zeigen wie ein Ablauf eines Fernlehrgangs aussehen könnte...
+
+
+Setup
+-----
+
+Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
+uma alle Utilities zur Verfügung zu haben.
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> from z3c.saconfig import Session
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+   
+
+Einrichten des Fernlehrgangs
+----------------------------
+
+   >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
+
+   >>> flg09 = Fernlehrgang(jahr="2009", titel="Fernlehrgang",
+   ...                      beschreibung="Beschreibung", start="01.01.2009", ende="31.12.2009")    
+
+   >>> lheft1 = Lehrheft(nummer=1)
+   >>> lheft2 = Lehrheft(nummer=2)
+
+   >>> frage1 = Frage(frage=1, antwortschema="ab")
+   >>> frage2 = Frage(frage=2, antwortschema="bc")
+   >>> frage3 = Frage(frage=3, antwortschema="cd")
+
+   >>> lheft1.fragen.append(frage1) 
+   >>> lheft1.fragen.append(frage2)
+   >>> lheft2.fragen.append(frage3)
+
+   >>> flg09.lehrhefte.append(lheft1)
+   >>> flg09.lehrhefte.append(lheft2)
+
+   >>> session = Session()
+   >>> session.add(flg09)
+   >>> import transaction; transaction.commit()
+
+    
+
+Einrichten der Benutzer
+-----------------------
+
+   >>> from fernlehrgang.models import Unternehmen, Teilnehmer
+
+   >>> session = Session()
+   >>> unt1 = Unternehmen(mnr="0000-00025", name="Novareto")
+   >>> unt2 = Unternehmen(mnr="0000-00026", name="Econtec")
+
+   >>> teil1 = Teilnehmer(name="Lars Walther")
+   >>> teil2 = Teilnehmer(name="Bernd Probst")
+
+   >>> session.add_all([unt1, unt2, teil1, teil2])
+   >>> import transaction; transaction.commit()
+
+
+
+Einrichten von Kursteilnehmern
+------------------------------
+
+   >>> from fernlehrgang.models import Kursteilnehmer
+   >>> kt1 = Kursteilnehmer()
+   >>> kt2 = Kursteilnehmer()
+
+   >>> kt1.unternehmen = unt1
+   >>> kt1.teilnehmer = teil1
+
+   >>> kt2.unternehmen = unt2
+   >>> kt2.teilnehmer = teil2
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg.kursteilnehmer.append(kt1)
+   >>> flg.kursteilnehmer.append(kt2)
+   
+   >>> import transaction; transaction.commit()
+   >>> import pdb; pdb.set_trace()
+
+
+Cleaning
+--------
+
+   >>> session = Session()
+   >>> from fernlehrgang.models import Base
+   >>> mt = Base.metadata
+   >>> mt.bind = session.connection().engine
+   >>> mt.drop_all()

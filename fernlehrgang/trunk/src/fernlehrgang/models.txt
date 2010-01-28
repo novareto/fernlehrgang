@@ -17,8 +17,6 @@ Für unsere Tests brauchen wir auch das Session Objekt:
 
 
 
-
-
 Fernlehrgang
 ------------
 
@@ -101,6 +99,53 @@ Nun sollten wir auch die Instanz von lars aus der Datenbank bekommen.
 
    >>> session.query(Teilnehmer).one()
    <Teilnehmer(id='1', name='Lars Walther')>
+
+
+   >>> import transaction; transaction.commit()
+
+
+Kursteilnehmer
+--------------
+
+Der Kursteilnehmer ist nun eine Kombination aus Unternehmen und Teilnehmer.
+Der Kursteilnehmer hängt unter dem Fernlehrgang und stellt somit das Paar zwischen
+Unternehmen und Teilnehmer dar. D. h. alle aktiven User für den Fernlehrgang sind 
+Kursteilnehmer.
+
+Zunächst erzeugen wir eine Instanz eines Kursteilnehmers
+
+   >>> from fernlehrgang.models import Kursteilnehmer
+   >>> ktn = Kursteilnehmer(teilnehmer_id=1, unternehmen_mnr='0000-00025')
+   >>> ktn
+   <Kursteilnehmer(id='None', fernlehrgangid='None')>
+
+Diese Instanz legen wir anschließend unterhalb des Fernlehrgangs an!
+
+   >>> session = Session
+   >>> fernlehrgang = session.query(Fernlehrgang).first()
+
+   >>> fernlehrgang.kursteilnehmer.append(ktn)
+   >>> import transaction; transaction.commit()
+
+Nun greifen wir erneut den Fernlehrgang ab und suchen gezielt nach unseren 
+Kursteilnehmer
+
+   >>> fernlehrgang = session.query(Fernlehrgang).first()
+   >>> ktn = fernlehrgang.kursteilnehmer[0]
+   >>> ktn
+   <Kursteilnehmer(id='1', fernlehrgangid='1')>
+
+Wir haben unser Unternehmen des Kursteilnehmers
+
+   >>> ktn.unternehmen
+   <Unternehmen(mnr='0000-00025')>
+
+und natürlich den Teilnehmer selbst.
+
+   >>> ktn.teilnehmer
+   <Teilnehmer(id='1', name='Lars Walther')>
+
+
 
 
 Lehrhefte für den Fernlehrgang
