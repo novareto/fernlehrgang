@@ -21,6 +21,7 @@ from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.interfaces.antwort import IAntwort
 
 from zope.container.contained import Contained
 
@@ -146,9 +147,9 @@ class Lehrheft(Base, RDBMixin):
 class Frage(Base, RDBMixin):
     grok.implements(IFrage)
     grok.context(IFernlehrgangApp)
-    traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/resultat/:resultat_id")
+    traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/frage/:frage_id")
 
-    __tablename__ = 'resultat'
+    __tablename__ = 'frage'
 
     id = Column(Integer, primary_key=True)
     frage = Column(Integer)
@@ -162,16 +163,16 @@ class Frage(Base, RDBMixin):
     def __repr__(self):
         return "<Frage(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
 
-    def factory(fernlehrgang_id, lehrheft_id, resultat_id):
+    def factory(fernlehrgang_id, lehrheft_id, frage_id):
         session = Session()
         return  session.query(Frage).filter(
-            and_( Frage.id == int(resultat_id),
+            and_( Frage.id == int(frage_id),
                   Frage.lehrheft_id == int(lehrheft_id))).one()
 
-    def arguments(resultat):
-        return dict(resultat_id = resultat.id,
-                    lehrheft_id = resultat.lehrheft_id,
-                    fernlehrgang_id = resultat.lehrheft.fernlehrgang.id)
+    def arguments(frage):
+        return dict(frage_id = frage.id,
+                    lehrheft_id = frage.lehrheft_id,
+                    fernlehrgang_id = frage.lehrheft.fernlehrgang.id)
 
 
 class Kursteilnehmer(Base, RDBMixin):
@@ -203,4 +204,34 @@ class Kursteilnehmer(Base, RDBMixin):
     def arguments(kursteilnehmer):
         return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
                     id = kursteilnehmer.id)
+
+class Antwort(Base, RDBMixin):
+    grok.implements(IAntwort)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id")
+
+    __tablename__ = 'antwort'
+
+    id = Column(Integer, primary_key=True)
+    frage = Column(Integer, ForeignKey('frage.id'))
+    antwortschema = Column(String)
+    kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
+
+    kursteilnehmer = relation(Kursteilnehmer, 
+                              backref = backref('antworten', order_by=frage),
+                             )
+
+    def __repr__(self):
+        return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
+
+    def factory(fernlehrgang_id, id, antwort_id):
+        session = Session()
+        return  session.query(Antwort).filter(
+            and_( Antwort.id == int(antwort_id),
+                  Antwort.kursteilnehmer_id == int(id))).one()
+
+    def arguments(antwort):
+        return dict(antwort_id = antwort.id,
+                    kursteilnehmer_id = antwort.kursteilnehmer_id,
+                    fernlehrgang_id = resultat.kursteilnehmer.fernlehrgang.id)
 
