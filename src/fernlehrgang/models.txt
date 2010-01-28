@@ -16,6 +16,9 @@ Für unsere Tests brauchen wir auch das Session Objekt:
    >>> session = Session()
 
 
+
+
+
 Fernlehrgang
 ------------
 
@@ -45,6 +48,63 @@ Wenn wir gezielt nach unseren Fernlehrgang suchen sollten wir erneut unsere Inst
    >>> fernlehrgang
    <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
    >>> import transaction; transaction.commit() 
+
+Unternehmen
+-----------
+
+Als Basis für den Fernlehrgang dienen Unternehmen, diese werden zur Teilnahme am 
+Fernlehrgang angeschrieben. Anschließend können die Unternehmen Mitarbeiter (Personen)
+benennen die für das Unternehmen am Fernlehrgang teilnehmen...
+
+   >>> from fernlehrgang.models import Unternehmen
+   >>> novareto = Unternehmen(mnr = "0000-00025", name = "Novareto")
+   >>> novareto
+   <Unternehmen(mnr='0000-00025')>
+
+Normalerweise sollten wir keine Unternehmen in der Datenbank haben:
+
+   >>> session = Session()
+   >>> int(session.query(Unternehmen).count())
+   0
+
+Speichern wir nun die Instanz novareto in die Datenbank:
+
+   >>> session.add(novareto)
+
+Wir können nun nachsehen ob wir *** novareto *** auch finden.
+
+   >>> session.query(Unternehmen).one()
+   <Unternehmen(mnr='0000-00025')>
+
+
+Teilnehmer
+----------
+
+Diese Teilnehmer werden mit Ihrer *ID* schon beim Initiallauf angelegt.
+
+   >>> from fernlehrgang.models import Teilnehmer
+   >>> lars = Teilnehmer(name='Lars Walther')
+   >>> lars
+   <Teilnehmer(id='None', name='Lars Walther')>
+
+Auch hier sollte die Datenbank noch keine Einträge für Teilnehmer haben:
+
+   >>> session = Session()
+   >>> int(session.query(Teilnehmer).count())
+   0
+
+Speichern wir den Teilnehmer lars:
+
+   >>> session.add(lars)
+
+Nun sollten wir auch die Instanz von lars aus der Datenbank bekommen.
+
+   >>> session.query(Teilnehmer).one()
+   <Teilnehmer(id='1', name='Lars Walther')>
+
+
+Lehrhefte für den Fernlehrgang
+------------------------------
 
 Nun können wir für unseren Fernlehrgang Verschiedene Lehrhefte anlegen.
 
@@ -78,9 +138,11 @@ alle Referenzen auf die Objekte bekommen.
 
    >>> from fernlehrgang.models import Frage
    >>> frage = Frage(frage=1, antwortschema="abac")
+   >>> frage
+   <Frage(id='None', frage='1', antwort='abac')>
 
+   >>> lehrheft.fragen.append(frage)
 
-   >>> session.delete(fernlehrgang)
    >>> import transaction; transaction.commit() 
 
 Cleaning

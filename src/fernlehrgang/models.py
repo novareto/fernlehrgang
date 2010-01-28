@@ -20,6 +20,7 @@ from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 
 from zope.container.contained import Contained
 
@@ -31,7 +32,17 @@ def setUpDatabase(event):
 
 Base = declarative_base()
 
-class Fernlehrgang(Base, traject.Model, Contained):
+
+class RDBMixin(traject.Model, Contained):
+    """ Base Mixin for RDB-Base Classes """
+    grok.baseclass()
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
+class Fernlehrgang(Base, RDBMixin):
     grok.implements(IFernlehrgang)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id")
@@ -45,9 +56,6 @@ class Fernlehrgang(Base, traject.Model, Contained):
     start = Column(Date)
     ende = Column(Date)
 
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
     def __repr__(self):
         return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" %(self.id, self.jahr, self.titel)
@@ -61,7 +69,7 @@ class Fernlehrgang(Base, traject.Model, Contained):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
-class Unternehmen(Base, traject.Model, Contained):
+class Unternehmen(Base, RDBMixin):
     grok.implements(IUnternehmen)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:mnr")
@@ -70,10 +78,6 @@ class Unternehmen(Base, traject.Model, Contained):
 
     mnr = Column(String, primary_key=True)
     name = Column(String)
-
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
@@ -87,7 +91,29 @@ class Unternehmen(Base, traject.Model, Contained):
         return dict(mnr = unternehmen.mnr)
 
 
-class Lehrheft(Base, traject.Model, Contained):
+class Teilnehmer(Base, RDBMixin):
+    grok.implements(ITeilnehmer)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("teilnehmer/:id")
+
+    __tablename__ = 'teilnehmer'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+    def __repr__(self):
+        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
+
+    def factory(id):
+        session = Session()
+        return session.query(Teilnehmer).filter(
+            Teilnehmer.id == id).one()
+
+    def arguments(teilnehmer):
+        return dict(id = teilnehmer.id)
+
+
+class Lehrheft(Base, RDBMixin):
     grok.implements(ILehrheft)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id")
@@ -99,10 +125,6 @@ class Lehrheft(Base, traject.Model, Contained):
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('lehrhefte', order_by=nummer))
-
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
     def __repr__(self):
         return "<Lehrgang(id='%s', nummer='%s', fernlehrgangid='%s')>" %(self.id, self.nummer, self.fernlehrgang_id)
@@ -119,7 +141,7 @@ class Lehrheft(Base, traject.Model, Contained):
 
 
 
-class Frage(Base, traject.Model, Contained):
+class Frage(Base, RDBMixin):
     grok.implements(IFrage)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/resultat/:resultat_id")
@@ -131,11 +153,7 @@ class Frage(Base, traject.Model, Contained):
     antwortschema = Column(String)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
 
-    lehrheft = relation(Lehrheft, backref = backref('resultate', order_by=frage))
-
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    lehrheft = relation(Lehrheft, backref = backref('fragen', order_by=frage))
 
     def __repr__(self):
         return "<Frage(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
@@ -152,7 +170,7 @@ class Frage(Base, traject.Model, Contained):
                     fernlehrgang_id = resultat.lehrheft.fernlehrgang.id)
 
 
-class Kursteilnehmer(Base, traject.Model, Contained):
+class Kursteilnehmer(Base, RDBMixin):
     grok.implements(IKursteilnehmer)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id")
@@ -162,14 +180,10 @@ class Kursteilnehmer(Base, traject.Model, Contained):
     id = Column(Integer, primary_key=True)
     status = Column(String)
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
-    #teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    #unternehmen_mnr = Column(Integer, ForeignKey('unternehmen.id',))
+    teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
+    unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
-
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
     def __repr__(self):
         return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" %(self.id, self.fernlehrgang_id)
