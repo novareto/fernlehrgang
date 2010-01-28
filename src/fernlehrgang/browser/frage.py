@@ -10,9 +10,9 @@ from megrok.traject.components import DefaultModel
 from fernlehrgang.utils import Page
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
-from fernlehrgang.models import Resultat 
+from fernlehrgang.models import Frage 
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from fernlehrgang.interfaces.resultat import IResultat
+from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 
 from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields, button, extends
@@ -31,42 +31,42 @@ class AddMenu(MenuItem):
     grok.name(u'Resultset verwalten')
     grok.viewletmanager(ISidebar)
 
-    urlEndings = "resultate"
-    viewURL = "resultate"
+    urlEndings = "fragee"
+    viewURL = "fragee"
 
     @property
     def url(self):
         return "%s/%s" % (url(self.request, self.context), self.viewURL)
 
 
-class AddResultat(PageAddForm, grok.View):
+class AddFrage(PageAddForm, grok.View):
     grok.context(ILehrheft)
-    title = u'Resultat'
-    label = u'Resultat anlegen'
+    title = u'Frage'
+    label = u'Frage anlegen'
 
-    fields = Fields(IResultat).omit('id')
+    fields = Fields(IFrage).omit('id')
 
     def create(self, data):
-        return Resultat(**data)
+        return Frage(**data)
 
     def add(self, object):
         self.object = object
-        self.context.resultate.append(object)
+        self.context.fragee.append(object)
 
     def nextURL(self):
-        return self.url(self.context, 'resultate')
+        return self.url(self.context, 'fragee')
 
 
 class Index(PageDisplayForm, grok.View):
-    grok.context(IResultat)
+    grok.context(IFrage)
 
-    fields = Fields(IResultat).omit('id')
+    fields = Fields(IFrage).omit('id')
 
 
 
-class Resultate(DeleteFormTablePage, grok.View):
+class Fragee(DeleteFormTablePage, grok.View):
     grok.context(ILehrheft)
-    grok.name('resultate')
+    grok.name('fragee')
     extends(DeleteFormTablePage)
 
     status = None
@@ -74,14 +74,14 @@ class Resultate(DeleteFormTablePage, grok.View):
     @property
     def values(self):
         root = getSite()
-        for x in self.context.resultate:
+        for x in self.context.fragee:
             locate(root, x, DefaultModel)
-        return self.context.resultate
+        return self.context.fragee
 
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
-        self.nextURL = self.url(self.context, 'resultate')
+        self.nextURL = self.url(self.context, 'fragee')
 
     def render(self):
         if self.nextURL is not None:
@@ -90,9 +90,9 @@ class Resultate(DeleteFormTablePage, grok.View):
             return ""
         return self.renderFormTable()
 
-    @button.buttonAndHandler(u'Resultat anlegen')
+    @button.buttonAndHandler(u'Frage anlegen')
     def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addresultat')) 
+         self.redirect(self.url(self.context, 'addfrage')) 
 
 
 
