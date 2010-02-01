@@ -96,6 +96,22 @@ Einrichten von Kursteilnehmern und von Antwortbögen
 
    >>> import transaction; transaction.commit()
 
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+
+   >>> kt1, kt2 = flg.kursteilnehmer
+   >>> ant1, = kt1.antworten
+   >>> ant1
+   <Antwort(id='1', frage='1', antwort='AB')>
+
+   >>> ant1.frage
+   <Frage(id='1', frage='1', antwort='ab')>
+
+   >>> import transaction; transaction.commit()
+
+
+
 Cleaning
 --------
 

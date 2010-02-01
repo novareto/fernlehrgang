@@ -190,11 +190,11 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String)
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    #unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr',))
+    unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
-    #unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     def __repr__(self):
         return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" %(self.id, self.fernlehrgang_id)
@@ -225,11 +225,11 @@ class Antwort(Base, RDBMixin):
                               backref = backref('antworten', order_by=frage_id),
                              )
 
-    #frage = relation(Frage)
+    frage = relation(Frage)
                      
 
     def __repr__(self):
-        return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
+        return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage_id, self.antwortschema)
 
     def factory(fernlehrgang_id, id, antwort_id):
         session = Session()
