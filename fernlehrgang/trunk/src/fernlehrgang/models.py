@@ -95,23 +95,27 @@ class Unternehmen(Base, RDBMixin):
 class Teilnehmer(Base, RDBMixin):
     grok.implements(ITeilnehmer)
     grok.context(IFernlehrgangApp)
-    traject.pattern("teilnehmer/:id")
+    traject.pattern("unternehmen/:mnr/teilnehmer/:id")
 
     __tablename__ = 'teilnehmer'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr'))
+
+    unternehmen = relation(Unternehmen,
+                           backref = backref('teilnehmer', order_by=id))
 
     def __repr__(self):
         return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
 
-    def factory(id):
+    def factory(id, mnr):
         session = Session()
         return session.query(Teilnehmer).filter(
-            Teilnehmer.id == id).one()
+            and_(Teilnehmer.id == id, Teilnehmer.mnr == mnr)).one()
 
     def arguments(teilnehmer):
-        return dict(id = teilnehmer.id)
+        return dict(id = teilnehmer.id, mnr = teilnehmer.unternehmen_mnr)
 
 
 class Lehrheft(Base, RDBMixin):
@@ -127,7 +131,7 @@ class Lehrheft(Base, RDBMixin):
 
     fernlehrgang = relation(Fernlehrgang, 
                             backref = backref('lehrhefte', order_by=nummer),
-                            cascade = "all, delete, delete-orphan",)
+                           ) 
 
     def __repr__(self):
         return "<Lehrgang(id='%s', nummer='%s', fernlehrgangid='%s')>" %(self.id, self.nummer, self.fernlehrgang_id)
@@ -158,7 +162,7 @@ class Frage(Base, RDBMixin):
 
     lehrheft = relation(Lehrheft, 
                         backref = backref('fragen', order_by=frage),
-                        cascade="all, delete, delete-orphan",)
+                        )
 
     def __repr__(self):
         return "<Frage(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
@@ -186,11 +190,11 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String)
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr',))
+    #unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
-    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    #unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     def __repr__(self):
         return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" %(self.id, self.fernlehrgang_id)
@@ -213,13 +217,16 @@ class Antwort(Base, RDBMixin):
     __tablename__ = 'antwort'
 
     id = Column(Integer, primary_key=True)
-    frage = Column(Integer, ForeignKey('frage.id'))
+    frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String)
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 
-                              backref = backref('antworten', order_by=frage),
+                              backref = backref('antworten', order_by=frage_id),
                              )
+
+    #frage = relation(Frage)
+                     
 
     def __repr__(self):
         return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
