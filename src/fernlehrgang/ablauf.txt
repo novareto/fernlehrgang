@@ -59,32 +59,42 @@ Einrichten der Benutzer
    >>> teil1 = Teilnehmer(name="Lars Walther")
    >>> teil2 = Teilnehmer(name="Bernd Probst")
 
-   >>> session.add_all([unt1, unt2, teil1, teil2])
-   >>> import transaction; transaction.commit()
+   >>> unt1.teilnehmer.append(teil1)
+   >>> unt2.teilnehmer.append(teil2)
 
 
+Einrichten von Kursteilnehmern und von Antwortbögen
+---------------------------------------------------
 
-Einrichten von Kursteilnehmern
-------------------------------
-
-   >>> from fernlehrgang.models import Kursteilnehmer
+   >>> from fernlehrgang.models import Kursteilnehmer, Antwort
    >>> kt1 = Kursteilnehmer()
    >>> kt2 = Kursteilnehmer()
 
-   >>> kt1.unternehmen = unt1
-   >>> kt1.teilnehmer = teil1
-
-   >>> kt2.unternehmen = unt2
-   >>> kt2.teilnehmer = teil2
-
-   >>> session = Session()
    >>> flg = session.query(Fernlehrgang).get(1)
    >>> flg.kursteilnehmer.append(kt1)
    >>> flg.kursteilnehmer.append(kt2)
-   
-   >>> import transaction; transaction.commit()
-   >>> import pdb; pdb.set_trace()
 
+   >>> import transaction; transaction.commit()
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> kut1, kut2 = flg.kursteilnehmer
+
+   >>> kut1.teilnehmer = teil1
+   >>> kut2.teilnehmer = teil2
+
+   >>> import transaction; transaction.commit()
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg
+   <Fernlehrgang(id='1', jahr='2009', titel='Fernlehrgang')>
+
+   >>> antwort1 = Antwort(antwortschema = "AB", frage_id=1)
+   >>> kt1, kt2 = flg.kursteilnehmer
+   >>> kt1.antworten.append(antwort1)
+
+   >>> import transaction; transaction.commit()
 
 Cleaning
 --------
