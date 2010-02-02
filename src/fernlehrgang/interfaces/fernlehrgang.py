@@ -34,7 +34,7 @@ class IFernlehrgang(Interface):
         required = True
         )
 
-    start = Date(title = u'Start',
+    beginn = Date(title = u'Start',
         description = u'Zu welchen Datum soll der Fernlehrgang beginnen?',
         required = True
         )

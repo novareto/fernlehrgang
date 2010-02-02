@@ -24,7 +24,7 @@ Wir starten mit einer Instanz vom Fernlehrgang; diesen werden wir dann DB-Techni
 
    >>> from fernlehrgang.models import Fernlehrgang
    >>> fernlehrgang = Fernlehrgang(jahr=2009, titel='Fernlehrgang', 
-   ...                               beschreibung='Beschreibugn', start="01.01.2009", ende="31.12.2009")
+   ...                               beschreibung='Beschreibugn', beginn="01.01.2009", ende="31.12.2009")
 
 Zuerst prüfen wir ob wir schon Fernlehrgänge in der Datenbank haben.
 
@@ -198,6 +198,6 @@ Cleaning
    >>> mt = Base.metadata
    >>> mt.bind = session.connection().engine
    >>> mt
-   MetaData(Engine(postgres://cklinger@localhost:5432/fernlehrgang))
+   MetaData(Engine(...))
 
    >>> mt.drop_all()

@@ -50,12 +50,12 @@ class Fernlehrgang(Base, RDBMixin):
 
     __tablename__ = 'fernlehrgang'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('fernlehrgang_id'), primary_key=True)
     jahr = Column(Integer)
-    titel = Column(String)
-    beschreibung = Column(String)
-    start = Column(Date)
-    ende = Column(Date)
+    titel = Column(String(50))
+    beschreibung = Column(String(50))
+    beginn = Column(String(12))
+    ende = Column(String(12))
 
 
     def __repr__(self):
@@ -77,8 +77,8 @@ class Unternehmen(Base, RDBMixin):
 
     __tablename__ = 'unternehmen'
 
-    mnr = Column(String, primary_key=True)
-    name = Column(String)
+    mnr = Column(String(10), primary_key=True)
+    name = Column(String(50))
 
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
@@ -99,9 +99,9 @@ class Teilnehmer(Base, RDBMixin):
 
     __tablename__ = 'teilnehmer'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr'))
+    id = Column(Integer, Sequence('teilnehmer_seq'), primary_key=True)
+    name = Column(String(50))
+    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr'))
 
     unternehmen = relation(Unternehmen,
                            backref = backref('teilnehmer', order_by=id))
@@ -125,7 +125,7 @@ class Lehrheft(Base, RDBMixin):
 
     __tablename__ = 'lehrheft'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('lehrheft_seq'), primary_key=True)
     nummer = Column(Integer)
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
@@ -155,9 +155,9 @@ class Frage(Base, RDBMixin):
 
     __tablename__ = 'frage'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('frage_id'), primary_key=True)
     frage = Column(Integer)
-    antwortschema = Column(String)
+    antwortschema = Column(String(50))
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
 
     lehrheft = relation(Lehrheft, 
@@ -186,11 +186,11 @@ class Kursteilnehmer(Base, RDBMixin):
 
     __tablename__ = 'kursteilnehmer'
 
-    id = Column(Integer, primary_key=True)
-    status = Column(String)
+    id = Column(Integer, Sequence('kursteilnehmer_id'), primary_key=True)
+    status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String, ForeignKey('unternehmen.mnr',))
+    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
@@ -216,9 +216,9 @@ class Antwort(Base, RDBMixin):
 
     __tablename__ = 'antwort'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('antwort_seq'), primary_key=True)
     frage_id = Column(Integer, ForeignKey('frage.id'))
-    antwortschema = Column(String)
+    antwortschema = Column(String(50))
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 
