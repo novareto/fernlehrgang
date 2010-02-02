@@ -86,7 +86,7 @@ class Unternehmen(Base, RDBMixin):
     def factory(mnr):
         session = Session()
         return session.query(Unternehmen).filter(
-            Unternehmen.id == mnr).one()
+            Unternehmen.mnr == mnr).one()
 
     def arguments(unternehmen):
         return dict(mnr = unternehmen.mnr)
