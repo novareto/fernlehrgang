@@ -25,7 +25,7 @@ Einrichten des Fernlehrgangs
    >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
 
    >>> flg09 = Fernlehrgang(jahr="2009", titel="Fernlehrgang",
-   ...                      beschreibung="Beschreibung", start="01.01.2009", ende="31.12.2009")    
+   ...                      beschreibung="Beschreibung", beginn="01.01.09", ende="01.12.09")    
 
    >>> lheft1 = Lehrheft(nummer=1)
    >>> lheft2 = Lehrheft(nummer=2)

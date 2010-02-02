@@ -54,7 +54,7 @@ Wir können jetzt die Eingabeform für den Fernlehrgang ausfüllen.
    >>> form.getControl(name='form.widgets.jahr').value = "2010"
    >>> form.getControl(name='form.widgets.titel').value = "Fernlehrgang 2010"
    >>> form.getControl(name='form.widgets.beschreibung').value = "Handel mit Schwerpunkt Tiere."
-   >>> form.getControl(name='form.widgets.start').value = "10/01/01"
+   >>> form.getControl(name='form.widgets.beginn').value = "10/01/01"
    >>> form.getControl(name='form.widgets.ende').value = "10/12/31"
    >>> form.submit(u'Add')
 
