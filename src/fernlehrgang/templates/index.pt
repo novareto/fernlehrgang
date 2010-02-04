@@ -7,16 +7,5 @@
     <p class="description"
        tal:content="view/description"/>
   </div>
-  <fieldset>
-   <legend i18n:translate=""> Fernlehrgaenge </legend>
-     <ul tal:repeat="flg view/getFernlehrgaenge">
-       <li> 
-         <a href="" tal:attributes="href python: view.createLink(flg.id)">
-              <span tal:replace="string: ${flg/titel} ${flg/jahr}"/>
-         </a>     
-       </li>
-     </ul>
-  </fieldset> 
-
 </body>
 </html>
