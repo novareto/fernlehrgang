@@ -19,19 +19,19 @@ from z3c.saconfig import Session
 
 
 from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import CheckBoxColumn, LinkColumn
+from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3ctable.ftests import Container, Content
 
 
 grok.templatedir('templates')
 
-class AddMenu(MenuItem):
+class AddUnternehmenMenu(MenuItem):
     grok.context(IFernlehrgangApp)
     grok.name(u'Unternehmen verwalten')
     grok.viewletmanager(ISidebar)
 
-    urlEndings = "unternehmen"
-    viewURL = "unternehmen"
+    urlEndings = "unternehmencontrol"
+    viewURL = "unternehmencontrol"
 
     @property
     def url(self):
@@ -46,41 +46,40 @@ class AddUnternehmen(PageAddForm, grok.View):
     fields = Fields(IUnternehmen)
 
     def create(self, data):
-        return Lehrheft(**data)
+        return Unternehmen(**data)
 
     def add(self, object):
-        self.object = object
-        self.context.unternehmen.append(object)
+        session = Session()
+        session.add(object)
 
     def nextURL(self):
-        return self.url(self.context, 'unternehmen')
-
-
-class Index(PageDisplayForm, grok.View):
-    grok.context(IUnternehmen)
-
-    fields = Fields(IUnternehmen)
+        return self.url(self.context, 'unternehmencontrol')
 
 
 
-class Unternehmen(DeleteFormTablePage, grok.View):
+
+class UnternehmenControl(DeleteFormTablePage, grok.View):
     grok.context(IFernlehrgangApp)
-    grok.name('unternehmen_view')
+    grok.name('unternehmencontrol')
     extends(DeleteFormTablePage)
+    title = u"Unternehmen"
+    description = u"Hier können Sie die Unternehmen der BG-Verwalten"
 
     status = None
 
     @property
     def values(self):
         root = getSite()
-        for x in self.context.unternehmen:
-            locate(root, x, DefaultModel)
-        return self.context.unternehmen
+        session = Session()
+        for unternehmen in session.query(Unternehmen).all():
+            locate(root, unternehmen, DefaultModel)
+            yield unternehmen 
+
 
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
-        self.nextURL = self.url(self.context, 'unternehmen')
+        self.nextURL = self.url(self.context, 'unternehmencontrol')
 
     def render(self):
         if self.nextURL is not None:
@@ -90,19 +89,36 @@ class Unternehmen(DeleteFormTablePage, grok.View):
         return self.renderFormTable()
 
     @button.buttonAndHandler(u'Unternehmen anlegen')
-    def handleChangeWorkflowState(self, action):
+    def handleAddUnternehmen(self, action):
          self.redirect(self.url(self.context, 'addunternehmen')) 
-
-
 
 
 class CheckBox(CheckBoxColumn):
     grok.name('checkBox')
-    grok.context(IUnternehmen)
+    grok.context(IFernlehrgangApp)
     weight = 0
 
-class Name(LinkColumn):
-    grok.name('Nummer')
-    grok.context(IUnternehmen)
+class Mitgliedsnummer(GetAttrColumn):
+    grok.name('Mitgliedsnummer')
+    grok.context(IFernlehrgangApp)
+    weight = 10
+    header = u"Mitgliedsnummer"
+    attrName = u"mnr"
+
+class Name(GetAttrColumn):
+    grok.name('Name')
+    grok.context(IFernlehrgangApp)
+    weight = 20
+    header = u"Name"
+    attrName = u"name"
+
+class Aktion(LinkColumn):
+    grok.name('aktion')
+    grok.context(IFernlehrgangApp)
     weight = 99
     linkContent = "edit"
+
+
+class Index(PageDisplayForm, grok.View):
+    grok.context(IUnternehmen)
+    fields = Fields(IUnternehmen)
