@@ -1,0 +1,11 @@
+<div class="main-menu"
+     tal:define="flgs viewletmanager/flgs">
+    <img src="" alt="Extranet"
+         tal:attributes="src python: viewletmanager.view.application_url()+'/@@/uvc.skin/main-menu-bg.gif'"/>
+         <ul tal:condition="flgs">
+            <li tal:repeat="flg flgs"
+                tal:attributes="class flg/css">
+              <a tal:attributes="href flg/url"> <span tal:content="flg/title"/> </a>
+            </li>
+         </ul>
+</div>
