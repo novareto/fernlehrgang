@@ -21,3 +21,9 @@ class ILehrheft(Interface):
         description = u'Die Nummer des Lehrgangs. Diese sollte Fortlaufend 1-8 sein',
         required = True,
         )
+
+    titel = TextLine(
+        title = u'Titel',
+        description = u'Titel des Lehrhefts.',
+        required = True
+        )

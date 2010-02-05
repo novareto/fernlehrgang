@@ -20,7 +20,7 @@ from z3c.saconfig import Session
 
 
 from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import CheckBoxColumn, LinkColumn
+from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3ctable.ftests import Container, Content
 
 
@@ -31,8 +31,8 @@ class AddMenu(MenuItem):
     grok.name(u'Resultset verwalten')
     grok.viewletmanager(ISidebar)
 
-    urlEndings = "fragee"
-    viewURL = "fragee"
+    urlEndings = "frage_view"
+    viewURL = "frage_view"
 
     @property
     def url(self):
@@ -51,10 +51,10 @@ class AddFrage(PageAddForm, grok.View):
 
     def add(self, object):
         self.object = object
-        self.context.fragee.append(object)
+        self.context.fragen.append(object)
 
     def nextURL(self):
-        return self.url(self.context, 'fragee')
+        return self.url(self.context, 'frage_view')
 
 
 class Index(PageDisplayForm, grok.View):
@@ -62,11 +62,9 @@ class Index(PageDisplayForm, grok.View):
 
     fields = Fields(IFrage).omit('id')
 
-
-
-class Fragee(DeleteFormTablePage, grok.View):
+class FrageView(DeleteFormTablePage, grok.View):
     grok.context(ILehrheft)
-    grok.name('fragee')
+    grok.name('frage_view')
     extends(DeleteFormTablePage)
 
     status = None
@@ -74,14 +72,14 @@ class Fragee(DeleteFormTablePage, grok.View):
     @property
     def values(self):
         root = getSite()
-        for x in self.context.fragee:
+        for x in self.context.fragen:
             locate(root, x, DefaultModel)
-        return self.context.fragee
+        return self.context.fragen
 
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
-        self.nextURL = self.url(self.context, 'fragee')
+        self.nextURL = self.url(self.context, 'frage_view')
 
     def render(self):
         if self.nextURL is not None:
@@ -95,15 +93,33 @@ class Fragee(DeleteFormTablePage, grok.View):
          self.redirect(self.url(self.context, 'addfrage')) 
 
 
-
-
 class CheckBox(CheckBoxColumn):
     grok.name('checkBox')
     grok.context(ILehrheft)
     weight = 0
 
-class Name(LinkColumn):
+
+class Link(LinkColumn):
     grok.name('Nummer')
     grok.context(ILehrheft)
-    weight = 99
+    weight = 5 
     linkContent = "edit"
+
+    def getLinkContent(self, item):
+        return "Frage %s" %item.frage 
+
+
+class Antwortschema(GetAttrColumn):
+    grok.name('Antwortschema')
+    grok.context(ILehrheft)
+    weight = 10
+    attrName = 'antwortschema'
+    header = u"Antwortschema"
+
+class Gewichtung(GetAttrColumn):
+    grok.name('Gewichtung')
+    grok.context(ILehrheft)
+    weight = 20
+    attrName = 'gewichtung'
+    header = u"Gewichtung"
+

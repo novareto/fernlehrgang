@@ -106,3 +106,6 @@ class Name(LinkColumn):
     grok.context(IFernlehrgang)
     weight = 99
     linkContent = "edit"
+
+    def getLinkContent(self, item):
+        return item.titel

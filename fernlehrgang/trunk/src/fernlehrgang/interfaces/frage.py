@@ -6,6 +6,12 @@ import grok
 
 from zope.schema import *
 from zope.interface import Interface
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+
+def vocabulary(*terms):
+    return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
+
 
 class IFrage(Interface):
 
@@ -28,8 +34,10 @@ class IFrage(Interface):
         required = True,
         )
 
-    eingangsdatum = Date(
-        title = u'Eingangsdatum',
-        description = u'Bitte geben Sie das Eingangsdatum der Antwort an.',
+    gewichtung = Choice(
+        title = u'Gewichtung',
+        description = u'Bitte geben Sie die Gewichtung für diese Frage ein.',
         required = True,
+        vocabulary=vocabulary((1,1,1),(2,2,2),),
         )
+
