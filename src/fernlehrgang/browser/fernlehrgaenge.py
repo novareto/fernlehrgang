@@ -77,12 +77,16 @@ class CheckBox(CheckBoxColumn):
     grok.context(IFernlehrgangApp)
     weight = 0
 
-class Title(GetAttrColumn):
+class Title(LinkColumn):
     grok.name('titel')
     grok.context(IFernlehrgangApp)
     weight = 10
     header = u"Titel"
     attrName = u"titel"
+
+    def getLinkContent(self, item):
+        return item.titel
+
 
 class Jahr(GetAttrColumn):
     grok.name('Jahr')
@@ -90,12 +94,6 @@ class Jahr(GetAttrColumn):
     weight = 20
     header = u"Jahr"
     attrName = u"jahr"
-
-class Aktion(LinkColumn):
-    grok.name('aktion')
-    grok.context(IFernlehrgangApp)
-    weight = 99
-    linkContent = "index"
 
 
 

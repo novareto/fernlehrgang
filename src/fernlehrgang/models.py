@@ -127,6 +127,7 @@ class Lehrheft(Base, RDBMixin):
 
     id = Column(Integer, Sequence('lehrheft_seq'), primary_key=True)
     nummer = Column(Integer)
+    titel = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
     fernlehrgang = relation(Fernlehrgang, 
@@ -158,6 +159,7 @@ class Frage(Base, RDBMixin):
     id = Column(Integer, Sequence('frage_id'), primary_key=True)
     frage = Column(Integer)
     antwortschema = Column(String(50))
+    gewichtung = Column(Integer)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
 
     lehrheft = relation(Lehrheft, 
