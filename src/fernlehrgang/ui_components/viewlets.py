@@ -17,7 +17,7 @@ class GlobalMenu(grok.ViewletManager):
     grok.name('uvcsite.globalmenu')
     grok.context(Interface)
     grok.implements(IGlobalMenu)
-    template = grok.PageTemplateFile('globalmenu.pt')
+    template = grok.PageTemplateFile('templates/globalmenu.pt')
 
     css = ['blue', 'orange', 'violet', 'green', 'brown', 'purple']
 
