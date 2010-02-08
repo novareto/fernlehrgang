@@ -2,13 +2,15 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
+
 import grok
 
+from dolmen import menu
+from megrok import pagetemplate
 from z3c.saconfig import Session
-from fernlehrgang.models import Fernlehrgang
 from zope.interface import Interface
-from uvc.layout.interfaces import IGlobalMenu
-
+from fernlehrgang.models import Fernlehrgang
+from uvc.layout.interfaces import IGlobalMenu, IAboveContent
 
 
 class GlobalMenu(grok.ViewletManager):
@@ -32,4 +34,12 @@ class GlobalMenu(grok.ViewletManager):
         return rc    
 
 
+class AboveContent(menu.Menu):
+    grok.name('uvcsite.abovecontent')
+    grok.context(Interface)
+    grok.implements(IAboveContent)
 
+
+class MenuTemplate(pagetemplate.PageTemplate):
+    pagetemplate.view(IAboveContent)
+    template = grok.PageTemplateFile("templates/menu.pt")
