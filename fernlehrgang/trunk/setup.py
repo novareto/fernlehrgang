@@ -33,6 +33,8 @@ setup(name='fernlehrgang',
                         'megrok.z3cform.base',
                         'megrok.z3cform.ui',
                         'megrok.z3cform.tabular',
+                        'dolmen.menu',
+                        'megrok.pagetemplate',
                         # Add extra requirements here
                         ],
       entry_points = """

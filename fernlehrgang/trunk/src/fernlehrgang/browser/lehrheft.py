@@ -5,37 +5,71 @@
 import grok
 
 from grok import url, getSite
+from z3c.saconfig import Session
 from megrok.traject import locate
-from megrok.traject.components import DefaultModel
+from dolmen.menu import menuentry
 from fernlehrgang.utils import Page
 from fernlehrgang.utils import MenuItem 
-from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Lehrheft 
+from uvc.layout.interfaces import ISidebar
+from megrok.traject.components import DefaultModel
+from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
-
-from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields, button, extends
-from z3c.saconfig import Session
-
-
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import CheckBoxColumn, LinkColumn
-from megrok.z3ctable.ftests import Container, Content
+from fernlehrgang.ui_components.viewlets import AboveContent
+from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
+from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
 
 grok.templatedir('templates')
+
 
 class AddMenu(MenuItem):
     grok.context(IFernlehrgang)
     grok.name(u'Lehrhefte verwalten')
     grok.viewletmanager(ISidebar)
 
-    urlEndings = "lehrhefte"
-    viewURL = "lehrhefte"
+    urlEndings = "lehrhefte_listing"
+    viewURL = "lehrhefte_listing"
 
     @property
     def url(self):
         return "%s/%s" % (url(self.request, self.context), self.viewURL)
+
+
+@menuentry(AboveContent, title="Lehrhefte verwalten", order=10)
+class LehrhefteListing(DeleteFormTablePage, grok.View):
+    grok.context(IFernlehrgang)
+    grok.name('lehrhefte_listing')
+    title = u"Lehrhefte"
+    description = u"Hier können Sie die Lehrhefte zu Ihrem Fernlehrgang bearbeiten."
+    extends(DeleteFormTablePage)
+
+    status = None
+
+    @property
+    def values(self):
+        root = getSite()
+        for x in self.context.lehrhefte:
+            locate(root, x, DefaultModel)
+        return self.context.lehrhefte
+
+    def executeDelete(self, item):
+        session = Session()
+        session.delete(item)
+        self.nextURL = self.url(self.context, 'lehrhefte_listing')
+
+    def render(self):
+        if self.nextURL is not None:
+            self.flash(u'Die Objecte wurden gelöscht')
+            self.request.response.redirect(self.nextURL)
+            return ""
+        return self.renderFormTable()
+
+    @button.buttonAndHandler(u'Lehrheft anlegen')
+    def handleChangeWorkflowState(self, action):
+         self.redirect(self.url(self.context, 'addlehrheft')) 
 
 
 class AddLehrheft(PageAddForm, grok.View):
@@ -53,53 +87,38 @@ class AddLehrheft(PageAddForm, grok.View):
         self.context.lehrhefte.append(object)
 
     def nextURL(self):
-        return self.url(self.context, 'lehrhefte')
+        return self.url(self.context, 'lehrhefte_listing')
 
 
 class Index(PageDisplayForm, grok.View):
     grok.context(ILehrheft)
+    title = u"Unternehmen"
+    description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(ILehrheft).omit(id)
 
 
+class Edit(PageEditForm, grok.View):
+    grok.context(ILehrheft)
+    grok.name('edit')
+    extends(PageEditForm)
 
-class Lehrhefte(DeleteFormTablePage, grok.View):
-    grok.context(IFernlehrgang)
-    grok.name('lehrhefte')
-    extends(DeleteFormTablePage)
+    fields = Fields(ILehrheft).omit('id')
 
-    status = None
-
-    @property
-    def values(self):
-        root = getSite()
-        for x in self.context.lehrhefte:
-            locate(root, x, DefaultModel)
-        return self.context.lehrhefte
-
-    def executeDelete(self, item):
+    @button.buttonAndHandler(u'Lehrhefte entfernen')
+    def handleDeleteFernlehrgang(self, action):
         session = Session()
-        session.delete(item)
-        self.nextURL = self.url(self.context, 'lehrhefte')
+        session.delete(self.context)
+        self.redirect(self.url(self.context.__parent__)) 
 
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-
-    @button.buttonAndHandler(u'Lehrheft anlegen')
-    def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addlehrheft')) 
-
-
-
+## Spalten
 
 class CheckBox(CheckBoxColumn):
     grok.name('checkBox')
     grok.context(IFernlehrgang)
     weight = 0
+    cssClasses = {'th': 'checkBox'}
+    
 
 class Name(LinkColumn):
     grok.name('Nummer')

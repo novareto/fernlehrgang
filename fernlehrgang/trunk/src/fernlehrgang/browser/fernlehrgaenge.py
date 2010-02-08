@@ -4,44 +4,42 @@
 
 import grok
 
+from grok import url, getSite
+from z3c.saconfig import Session
 from megrok.traject import locate
+from dolmen.menu import menuentry
 from fernlehrgang.utils import Page
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Fernlehrgang
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
-
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from z3c.saconfig import Session
-
-
-from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
-from megrok.z3ctable.ftests import Container, Content
-
-from grok import url, getSite
-
 from megrok.traject.components import DefaultModel
+from megrok.z3ctable.ftests import Container, Content
+from megrok.z3cform.tabular import DeleteFormTablePage
+from fernlehrgang.interfaces.app import IFernlehrgangApp
+from fernlehrgang.ui_components.viewlets import AboveContent
+from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
+from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
+from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+
 
 grok.templatedir('templates')
 
 
 class AddFLGMenu(MenuItem):
     grok.context(IFernlehrgangApp)
-    grok.name(u'Fernlehrgaengeverwalten')
+    grok.name(u'Fernlehrgänge verwalten')
     grok.viewletmanager(ISidebar)
 
-    urlEndings = "flgcontrol"
-    viewURL = "flgcontrol"
+    urlEndings = "fernlehrgang_listing"
+    viewURL = "fernlehrgang_listing"
 
 
-
-class FlgControl(DeleteFormTablePage, grok.View):
+@menuentry(AboveContent, title=u"Fernlehrgänge verwalten", order=20)
+class FernlehrgangListing(DeleteFormTablePage, grok.View):
     grok.context(IFernlehrgangApp)
-    grok.name('flgcontrol')
+    grok.name('fernlehrgang_listing')
     extends(DeleteFormTablePage)
-    title = u"Fernlehrgaenge"
+    title = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgaenge der BG-Verwalten"
 
     cssClasses = {'table': 'tablesorter myTable'}
@@ -59,7 +57,7 @@ class FlgControl(DeleteFormTablePage, grok.View):
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
-        self.nextURL = self.url(self.context, 'flgcontrol')
+        self.nextURL = self.url(self.context, 'fernlehrgang_listing')
 
     def render(self):
         if self.nextURL is not None:
@@ -67,34 +65,11 @@ class FlgControl(DeleteFormTablePage, grok.View):
             self.request.response.redirect(self.nextURL)
             return ""
         return self.renderFormTable()
+    render.base_method = True    
 
     @button.buttonAndHandler(u'Fernlehrgang anlegen')
     def handleAddUnternehmen(self, action):
          self.redirect(self.url(self.context, 'addfernlehrgang')) 
-
-
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
-    grok.context(IFernlehrgangApp)
-    weight = 0
-
-class Title(LinkColumn):
-    grok.name('titel')
-    grok.context(IFernlehrgangApp)
-    weight = 10
-    header = u"Titel"
-    attrName = u"titel"
-
-    def getLinkContent(self, item):
-        return item.titel
-
-
-class Jahr(GetAttrColumn):
-    grok.name('Jahr')
-    grok.context(IFernlehrgangApp)
-    weight = 20
-    header = u"Jahr"
-    attrName = u"jahr"
 
 
 
@@ -120,6 +95,8 @@ class AddFernlehrgang(PageAddForm, grok.View):
 class Index(PageDisplayForm, grok.View):
     grok.context(IFernlehrgang)
     grok.name('index')
+    title = u"Fernlehrgang"
+    description = u"Details zu Ihrem Fernlehrgang"
 
     fields = Fields(IFernlehrgang).omit('id')
 
@@ -135,3 +112,32 @@ class Edit(PageEditForm, grok.View):
         session = Session()
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
+
+### Spalten
+
+class CheckBox(CheckBoxColumn):
+    grok.name('checkBox')
+    grok.context(IFernlehrgangApp)
+    weight = 0
+    cssClasses = {'th': 'checkBox'}
+
+
+class Title(LinkColumn):
+    grok.name('titel')
+    grok.context(IFernlehrgangApp)
+    weight = 10
+    header = u"Titel"
+    attrName = u"titel"
+
+    def getLinkContent(self, item):
+        return item.titel
+
+
+class Jahr(GetAttrColumn):
+    grok.name('Jahr')
+    grok.context(IFernlehrgangApp)
+    weight = 20
+    header = u"Jahr"
+    attrName = u"jahr"
+
+
