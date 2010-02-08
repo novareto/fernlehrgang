@@ -24,7 +24,7 @@ class FernlehrgangApp(grok.Application, grok.Container):
     grok.implements(IFernlehrgangApp) 
 
 
-@menuentry(AboveContent)
+@menuentry(AboveContent, title=u"Startseite", order=10)
 class Index(Page):
     grok.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
