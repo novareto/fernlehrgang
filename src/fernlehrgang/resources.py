@@ -14,6 +14,7 @@ from uvc.layout.interfaces import IHeaders
 class FernlehrgangResources(resource.ResourceLibrary):
     resource.name('flgresource')
     resource.path('static')
+    #resource.resource('jquery.tools.min.js')
     resource.resource('jquery.tablesorter.min.js')
     resource.resource('jquery.tablesorter.pager.js')
     resource.resource('jquery.metadata.js')
@@ -28,5 +29,6 @@ class FernlehrgangResourceViewlet(grok.Viewlet):
     def render(self):
         jquery.need()
         FernlehrgangResources.need()
-        return u""
+        return u''
+        #return u'<script src="http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js"></script>'
 
