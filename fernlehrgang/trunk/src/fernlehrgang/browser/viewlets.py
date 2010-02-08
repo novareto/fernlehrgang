@@ -26,11 +26,9 @@ class GlobalMenu(grok.ViewletManager):
     def flgs(self):
         session = Session()
         rc = []
-        i=0
-        for fernlehrgang in session.query(Fernlehrgang).all():
-            url = "%s/fernlehrgang/%s" %(self.view.url(), fernlehrgang.id)
+        for i, fernlehrgang in enumerate(session.query(Fernlehrgang).all()):
+            url = "%s/fernlehrgang/%s" %(self.view.application_url(), fernlehrgang.id)
             rc.append(dict(title=fernlehrgang.jahr, css=self.css[i], url=url))
-            i+=1 # ENUMERATE
         return rc    
 
 
