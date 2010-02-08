@@ -14,7 +14,7 @@ from uvc.layout.interfaces import IHeaders
 class FernlehrgangResources(resource.ResourceLibrary):
     resource.name('flgresource')
     resource.path('static')
-    #resource.resource('jquery.tools.min.js')
+    resource.resource('jquery.tools.min.js')
     resource.resource('jquery.tablesorter.min.js')
     resource.resource('jquery.tablesorter.pager.js')
     resource.resource('jquery.metadata.js')
