@@ -65,6 +65,7 @@ class UnternehmenControl(DeleteFormTablePage, grok.View):
     title = u"Unternehmen"
     description = u"Hier können Sie die Unternehmen der BG-Verwalten"
 
+    cssClasses = {'table': 'tablesorter myTable'}
     status = None
 
     @property
