@@ -48,17 +48,6 @@ div.tooltip {
     -webkit-box-shadow:0 0 10px #000; 
 }
 
-/* Ul & Li Elements */
-
-.right-col ul {
-    margin-bottom:0.5em;
-}
-
-.right-col ul li {
-    line-height:1.5em;
-    list-style-image:url(http://www.novareto.de/bullet.gif);
-    list-style-type:square;
-}
 
 /* Form Effects */
 
@@ -216,3 +205,4 @@ dl.error dd {
     list-style-type:square;
     color:transparent;
 }
+

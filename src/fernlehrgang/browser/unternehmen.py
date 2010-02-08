@@ -5,22 +5,21 @@
 import grok
 
 from grok import url, getSite
+from z3c.saconfig import Session
+from dolmen.menu import menuentry
 from megrok.traject import locate
-from megrok.traject.components import DefaultModel
 from fernlehrgang.utils import Page
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Unternehmen 
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-
-from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields, button, extends
-from z3c.saconfig import Session
-
-
-from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
+from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
+from megrok.z3cform.tabular import DeleteFormTablePage
+from fernlehrgang.interfaces.app import IFernlehrgangApp
+from fernlehrgang.ui_components.viewlets import AboveContent 
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
+from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields, button, extends
 
 
 grok.templatedir('templates')
@@ -57,7 +56,7 @@ class AddUnternehmen(PageAddForm, grok.View):
 
 
 
-
+@menuentry(AboveContent)
 class UnternehmenControl(DeleteFormTablePage, grok.View):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmencontrol')

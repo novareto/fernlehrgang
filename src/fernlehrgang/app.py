@@ -4,31 +4,29 @@
 
 import grok
 
-from megrok.traject import locate
 from fernlehrgang import Page
+from z3c.saconfig import Session
+from dolmen.menu import menuentry
+from megrok.traject import locate
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.interfaces.app import IFernlehrgangApp
+from fernlehrgang.ui_components.viewlets import AboveContent 
 from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
-
 from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields
-from z3c.saconfig import Session
+
 
 grok.templatedir('templates')
+
 
 class FernlehrgangApp(grok.Application, grok.Container):
     grok.implements(IFernlehrgangApp) 
 
 
+@menuentry(AboveContent)
 class Index(Page):
     grok.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
-    description = u"Fernlehrgang"
+    description = u"Beschreibugn Fernlehrgang"
 
-    def getFernlehrgaenge(self):
-        session = Session()
-        return session.query(Fernlehrgang).all() 
-
-    def createLink(self, name):
-        return "%s/fernlehrgang/%s" % (self.url(self.context), name)

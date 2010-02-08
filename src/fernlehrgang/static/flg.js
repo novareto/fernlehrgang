@@ -5,14 +5,3 @@ $(document).ready(function()
 ); 
 
 
-/*
-$(document).ready(function()
-    {
-        $(".myTable").tablesorter.(
-           {
-               widgets: ['zebra'],
-           }
-        )
-    }
-);
-*/
