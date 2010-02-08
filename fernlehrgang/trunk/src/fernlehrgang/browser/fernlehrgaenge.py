@@ -44,6 +44,7 @@ class FlgControl(DeleteFormTablePage, grok.View):
     title = u"Fernlehrgaenge"
     description = u"Hier können Sie die Fernlehrgaenge der BG-Verwalten"
 
+    cssClasses = {'table': 'tablesorter myTable'}
     status = None
 
     @property

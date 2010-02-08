@@ -1,0 +1,218 @@
+/* Formlib Errors */
+.right-col form span.error {
+    color:#B30B16;
+    font-size:10px;
+    font-weight:bold;
+}
+
+
+/* The Lenend in Fieldsets */
+
+fieldset legend {
+   color: #B30B16;    
+   border: 1px solid #B30B16;
+   background-color:#EFEFEF;
+}
+
+/* tooltip with jquery tools */
+
+
+.right-col label {
+    display: block;
+    margin-top: 10px;
+    font-size: 11px;
+}
+
+
+.right-col label span.label {
+    background-color:#EEEEEE;
+    color:#000000;
+    font-size:13px;
+    margin-right:10px;
+    padding:3px 10px;
+}
+
+
+div.tooltip { 
+    background-color:#000; 
+    border:1px solid #fff; 
+    padding:10px 15px; 
+    width:200px; 
+    display:none; 
+    color:#fff; 
+    text-align:left; 
+    font-size:12px; 
+ 
+    /* outline radius for mozilla/firefox only */ 
+    -moz-box-shadow:0 0 10px #000; 
+    -webkit-box-shadow:0 0 10px #000; 
+}
+
+/* Ul & Li Elements */
+
+.right-col ul {
+    margin-bottom:0.5em;
+}
+
+.right-col ul li {
+    line-height:1.5em;
+    list-style-image:url(http://www.novareto.de/bullet.gif);
+    list-style-type:square;
+}
+
+/* Form Effects */
+
+input:focus, textarea:focus, select:focus{
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+input[type="submit"] {
+    background-color:#B30B16;
+    border:medium none;
+    color:#FFFFFF;
+    font-weight:bold;
+    margin: 5px 0px 0px 0px;
+    padding:2px 8px;
+}
+
+textarea {
+    margin-top: 4px;
+    border: 1px solid #4f4f4f;
+}       
+   
+
+/* Description */
+
+.right-col P.description{
+        font-size: 14px;
+        margin: 10px 5px 0px 0px;
+        padding: 0px;
+        line-height: 19px;
+        float: none;
+}
+
+/* Table */
+
+table.tablesorter thead tr .header {
+        background-image: url(bg.gif);
+        background-repeat: no-repeat;
+        background-position: center right;
+        cursor: pointer;
+}
+table.tablesorter thead tr .headerSortUp {
+    background-image: url(asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+    background-image: url(desc.gif);
+}
+
+table.tablesorter thead tr .checkBox {
+    width: 1px;
+}
+
+
+/* Portal Messages */
+
+dl.portalMessage {
+    font-size: &dtml-fontSmallSize;;
+    background-color: #ffffe3;
+    border: 1px solid #996;
+}
+dl.portalMessage a {
+    color: black;
+    border: none;
+    text-decoration: underline;
+}
+dl.portalMessage dt {
+    background-color: #996;
+    font-weight: bold;
+    float: left;
+    margin: 0 0.5em 0 0;
+    padding: 0.5em 0.75em;
+    color: White;
+    line-height: 1.25em;
+}
+dl.portalMessage dd {
+    padding: 0.5em 0.5em;
+    margin: 0;
+    line-height: 1.25em;
+}
+dl.warning {
+    border-color: #d80;
+}
+dl.warning dt {
+    background-color: #d80;
+}
+dl.error {
+    border-color: #d00;
+}
+dl.error dt {
+    background-color: #d00;
+}
+dl.warning {
+    border-color: #d80;
+}
+dl.warning dd {
+    background-color: #fd7;
+}
+dl.error {
+    border-color: #d80;
+}
+dl.error dd {
+    background-color: #fd7;
+}
+
+
+
+.right-col UL.miniman LI A:HOVER{
+        text-decoration: underline;
+        color: #6e6e6e;
+}
+.right-col UL.content {
+        list-style: none;
+        width: 450px;
+        border-bottom: 1px #b30b16 solid;
+}
+.right-col UL.content LI{
+        margin-bottom: 10px;
+        width: 100%;
+}
+.right-col UL.last {width: 400px;}
+.right-col UL.last LI{
+        margin-bottom: 10px;
+        width: 100%;
+}
+
+/* Document Actions" */
+
+.documentActions {
+    float:right;
+    margin:0.4em 0 0 0.5em;
+    padding:0;
+    text-align:right;
+}
+
+.documentActions ul {
+    display:block;
+    margin:1px 0 2px;
+    padding:0;
+}
+
+.documentActions li {
+    display:inline;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin:0;
+    padding:0;
+}
+
+.right-col .documentActions ul li {
+    line-height:1.5em;
+    list-style-image:none;
+    list-style-type:square;
+    color:transparent;
+}
