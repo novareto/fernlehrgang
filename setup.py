@@ -35,6 +35,7 @@ setup(name='fernlehrgang',
                         'megrok.z3cform.tabular',
                         'dolmen.menu',
                         'megrok.pagetemplate',
+                        'collective.z3cform.datetimewidget',
                         # Add extra requirements here
                         ],
       entry_points = """
