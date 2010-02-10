@@ -16,7 +16,7 @@ from z3c.saconfig.interfaces import IEngineCreatedEvent
 
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
+from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
@@ -203,24 +203,24 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr',))
+    #unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
-    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    #unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     def __repr__(self):
         return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" %(self.id, self.fernlehrgang_id)
 
-    def factory(fernlehrgang_id, id):
+    def factory(fernlehrgang_id, kursteilnehmer_id):
         session = Session()
         return  session.query(Kursteilnehmer).filter(
             and_( Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
-                  Kursteilnehmer.id == int(id))).one()
+                  Kursteilnehmer.id == int(kursteilnehmer_id))).one()
 
     def arguments(kursteilnehmer):
         return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
-                    id = kursteilnehmer.id)
+                    kursteilnehmer_id = kursteilnehmer.id)
 
 class Antwort(Base, RDBMixin):
     grok.implements(IAntwort)

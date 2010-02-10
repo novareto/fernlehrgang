@@ -13,7 +13,6 @@ from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.ui_components.viewlets import AboveContent 
-from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields
 
 
