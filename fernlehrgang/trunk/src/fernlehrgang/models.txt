@@ -22,9 +22,13 @@ Fernlehrgang
 
 Wir starten mit einer Instanz vom Fernlehrgang; diesen werden wir dann DB-Technisch durchtesten.
 
+   >>> import datetime
+   >>> beginn = datetime.date(2010,01,01)
+   >>> ende = datetime.date(2010,12,31)
+
    >>> from fernlehrgang.models import Fernlehrgang
    >>> fernlehrgang = Fernlehrgang(jahr=2009, titel='Fernlehrgang', 
-   ...                               beschreibung='Beschreibugn', beginn="01.01.2009", ende="31.12.2009")
+   ...                               beschreibung='Beschreibugn', beginn=beginn, ende=ende)
 
 Zuerst prüfen wir ob wir schon Fernlehrgänge in der Datenbank haben.
 
