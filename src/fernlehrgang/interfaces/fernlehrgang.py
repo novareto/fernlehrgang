@@ -34,12 +34,12 @@ class IFernlehrgang(Interface):
         required = True
         )
 
-    beginn = TextLine(title = u'Start',
+    beginn = Date(title = u'Start',
         description = u'Zu welchen Datum soll der Fernlehrgang beginnen?',
         required = True
         )
 
-    ende = TextLine(title = u'Ende',
+    ende = Date(title = u'Ende',
         description = u'Zu welchen Datum soll der Fernlehrgang enden?',
         required = True
         )

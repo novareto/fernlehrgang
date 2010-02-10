@@ -54,8 +54,8 @@ class Fernlehrgang(Base, RDBMixin):
     jahr = Column(Integer)
     titel = Column(String(50))
     beschreibung = Column(String(50))
-    beginn = Column(String(12))
-    ende = Column(String(12))
+    beginn = Column(Date)
+    ende = Column(Date)
 
 
     def __repr__(self):
@@ -100,7 +100,18 @@ class Teilnehmer(Base, RDBMixin):
     __tablename__ = 'teilnehmer'
 
     id = Column(Integer, Sequence('teilnehmer_seq'), primary_key=True)
+
+    anrede = Column(String(50))
+    titel = Column(String(50))
+    vorname = Column(String(50))
     name = Column(String(50))
+    geburtsdatum = Column(Date)
+    strasse = Column(String(50))
+    nr = Column(String(50))
+    plz = Column(String(50))
+    ort = Column(String(50))
+    email = Column(String(50))
+
     unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr'))
 
     unternehmen = relation(Unternehmen,
@@ -112,7 +123,7 @@ class Teilnehmer(Base, RDBMixin):
     def factory(id, mnr):
         session = Session()
         return session.query(Teilnehmer).filter(
-            and_(Teilnehmer.id == id, Teilnehmer.mnr == mnr)).one()
+            and_(Teilnehmer.id == id, Teilnehmer.unternehmen_mnr == mnr)).one()
 
     def arguments(teilnehmer):
         return dict(id = teilnehmer.id, mnr = teilnehmer.unternehmen_mnr)
