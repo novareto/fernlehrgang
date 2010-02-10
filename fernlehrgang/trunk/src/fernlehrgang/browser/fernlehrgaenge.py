@@ -13,11 +13,11 @@ from fernlehrgang.utils import MenuItem
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Fernlehrgang
 from megrok.traject.components import DefaultModel
+from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.ui_components.viewlets import AboveContent
-from fernlehrgang.interfaces.fernlehrgang import IFernlehrgang
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
