@@ -44,3 +44,23 @@ class UnternehmenSources(grok.GlobalUtility):
             value = "%s - %s %s" % (id, name, vorname)
             rc.append(SimpleTerm(id, value, value))
         return SimpleVocabulary(rc)    
+
+
+class LehrheftSources(grok.GlobalUtility):
+    grok.implements(IVocabularyFactory)
+    grok.name(u'LehrheftVocab')
+    
+    def __call__(self, context):
+        rc = []
+        for lehrheft in context.fernlehrgang.lehrhefte:
+            value = "%s - %s" % (lehrheft.nummer, lehrheft.titel)
+            rc.append(SimpleTerm(lehrheft.id, value, value))
+        return SimpleVocabulary(rc)    
+
+class FragenSources(grok.GlobalUtility):
+    grok.implements(IVocabularyFactory)
+    grok.name(u'FragenVocab')
+    
+    def __call__(self, context):
+        rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen', 'Bitte eine Auswahl treffen')]
+        return SimpleVocabulary(rc)    

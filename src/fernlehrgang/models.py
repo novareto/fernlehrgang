@@ -230,6 +230,7 @@ class Antwort(Base, RDBMixin):
     __tablename__ = 'antwort'
 
     id = Column(Integer, Sequence('antwort_seq'), primary_key=True)
+    lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))

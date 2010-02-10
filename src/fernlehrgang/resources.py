@@ -15,10 +15,13 @@ class FernlehrgangResources(resource.ResourceLibrary):
     resource.name('flgresource')
     resource.path('static')
     resource.resource('jquery.tablesorter.min.js')
-    resource.resource('jquery.tablesorter.pager.js')
-    resource.resource('jquery.metadata.js')
+    #resource.resource('jquery.tablesorter.pager.js')
+    #resource.resource('jquery.metadata.js')
+    resource.resource('jquery.autocomplete.js')
     resource.resource('flg.js')
     resource.resource('flg.css')
+    #resource.resource('jquery.autocomplete.css')
+    #resource.resource('myflb.js', bottom=True)
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):
