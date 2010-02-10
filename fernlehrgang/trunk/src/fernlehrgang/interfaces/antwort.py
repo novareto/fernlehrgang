@@ -16,10 +16,18 @@ class IAntwort(Interface):
         readonly = True
         )
 
-    frage = Int(
+    lehrheft_id = Choice(
+        title = u'Lehrheft',
+        description = u'Für welches Lehrheft liegt eine Antwort vor.',
+        required = True,
+        vocabulary = "LehrheftVocab",
+        )
+
+    frage_id = Choice(
         title = u'Frage',
         description = u'Für welche Frage soll das Antwortschema sein.',
         required = True,
+        vocabulary = "FragenVocab",
         )
 
     antwortschema = TextLine(
