@@ -169,6 +169,7 @@ class Frage(Base, RDBMixin):
 
     id = Column(Integer, Sequence('frage_id'), primary_key=True)
     frage = Column(Integer)
+    titel = Column(String(50))
     antwortschema = Column(String(50))
     gewichtung = Column(Integer)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
