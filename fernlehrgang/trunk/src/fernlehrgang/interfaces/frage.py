@@ -26,7 +26,7 @@ class IFrage(Interface):
         title = u'Frage',
         description = u'Für welche Frage soll das Antwortschema sein.',
         required = True,
-        vocabulary = "FrageVocabs",
+        vocabulary = "ReduceFrageVocab",
         )
 
     titel = TextLine(
