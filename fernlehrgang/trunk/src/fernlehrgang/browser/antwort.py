@@ -9,7 +9,7 @@ from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
 from fernlehrgang.utils import Page
-from fernlehrgang.models import Antwort 
+from fernlehrgang.models import Antwort, Frage 
 from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort
@@ -115,6 +115,20 @@ class AntwortListing(DeleteFormTablePage, grok.View):
          self.redirect(self.url(self.context, 'addantwort')) 
 
 
+class JSON_Views(grok.JSON):
+    """ Ajax basiertes Wechseln der Jahre"""
+    grok.context(IKursteilnehmer)
+ 
+    def context_fragen(self, lehrheft_id=None):
+        rc = []
+        session = Session()
+        i=0
+        for id, frage in session.query(Frage.id, Frage.frage).filter(Frage.lehrheft_id == int(lehrheft_id)).all():
+            rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s </option>' %(i, id, frage))
+            i+=1
+        return {'fragen': ''.join(rc)}
+
+
 ### Spalten
 
 class CheckBox(CheckBoxColumn):
@@ -130,6 +144,13 @@ class Link(LinkColumn):
     linkContent = "edit"
 
     def getLinkContent(self, item):
-        return "Antwort %s" %item.antwort 
+        return u"Antwort für Frage %s" %item.id
+
+class Antworten(GetAttrColumn):
+    grok.name('Antworten')
+    grok.context(IKursteilnehmer)
+    weight = 10
+    header = "Antworten"
+    attrName = "antwortschema"
 
 

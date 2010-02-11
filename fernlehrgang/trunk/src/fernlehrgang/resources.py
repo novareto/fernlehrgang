@@ -21,7 +21,7 @@ class FernlehrgangResources(resource.ResourceLibrary):
     resource.resource('flg.js')
     resource.resource('flg.css')
     #resource.resource('jquery.autocomplete.css')
-    #resource.resource('myflb.js', bottom=True)
+    resource.resource('dynselect.js', bottom=True)
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):

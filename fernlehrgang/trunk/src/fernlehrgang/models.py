@@ -245,14 +245,14 @@ class Antwort(Base, RDBMixin):
     def __repr__(self):
         return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage_id, self.antwortschema)
 
-    def factory(fernlehrgang_id, id, antwort_id):
+    def factory(fernlehrgang_id, kursteilnehmer_id, antwort_id):
         session = Session()
         return  session.query(Antwort).filter(
             and_( Antwort.id == int(antwort_id),
-                  Antwort.kursteilnehmer_id == int(id))).one()
+                  Antwort.kursteilnehmer_id == int(kursteilnehmer_id))).one()
 
     def arguments(antwort):
         return dict(antwort_id = antwort.id,
                     kursteilnehmer_id = antwort.kursteilnehmer_id,
-                    fernlehrgang_id = resultat.kursteilnehmer.fernlehrgang.id)
+                    fernlehrgang_id = antwort.kursteilnehmer.fernlehrgang.id)
 

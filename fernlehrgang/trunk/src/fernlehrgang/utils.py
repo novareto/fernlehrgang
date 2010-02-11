@@ -6,6 +6,8 @@ import grok
 
 from z3c.saconfig import Session
 from fernlehrgang.models import Teilnehmer 
+from fernlehrgang.interfaces.antwort import IAntwort 
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.layout import Page as basePage
 from z3c.menu.simple.menu import GlobalMenuItem
 from zope.schema.interfaces import IVocabularyFactory
@@ -52,9 +54,13 @@ class LehrheftSources(grok.GlobalUtility):
     
     def __call__(self, context):
         rc = []
-        for lehrheft in context.fernlehrgang.lehrhefte:
+        if IAntwort.providedBy(context):
+            fernlehrgang = context.kursteilnehmer.fernlehrgang
+        if IKursteilnehmer.providedBy(context):
+            fernlehrgang = context.fernlehrgang
+        for lehrheft in fernlehrgang.lehrhefte:
             value = "%s - %s" % (lehrheft.nummer, lehrheft.titel)
-            rc.append(SimpleTerm(lehrheft.id, value, value))
+            rc.append(SimpleTerm(lehrheft.id, lehrheft.id, value))
         return SimpleVocabulary(rc)    
 
 class FragenSources(grok.GlobalUtility):
@@ -62,5 +68,13 @@ class FragenSources(grok.GlobalUtility):
     grok.name(u'FragenVocab')
     
     def __call__(self, context):
+        session = Session()
         rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen', 'Bitte eine Auswahl treffen')]
+        if IAntwort.providedBy(context):
+            fernlehrgang = context.kursteilnehmer.fernlehrgang
+        if IKursteilnehmer.providedBy(context):
+            fernlehrgang = context.fernlehrgang
+        for lehrheft in fernlehrgang.lehrhefte:
+            for frage in lehrheft.fragen: 
+                rc.append(SimpleTerm(frage.id, frage.id, frage.id))           
         return SimpleVocabulary(rc)    
