@@ -7,6 +7,8 @@ import grok
 from z3c.saconfig import Session
 from fernlehrgang.models import Teilnehmer 
 from fernlehrgang.interfaces.antwort import IAntwort 
+from fernlehrgang.interfaces.frage import IFrage
+from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.layout import Page as basePage
 from z3c.menu.simple.menu import GlobalMenuItem
@@ -78,9 +80,19 @@ class FragenSources(grok.GlobalUtility):
         return SimpleVocabulary(rc)    
 
 
-class FrageSources(grok.GlobalUtility):
+class ReduceNummerSources(grok.GlobalUtility):
     grok.implements(IVocabularyFactory)
-    grok.name(u'FrageVocab')
+    grok.name(u'ReduceFrageVocab')
     
     def __call__(self, context):
-        import pdb; pdb.set_trace() 
+        rc = []
+        alle = range(1, 11)
+        if ILehrheft.providedBy(context):
+            fragen = context.fragen
+        if IFrage.providedBy(context):
+            fragen = context.lehrheft.fragen
+        reduce = [x.frage for x in fragen]
+        for x in alle:
+            if x not in reduce:
+                rc.append(SimpleTerm(x, x, x))
+        return SimpleVocabulary(rc)   
