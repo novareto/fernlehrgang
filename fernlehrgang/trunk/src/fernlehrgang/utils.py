@@ -34,7 +34,6 @@ def vocabulary(*terms):
     """ """
     return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
 
-
 class UnternehmenSources(grok.GlobalUtility):
     grok.implements(IVocabularyFactory)
     grok.name(u'unternehmen')
@@ -46,7 +45,6 @@ class UnternehmenSources(grok.GlobalUtility):
             value = "%s - %s %s" % (id, name, vorname)
             rc.append(SimpleTerm(id, value, value))
         return SimpleVocabulary(rc)    
-
 
 class LehrheftSources(grok.GlobalUtility):
     grok.implements(IVocabularyFactory)
@@ -78,3 +76,11 @@ class FragenSources(grok.GlobalUtility):
             for frage in lehrheft.fragen: 
                 rc.append(SimpleTerm(frage.id, frage.id, frage.id))           
         return SimpleVocabulary(rc)    
+
+
+class FrageSources(grok.GlobalUtility):
+    grok.implements(IVocabularyFactory)
+    grok.name(u'FrageVocab')
+    
+    def __call__(self, context):
+        import pdb; pdb.set_trace() 

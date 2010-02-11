@@ -22,9 +22,16 @@ class IFrage(Interface):
         readonly = True
         )
 
-    frage = Int(
+    frage = Choice(
         title = u'Frage',
         description = u'Für welche Frage soll das Antwortschema sein.',
+        required = True,
+        vocabulary = "FrageVocabs",
+        )
+
+    titel = TextLine(
+        title = u'Titel',
+        description = u'Titel der Frage.',
         required = True,
         )
 
