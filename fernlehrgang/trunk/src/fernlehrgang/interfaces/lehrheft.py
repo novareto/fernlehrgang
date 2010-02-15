@@ -16,10 +16,11 @@ class ILehrheft(Interface):
         readonly = True
         )
 
-    nummer = Int(
+    nummer = Choice(
         title = u'Nummer',
         description = u'Die Nummer des Lehrgangs. Diese sollte Fortlaufend 1-8 sein',
         required = True,
+        vocabulary = "ReduceLehrheftVocab",
         )
 
     titel = TextLine(

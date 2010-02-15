@@ -123,8 +123,9 @@ class JSON_Views(grok.JSON):
         rc = []
         session = Session()
         i=0
-        for id, frage in session.query(Frage.id, Frage.frage).filter(Frage.lehrheft_id == int(lehrheft_id)).all():
-            rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s </option>' %(i, id, frage))
+        for id, nr, titel in session.query(Frage.id, Frage.frage, Frage.titel).filter(
+                                           Frage.lehrheft_id == int(lehrheft_id)).all():
+            rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s - %s </option>' %(i, id, nr, titel))
             i+=1
         return {'fragen': ''.join(rc)}
 
