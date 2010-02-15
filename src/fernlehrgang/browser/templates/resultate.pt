@@ -1,0 +1,42 @@
+<div>
+  <h1 tal:content="view/title"></h1>
+   <p class="description" tal:content="view/description"/>
+
+     
+    <div>
+        <h2 class="current">Übersicht Lehrhefte</h2> 
+        <div class="pane" style="display:block">
+          <table>
+            <tr>
+             <th> Lehrheft </th>
+             <th> Fragen </th>
+             <th> Richtig </th>
+            </tr>
+          </table>
+        </div> 
+    </div>
+   
+     <br> <br>
+    <h2> Die einzelnen Lehrhefte </h2>
+     <div id="accordion">
+      <div tal:repeat="lh view/lehrhefte">
+        <h2> <span tal:content="lh/titel" /> </h2> 
+        <div class="pane">
+          <table>
+            <tr>
+             <th> Frage </th>
+             <th> Richtig </th>
+             <th> Antwort </th>
+             <th> Bestanden </th>
+            </tr>
+            <tr tal:repeat="ant lh/antworten">
+              <td> <span tal:content="ant/titel"/> </td>
+              <td> <span tal:content="ant/frage"/> </td>
+              <td> <span tal:content="ant/antwort"/> </td>
+              <td> <span tal:content="ant/res"/> </td>
+            </tr>
+          </table>
+        </div> 
+      </div>
+    </div>
+</div>

@@ -17,8 +17,8 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import CheckBoxColumn, LinkColumn
 from fernlehrgang.ui_components.viewlets import AboveContent
+from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
 
@@ -119,6 +119,14 @@ class CheckBox(CheckBoxColumn):
     weight = 0
     cssClasses = {'th': 'checkBox'}
     
+
+class Nummer(GetAttrColumn):
+    grok.name('nummer')
+    grok.context(IFernlehrgang)
+    weight = 10 
+    attrName = "nummer"
+    header = "Nummer"
+
 
 class Name(LinkColumn):
     grok.name('Nummer')
