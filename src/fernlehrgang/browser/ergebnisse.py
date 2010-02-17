@@ -41,27 +41,32 @@ class Resultate(Page):
             res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
             lehrheft_id = lehrheft.id
             fragen = []
+            punkte = 0
             for antwort in self.context.antworten: 
                 if antwort.frage.lehrheft_id == lehrheft_id:
                     titel = "%s - %s" %(antwort.frage.frage, antwort.frage.titel)
+                    ergebnis = self.calculateResult(antwort.antwortschema, 
+                                               antwort.frage.antwortschema,
+                                               antwort.frage.gewichtung)
                     d=dict(titel = titel,
                            frage = antwort.frage.antwortschema,
                            antwort = antwort.antwortschema,
-                           res = self.calculateResult(antwort.antwortschema, antwort.frage.antwortschema))
+                           res = ergebnis) 
+                    punkte += ergebnis 
                     fragen.append(d)
             res['antworten'] = fragen
+            res['punkte'] = punkte
             rc.append(res)
-        print rc    
         return rc    
 
 
 
 
-    def calculateResult(self, antworten, antwortschema):
+    def calculateResult(self, antworten, antwortschema, gewichtung):
         if len(antworten) != len(antwortschema):
-            return False
-        antwortschema = list(antwortschema)
+            return 0 
+        antwortschema = list(antwortschema.lower())
         for x in antworten:
-            if x not in antwortschema:
-                return False
-        return True        
+            if x.lower() not in antwortschema:
+                return 0 
+        return gewichtung 

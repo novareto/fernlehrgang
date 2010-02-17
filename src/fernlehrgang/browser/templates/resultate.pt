@@ -6,11 +6,16 @@
     <div>
         <h2 class="current">Übersicht Lehrhefte</h2> 
         <div class="pane" style="display:block">
-          <table>
+          <table class="myTable">
             <tr>
              <th> Lehrheft </th>
              <th> Fragen </th>
-             <th> Richtig </th>
+             <th> Punkte </th>
+            </tr>
+            <tr tal:repeat="lh view/lehrhefte">
+              <td> <span tal:content="lh/titel" /> </td>
+              <td> <span tal:content="python: len(lh.get('antworten', []))" /> </td>
+              <td> <span tal:content="lh/punkte" /> </td>
             </tr>
           </table>
         </div> 
