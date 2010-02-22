@@ -10,7 +10,7 @@ from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
 from fernlehrgang.models import Fernlehrgang
-from uvc.layout.interfaces import IGlobalMenu, IAboveContent
+from uvc.layout.interfaces import IGlobalMenu, IAboveContent, IPersonalPreferences
 
 
 class GlobalMenu(grok.ViewletManager):
@@ -43,3 +43,10 @@ class AboveContent(menu.Menu):
 class MenuTemplate(pagetemplate.PageTemplate):
     pagetemplate.view(IAboveContent)
     template = grok.PageTemplateFile("templates/menu.pt")
+
+
+class PersonalPreferences(menu.Menu):
+    grok.name('uvcsite.personalpreferences')
+    grok.context(Interface)
+    grok.implements(IPersonalPreferences)
+    grok.title('')

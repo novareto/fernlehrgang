@@ -9,11 +9,13 @@ from megrok import resource
 from hurry.jquery import jquery
 from zope.interface import Interface
 from uvc.layout.interfaces import IHeaders
+from megrok.resourcemerger.directives import merge
 
 
 class FernlehrgangResources(resource.ResourceLibrary):
     resource.name('flgresource')
     resource.path('static')
+    merge()
     resource.resource('jquery.tools.min.js')
     resource.resource('jquery.tablesorter.min.js')
     #resource.resource('jquery.tablesorter.pager.js')
