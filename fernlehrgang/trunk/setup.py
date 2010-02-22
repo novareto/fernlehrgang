@@ -35,6 +35,7 @@ setup(name='fernlehrgang',
                         'megrok.z3cform.tabular',
                         'dolmen.menu',
                         'megrok.pagetemplate',
+                        'megrok.resourcemerger',
                         'collective.z3cform.datetimewidget',
                         # Add extra requirements here
                         ],
