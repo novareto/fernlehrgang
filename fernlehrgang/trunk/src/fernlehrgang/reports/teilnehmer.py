@@ -27,25 +27,32 @@ class UnternehmenSuche(FormTablePage, grok.View):
 
     @button.buttonAndHandler(u'Suchen')
     def handle_search(self, action):
+        rc = []
         data, errors = self.extractData()
         session = Session()
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
         sql = sql.filter(Teilnehmer.unternehmen_mnr == data.get('name'))
-        self.results = sql.all()
+        for kursteilnehmer, teilnehmer, unternehmen in sql.all():
+            rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,
+                           name = teilnehmer.name,
+                           vorname = teilnehmer.vorname,
+                           id = teilnehmer.id,
+                           unternehmen = unternehmen.name,
+                           mnr = unternehmen.mnr,
+                          ))
+        self.results = rc
 
     @property
     def values(self):
-        rc = []
-        for kursteilnehmer, teilnehmer, unternehmen in self.results:
-            rc.append(dict(flg=kursteilnehmer.fernlehrgang.jahr))
-        return rc
+        return self.results
 
     @property
     def displaytable(self):
         self.update()
         return self.renderTable()
+
 
 class ColumnFernlehrgang(Column):
     grok.name('columnfernlehrgang')
@@ -53,4 +60,24 @@ class ColumnFernlehrgang(Column):
     header = "Fernlehrgang"
 
     def renderCell(self, item):
-        return item[fernlehrgang] 
+        return item.get('flg', '-') 
+
+
+class ColumnTeilnehmer(Column):
+    grok.name('columnteilnehmer')
+    grok.context(Interface)
+    header = "Teilnehmer"
+
+    def renderCell(self, item):
+        teilnehmer = "%s, %s" %(item.get('name','-'), item.get('vorname','-'))
+        return teilnehmer 
+
+
+class ColumnUnternehmen(Column):
+    grok.name('columnunternehmen')
+    grok.context(Interface)
+    header = "Unternehmen"
+
+    def renderCell(self, item):
+        unternehmen = "%s, %s" % (item.get('mnr','-'), item.get('unternehmen', '-'))
+        return unternehmen 
