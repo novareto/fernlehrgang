@@ -25,13 +25,13 @@ from fernlehrgang.interfaces.antwort import IAntwort
 
 from zope.container.contained import Contained
 
+Base = declarative_base()
+
 @grok.subscribe(IEngineCreatedEvent)
 def setUpDatabase(event):
     metadata = Base.metadata
-    metadata.create_all(event.engine)
+    metadata.create_all(event.engine, checkfirst=True)
 
-
-Base = declarative_base()
 
 
 class RDBMixin(traject.Model, Contained):
@@ -75,10 +75,11 @@ class Unternehmen(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:mnr")
 
-    __tablename__ = 'unternehmen'
+    __tablename__ = 'adr@ADR'
+    __table_args__ = {'quote': False}
 
-    mnr = Column(String(10), primary_key=True)
-    name = Column(String(50))
+    mnr = Column(String(12), primary_key=True)
+    name = Column("NAME1", String(32))
 
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
@@ -112,7 +113,7 @@ class Teilnehmer(Base, RDBMixin):
     ort = Column(String(50))
     email = Column(String(50))
 
-    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr'))
+    unternehmen_mnr = Column(String(12), ForeignKey(Unternehmen.mnr))
 
     unternehmen = relation(Unternehmen,
                            backref = backref('teilnehmer', order_by=id))
