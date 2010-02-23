@@ -41,6 +41,7 @@ class UnternehmenListing(DeleteFormTablePage, grok.View):
         root = getSite()
         session = Session()
         for unternehmen in session.query(Unternehmen).all():
+            print unternehmen
             locate(root, unternehmen, DefaultModel)
             yield unternehmen 
 
@@ -116,12 +117,12 @@ class AddUnternehmen(PageAddForm, grok.View):
         return self.url(self.context, 'unternehmen_listing')
 
 
-
 class CheckBox(CheckBoxColumn):
     grok.name('checkBox')
     grok.context(IFernlehrgangApp)
     weight = 0
     cssClasses = {'th': 'checkBox'}
+
 
 class Mitgliedsnummer(LinkColumn):
     grok.name('Mitgliedsnummer')
@@ -131,6 +132,7 @@ class Mitgliedsnummer(LinkColumn):
 
     def getContent(self, item):
         return item.mnr
+
 
 class Name(GetAttrColumn):
     grok.name('Name')
