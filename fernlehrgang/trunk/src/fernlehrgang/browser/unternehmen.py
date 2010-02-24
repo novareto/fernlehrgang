@@ -41,7 +41,6 @@ class UnternehmenListing(DeleteFormTablePage, grok.View):
         root = getSite()
         session = Session()
         for unternehmen in session.query(Unternehmen).all():
-            print unternehmen
             locate(root, unternehmen, DefaultModel)
             yield unternehmen 
 
