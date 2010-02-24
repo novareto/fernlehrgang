@@ -55,6 +55,7 @@ class Fernlehrgang(Base, RDBMixin):
     jahr = Column(Integer)
     titel = Column(String(50))
     beschreibung = Column(String(50))
+    punktzahl = Column(Integer(4))
     beginn = Column(Date)
     ende = Column(Date)
 

@@ -27,8 +27,8 @@ class ITeilnehmer(Interface):
         description = u'Bitte wählen Sie eine Anrede.',
         required = True,
         vocabulary = vocabulary(
-            (1, 'Herr', 'Herr'),
-            (2, 'Frau', 'Frau'),)
+            ('1', 'Herr', 'Herr'),
+            ('2', 'Frau', 'Frau'),)
         )
 
     titel = Choice(
@@ -36,8 +36,8 @@ class ITeilnehmer(Interface):
         description = u'Bitte wählen Sie eine Anrede.',
         required = True,
         vocabulary = vocabulary(
-            (1, 'Dr.', 'Dr.'),
-            (2, 'Prof.', 'Prof.'),)
+            ('1', 'Dr.', 'Dr.'),
+            ('2', 'Prof.', 'Prof.'),)
         )
 
     vorname = TextLine(

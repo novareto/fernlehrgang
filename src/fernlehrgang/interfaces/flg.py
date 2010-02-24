@@ -34,6 +34,13 @@ class IFernlehrgang(Interface):
         required = True
         )
 
+    punktzahl = Int(
+        title = u'Punkteanzahl',
+        description = u'Bitte geben Sie hier die Punktanzahl an die'
+                       'erreicht werden muss um den Fernlehrgang zu bestehn',
+        required = True
+        )
+
     beginn = Date(title = u'Start',
         description = u'Zu welchen Datum soll der Fernlehrgang beginnen?',
         required = True
