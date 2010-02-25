@@ -1,6 +1,13 @@
-<div>
+<div tal:define="results view/getResults">
   <h1 tal:content="view/title"></h1>
    <p class="description" tal:content="view/description"/>
+
+    <fieldset tal:define="summary view/getSummary">
+       <legend> Auswertung </legend>
+        <h3>Folgende Punktzahl ist nötig um den Kurs zu bestehen: <span tal:replace="summary/points"/></h3> 
+        <h3>Erreichte Anzahl von Punkte: <span tal:replace="summary/resultpoints"/></h3> 
+        <h3>Bemerkung: <span tal:replace="summary/comment"/></h3> 
+    </fieldset>
 
      
     <div>
@@ -12,7 +19,7 @@
              <th> Fragen </th>
              <th> Punkte </th>
             </tr>
-            <tr tal:repeat="lh view/lehrhefte">
+            <tr tal:repeat="lh results">
               <td> <span tal:content="lh/titel" /> </td>
               <td> <span tal:content="python: len(lh.get('antworten', []))" /> </td>
               <td> <span tal:content="lh/punkte" /> </td>
@@ -24,7 +31,7 @@
      <br> <br>
     <h2> Die einzelnen Lehrhefte </h2>
      <div id="accordion">
-      <div tal:repeat="lh view/lehrhefte">
+      <div tal:repeat="lh results">
         <h2> <span tal:content="lh/titel" /> </h2> 
         <div class="pane">
           <table>
