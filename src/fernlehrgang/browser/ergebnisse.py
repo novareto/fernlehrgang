@@ -15,12 +15,13 @@ from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.ui_components.viewlets import AboveContent
+from fernlehrgang.interfaces.resultate import ICalculateResults
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-
+from fernlehrgang.config import POSTVERSANDSPERRE
 
 grok.templatedir('templates')
 
@@ -32,17 +33,31 @@ class Resultate(Page):
     title = u"Resultate"
     description = u"Hier Können Sie die Resultate des Kursteilnehmers einsehen"
 
+    @property
+    def getResults(self):
+        results = ICalculateResults(self.context)
+        return results.lehrhefte()
 
     @property
+    def getSummary(self):
+        results = ICalculateResults(self.context)
+        return results.summary()
+
+class CalculateResults(grok.Adapter):
+    grok.implements(ICalculateResults)
+    grok.context(IKursteilnehmer)
+
     def lehrhefte(self):
+        context = self.context
         rc = [] 
-        for lehrheft in self.context.fernlehrgang.lehrhefte:
+        points = context.fernlehrgang.punktzahl
+        for lehrheft in context.fernlehrgang.lehrhefte:
             res = {}
             res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
             lehrheft_id = lehrheft.id
             fragen = []
             punkte = 0
-            for antwort in self.context.antworten: 
+            for antwort in context.antworten: 
                 if antwort.frage.lehrheft_id == lehrheft_id:
                     titel = "%s - %s" %(antwort.frage.frage, antwort.frage.titel)
                     ergebnis = self.calculateResult(antwort.antwortschema, 
@@ -56,11 +71,9 @@ class Resultate(Page):
                     fragen.append(d)
             res['antworten'] = fragen
             res['punkte'] = punkte
+            res['points'] = points 
             rc.append(res)
         return rc    
-
-
-
 
     def calculateResult(self, antworten, antwortschema, gewichtung):
         if len(antworten) != len(antwortschema):
@@ -70,3 +83,18 @@ class Resultate(Page):
             if x.lower() not in antwortschema:
                 return 0 
         return gewichtung 
+
+
+    def summary(self):
+        punkte = 0
+        comment = "Nicht Bestanden"
+        context = self.context
+        mindest_punktzahl = context.fernlehrgang.punktzahl
+        lehrhefte = self.lehrhefte()
+        for lehrheft in lehrhefte:
+            punkte += lehrheft['punkte']
+        if context.status in POSTVERSANDSPERRE:
+            comment = "Nicht Bestanden da Postversandsperre: %s" %context.status
+        elif punkte >= mindest_punktzahl:
+            comment = "Bestanden"
+        return dict(points = mindest_punktzahl, resultpoints = punkte, comment = comment)
