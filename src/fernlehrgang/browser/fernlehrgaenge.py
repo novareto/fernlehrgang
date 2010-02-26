@@ -28,15 +28,6 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 grok.templatedir('templates')
 
 
-class AddFLGMenu(MenuItem):
-    grok.context(IFernlehrgangApp)
-    grok.name(u'Fernlehrgänge verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "fernlehrgang_listing"
-    viewURL = "fernlehrgang_listing"
-
-
 class FernlehrgangListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
@@ -96,7 +87,7 @@ class AddFernlehrgang(PageAddForm):
         return url
 
 
-class Index(models.DefaultView):
+class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IFernlehrgang)
     label = "View"
     fields = Fields(IFernlehrgang).omit('id')
@@ -104,6 +95,10 @@ class Index(models.DefaultView):
 
 class Edit(models.Edit):
     grok.context(IFernlehrgang)
+
+    label = u"Fernlehrgang bearbeiten"
+    description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
+
     fields = Fields(IFernlehrgang).omit('id')
 
     @button.buttonAndHandler(u'Fernlehrgang entfernen')
