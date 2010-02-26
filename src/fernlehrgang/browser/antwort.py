@@ -18,7 +18,7 @@ from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.ui_components.viewlets import AboveContent
-from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
+from megrok.z3ctable.components import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
 
