@@ -1,5 +1,5 @@
 <div class="main-menu"
-     tal:define="flgs viewletmanager/flgs">
+     tal:define="flgs viewlet/flgs">
     <img src="" alt="Extranet"
          tal:attributes="src python: viewletmanager.view.application_url()+'/@@/uvc.skin/main-menu-bg.gif'"/>
          <ul tal:condition="flgs">
