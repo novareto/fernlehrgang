@@ -13,6 +13,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.ui_components.viewlets import AboveContent
 from fernlehrgang.models import Unternehmen, Kursteilnehmer, Teilnehmer
+from fernlehrgang.interfaces.resultate import ICalculateResults
 from zope.interface import Interface
 
 grok.templatedir('templates')
@@ -35,12 +36,14 @@ class UnternehmenSuche(FormTablePage, grok.View):
         sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
         sql = sql.filter(Teilnehmer.unternehmen_mnr == data.get('name'))
         for kursteilnehmer, teilnehmer, unternehmen in sql.all():
+            results = ICalculateResults(kursteilnehmer).summary()
             rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,
                            name = teilnehmer.name,
                            vorname = teilnehmer.vorname,
                            id = teilnehmer.id,
                            unternehmen = unternehmen.name,
                            mnr = unternehmen.mnr,
+                           bestanden = results['comment'],
                           ))
         self.results = rc
 
@@ -81,3 +84,12 @@ class ColumnUnternehmen(Column):
     def renderCell(self, item):
         unternehmen = "%s, %s" % (item.get('mnr','-'), item.get('unternehmen', '-'))
         return unternehmen 
+
+
+class ColumnResult(Column):
+    grok.name('columnresult')
+    grok.context(Interface)
+    header = "Ergebnis"
+
+    def renderCell(self, item):
+        return item['bestanden']
