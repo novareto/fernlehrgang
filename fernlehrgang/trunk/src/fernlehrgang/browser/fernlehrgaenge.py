@@ -91,8 +91,10 @@ class AddFernlehrgang(PageAddForm, grok.View):
         url = self.url(self.context)
         return url
 
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from megrok.layout import Page
 
-class Index(PageDisplayForm, grok.View):
+class Index(PageDisplayForm, Page, ContextualMenuEntry):
     grok.context(IFernlehrgang)
     grok.name('index')
     title = u"Fernlehrgang"
@@ -141,33 +143,33 @@ class Jahr(GetAttrColumn):
     attrName = u"jahr"
 
 
-import elementtree.ElementTree as ET
-from elementtree.ElementTree import Element
-class CreateXML(grok.View):
-    grok.context(IFernlehrgang)
-    xml = ""
+#import elementtree.ElementTree as ET
+#from elementtree.ElementTree import Element
+#class CreateXML(grok.View):
+#    grok.context(IFernlehrgang)
+#    xml = ""
+#
+#    def update(self):
+#        from elementtree.SimpleXMLWriter import XMLWriter
+#        import sys
+#        fernlehrgang = self.context
 
-    def update(self):
-        from elementtree.SimpleXMLWriter import XMLWriter
-        import sys
-        fernlehrgang = self.context
-
-        w = XMLWriter('/Users/cklinger/Desktop/t.xml')
-        html = w.start("xml")
-        w.start("fernlehrgang")
-        w.element("id", str(fernlehrgang.id))
-        w.element("titel", fernlehrgang.titel)
-        w.element("jahr", str(fernlehrgang.jahr))
-        w.end()
-
-        w.start("kursteilnehmer")
-        for kursteilnehmer in fernlehrgang.kursteilnehmer:
-            w.start("teilnehmer")
-            w.element('id', str(kursteilnehmer.id))
-            w.end()
-        w.end()
-        w.close(html)
-
-    def render(self):
-        return self.xml
+#        w = XMLWriter('/Users/cklinger/Desktop/t.xml')
+#        html = w.start("xml")
+#        w.start("fernlehrgang")
+#        w.element("id", str(fernlehrgang.id))
+#        w.element("titel", fernlehrgang.titel)
+#        w.element("jahr", str(fernlehrgang.jahr))
+#        w.end()
+#
+#        w.start("kursteilnehmer")
+#        for kursteilnehmer in fernlehrgang.kursteilnehmer:
+#            w.start("teilnehmer")
+#            w.element('id', str(kursteilnehmer.id))
+#            w.end()
+#        w.end()
+#        w.close(html)
+#
+#    def render(self):
+#        return self.xml
 
