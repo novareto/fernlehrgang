@@ -256,3 +256,20 @@ dl.error dd {
     color:#999;
 }
 
+
+/* BREADCRUMB */
+#breadcrumb {
+    color:#6E6E6E;
+    margin-left:240px;
+    margin-top:5px;
+    width:420px;
+    font-size:11px
+}
+
+#breadcrumb a {
+    text-decoration: none;
+    color:#6E6E6E;
+    font-weight:bold;
+}
+#breadcrumb a:HOVER {text-decoration: underline;}
+

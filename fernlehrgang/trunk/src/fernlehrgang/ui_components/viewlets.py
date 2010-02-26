@@ -19,6 +19,7 @@ class GlobalMenu(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(master.Top)
     template = grok.PageTemplateFile('templates/globalmenu.pt')
+    grok.order(1)
 
     css = ['blue', 'orange', 'violet', 'green', 'brown', 'purple']
 
