@@ -273,3 +273,76 @@ dl.error dd {
 }
 #breadcrumb a:HOVER {text-decoration: underline;}
 
+
+
+/** Content actions tabs **/
+
+#contextual-actions dt {
+  display: none;
+}
+
+dl#contextual-actions,
+dl#contextual-actions dd {
+  padding: 0;
+  margin: 0;
+}
+
+dl#contextual-actions a {
+  color:  #999;
+}
+
+dl#contextual-actions {
+  font-size: 0.75em;
+  line-height: 1.7em;
+  margin: 1.5em 0 1em 0;
+  padding-left: 2em;;
+  border-bottom: 1px solid #cbcbcb;
+}
+
+dl#contextual-actions ul {
+  margin: 0 0 0 -0.25em;
+  padding: 0 1em 0 0;
+  text-align: left;
+  list-style-type: none;
+  text-indent: 0pt;
+  border-collapse: collapse;
+  line-height: 1.70em;
+}
+
+dl#contextual-actions ul li {
+  display: inline;
+}
+
+dl#contextual-actions ul li.entry {
+  height: 1.70em;
+}
+
+dl#contextual-actions ul li a {
+  text-decoration: none;
+  margin-left: 3px;
+  border-color: #cbcbcb #cbcbcb transparent  #cbcbcb;
+  border-width: 1px;
+  border-style: solid;
+  height: auto;
+  margin-right: 0.5em;
+  padding: 0.2em 1em;
+  text-decoration: none;
+}
+
+dl#contextual-actions ul li.selected a {
+  background-color: #fff;
+  border: 1px solid #cbcbcb;
+  border-bottom: 1px solid white;
+  color: #333333;
+  font-weight: bold;
+}
+
+.left-col {
+  padding: 1em 0;
+  margin: 0;
+}
+
+.left-col .box {
+  margin: 0;
+  padding: 0;
+}
