@@ -10,13 +10,14 @@ from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
 from fernlehrgang.models import Fernlehrgang
-from uvc.layout.interfaces import IGlobalMenu, IAboveContent, IPersonalPreferences
+from dolmen.app.layout import master
+from uvc.layout.interfaces import IAboveContent
 
 
-class GlobalMenu(grok.ViewletManager):
+class GlobalMenu(grok.Viewlet):
     grok.name('uvcsite.globalmenu')
     grok.context(Interface)
-    grok.implements(IGlobalMenu)
+    grok.viewletmanager(master.Top)
     template = grok.PageTemplateFile('templates/globalmenu.pt')
 
     css = ['blue', 'orange', 'violet', 'green', 'brown', 'purple']
@@ -24,14 +25,17 @@ class GlobalMenu(grok.ViewletManager):
     def getClass(self, index):
         return self.css[index]
 
-    @property
-    def flgs(self):
+    def getContent(self):
         session = Session()
         rc = []
         for i, fernlehrgang in enumerate(session.query(Fernlehrgang).all()):
-            url = "%s/fernlehrgang/%s" %(self.view.application_url(), fernlehrgang.id)
+            url = "%s/fernlehrgang/%s" % (
+                self.view.application_url(), fernlehrgang.id)
             rc.append(dict(title=fernlehrgang.jahr, css=self.css[i], url=url))
         return rc    
+
+    def update(self):
+        self.flgs = self.getContent()
 
 
 class AboveContent(menu.Menu):
@@ -40,13 +44,13 @@ class AboveContent(menu.Menu):
     grok.implements(IAboveContent)
 
 
-class MenuTemplate(pagetemplate.PageTemplate):
-    pagetemplate.view(IAboveContent)
-    template = grok.PageTemplateFile("templates/menu.pt")
-
-
 class PersonalPreferences(menu.Menu):
     grok.name('uvcsite.personalpreferences')
     grok.context(Interface)
-    grok.implements(IPersonalPreferences)
+    grok.implements(IAboveContent)
     grok.title('')
+
+
+class MenuTemplate(pagetemplate.PageTemplate):
+    pagetemplate.view(IAboveContent)
+    template = grok.PageTemplateFile("templates/menu.pt")
