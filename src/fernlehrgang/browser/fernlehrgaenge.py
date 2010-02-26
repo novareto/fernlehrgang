@@ -92,10 +92,12 @@ class AddFernlehrgang(PageAddForm, grok.View):
         return url
 
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
-from megrok.layout import Page
+from megrok.layout.components import UtilityView 
 
-class Index(PageDisplayForm, Page, ContextualMenuEntry):
+
+class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IFernlehrgang)
+    grok.implements(IDisplayView)
     grok.name('index')
     title = u"Fernlehrgang"
     description = u"Details zu Ihrem Fernlehrgang"
@@ -103,7 +105,8 @@ class Index(PageDisplayForm, Page, ContextualMenuEntry):
     fields = Fields(IFernlehrgang).omit('id')
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(PageEditForm, ContextualMenuEntry):
+    grok.implements(IDisplayView)
     grok.context(IFernlehrgang)
     grok.name('edit')
 
