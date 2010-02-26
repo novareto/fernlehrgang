@@ -18,6 +18,9 @@ from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.ui_components.viewlets import AboveContent, PersonalPreferences
+
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.app.layout import models
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
@@ -34,11 +37,12 @@ class AddFLGMenu(MenuItem):
     viewURL = "fernlehrgang_listing"
 
 
-@menuentry(AboveContent, title=u"Fernlehrgänge verwalten", order=20)
-class FernlehrgangListing(DeleteFormTablePage, grok.View):
+class FernlehrgangListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
+    grok.title(u"Fernlehrgänge")
     extends(DeleteFormTablePage)
+    
     title = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgaenge der BG-Verwalten"
 
@@ -73,7 +77,7 @@ class FernlehrgangListing(DeleteFormTablePage, grok.View):
 
 
 
-class AddFernlehrgang(PageAddForm, grok.View):
+class AddFernlehrgang(PageAddForm):
     grok.context(IFernlehrgangApp)
     title = u'Fernlehrgang'
     label = u'Fernlehrgang anlegen'
@@ -91,25 +95,15 @@ class AddFernlehrgang(PageAddForm, grok.View):
         url = self.url(self.context)
         return url
 
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
-from megrok.layout.components import UtilityView 
 
-
-class Index(PageDisplayForm, ContextualMenuEntry):
+class Index(models.DefaultView):
     grok.context(IFernlehrgang)
-    grok.implements(IDisplayView)
-    grok.name('index')
-    title = u"Fernlehrgang"
-    description = u"Details zu Ihrem Fernlehrgang"
-
+    label = "View"
     fields = Fields(IFernlehrgang).omit('id')
 
 
-class Edit(PageEditForm, ContextualMenuEntry):
-    grok.implements(IDisplayView)
+class Edit(models.Edit):
     grok.context(IFernlehrgang)
-    grok.name('edit')
-
     fields = Fields(IFernlehrgang).omit('id')
 
     @button.buttonAndHandler(u'Fernlehrgang entfernen')
