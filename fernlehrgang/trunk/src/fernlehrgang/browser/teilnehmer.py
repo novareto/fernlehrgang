@@ -76,6 +76,7 @@ class AddTeilnehmer(PageAddForm, grok.View):
     grok.context(IUnternehmen)
     title = u'Teilnehmer'
     label = u'Teilnehmer anlegen'
+    id = "stylized"
 
     fields = Fields(ITeilnehmer).omit('id')
 

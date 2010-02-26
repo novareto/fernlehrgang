@@ -21,17 +21,20 @@ from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.app.layout import models
+
 
 grok.templatedir('templates')
 
 
-@menuentry(AboveContent, title="Unternehmen verwalten", order=30)
-class UnternehmenListing(DeleteFormTablePage, grok.View):
+class UnternehmenListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmen_listing')
-    extends(DeleteFormTablePage)
-    title = u"Unternehmen"
+    grok.title(u"Unternehmen verwalten")
+    title = "Unternehmen verwalten"
     description = u"Hier können Sie die Unternehmen der BG-Verwalten"
+    extends(DeleteFormTablePage)
 
     cssClasses = {'table': 'tablesorter myTable'}
     status = None
@@ -76,7 +79,7 @@ class AddUnternehmenMenu(MenuItem):
         return "%s/%s" % (url(self.request, self.context), self.viewURL)
 
 
-class Index(PageDisplayForm, grok.View):
+class Index(models.DefaultView):
     grok.context(IUnternehmen)
     grok.name('index')
     title = u"Unternehmen"
@@ -85,7 +88,7 @@ class Index(PageDisplayForm, grok.View):
     fields = Fields(IUnternehmen)
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(models.Edit):
     grok.context(IUnternehmen)
     grok.name('edit')
 
@@ -98,7 +101,7 @@ class Edit(PageEditForm, grok.View):
         self.redirect(self.url(self.context.__parent__)) 
 
 
-class AddUnternehmen(PageAddForm, grok.View):
+class AddUnternehmen(PageAddForm):
     grok.context(IFernlehrgangApp)
     title = u'Unternehmen'
     label = u'Unternehmen anlegen'
