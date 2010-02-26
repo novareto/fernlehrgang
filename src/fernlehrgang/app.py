@@ -22,7 +22,7 @@ grok.templatedir('templates')
 class FernlehrgangApp(grok.Application, grok.Container):
     grok.implements(IFernlehrgangApp) 
 
-
+from megrok.layout import Page
 @menuentry(AboveContent, title=u"Startseite", order=10)
 class Index(Page):
     grok.context(IFernlehrgangApp)
