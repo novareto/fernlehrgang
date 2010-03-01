@@ -337,15 +337,22 @@ dl#contextual-actions ul li.selected a {
 /* ----------- form ----------- */
 
 #stylized {
-  background-color: #f4f4f4;
   width: 900px;
-  height: auto;
-  border: 2px solid #ddd;
+}
+
+#stylized .form-header {
+  padding: 0 3em;
 }
 
 #stylized form {
-  margin: 0 auto;
-  padding: 1em;
+  margin: 1em auto;
+  width: 750px;
+  border: 2px solid #ddd;
+  background-color: #f4f4f4;
+}
+
+#stylized .viewspace {
+  padding: 1em 2em;
 }
 
 #stylized form h1 {
@@ -355,24 +362,35 @@ dl#contextual-actions ul li.selected a {
 #stylized .row {
   clear: both;
   padding-top: 10px;
+  margin: 0.5em 0;
 }
 
 div #stylized .row_error {
+  background: white url(error.png) 1em 50% no-repeat;
+  border: 1px solid #dddddd;
+}
+
+#stylized .row_error select,
+#stylized .row_error textarea,
+#stylized .row_error input {
+  background-color: #fffad7;
+}
+
+div #stylized .error {
   clear: both;
-  padding-top: 10px;
-  padding-bottom: 2em;
-  background-color:#FFCE7B;
-  border:1px solid #FFA500;
-  margin:0 0 1em;
+  font-size: 0.8em;
+  color: #990000;
+  padding: 0.2em 0.3em;
+  text-align: right;
 }
 
 #stylized label {
-  width: 40%;
   float: left;
   display: block;
   font-weight: bold;
   font-size: 1em;
   text-align: right;
+  width: 250px;
 }
 
 #stylized label span.small {
@@ -381,14 +399,19 @@ div #stylized .row_error {
   font-size: 0.75em;
   background-color: transparent;
   color: #666;
+  margin: 0 0 0 50px;
+  padding: 0;
 }
 
+#stylized span.required {
+  display: none;
+}
 
 #stylized .widget {
   width: auto;
   float: left;
-  margin-left: 1em;
-  padding-top: 0.5em;
+  margin-left: 25px;
+  padding-top: 1em;
 }
 
 #stylized .buttons {
@@ -397,12 +420,29 @@ div #stylized .row_error {
   text-align: center;
 }
 
+#stylized select,
+#stylized textarea,
+#stylized input {
+  border-color: #aaa;
+  width: 250px;
+}
+
+#stylized .date-widget {
+  width: auto;
+}
+
+#stylized .status {
+  padding: 0.3em 0;
+  font-weight: bold;
+}
+
 #stylized .buttons input {
   background-color: #666;
   border: 1px solid #333;
   color: white;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
+  width: auto;
 }
 
 
