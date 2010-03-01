@@ -38,6 +38,7 @@ setup(name='fernlehrgang',
                         'collective.z3cform.datetimewidget',
                         'elementtree',
                         'dolmen.app.layout',
+                        'dolmen.app.viewselector',
                         # Add extra requirements here
                         ],
       entry_points = """

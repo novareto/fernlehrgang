@@ -70,7 +70,7 @@
                 <span tal:replace="structure widget/error/render">error</span>
               </div>
             </metal:block>
-          </div>
+          </div> <br>
           <input type="hidden" value=""
                  tal:condition="python:widget.mode == 'hidden'"
                  tal:replace="structure widget/render" />
