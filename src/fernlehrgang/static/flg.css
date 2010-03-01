@@ -281,7 +281,6 @@ dl#contextual-actions {
   line-height: 1.7em;
   margin: 1.5em 0 1em 0;
   padding-left: 2em;;
-  margin-left: 200px;
   border-bottom: 1px solid #cbcbcb;
 }
 
@@ -326,6 +325,7 @@ dl#contextual-actions ul li.selected a {
 .left-col {
   padding: 1em 0;
   margin: 0;
+  display: none;
 }
 
 .left-col .box {

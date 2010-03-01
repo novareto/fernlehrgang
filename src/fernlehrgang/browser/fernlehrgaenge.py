@@ -70,8 +70,10 @@ class FernlehrgangListing(DeleteFormTablePage, ContextualMenuEntry):
 
 class AddFernlehrgang(PageAddForm):
     grok.context(IFernlehrgangApp)
+    grok.title(u'Fernlehrgang')
     title = u'Fernlehrgang'
     label = u'Fernlehrgang anlegen'
+    description = u""
 
     fields = Fields(IFernlehrgang).omit('id')
 
@@ -89,6 +91,7 @@ class AddFernlehrgang(PageAddForm):
 
 class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IFernlehrgang)
+    grok.title(u"View")
     label = "View"
     fields = Fields(IFernlehrgang).omit('id')
 
