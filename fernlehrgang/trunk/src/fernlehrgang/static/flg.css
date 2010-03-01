@@ -416,7 +416,7 @@ div #stylized .error {
 
 #stylized .buttons {
   clear: both;
-  padding-top: 2em;
+  padding: 0 0 1em 0;
   text-align: center;
 }
 
