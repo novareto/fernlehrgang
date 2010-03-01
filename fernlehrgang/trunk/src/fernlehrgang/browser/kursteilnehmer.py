@@ -17,7 +17,6 @@ from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.ui_components.viewlets import AboveContent, PersonalPreferences
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
@@ -26,23 +25,12 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 grok.templatedir('templates')
 
 
-class AddKursteilnehmerMenu(MenuItem):
-    grok.context(IFernlehrgang)
-    grok.name(u'Kursteilnehmer verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "kursteilnehmer_listing"
-    viewURL = "kursteilnehmer_listing"
-
-    @property
-    def url(self):
-        return "%s/%s" % (url(self.request, self.context), self.viewURL)
-
-
-@menuentry(AboveContent, title="Kursteilnehmer verwalten", order=10)
-class KursteilnehmerListing(DeleteFormTablePage, grok.View):
+class KursteilnehmerListing(DeleteFormTablePage):
     grok.context(IFernlehrgang)
     grok.name('kursteilnehmer_listing')
+    grok.title("Kursteilnehmer verwalten")
+    grok.order(10)
+    
     title = u"Kursteilnehmer"
     description = u"Hier können Sie die Kursteilnehmer zu Ihrem Fernlehrgang bearbeiten."
     extends(DeleteFormTablePage)
@@ -73,7 +61,7 @@ class KursteilnehmerListing(DeleteFormTablePage, grok.View):
          self.redirect(self.url(self.context, 'addkursteilnehmer')) 
 
 
-class AddKursteilnehmer(PageAddForm, grok.View):
+class AddKursteilnehmer(PageAddForm):
     grok.context(IFernlehrgang)
     title = u'Kursteilnehmer'
     label = u'Kursteilnehmer anlegen'
@@ -91,7 +79,7 @@ class AddKursteilnehmer(PageAddForm, grok.View):
         return self.url(self.context, 'kursteilnehmer_listing')
 
 
-class Index(PageDisplayForm, grok.View):
+class Index(PageDisplayForm):
     grok.context(IKursteilnehmer)
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
@@ -99,7 +87,7 @@ class Index(PageDisplayForm, grok.View):
     fields = Fields(IKursteilnehmer).omit(id)
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(PageEditForm):
     grok.context(IKursteilnehmer)
     grok.name('edit')
     extends(PageEditForm)

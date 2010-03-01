@@ -16,7 +16,6 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.ui_components.viewlets import AboveContent
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
@@ -25,21 +24,7 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 grok.templatedir('templates')
 
 
-class AddMenu(MenuItem):
-    grok.context(IUnternehmen)
-    grok.name(u'Teilnehmer verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "teilnehmer_listing"
-    viewURL = "teilnehmer_listing"
-
-    @property
-    def url(self):
-        return "%s/%s" % (url(self.request, self.context), self.viewURL)
-
-
-@menuentry(AboveContent, title="Teilnehmer verwalten", order=10)
-class TeilnehmerListing(DeleteFormTablePage, grok.View):
+class TeilnehmerListing(DeleteFormTablePage):
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     title = u"Teilnehmer"
@@ -72,7 +57,7 @@ class TeilnehmerListing(DeleteFormTablePage, grok.View):
          self.redirect(self.url(self.context, 'addteilnehmer')) 
 
 
-class AddTeilnehmer(PageAddForm, grok.View):
+class AddTeilnehmer(PageAddForm):
     grok.context(IUnternehmen)
     title = u'Teilnehmer'
     label = u'Teilnehmer anlegen'
@@ -91,7 +76,7 @@ class AddTeilnehmer(PageAddForm, grok.View):
         return self.url(self.context, 'teilnehmer_listing')
 
 
-class Index(PageDisplayForm, grok.View):
+class Index(PageDisplayForm):
     grok.context(ITeilnehmer)
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
@@ -99,7 +84,7 @@ class Index(PageDisplayForm, grok.View):
     fields = Fields(ITeilnehmer).omit(id)
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(PageEditForm):
     grok.context(ITeilnehmer)
     grok.name('edit')
     extends(PageEditForm)

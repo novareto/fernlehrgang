@@ -11,13 +11,14 @@ from megrok.z3cform.tabular import FormTablePage
 from megrok.z3ctable import Column 
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.ui_components.viewlets import AboveContent
 from fernlehrgang.models import Unternehmen, Kursteilnehmer, Teilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from zope.interface import Interface
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
+
 grok.templatedir('templates')
+
 
 class UnternehmenSuche(FormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgangApp)

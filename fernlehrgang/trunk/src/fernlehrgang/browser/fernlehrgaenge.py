@@ -13,11 +13,11 @@ from fernlehrgang.utils import MenuItem
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Fernlehrgang
 from megrok.traject.components import DefaultModel
+from fernlehrgang.ui_components import AddMenu
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.ui_components.viewlets import AboveContent, PersonalPreferences
 
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from dolmen.app.layout import models
@@ -67,7 +67,7 @@ class FernlehrgangListing(DeleteFormTablePage, ContextualMenuEntry):
          self.redirect(self.url(self.context, 'addfernlehrgang')) 
 
 
-
+@menuentry(AddMenu)
 class AddFernlehrgang(PageAddForm):
     grok.context(IFernlehrgangApp)
     grok.title(u'Fernlehrgang')

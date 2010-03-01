@@ -10,14 +10,14 @@ from megrok.traject import locate
 from dolmen.menu import menuentry
 from fernlehrgang.utils import Page
 from fernlehrgang.models import Antwort, Frage 
-from fernlehrgang.utils import MenuItem 
+from fernlehrgang.utils import MenuItem
+from fernlehrgang.ui_components import AddMenu
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.ui_components.viewlets import AboveContent
 from megrok.z3ctable.components import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
@@ -25,20 +25,8 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 grok.templatedir('templates')
 
 
-class AddMenu(MenuItem):
-    grok.context(IKursteilnehmer)
-    grok.name(u'Antworten verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "antwort_listing"
-    viewURL = "antwort_listing"
-
-    @property
-    def url(self):
-        return "%s/%s" % (url(self.request, self.context), self.viewURL)
-
-
-class AddAntwort(PageAddForm, grok.View):
+@menuentry(AddMenu)
+class AddAntwort(PageAddForm):
     grok.context(IKursteilnehmer)
     title = u'Antwort'
     label = u'Antwort anlegen'
@@ -56,7 +44,7 @@ class AddAntwort(PageAddForm, grok.View):
         return self.url(self.context, 'antwort_listing')
 
 
-class Index(PageDisplayForm, grok.View):
+class Index(PageDisplayForm):
     grok.context(IAntwort)
     title = u"Antworten"
     description = u"Hier können Sie Deteils zu Ihren Antworten ansehen."
@@ -64,7 +52,7 @@ class Index(PageDisplayForm, grok.View):
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(PageEditForm):
     grok.context(IAntwort)
     grok.name('edit')
     title = u"Antworten"
@@ -80,8 +68,7 @@ class Edit(PageEditForm, grok.View):
         self.redirect(self.url(self.context.__parent__)) 
 
 
-@menuentry(AboveContent, title=u"Antworten verwalten", order=20)
-class AntwortListing(DeleteFormTablePage, grok.View):
+class AntwortListing(DeleteFormTablePage):
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     title = u"Antworten"
