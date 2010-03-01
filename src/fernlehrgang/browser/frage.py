@@ -17,7 +17,6 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.ui_components.viewlets import AboveContent
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
@@ -38,7 +37,7 @@ class AddMenu(MenuItem):
         return "%s/%s" % (url(self.request, self.context), self.viewURL)
 
 
-class AddFrage(PageAddForm, grok.View):
+class AddFrage(PageAddForm):
     grok.context(ILehrheft)
     title = u'Frage'
     label = u'Frage anlegen'
@@ -56,7 +55,7 @@ class AddFrage(PageAddForm, grok.View):
         return self.url(self.context, 'frage_listing')
 
 
-class Index(PageDisplayForm, grok.View):
+class Index(PageDisplayForm):
     grok.context(IFrage)
     title = u"Fragen"
     description = u"Hier können Sie Deteils zu Ihren Fragen ansehen."
@@ -64,7 +63,7 @@ class Index(PageDisplayForm, grok.View):
     fields = Fields(IFrage).omit('id')
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(PageEditForm):
     grok.context(IFrage)
     grok.name('edit')
     title = u"Fragen"
@@ -80,8 +79,7 @@ class Edit(PageEditForm, grok.View):
         self.redirect(self.url(self.context.__parent__)) 
 
 
-@menuentry(AboveContent, title=u"Fragen verwalten", order=20)
-class FrageListing(DeleteFormTablePage, grok.View):
+class FrageListing(DeleteFormTablePage):
     grok.context(ILehrheft)
     grok.name('frage_listing')
     title = u"Fragen"

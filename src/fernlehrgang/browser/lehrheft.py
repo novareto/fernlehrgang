@@ -17,7 +17,6 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.ui_components.viewlets import AboveContent
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
@@ -25,21 +24,7 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 grok.templatedir('templates')
 
 
-class AddMenu(MenuItem):
-    grok.context(IFernlehrgang)
-    grok.name(u'Lehrhefte verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "lehrhefte_listing"
-    viewURL = "lehrhefte_listing"
-
-    @property
-    def url(self):
-        return "%s/%s" % (url(self.request, self.context), self.viewURL)
-
-
-@menuentry(AboveContent, title="Lehrhefte verwalten", order=10)
-class LehrhefteListing(DeleteFormTablePage, grok.View):
+class LehrhefteListing(DeleteFormTablePage):
     grok.context(IFernlehrgang)
     grok.name('lehrhefte_listing')
     title = u"Lehrhefte"
@@ -72,7 +57,7 @@ class LehrhefteListing(DeleteFormTablePage, grok.View):
          self.redirect(self.url(self.context, 'addlehrheft')) 
 
 
-class AddLehrheft(PageAddForm, grok.View):
+class AddLehrheft(PageAddForm):
     grok.context(IFernlehrgang)
     title = u'Lehrheft'
     label = u'Lehrheft anlegen'
@@ -90,7 +75,7 @@ class AddLehrheft(PageAddForm, grok.View):
         return self.url(self.context, 'lehrhefte_listing')
 
 
-class Index(PageDisplayForm, grok.View):
+class Index(PageDisplayForm):
     grok.context(ILehrheft)
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
@@ -98,7 +83,7 @@ class Index(PageDisplayForm, grok.View):
     fields = Fields(ILehrheft).omit(id)
 
 
-class Edit(PageEditForm, grok.View):
+class Edit(PageEditForm):
     grok.context(ILehrheft)
     grok.name('edit')
     extends(PageEditForm)

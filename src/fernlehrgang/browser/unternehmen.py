@@ -15,8 +15,7 @@ from fernlehrgang.models import Unternehmen
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.ui_components.viewlets import AboveContent 
+from fernlehrgang.interfaces.app import IFernlehrgangApp 
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
@@ -64,19 +63,6 @@ class UnternehmenListing(DeleteFormTablePage, ContextualMenuEntry):
     @button.buttonAndHandler(u'Unternehmen anlegen')
     def handleAddUnternehmen(self, action):
          self.redirect(self.url(self.context, 'addunternehmen')) 
-
-
-class AddUnternehmenMenu(MenuItem):
-    grok.context(IFernlehrgangApp)
-    grok.name(u'Unternehmen verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "unternehmen_listing"
-    viewURL = "unternehmen_listing"
-
-    @property
-    def url(self):
-        return "%s/%s" % (url(self.request, self.context), self.viewURL)
 
 
 class Index(models.DefaultView):

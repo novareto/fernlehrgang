@@ -10,7 +10,7 @@ from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
 from fernlehrgang.models import Fernlehrgang
-from dolmen.app.layout import master
+from dolmen.app.layout import master, IDisplayView
 from uvc.layout.interfaces import IAboveContent
 
 
@@ -39,17 +39,25 @@ class GlobalMenu(grok.Viewlet):
         self.flgs = self.getContent()
 
 
-class AboveContent(menu.Menu):
-    grok.name('uvcsite.abovecontent')
+class AddMenu(menu.Menu):
+    grok.name('uvcsite-addmenu')
     grok.context(Interface)
-    grok.implements(IAboveContent)
+    grok.view(IDisplayView)
+    grok.title('Add')
+
+    menu_class = u"foldable menu"
 
 
-class PersonalPreferences(menu.Menu):
-    grok.name('uvcsite.personalpreferences')
+class AddMenuViewlet(grok.Viewlet):
     grok.context(Interface)
-    grok.implements(IAboveContent)
-    grok.title('')
+    grok.view(IDisplayView)
+    grok.viewletmanager(master.AboveBody)
+
+    def render(self):
+        menu = AddMenu(self.context, self.request, self.view)
+        menu.update()
+        js = """<script src="%s"></script>""" % self.static['dropdown.js']()
+        return js + menu.render()
 
 
 class MenuTemplate(pagetemplate.PageTemplate):

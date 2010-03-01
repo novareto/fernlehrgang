@@ -404,3 +404,71 @@ div #stylized .row_error {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
 }
+
+
+/* Dropdown menu */
+
+dl.foldable {
+  padding: 0.2em;
+  float: right;
+  width: 10em;
+  font-size: 0.8em;
+}
+
+dl.unfolding dt {
+  background-color: #f9f9f9 !important;
+}
+
+dl.foldable dt {
+  padding-right: 25px;
+  font-weight: bold;
+  padding: 0.2em 0.4em 0.3em 0.4em;
+  border: 1px solid #cbcbcb;
+  color: #555;
+}
+
+dl.foldable dd {
+  margin: 0;
+  display: none;
+  position: absolute;
+  background-color: white;
+  width: 10em;
+}
+
+dl.foldable dd ul { 
+  list-style: none !important;
+  margin: 0;
+  padding: 0;
+}
+
+dl.foldable li {
+  margin: 0;
+  padding: 0;
+  list-style: none !important;
+}
+
+dl.foldable li.selected a {
+  color: #5aa1a9;
+  font-style: oblique;
+  background: #efefef url(selected.gif) 0 0.5em no-repeat;
+  padding: 0.2em 0.3em 0.2em 15px;
+}
+
+dl.foldable li a {
+  padding: 0.2em 0.3em;
+  display: block;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #cbcbcb;
+  text-decoration: none !important;
+  background-color: #f9f9f9;
+}
+
+dl.foldable li a img {
+  vertical-align: middle;
+}
+
+dl.foldable li a:hover {
+  color: #000;
+  background-color: #ddd;
+}

@@ -16,7 +16,6 @@ from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.ui_components.viewlets import AboveContent
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
@@ -26,7 +25,6 @@ from fernlehrgang.config import POSTVERSANDSPERRE
 grok.templatedir('templates')
 
 
-@menuentry(AboveContent, title=u"Resultate", order=30)
 class Resultate(Page):
     grok.context(IKursteilnehmer)
     grok.name('resultate')
@@ -42,6 +40,7 @@ class Resultate(Page):
     def getSummary(self):
         results = ICalculateResults(self.context)
         return results.summary()
+
 
 class CalculateResults(grok.Adapter):
     grok.implements(ICalculateResults)
@@ -83,7 +82,6 @@ class CalculateResults(grok.Adapter):
             if x.lower() not in antwortschema:
                 return 0 
         return gewichtung 
-
 
     def summary(self):
         punkte = 0
