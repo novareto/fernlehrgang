@@ -245,7 +245,7 @@ dl.error dd {
 /* BREADCRUMB */
 #breadcrumb {
     color:#6E6E6E;
-    margin-left:240px;
+    margin-left:10px;
     margin-top:5px;
     width:420px;
     font-size:11px
@@ -338,7 +338,7 @@ dl#contextual-actions ul li.selected a {
 
 #stylized {
   background-color: #f4f4f4;
-  width: auto;
+  width: 900px;
   height: auto;
   border: 2px solid #ddd;
 }
@@ -354,14 +354,25 @@ dl#contextual-actions ul li.selected a {
 
 #stylized .row {
   clear: both;
+  padding-top: 10px;
+}
+
+div #stylized .row_error {
+  clear: both;
+  padding-top: 10px;
+  padding-bottom: 2em;
+  background-color:#FFCE7B;
+  border:1px solid #FFA500;
+  margin:0 0 1em;
 }
 
 #stylized label {
-  width: 25%;
+  width: 40%;
   float: left;
   display: block;
   font-weight: bold;
   font-size: 1em;
+  text-align: right;
 }
 
 #stylized label span.small {
@@ -377,7 +388,7 @@ dl#contextual-actions ul li.selected a {
   width: auto;
   float: left;
   margin-left: 1em;
-  padding-top: 2em;
+  padding-top: 0.5em;
 }
 
 #stylized .buttons {

@@ -36,6 +36,7 @@
              tal:content="view/status">
           Form status summary
         </div>
+        <!--
         <ul class="errors"
             tal:condition="view/widgets/errors"
             metal:define-macro="errors">
@@ -46,6 +47,7 @@
             <span tal:replace="structure error/render">Error Type</span>
           </li>
         </ul>
+        -->
       </div>
     </metal:block>
     <div metal:define-slot="extra-info" tal:replace="nothing">
@@ -54,7 +56,8 @@
       <metal:block define-macro="widget-rows">
         <tal:block repeat="widget view/widgets/values">
           <div id="" class="row"
-               tal:attributes="id string:${widget/id}-row"
+               tal:attributes="id string:${widget/id}-row;
+                               class python: widget.error is not None and 'row_error' or 'row'"
                tal:condition="python:widget.mode != 'hidden'">
             <metal:block define-macro="widget-row">
                 <label>
@@ -70,7 +73,7 @@
                 <span tal:replace="structure widget/error/render">error</span>
               </div>
             </metal:block>
-          </div> <br>
+          </div> 
           <input type="hidden" value=""
                  tal:condition="python:widget.mode == 'hidden'"
                  tal:replace="structure widget/render" />
