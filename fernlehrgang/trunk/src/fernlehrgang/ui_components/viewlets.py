@@ -60,6 +60,26 @@ class AddMenuViewlet(grok.Viewlet):
         return js + menu.render()
 
 
+class ObjectMenu(menu.Menu):
+    grok.name('object-menu')
+    grok.title('Object actions')
+    grok.context(Interface)
+    grok.view(IDisplayView)
+
+    menu_class = u'object menu'
+
+
+class ObjectMenuViewlet(grok.Viewlet):
+    grok.context(Interface)
+    grok.view(IDisplayView)
+    grok.viewletmanager(master.AboveBody)
+    
+    def render(self):
+        menu = ObjectMenu(self.context, self.request, self.view)
+        menu.update()
+        return menu.render()
+
+
 class MenuTemplate(pagetemplate.PageTemplate):
     pagetemplate.view(IAboveContent)
     template = grok.PageTemplateFile("templates/menu.pt")
