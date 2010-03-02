@@ -21,11 +21,14 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
+from dolmen.menu import menuentry
+from fernlehrgang.ui_components import AddMenu
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
 grok.templatedir('templates')
 
 
-class KursteilnehmerListing(DeleteFormTablePage):
+class KursteilnehmerListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgang)
     grok.name('kursteilnehmer_listing')
     grok.title("Kursteilnehmer verwalten")
@@ -60,11 +63,13 @@ class KursteilnehmerListing(DeleteFormTablePage):
     def handleChangeWorkflowState(self, action):
          self.redirect(self.url(self.context, 'addkursteilnehmer')) 
 
-
+@menuentry(AddMenu)
 class AddKursteilnehmer(PageAddForm):
     grok.context(IFernlehrgang)
+    grok.title(u'Kursteilnehmer anlegen')
     title = u'Kursteilnehmer'
     label = u'Kursteilnehmer anlegen'
+    description = u'Kursteilnehmer anlegen'
 
     fields = Fields(IKursteilnehmer).omit('id')
 
@@ -79,17 +84,20 @@ class AddKursteilnehmer(PageAddForm):
         return self.url(self.context, 'kursteilnehmer_listing')
 
 
-class Index(PageDisplayForm):
+class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IKursteilnehmer)
+    grok.implements(IDisplayView)
+    grok.title(u'View')
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(IKursteilnehmer).omit(id)
 
 
-class Edit(PageEditForm):
+class Edit(PageEditForm, ContextualMenuEntry):
     grok.context(IKursteilnehmer)
     grok.name('edit')
+    grok.title(u'Edit')
     extends(PageEditForm)
 
     fields = Fields(IKursteilnehmer).omit('id')

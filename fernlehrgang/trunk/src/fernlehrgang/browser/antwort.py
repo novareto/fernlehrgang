@@ -21,6 +21,7 @@ from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable.components import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
 grok.templatedir('templates')
 
@@ -44,16 +45,19 @@ class AddAntwort(PageAddForm):
         return self.url(self.context, 'antwort_listing')
 
 
-class Index(PageDisplayForm):
+class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IAntwort)
+    grok.implements(IDisplayView)
+    grok.title(u'Index')
     title = u"Antworten"
     description = u"Hier können Sie Deteils zu Ihren Antworten ansehen."
 
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(PageEditForm):
+class Edit(PageEditForm, ContextualMenuEntry):
     grok.context(IAntwort)
+    grok.title(u'Edit')
     grok.name('edit')
     title = u"Antworten"
     description = u"Hier können Sie die Antwort bearbeiten."
@@ -68,9 +72,10 @@ class Edit(PageEditForm):
         self.redirect(self.url(self.context.__parent__)) 
 
 
-class AntwortListing(DeleteFormTablePage):
+class AntwortListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
+    grok.title(u'Antworten verwalten')
     title = u"Antworten"
     description = u"Hier können Sie die Antworten zu Ihren Lehrheften bearbeiten."
     extends(DeleteFormTablePage)

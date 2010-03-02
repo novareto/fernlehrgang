@@ -48,7 +48,6 @@ class FernlehrgangListing(DeleteFormTablePage, ContextualMenuEntry):
             locate(root, fernlehrgang, DefaultModel)
             yield fernlehrgang 
 
-
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
@@ -85,12 +84,14 @@ class AddFernlehrgang(PageAddForm):
         session.add(object)
 
     def nextURL(self):
+        self.flash(u'Der Fernlehrgang wurde erfolgreich angelegt')
         url = self.url(self.context)
         return url
 
 
 class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IFernlehrgang)
+    grok.implements(IDisplayView)
     grok.title(u"View")
     label = "View"
     fields = Fields(IFernlehrgang).omit('id')

@@ -365,6 +365,14 @@ dl#contextual-actions ul li.selected a {
   margin: 0.5em 0;
 }
 
+div .error {
+  display: block;
+  font-weight: normal;
+  font-size: 0.75em;
+  background-color: transparent;
+  color: #666;
+}
+
 div #stylized .row_error {
   background: white url(error.png) 1em 50% no-repeat;
   border: 1px solid #dddddd;
