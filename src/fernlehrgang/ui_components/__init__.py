@@ -1,2 +1,2 @@
 #package
-from fernlehrgang.ui_components.viewlets import AddMenu
+from fernlehrgang.ui_components.viewlets import AddMenu, ObjectMenu
