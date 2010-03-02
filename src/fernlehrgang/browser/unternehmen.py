@@ -22,6 +22,9 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from dolmen.app.layout import models
+from dolmen.menu import menuentry
+from fernlehrgang.ui_components import AddMenu
+
 
 
 grok.templatedir('templates')
@@ -69,6 +72,7 @@ class Index(models.DefaultView):
     grok.context(IUnternehmen)
     grok.name('index')
     title = u"Unternehmen"
+    label = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(IUnternehmen)
@@ -87,10 +91,13 @@ class Edit(models.Edit):
         self.redirect(self.url(self.context.__parent__)) 
 
 
+@menuentry(AddMenu)
 class AddUnternehmen(PageAddForm):
     grok.context(IFernlehrgangApp)
+    grok.title(u'Unternehmen')
     title = u'Unternehmen'
     label = u'Unternehmen anlegen'
+    description = u"Unternehmen anlegen"
 
     fields = Fields(IUnternehmen)
 

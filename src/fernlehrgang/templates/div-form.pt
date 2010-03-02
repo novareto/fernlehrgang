@@ -4,7 +4,9 @@
       tal:content="view/label">
     Form Label
   </h1>
-  <p tal:condition="view/description" tal:content="view/description" />
+  <p tal:condition="view/description|nothing">
+     <span tal:content="view/description" />
+  </p>   
 </div>
 <form action="." method="post" enctype="multipart/form-data" class="edit-form"
       metal:define-macro="form"

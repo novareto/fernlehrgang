@@ -19,26 +19,18 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.menu import menuentry
+from fernlehrgang.ui_components import AddMenu
 
 
 grok.templatedir('templates')
 
 
-class AddMenu(MenuItem):
-    grok.context(ILehrheft)
-    grok.name(u'Fragen verwalten')
-    grok.viewletmanager(ISidebar)
-
-    urlEndings = "frage_listing"
-    viewURL = "frage_listing"
-
-    @property
-    def url(self):
-        return "%s/%s" % (url(self.request, self.context), self.viewURL)
-
-
+@menuentry(AddMenu)
 class AddFrage(PageAddForm):
     grok.context(ILehrheft)
+    grok.title(u'Frage')
     title = u'Frage'
     label = u'Frage anlegen'
 
@@ -55,16 +47,19 @@ class AddFrage(PageAddForm):
         return self.url(self.context, 'frage_listing')
 
 
-class Index(PageDisplayForm):
+class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IFrage)
+    grok.implements(IDisplayView)    
+    grok.title(u'View')
     title = u"Fragen"
     description = u"Hier können Sie Deteils zu Ihren Fragen ansehen."
 
     fields = Fields(IFrage).omit('id')
 
 
-class Edit(PageEditForm):
+class Edit(PageEditForm, ContextualMenuEntry):
     grok.context(IFrage)
+    grok.title(u'Edit')
     grok.name('edit')
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."
@@ -79,9 +74,10 @@ class Edit(PageEditForm):
         self.redirect(self.url(self.context.__parent__)) 
 
 
-class FrageListing(DeleteFormTablePage):
+class FrageListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(ILehrheft)
     grok.name('frage_listing')
+    grok.title(u'Fragen verwalten')
     title = u"Fragen"
     description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
     extends(DeleteFormTablePage)

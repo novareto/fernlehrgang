@@ -19,14 +19,18 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from dolmen.menu import menuentry
+from fernlehrgang.ui_components import AddMenu
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
 
 grok.templatedir('templates')
 
 
-class LehrhefteListing(DeleteFormTablePage):
+class LehrhefteListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgang)
     grok.name('lehrhefte_listing')
+    grok.title(u'Lehrhefte verwalten')
     title = u"Lehrhefte"
     description = u"Hier können Sie die Lehrhefte zu Ihrem Fernlehrgang bearbeiten."
     extends(DeleteFormTablePage)
@@ -57,10 +61,13 @@ class LehrhefteListing(DeleteFormTablePage):
          self.redirect(self.url(self.context, 'addlehrheft')) 
 
 
+@menuentry(AddMenu)
 class AddLehrheft(PageAddForm):
     grok.context(IFernlehrgang)
+    grok.title(u'Lehrheft')
     title = u'Lehrheft'
     label = u'Lehrheft anlegen'
+    description = u'Lehrheft anlegen'
 
     fields = Fields(ILehrheft).omit('id')
 
@@ -75,16 +82,19 @@ class AddLehrheft(PageAddForm):
         return self.url(self.context, 'lehrhefte_listing')
 
 
-class Index(PageDisplayForm):
+class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(ILehrheft)
+    grok.implements(IDisplayView)
+    grok.title(u"View")
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(ILehrheft).omit(id)
 
 
-class Edit(PageEditForm):
+class Edit(PageEditForm, ContextualMenuEntry):
     grok.context(ILehrheft)
+    grok.title(u'Edit')
     grok.name('edit')
     extends(PageEditForm)
 

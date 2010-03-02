@@ -19,14 +19,18 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
+from dolmen.menu import menuentry
+from fernlehrgang.ui_components import AddMenu
 
 grok.templatedir('templates')
 
 
-class TeilnehmerListing(DeleteFormTablePage):
+class TeilnehmerListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
+    grok.title(u'Teilnehmer verwalten')
     title = u"Teilnehmer"
     description = u"Hier können Sie die Teilnehmer zu Ihrem Fernlehrgang bearbeiten."
     extends(DeleteFormTablePage)
@@ -56,9 +60,10 @@ class TeilnehmerListing(DeleteFormTablePage):
     def handleChangeWorkflowState(self, action):
          self.redirect(self.url(self.context, 'addteilnehmer')) 
 
-
+@menuentry(AddMenu)
 class AddTeilnehmer(PageAddForm):
     grok.context(IUnternehmen)
+    grok.title(u'Teilnehmer')
     title = u'Teilnehmer'
     label = u'Teilnehmer anlegen'
     id = "stylized"
@@ -78,6 +83,7 @@ class AddTeilnehmer(PageAddForm):
 
 class Index(PageDisplayForm):
     grok.context(ITeilnehmer)
+    grok.implements(IDisplayView)
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
 
@@ -122,6 +128,7 @@ class VorName(GetAttrColumn):
     weight = 20 
     header = u"Vorname"
     attrName = "vorname"
+
 
 class Geburtsdatum(GetAttrColumn):    
     grok.name('Geburtsdatum')
