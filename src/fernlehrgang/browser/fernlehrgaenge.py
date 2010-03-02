@@ -13,7 +13,7 @@ from fernlehrgang.utils import MenuItem
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Fernlehrgang
 from megrok.traject.components import DefaultModel
-from fernlehrgang.ui_components import AddMenu, ObjectMenu
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
@@ -28,7 +28,8 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 grok.templatedir('templates')
 
 
-class FernlehrgangListing(DeleteFormTablePage, ContextualMenuEntry):
+@menuentry(NavigationMenu)
+class FernlehrgangListing(DeleteFormTablePage):
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
@@ -88,6 +89,7 @@ class AddFernlehrgang(PageAddForm):
         url = self.url(self.context)
         return url
 
+
 class Index(PageDisplayForm, ContextualMenuEntry):
     grok.context(IFernlehrgang)
     grok.implements(IDisplayView)
@@ -95,7 +97,7 @@ class Index(PageDisplayForm, ContextualMenuEntry):
     label = "View"
     fields = Fields(IFernlehrgang).omit('id')
 
-@menuentry(ObjectMenu)
+
 class Edit(PageEditForm):
     grok.context(IFernlehrgang)
     grok.title(u'Edit')

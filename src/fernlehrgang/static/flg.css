@@ -5,6 +5,27 @@
     font-weight:bold;
 }
 
+.right-col {
+  width: 100%;
+  margin: 0;
+  padding: 1em 0;
+  float: none;
+}
+
+.right-col {
+  width: 100%;
+  margin: 0;
+  padding: 1em 0;
+  float: none;
+}
+
+.right-col .css-panes {
+  padding-top: 1em;
+}
+
+#page {
+  margin: 0 auto;
+}
 
 /* The Lenend in Fieldsets */
 
@@ -70,21 +91,45 @@ textarea {
 
 /* Table */
 
+table.tablesorter {
+  width: 100%;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  border-color: #aaa;
+  border-collapse: collapse;
+  font-size: 90%;
+  margin: 0.5em 0;
+}
+
+table.tablesorter td, table.tablesorter th {
+  border-width: 0 1px 1px 0;
+  border-style: solid;
+  border-color: #aaa;
+  padding: 0.2em 0.5em;
+  line-height: 1.5em;
+  font-size: 0.8em;
+}
+
+table.tablesorter th {
+  padding-left: 16px;
+  font-weight: bold;
+}
+
 table.tablesorter thead tr .header {
-        background-image: url(bg.gif);
-        background-repeat: no-repeat;
-        background-position: center right;
-        cursor: pointer;
+  background-image: url(bg.gif);
+  background-repeat: no-repeat;
+  background-position: center right;
+  cursor: pointer;
 }
 table.tablesorter thead tr .headerSortUp {
-    background-image: url(asc.gif);
+  background-image: url(asc.gif);
 }
 table.tablesorter thead tr .headerSortDown {
-    background-image: url(desc.gif);
+  background-image: url(desc.gif);
 }
 
 table.tablesorter thead tr .checkBox {
-    width: 1px;
+  width: 1px;
 }
 
 
@@ -139,26 +184,6 @@ dl.error dd {
     background-color: #fd7;
 }
 
-
-
-.right-col UL.miniman LI A:HOVER{
-        text-decoration: underline;
-        color: #6e6e6e;
-}
-.right-col UL.content {
-        list-style: none;
-        width: 450px;
-        border-bottom: 1px #b30b16 solid;
-}
-.right-col UL.content LI{
-        margin-bottom: 10px;
-        width: 100%;
-}
-.right-col UL.last {width: 400px;}
-.right-col UL.last LI{
-        margin-bottom: 10px;
-        width: 100%;
-}
 
 /* Document Actions" */
 
@@ -262,29 +287,33 @@ dl.error dd {
 
 /** Content actions tabs **/
 
-#contextual-actions dt {
+#navigation dt {
   display: none;
 }
 
-dl#contextual-actions,
-dl#contextual-actions dd {
+dl#navigation,
+dl#navigation dd {
   padding: 0;
   margin: 0;
 }
 
-dl#contextual-actions a {
+dl#navigation a {
   color:  #999;
 }
 
-dl#contextual-actions {
+dl#navigation {
   font-size: 0.75em;
   line-height: 1.7em;
   margin: 1.5em 0 1em 0;
   padding-left: 2em;;
   border-bottom: 1px solid #cbcbcb;
+  float: left;
+  width: 925px;
+  top: 140px;
+  position: absolute;
 }
 
-dl#contextual-actions ul {
+dl#navigation ul {
   margin: 0 0 0 -0.25em;
   padding: 0 1em 0 0;
   text-align: left;
@@ -294,15 +323,15 @@ dl#contextual-actions ul {
   line-height: 1.70em;
 }
 
-dl#contextual-actions ul li {
+dl#navigation ul li {
   display: inline;
 }
 
-dl#contextual-actions ul li.entry {
+dl#navigation ul li.entry {
   height: 1.70em;
 }
 
-dl#contextual-actions ul li a {
+dl#navigation ul li a {
   text-decoration: none;
   margin-left: 3px;
   border-color: #cbcbcb #cbcbcb transparent  #cbcbcb;
@@ -314,7 +343,7 @@ dl#contextual-actions ul li a {
   text-decoration: none;
 }
 
-dl#contextual-actions ul li.selected a {
+dl#navigation ul li.selected a {
   background-color: #fff;
   border: 1px solid #cbcbcb;
   border-bottom: 1px solid white;
@@ -461,6 +490,7 @@ dl.foldable {
   float: right;
   width: 10em;
   font-size: 0.8em;
+  margin: 3.5em 0 0 0;
 }
 
 dl.unfolding dt {
@@ -468,7 +498,6 @@ dl.unfolding dt {
 }
 
 dl.foldable dt {
-  padding-right: 25px;
   font-weight: bold;
   padding: 0.2em 0.4em 0.3em 0.4em;
   border: 1px solid #cbcbcb;
@@ -498,7 +527,7 @@ dl.foldable li {
 dl.foldable li.selected a {
   color: #5aa1a9;
   font-style: oblique;
-  background: #efefef url(selected.gif) 0 0.5em no-repeat;
+  background: #efefef url(selected.gif) 5px 0.5em no-repeat;
   padding: 0.2em 0.3em 0.2em 15px;
 }
 

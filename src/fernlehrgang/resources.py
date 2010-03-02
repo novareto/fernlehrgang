@@ -20,6 +20,7 @@ class FernlehrgangResources(resource.ResourceLibrary):
     #resource.resource('jquery.metadata.js')
     resource.resource('jquery.autocomplete.js')
     resource.resource('flg.js')
+    resource.resource('dropdown.js')
     resource.resource('flg.css')
     resource.resource('dynselect.js', bottom=True)
 
