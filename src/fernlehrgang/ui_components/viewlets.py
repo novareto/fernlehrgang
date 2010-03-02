@@ -9,8 +9,9 @@ from dolmen import menu
 from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
+from uvc.layout.layout import IUVCLayer
 from fernlehrgang.models import Fernlehrgang
-from dolmen.app.layout import master, IDisplayView
+from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent
 
 
@@ -39,43 +40,53 @@ class GlobalMenu(grok.Viewlet):
         self.flgs = self.getContent()
 
 
+
+class ObjectActionMenu(viewlets.ContextualActions):
+    grok.name('contextualactions')
+    grok.layer(IUVCLayer)
+    grok.title('Actions')
+
+    menu_class = u"foldable menu"
+    title = "Actions"
+
+    def get_actions(self, context):
+        return MenuViewlet.get_actions(self, context)
+
+
+
 class AddMenu(menu.Menu):
     grok.name('uvcsite-addmenu')
     grok.context(Interface)
     grok.view(IDisplayView)
     grok.title('Add')
-
+    
     menu_class = u"foldable menu"
 
 
 class AddMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.view(IDisplayView)
-    grok.viewletmanager(master.AboveBody)
+    grok.viewletmanager(master.Top)
 
     def render(self):
         menu = AddMenu(self.context, self.request, self.view)
         menu.update()
-        js = """<script src="%s"></script>""" % self.static['dropdown.js']()
-        return js + menu.render()
+        return menu.render()
 
 
-class ObjectMenu(menu.Menu):
-    grok.name('object-menu')
-    grok.title('Object actions')
+class NavigationMenu(menu.Menu):
+    grok.name('navigation')
+    grok.title('Navigation')
     grok.context(Interface)
-    grok.view(IDisplayView)
-
-    menu_class = u'object menu'
+    menu_class = u'menu'
 
 
-class ObjectMenuViewlet(grok.Viewlet):
+class NavigationMenuViewlet(grok.Viewlet):
     grok.context(Interface)
-    grok.view(IDisplayView)
     grok.viewletmanager(master.AboveBody)
     
     def render(self):
-        menu = ObjectMenu(self.context, self.request, self.view)
+        menu = NavigationMenu(self.context, self.request, self.view)
         menu.update()
         return menu.render()
 
