@@ -8,6 +8,7 @@ from grok import url, getSite
 from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
+from dolmen.app.layout import models
 from fernlehrgang.utils import Page
 from fernlehrgang.models import Antwort, Frage 
 from fernlehrgang.utils import MenuItem
@@ -45,9 +46,8 @@ class AddAntwort(PageAddForm):
         return self.url(self.context, 'antwort_listing')
 
 
-class Index(PageDisplayForm, ContextualMenuEntry):
+class Index(models.DefaultView):
     grok.context(IAntwort)
-    grok.implements(IDisplayView)
     grok.title(u'Index')
     title = u"Antworten"
     description = u"Hier können Sie Deteils zu Ihren Antworten ansehen."
@@ -55,7 +55,7 @@ class Index(PageDisplayForm, ContextualMenuEntry):
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(PageEditForm, ContextualMenuEntry):
+class Edit(models.Edit):
     grok.context(IAntwort)
     grok.title(u'Edit')
     grok.name('edit')

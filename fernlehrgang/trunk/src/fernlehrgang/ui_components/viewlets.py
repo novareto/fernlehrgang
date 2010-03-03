@@ -67,6 +67,7 @@ class AddMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.view(IDisplayView)
     grok.viewletmanager(master.Top)
+    grok.order(70)
 
     def render(self):
         menu = AddMenu(self.context, self.request, self.view)

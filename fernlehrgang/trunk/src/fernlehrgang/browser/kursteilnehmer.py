@@ -23,7 +23,7 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.app.layout import models, ContextualMenuEntry
 
 grok.templatedir('templates')
 
@@ -84,9 +84,8 @@ class AddKursteilnehmer(PageAddForm):
         return self.url(self.context, 'kursteilnehmer_listing')
 
 
-class Index(PageDisplayForm, ContextualMenuEntry):
+class Index(models.DefaultView):
     grok.context(IKursteilnehmer)
-    grok.implements(IDisplayView)
     grok.title(u'View')
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
@@ -94,7 +93,7 @@ class Index(PageDisplayForm, ContextualMenuEntry):
     fields = Fields(IKursteilnehmer).omit(id)
 
 
-class Edit(PageEditForm, ContextualMenuEntry):
+class Edit(models.Edit):
     grok.context(IKursteilnehmer)
     grok.name('edit')
     grok.title(u'Edit')
