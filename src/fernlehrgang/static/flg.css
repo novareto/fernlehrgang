@@ -570,6 +570,10 @@ dl.foldable li a:hover {
   background-color: #f4f4f4;
 }
 
+.defaultview .field:hover {
+  background-color: #efefef;
+}
+
 .defaultview .field label span {
   background-color: transparent;
   font-weight: bold;
