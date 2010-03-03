@@ -19,7 +19,7 @@ from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.app.layout import ContextualMenuEntry
 from dolmen.app.layout import models
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
@@ -90,15 +90,14 @@ class AddFernlehrgang(PageAddForm):
         return url
 
 
-class Index(PageDisplayForm, ContextualMenuEntry):
+class Index(models.DefaultView):
     grok.context(IFernlehrgang)
-    grok.implements(IDisplayView)
     grok.title(u"View")
     label = "View"
     fields = Fields(IFernlehrgang).omit('id')
 
 
-class Edit(PageEditForm):
+class Edit(models.Edit):
     grok.context(IFernlehrgang)
     grok.title(u'Edit')
 

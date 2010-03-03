@@ -19,7 +19,7 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.app.layout import models, ContextualMenuEntry
 
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
@@ -81,16 +81,15 @@ class AddTeilnehmer(PageAddForm):
         return self.url(self.context, 'teilnehmer_listing')
 
 
-class Index(PageDisplayForm):
+class Index(models.DefaultView):
     grok.context(ITeilnehmer)
-    grok.implements(IDisplayView)
     title = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(ITeilnehmer).omit(id)
 
 
-class Edit(PageEditForm):
+class Edit(models.Edit):
     grok.context(ITeilnehmer)
     grok.name('edit')
     extends(PageEditForm)

@@ -19,7 +19,7 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from dolmen.app.layout import models, ContextualMenuEntry
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 
@@ -47,9 +47,8 @@ class AddFrage(PageAddForm):
         return self.url(self.context, 'frage_listing')
 
 
-class Index(PageDisplayForm, ContextualMenuEntry):
+class Index(models.DefaultView):
     grok.context(IFrage)
-    grok.implements(IDisplayView)    
     grok.title(u'View')
     title = u"Fragen"
     description = u"Hier können Sie Deteils zu Ihren Fragen ansehen."
@@ -57,7 +56,7 @@ class Index(PageDisplayForm, ContextualMenuEntry):
     fields = Fields(IFrage).omit('id')
 
 
-class Edit(PageEditForm, ContextualMenuEntry):
+class Edit(models.Edit):
     grok.context(IFrage)
     grok.title(u'Edit')
     grok.name('edit')
