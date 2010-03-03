@@ -21,7 +21,7 @@ from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import AddMenu
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 
 
 grok.templatedir('templates')
@@ -73,8 +73,8 @@ class Edit(PageEditForm, ContextualMenuEntry):
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
 
-
-class FrageListing(DeleteFormTablePage, ContextualMenuEntry):
+@menuentry(NavigationMenu)
+class FrageListing(DeleteFormTablePage):
     grok.context(ILehrheft)
     grok.name('frage_listing')
     grok.title(u'Fragen verwalten')

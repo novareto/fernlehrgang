@@ -15,12 +15,14 @@ from fernlehrgang.models import Unternehmen, Kursteilnehmer, Teilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from zope.interface import Interface
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from dolmen.menu import menuentry
 
 
 grok.templatedir('templates')
 
-
-class UnternehmenSuche(FormTablePage, ContextualMenuEntry):
+@menuentry(NavigationMenu)
+class UnternehmenSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
     grok.title(u'Unternehmen suchen')
     ignoreContext = True

@@ -11,7 +11,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.utils import Page
 from fernlehrgang.models import Antwort, Frage 
 from fernlehrgang.utils import MenuItem
-from fernlehrgang.ui_components import AddMenu
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
@@ -71,8 +71,8 @@ class Edit(PageEditForm, ContextualMenuEntry):
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
 
-
-class AntwortListing(DeleteFormTablePage, ContextualMenuEntry):
+@menuentry(NavigationMenu)
+class AntwortListing(DeleteFormTablePage):
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
