@@ -102,8 +102,6 @@ class Index(models.DefaultView):
 
 class Edit(models.Edit):
     grok.context(IFernlehrgang)
-    grok.title(u'Edit')
-
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
 
