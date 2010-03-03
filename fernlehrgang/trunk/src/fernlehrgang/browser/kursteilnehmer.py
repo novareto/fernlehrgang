@@ -22,12 +22,12 @@ from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import AddMenu
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
 grok.templatedir('templates')
 
-
+@menuentry(NavigationMenu)
 class KursteilnehmerListing(DeleteFormTablePage, ContextualMenuEntry):
     grok.context(IFernlehrgang)
     grok.name('kursteilnehmer_listing')

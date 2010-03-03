@@ -20,14 +20,15 @@ from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import AddMenu
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
 
 grok.templatedir('templates')
 
 
-class LehrhefteListing(DeleteFormTablePage, ContextualMenuEntry):
+@menuentry(NavigationMenu)
+class LehrhefteListing(DeleteFormTablePage):
     grok.context(IFernlehrgang)
     grok.name('lehrhefte_listing')
     grok.title(u'Lehrhefte verwalten')

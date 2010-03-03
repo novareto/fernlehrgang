@@ -22,12 +22,12 @@ from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fiel
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import AddMenu
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 
 grok.templatedir('templates')
 
-
-class TeilnehmerListing(DeleteFormTablePage, ContextualMenuEntry):
+@menuentry(NavigationMenu)
+class TeilnehmerListing(DeleteFormTablePage):
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
