@@ -6,6 +6,7 @@
   <includeDependencies package="." />
   <includeDependenciesOverrides package="." />
   <i18n:registerTranslations directory="locales" />
+  <include package="megrok.pagetemplate" file="meta.zcml" />
 
    <z3c:template
       template="templates/div-form.pt"

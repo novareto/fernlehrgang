@@ -1,5 +1,6 @@
 #page .css-panes h1 {
   font-size: 1.6em;
+  margin: 1em 0;
 }
 
 /* Formlib Errors */
@@ -377,6 +378,7 @@ dl#navigation ul li.selected a {
   padding: 0 3em;
 }
 
+#stylized .formspace,
 #stylized form {
   margin: 1em auto;
   width: 750px;
@@ -388,7 +390,7 @@ dl#navigation ul li.selected a {
   padding: 1em 2em;
 }
 
-#stylized form h1 {
+#stylized h1 {
   margin: 0;
 }
 
@@ -434,6 +436,10 @@ div #stylized .error {
   width: 250px;
 }
 
+.defaultview .formspace label {
+  width: 350px !important;
+}
+
 #stylized label span.small {
   display: block;
   font-weight: normal;
@@ -455,6 +461,27 @@ div #stylized .error {
   padding-top: 1em;
 }
 
+.defaultview .formspace .widget {
+  padding-top: 0.6em !important;
+}
+
+.defaultview .formspace .widget span {
+  font-size: 1.2em;
+  background-color: white;
+  display: block !important;
+  width: 250px !important;
+  padding: 0.2em 0.5em;
+  border: 1px solid #ddd;
+  color: #444;
+  font-style: italic;
+}
+
+.defaultview .formspace span.required {
+  display: block !important;
+}
+
+
+#stylized .colophon,
 #stylized .buttons {
   clear: both;
   padding: 0 0 1em 0;
@@ -552,42 +579,4 @@ dl.foldable li a img {
 dl.foldable li a:hover {
   color: #000;
   background-color: #ddd;
-}
-
-.defaultview {
-  width: 75%;
-}
-
-.defaultview h1 {
-  padding-bottom: 0.4em;
-  border-bottom: 1px solid #ddd;
-}
-
-.defaultview .field {
-  padding: 0.1em 1em;
-  margin: 0.5em 0;
-  border-left: 3px solid #ddd;
-  background-color: #f4f4f4;
-}
-
-.defaultview .field:hover {
-  background-color: #efefef;
-}
-
-.defaultview .field label span {
-  background-color: transparent;
-  font-weight: bold;
-  font-size: 1.3em;
-  color: #B30B16;
-  padding: 0;
-  margin: 0.5em 0 0 0;
-}
-
-.defaultview .field .widget {
-  padding: 0.2em;
-}
-
-.defaultview .field .widget span {
-  font-size: 0.8em;
-  font-weight: bold !important;
 }

@@ -1,0 +1,16 @@
+<div id="stylized" class="defaultview">
+  <h1 tal:condition="view/label" tal:content="view/label" />
+  <div class="formspace">
+    <div class="field row"
+	 tal:repeat="widget view/widgets/values">
+      <label tal:condition="widget/label"
+	     tal:attributes="for widget/id">
+	<span i18n:translate=""
+	      tal:replace="widget/label">label</span>
+	<span class="small" tal:content="widget/field/description" />
+      </label>
+      <div class="widget" tal:content="structure widget/render" />
+    </div>
+    <div class="colophon">&nbsp;</div>
+  </div>
+</div>
