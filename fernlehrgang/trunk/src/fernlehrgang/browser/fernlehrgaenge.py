@@ -91,10 +91,13 @@ class AddFernlehrgang(PageAddForm):
 
 
 class Index(models.DefaultView):
-    grok.context(IFernlehrgang)
-    grok.title(u"View")
-    label = "View"
+    grok.context(IFernlehrgang)   
     fields = Fields(IFernlehrgang).omit('id')
+
+    @property
+    def label(self):
+        return u"Fernlehrgang: %s (%s)" % (
+            self.context.titel, self.context.id)
 
 
 class Edit(models.Edit):
