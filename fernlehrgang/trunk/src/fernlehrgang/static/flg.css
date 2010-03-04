@@ -467,11 +467,9 @@ div #stylized .error {
 
 .defaultview .formspace .widget span {
   font-size: 1.2em;
-  background-color: white;
   display: block !important;
   width: 250px !important;
   padding: 0.2em 0.5em;
-  border: 1px solid #ddd;
   color: #444;
   font-style: italic;
 }

@@ -1,6 +1,6 @@
 <html>
  <body>
-    <div metal:use-macro="macro:form">
+    <div metal:use-macro="macro:completeform">
       <div metal:use-macro="macro:widget-rows" />
     </div>
 

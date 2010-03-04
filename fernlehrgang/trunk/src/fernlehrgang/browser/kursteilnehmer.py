@@ -28,7 +28,7 @@ from dolmen.app.layout import models, ContextualMenuEntry
 grok.templatedir('templates')
 
 @menuentry(NavigationMenu)
-class KursteilnehmerListing(DeleteFormTablePage, ContextualMenuEntry):
+class KursteilnehmerListing(DeleteFormTablePage):
     grok.context(IFernlehrgang)
     grok.name('kursteilnehmer_listing')
     grok.title("Kursteilnehmer verwalten")
@@ -58,6 +58,7 @@ class KursteilnehmerListing(DeleteFormTablePage, ContextualMenuEntry):
             self.request.response.redirect(self.nextURL)
             return ""
         return self.renderFormTable()
+    render.base_method = True    
 
     @button.buttonAndHandler(u'Kursteilnehmer anlegen')
     def handleChangeWorkflowState(self, action):
@@ -87,8 +88,8 @@ class AddKursteilnehmer(PageAddForm):
 class Index(models.DefaultView):
     grok.context(IKursteilnehmer)
     grok.title(u'View')
-    title = u"Unternehmen"
-    description = u"Details zu Ihrem Unternehmen"
+    title = label = u"Kursteilnehmer"
+    description = u"Details zum Kursteilnehmer"
 
     fields = Fields(IKursteilnehmer).omit(id)
 

@@ -49,7 +49,7 @@ class AddAntwort(PageAddForm):
 class Index(models.DefaultView):
     grok.context(IAntwort)
     grok.title(u'Index')
-    title = u"Antworten"
+    title = label = u"Antwort"
     description = u"Hier können Sie Deteils zu Ihren Antworten ansehen."
 
     fields = Fields(IAntwort).omit('id')

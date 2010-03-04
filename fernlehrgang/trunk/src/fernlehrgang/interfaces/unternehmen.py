@@ -22,3 +22,38 @@ class IUnternehmen(Interface):
         required = True
         )
 
+    name1 = TextLine(
+        title = u'Name2',
+        description = u'Name des Unternehmens',
+        required = True
+        )
+
+    name2 = TextLine(
+        title = u'Name2',
+        description = u'Name des Unternehmens',
+        required = True
+        )
+
+    strasse = TextLine(
+        title = u'Strasse',
+        description = u'Strasse des Unternehmens',
+        required = True
+        )
+
+    plz = TextLine(
+        title = u'Postleitzahl',
+        description = u'Postleitzahl des Unternehmens',
+        required = True
+        )
+
+    ort = TextLine(
+        title = u'Ort',
+        description = u'Ort des Unternehmens',
+        required = True
+        )
+
+    plz = TextLine(
+        title = u'Postleitzahl',
+        description = u'Postleitzahl des Unternehmens',
+        required = True
+        )

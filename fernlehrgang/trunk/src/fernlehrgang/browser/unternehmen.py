@@ -78,17 +78,17 @@ class Index(models.DefaultView):
     fields = Fields(IUnternehmen)
 
 
-class Edit(models.Edit):
-    grok.context(IUnternehmen)
-    grok.name('edit')
-
-    fields = Fields(IUnternehmen).omit('id')
-
-    @button.buttonAndHandler(u'Unternehmen entfernen')
-    def handleDeleteFernlehrgang(self, action):
-        session = Session()
-        session.delete(self.context)
-        self.redirect(self.url(self.context.__parent__)) 
+#class Edit(models.Edit):
+#    grok.context(IUnternehmen)
+#    grok.name('edit')
+#
+#    fields = Fields(IUnternehmen).omit('id')
+#
+#    @button.buttonAndHandler(u'Unternehmen entfernen')
+#    def handleDeleteFernlehrgang(self, action):
+#        session = Session()
+#        session.delete(self.context)
+#        self.redirect(self.url(self.context.__parent__)) 
 
 
 @menuentry(AddMenu)
@@ -125,7 +125,7 @@ class Mitgliedsnummer(LinkColumn):
     weight = 10
     header = u"Mitgliedsnummer"
 
-    def getContent(self, item):
+    def getLinkContent(self, item):
         return item.mnr
 
 
