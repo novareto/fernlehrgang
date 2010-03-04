@@ -37,8 +37,9 @@ class UnternehmenSuche(FormTablePage):
         session = Session()
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
-        sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
-        sql = sql.filter(Teilnehmer.unternehmen_mnr == data.get('name'))
+        sql = sql.filter(Teilnehmer.unternehmen_id == Unternehmen.id)
+        sql = sql.filter(Unternehmen.mnr == data.get('name'))
+        print sql
         for kursteilnehmer, teilnehmer, unternehmen in sql.all():
             results = ICalculateResults(kursteilnehmer).summary()
             rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,

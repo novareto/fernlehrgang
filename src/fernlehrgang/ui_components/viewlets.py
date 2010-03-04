@@ -53,7 +53,6 @@ class ObjectActionMenu(viewlets.ContextualActions):
         return MenuViewlet.get_actions(self, context)
 
 
-
 class AddMenu(menu.Menu):
     grok.name('uvcsite-addmenu')
     grok.context(Interface)

@@ -77,10 +77,13 @@ class Unternehmen(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:mnr")
 
-    __tablename__ = 'unternehmen'
+    __tablename__ = 'adr'
 
-    mnr = Column(String(12), primary_key=True)
+    id = Column("ID", Numeric, primary_key=True)
+    mnr = Column(String(12))
     name = Column("NAME1", String(32))
+    typ = Column("TYP", String(3))
+    plz = Column("PLZ", String(10))
 
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
@@ -114,7 +117,7 @@ class Teilnehmer(Base, RDBMixin):
     ort = Column(String(50))
     email = Column(String(50))
 
-    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr'))
+    unternehmen_id = Column(Numeric, ForeignKey('adr.ID'))
 
     unternehmen = relation(Unternehmen,
                            backref = backref('teilnehmer', order_by=id))
@@ -122,13 +125,13 @@ class Teilnehmer(Base, RDBMixin):
     def __repr__(self):
         return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
 
-    def factory(id, mnr):
+    def factory(id, unternehmen_id):
         session = Session()
         return session.query(Teilnehmer).filter(
-            and_(Teilnehmer.id == id, Teilnehmer.unternehmen_mnr == mnr)).one()
+            and_(Teilnehmer.id == id, Teilnehmer.unternehmen_id == unternehmen_id)).one()
 
     def arguments(teilnehmer):
-        return dict(id = teilnehmer.id, mnr = teilnehmer.unternehmen_mnr)
+        return dict(id = teilnehmer.id, unternehmen_id = teilnehmer.unternehmen_id)
 
 
 class Lehrheft(Base, RDBMixin):

@@ -45,7 +45,7 @@ class UnternehmenListing(DeleteFormTablePage):
     def values(self):
         root = getSite()
         session = Session()
-        for unternehmen in session.query(Unternehmen).all():
+        for unternehmen in session.query(Unternehmen).filter(Unternehmen.plz == "91438").all():
             locate(root, unternehmen, DefaultModel)
             yield unternehmen 
 
