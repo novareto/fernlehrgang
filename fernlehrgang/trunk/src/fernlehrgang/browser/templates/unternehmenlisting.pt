@@ -2,4 +2,5 @@
   <h1 tal:content="view/title"></h1>
    <p class="description" tal:content="view/description"/>
    <span tal:replace="structure view/renderFormTable"/>
+   <span tal:replace="structure view/renderBatch"/>
 </div>
