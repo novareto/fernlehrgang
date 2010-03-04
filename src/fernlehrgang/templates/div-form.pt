@@ -1,4 +1,5 @@
-<div id="stylized" class="myform">
+<div id="stylized" class="myform"
+     metal:define-macro="completeform">
 <div class="form-header">
   <h1 tal:condition="view/label|nothing"
       tal:content="view/label">

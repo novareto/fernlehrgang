@@ -56,6 +56,7 @@ class LehrhefteListing(DeleteFormTablePage):
             self.request.response.redirect(self.nextURL)
             return ""
         return self.renderFormTable()
+    render.base_method = True    
 
     @button.buttonAndHandler(u'Lehrheft anlegen')
     def handleChangeWorkflowState(self, action):
@@ -85,9 +86,9 @@ class AddLehrheft(PageAddForm):
 
 class Index(models.DefaultView):
     grok.context(ILehrheft)
-
-    title = u"Unternehmen"
-    description = u"Details zu Ihrem Unternehmen"
+    grok.name('index')
+    title = label = u"Lehrheft"
+    description = u"Details zu Ihrem Lehrheft"
     fields = Fields(ILehrheft).omit(id)
 
 

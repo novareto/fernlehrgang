@@ -55,10 +55,12 @@ class TeilnehmerListing(DeleteFormTablePage):
             self.request.response.redirect(self.nextURL)
             return ""
         return self.renderFormTable()
+    render.base_method = True
 
     @button.buttonAndHandler(u'Teilnehmer anlegen')
     def handleChangeWorkflowState(self, action):
          self.redirect(self.url(self.context, 'addteilnehmer')) 
+
 
 @menuentry(AddMenu)
 class AddTeilnehmer(PageAddForm):

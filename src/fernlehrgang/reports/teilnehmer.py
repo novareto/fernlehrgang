@@ -25,6 +25,8 @@ grok.templatedir('templates')
 class UnternehmenSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
     grok.title(u'Unternehmen suchen')
+    title = label = u"Unternehmen Suchen"
+    description = u"Bitte geben Sie das Unternehmen ein, dass Sie suchen möchten"
     ignoreContext = True
     results = []
 
@@ -39,7 +41,6 @@ class UnternehmenSuche(FormTablePage):
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         sql = sql.filter(Teilnehmer.unternehmen_id == Unternehmen.id)
         sql = sql.filter(Unternehmen.mnr == data.get('name'))
-        print sql
         for kursteilnehmer, teilnehmer, unternehmen in sql.all():
             results = ICalculateResults(kursteilnehmer).summary()
             rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,

@@ -75,32 +75,37 @@ class Fernlehrgang(Base, RDBMixin):
 class Unternehmen(Base, RDBMixin):
     grok.implements(IUnternehmen)
     grok.context(IFernlehrgangApp)
-    traject.pattern("unternehmen/:mnr")
+    traject.pattern("unternehmen/:unternehmen_id")
 
     __tablename__ = 'adr'
 
     id = Column("ID", Numeric, primary_key=True)
-    mnr = Column(String(12))
-    name = Column("NAME1", String(32))
+    mnr = Column("MNR", String(12))
     typ = Column("TYP", String(3))
+    name = Column("NAME1", String(32))
+    name2 = Column("NAME2", String(32))
+    name3 = Column("NAME3", String(32))
+    str = Column("STR", String(70))
+    plz = Column("PLZ", String(10))
+    ort = Column("ORT", String(30))
     plz = Column("PLZ", String(10))
 
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
 
-    def factory(mnr):
+    def factory(unternehmen_id):
         session = Session()
         return session.query(Unternehmen).filter(
-            Unternehmen.mnr == mnr).one()
+            Unternehmen.id == unternehmen_id).one()
 
     def arguments(unternehmen):
-        return dict(mnr = unternehmen.mnr)
+        return dict(unternehmen_id = unternehmen.id)
 
 
 class Teilnehmer(Base, RDBMixin):
     grok.implements(ITeilnehmer)
     grok.context(IFernlehrgangApp)
-    traject.pattern("unternehmen/:mnr/teilnehmer/:id")
+    traject.pattern("unternehmen/:unternehmen_id/teilnehmer/:id")
 
     __tablename__ = 'teilnehmer'
 

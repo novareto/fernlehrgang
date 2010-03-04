@@ -50,7 +50,7 @@ class AddFrage(PageAddForm):
 class Index(models.DefaultView):
     grok.context(IFrage)
     grok.title(u'View')
-    title = u"Fragen"
+    title = label = u"Frage"
     description = u"Hier können Sie Deteils zu Ihren Fragen ansehen."
 
     fields = Fields(IFrage).omit('id')
