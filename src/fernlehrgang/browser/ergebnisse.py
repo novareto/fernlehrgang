@@ -21,10 +21,12 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from fernlehrgang.config import POSTVERSANDSPERRE
+from dolmen.menu import menuentry
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
 
 grok.templatedir('templates')
 
-
+@menuentry(NavigationMenu)
 class Resultate(Page):
     grok.context(IKursteilnehmer)
     grok.name('resultate')

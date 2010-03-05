@@ -37,6 +37,7 @@ class KursteilnehmerListing(DeleteFormTablePage):
     title = u"Kursteilnehmer"
     description = u"Hier können Sie die Kursteilnehmer zu Ihrem Fernlehrgang bearbeiten."
     extends(DeleteFormTablePage)
+    cssClasses = {'table': 'tablesorter myTable'}
 
     status = None
 

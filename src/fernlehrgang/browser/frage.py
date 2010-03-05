@@ -80,6 +80,7 @@ class FrageListing(DeleteFormTablePage):
     title = u"Fragen"
     description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
     extends(DeleteFormTablePage)
+    cssClasses = {'table': 'tablesorter myTable'}
 
     status = None
 

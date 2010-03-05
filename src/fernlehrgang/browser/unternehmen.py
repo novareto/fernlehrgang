@@ -78,19 +78,6 @@ class Index(models.DefaultView):
     fields = Fields(IUnternehmen)
 
 
-#class Edit(models.Edit):
-#    grok.context(IUnternehmen)
-#    grok.name('edit')
-#
-#    fields = Fields(IUnternehmen).omit('id')
-#
-#    @button.buttonAndHandler(u'Unternehmen entfernen')
-#    def handleDeleteFernlehrgang(self, action):
-#        session = Session()
-#        session.delete(self.context)
-#        self.redirect(self.url(self.context.__parent__)) 
-
-
 @menuentry(AddMenu)
 class AddUnternehmen(PageAddForm):
     grok.context(IFernlehrgangApp)

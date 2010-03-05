@@ -10,7 +10,7 @@ from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from megrok.layout import Page as basePage
+from megrok.layout import Page 
 from z3c.menu.simple.menu import GlobalMenuItem
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
@@ -24,6 +24,3 @@ class MenuItem(grok.Viewlet, GlobalMenuItem):
     def render(self):
         return self.template()
 
-
-class Page(basePage, grok.View):
-    grok.baseclass()
