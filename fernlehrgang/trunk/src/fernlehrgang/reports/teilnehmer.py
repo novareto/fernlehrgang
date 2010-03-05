@@ -30,6 +30,7 @@ class UnternehmenSuche(FormTablePage):
     ignoreContext = True
     results = []
 
+    cssClasses = {'table': 'tablesorter myTable'}
     fields = Fields(IUnternehmen).select('name')
 
     @button.buttonAndHandler(u'Suchen')

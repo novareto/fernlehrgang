@@ -578,3 +578,7 @@ dl.foldable li a:hover {
   color: #000;
   background-color: #ddd;
 }
+
+dl#footer dt {
+    display: none;
+}

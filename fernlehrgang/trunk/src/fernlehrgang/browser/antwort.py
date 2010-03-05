@@ -79,6 +79,7 @@ class AntwortListing(DeleteFormTablePage):
     title = u"Antworten"
     description = u"Hier können Sie die Antworten zu Ihren Lehrheften bearbeiten."
     extends(DeleteFormTablePage)
+    cssClasses = {'table': 'tablesorter myTable'}
 
     status = None
 

@@ -35,6 +35,7 @@ class LehrhefteListing(DeleteFormTablePage):
     title = u"Lehrhefte"
     description = u"Hier können Sie die Lehrhefte zu Ihrem Fernlehrgang bearbeiten."
     extends(DeleteFormTablePage)
+    cssClasses = {'table': 'tablesorter myTable'}
 
     status = None
 
