@@ -84,7 +84,7 @@ class AddTeilnehmer(PageAddForm):
 
 class Index(models.DefaultView):
     grok.context(ITeilnehmer)
-    title = u"Unternehmen"
+    title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(ITeilnehmer).omit(id)
@@ -94,6 +94,7 @@ class Edit(models.Edit):
     grok.context(ITeilnehmer)
     grok.name('edit')
     extends(PageEditForm)
+    title = label = u"Teilnehmer"
 
     fields = Fields(ITeilnehmer).omit('id')
 

@@ -12,15 +12,15 @@ from zope.interface import Interface
 from uvc.layout.layout import IUVCLayer
 from fernlehrgang.models import Fernlehrgang
 from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
-from uvc.layout.interfaces import IAboveContent, IFooter
+from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
 
 
-class GlobalMenu(grok.Viewlet):
-    grok.name('uvcsite.globalmenu')
+class GlobalMenuViewlet(grok.Viewlet):
     grok.context(Interface)
-    grok.viewletmanager(master.Top)
+    grok.viewletmanager(IPageTop)
     template = grok.PageTemplateFile('templates/globalmenu.pt')
     grok.order(1)
+    flgs = []
 
     css = ['blue', 'orange', 'violet', 'green', 'brown', 'purple']
 
@@ -38,7 +38,6 @@ class GlobalMenu(grok.Viewlet):
 
     def update(self):
         self.flgs = self.getContent()
-
 
 
 class ObjectActionMenu(viewlets.ContextualActions):
@@ -90,21 +89,6 @@ class NavigationMenuViewlet(grok.Viewlet):
         menu.update()
         return menu.render()
 
-class FooterMenu(menu.Menu):
-    grok.name('footer')
-    grok.title('Footer')
-    grok.context(Interface)
-    menu_class = u'menu'
-
-
-class FooterMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.viewletmanager(IFooter)
-    
-    def render(self):
-        menu = FooterMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
 
 class MenuTemplate(pagetemplate.PageTemplate):
     pagetemplate.view(IAboveContent)

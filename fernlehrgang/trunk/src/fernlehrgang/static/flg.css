@@ -84,16 +84,6 @@ textarea {
 }       
    
 
-/* Description */
-
-.right-col P.description{
-        font-size: 14px;
-        margin: 10px 5px 0px 0px;
-        padding: 0px;
-        line-height: 19px;
-        float: none;
-}
-
 /* Table */
 
 table.tablesorter {
@@ -137,57 +127,6 @@ table.tablesorter thead tr .checkBox {
   width: 1px;
 }
 
-
-/* Portal Messages */
-
-dl.portalMessage {
-    font-size: &dtml-fontSmallSize;;
-    background-color: #ffffe3;
-    border: 1px solid #996;
-}
-dl.portalMessage a {
-    color: black;
-    border: none;
-    text-decoration: underline;
-}
-dl.portalMessage dt {
-    background-color: #996;
-    font-weight: bold;
-    float: left;
-    margin: 0 0.5em 0 0;
-    padding: 0.5em 0.75em;
-    color: White;
-    line-height: 1.25em;
-}
-dl.portalMessage dd {
-    padding: 0.5em 0.5em;
-    margin: 0;
-    line-height: 1.25em;
-}
-dl.warning {
-    border-color: #d80;
-}
-dl.warning dt {
-    background-color: #d80;
-}
-dl.error {
-    border-color: #d00;
-}
-dl.error dt {
-    background-color: #d00;
-}
-dl.warning {
-    border-color: #d80;
-}
-dl.warning dd {
-    background-color: #fd7;
-}
-dl.error {
-    border-color: #d80;
-}
-dl.error dd {
-    background-color: #fd7;
-}
 
 
 /* Document Actions" */
@@ -581,4 +520,9 @@ dl.foldable li a:hover {
 
 dl#footer dt {
     display: none;
+}
+
+#page-body {
+    margin-bottom:2em;
+    margin-left:0;
 }
