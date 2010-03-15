@@ -12,7 +12,7 @@ from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields
 from dolmen.app.layout import models
 from zope.interface import Interface
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import FooterMenu
+from uvc.layout.interfaces import IFooter
 from megrok.layout import Page
 
 grok.templatedir('templates')
@@ -28,7 +28,7 @@ class Index(models.Index):
     description = u"Beschreibugn Fernlehrgang"
 
 
-@menuentry(FooterMenu)
+@menuentry(IFooter)
 class Kontakt(Page):
     grok.context(Interface)
     grok.title(u"Kontakt")
