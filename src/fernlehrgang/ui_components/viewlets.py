@@ -13,6 +13,17 @@ from uvc.layout.layout import IUVCLayer
 from fernlehrgang.models import Fernlehrgang
 from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
+from uvc.layout.menus import PersonalPreferences 
+
+
+class UserName(menu.Entry):
+    grok.name('myname')
+    grok.context(Interface)
+    menu.menu(PersonalPreferences)
+    grok.order(10)
+
+    def render(self):
+        return '<a href="#"> %s </a>' % self.request.principal.description or self.request.principal.id
 
 
 class GlobalMenuViewlet(grok.Viewlet):

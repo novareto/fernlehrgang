@@ -31,6 +31,7 @@ class FernlehrgangListing(DeleteFormTablePage):
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
+    grok.require('uvc.managefernlehrgang')
     extends(DeleteFormTablePage)
     
     title = u"Fernlehrgänge"

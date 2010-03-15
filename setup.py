@@ -38,6 +38,7 @@ setup(name='fernlehrgang',
                         'elementtree',
                         'dolmen.app.layout',
                         'dolmen.app.viewselector',
+                        'z3c.securitytool',
                         # Add extra requirements here
                         ],
       entry_points = """
