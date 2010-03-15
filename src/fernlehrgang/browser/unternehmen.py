@@ -8,8 +8,6 @@ from grok import url, getSite
 from z3c.saconfig import Session
 from dolmen.menu import menuentry
 from megrok.traject import locate
-from fernlehrgang.utils import Page
-from fernlehrgang.utils import MenuItem 
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Unternehmen 
 from megrok.traject.components import DefaultModel

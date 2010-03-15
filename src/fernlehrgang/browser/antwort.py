@@ -9,9 +9,8 @@ from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
 from dolmen.app.layout import models
-from fernlehrgang.utils import Page
+from megrok.layout import Page
 from fernlehrgang.models import Antwort, Frage 
-from fernlehrgang.utils import MenuItem
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort

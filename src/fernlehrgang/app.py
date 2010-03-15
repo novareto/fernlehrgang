@@ -4,7 +4,6 @@
 
 import grok
 
-from fernlehrgang import Page
 from z3c.saconfig import Session
 from megrok.traject import locate
 from fernlehrgang.models import Fernlehrgang
@@ -14,6 +13,7 @@ from dolmen.app.layout import models
 from zope.interface import Interface
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import FooterMenu
+from megrok.layout import Page
 
 grok.templatedir('templates')
 
