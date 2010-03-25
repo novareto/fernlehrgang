@@ -29,8 +29,12 @@ class TeilnehmerListing(DeleteFormTablePage):
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
+
+    template = grok.PageTemplateFile('templates/base_listing.pt')
+
     title = u"Teilnehmer"
     description = u"Hier können Sie die Teilnehmer zu Ihrem Fernlehrgang bearbeiten."
+
     extends(DeleteFormTablePage)
     cssClasses = {'table': 'tablesorter myTable'}
 

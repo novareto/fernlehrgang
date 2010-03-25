@@ -2,16 +2,19 @@
   <h1 tal:content="view/title"></h1>
    <p class="description" tal:content="view/description"/>
 
-    <fieldset tal:define="summary view/getSummary">
-       <legend> Auswertung </legend>
-        <h3>Folgende Punktzahl ist nötig um den Kurs zu bestehen: <span tal:replace="summary/points"/></h3> 
-        <h3>Erreichte Anzahl von Punkte: <span tal:replace="summary/resultpoints"/></h3> 
-        <h3>Bemerkung: <span tal:replace="summary/comment"/></h3> 
-    </fieldset>
+<fieldset>
+
+    <div tal:define="summary view/getSummary">
+       <h3> Auswertung </h3>
+         <ul>
+          <li>Folgende Punktzahl ist nötig um den Kurs zu bestehen: <span tal:replace="summary/points"/></li> 
+          <li>Erreichte Anzahl von Punkte: <span tal:replace="summary/resultpoints"/></li> 
+          <li>Bemerkung: <span tal:replace="summary/comment"/></li> 
+    </div>
 
      
     <div>
-        <h2 class="current">Übersicht Lehrhefte</h2> 
+        <h3 class="current">Übersicht Lehrhefte</h3> 
         <div class="pane" style="display:block">
           <table class="myTable">
             <tr>
@@ -29,7 +32,7 @@
     </div>
    
      <br> <br>
-    <h2> Die einzelnen Lehrhefte </h2>
+    <h3> Die einzelnen Lehrhefte </h3>
      <div id="accordion">
       <div tal:repeat="lh results">
         <h2> <span tal:content="lh/titel" /> </h2> 
@@ -51,4 +54,5 @@
         </div> 
       </div>
     </div>
+  </fieldset>  
 </div>

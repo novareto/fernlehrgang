@@ -24,6 +24,46 @@ from fernlehrgang.ui_components import AddMenu, NavigationMenu
 
 grok.templatedir('templates')
 
+@menuentry(NavigationMenu)
+class FrageListing(DeleteFormTablePage):
+    grok.context(ILehrheft)
+    grok.name('frage_listing')
+    grok.title(u'Fragen verwalten')
+
+    template = grok.PageTemplateFile('templates/base_listing.pt')
+
+    title = u"Fragen"
+    description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
+
+    extends(DeleteFormTablePage)
+    cssClasses = {'table': 'tablesorter myTable'}
+
+    status = None
+
+    @property
+    def values(self):
+        root = getSite()
+        for x in self.context.fragen:
+            locate(root, x, DefaultModel)
+        return self.context.fragen
+
+    def executeDelete(self, item):
+        session = Session()
+        session.delete(item)
+        self.nextURL = self.url(self.context, 'frage_listing')
+
+    def render(self):
+        if self.nextURL is not None:
+            self.flash(u'Die Objecte wurden gelöscht')
+            self.request.response.redirect(self.nextURL)
+            return ""
+        return self.renderFormTable()
+    render.base_method = True    
+
+    @button.buttonAndHandler(u'Frage anlegen')
+    def handleChangeWorkflowState(self, action):
+         self.redirect(self.url(self.context, 'addfrage')) 
+
 
 @menuentry(AddMenu)
 class AddFrage(PageAddForm):
@@ -69,42 +109,6 @@ class Edit(models.Edit):
         session = Session()
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
-
-@menuentry(NavigationMenu)
-class FrageListing(DeleteFormTablePage):
-    grok.context(ILehrheft)
-    grok.name('frage_listing')
-    grok.title(u'Fragen verwalten')
-    title = u"Fragen"
-    description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
-    extends(DeleteFormTablePage)
-    cssClasses = {'table': 'tablesorter myTable'}
-
-    status = None
-
-    @property
-    def values(self):
-        root = getSite()
-        for x in self.context.fragen:
-            locate(root, x, DefaultModel)
-        return self.context.fragen
-
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.nextURL = self.url(self.context, 'frage_listing')
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True    
-
-    @button.buttonAndHandler(u'Frage anlegen')
-    def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addfrage')) 
 
 
 ### Spalten

@@ -31,10 +31,13 @@ class KursteilnehmerListing(DeleteFormTablePage):
     grok.name('kursteilnehmer_listing')
     grok.title("Kursteilnehmer verwalten")
     grok.order(10)
+
+    template = grok.PageTemplateFile('templates/base_listing.pt')
+    extends(DeleteFormTablePage)
     
     title = u"Kursteilnehmer"
     description = u"Hier können Sie die Kursteilnehmer zu Ihrem Fernlehrgang bearbeiten."
-    extends(DeleteFormTablePage)
+
     cssClasses = {'table': 'tablesorter myTable'}
 
     status = None
@@ -66,7 +69,7 @@ class KursteilnehmerListing(DeleteFormTablePage):
 @menuentry(AddMenu)
 class AddKursteilnehmer(PageAddForm):
     grok.context(IFernlehrgang)
-    grok.title(u'Kursteilnehmer anlegen')
+    grok.title(u'Kursteilnehmer')
     title = u'Kursteilnehmer'
     label = u'Kursteilnehmer anlegen'
     description = u'Kursteilnehmer anlegen'
@@ -81,6 +84,7 @@ class AddKursteilnehmer(PageAddForm):
         self.context.kursteilnehmer.append(object)
 
     def nextURL(self):
+        self.flash(u'Der Kursteilnehmer wurde erfolgreich angemeldet')
         return self.url(self.context, 'kursteilnehmer_listing')
 
 

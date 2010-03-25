@@ -66,7 +66,7 @@ input:focus, textarea:focus, select:focus{
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border: 1px solid #ddd;
-  background: #f9f9f9;
+  background: #FFFFE0;
 }
 
 input[type="submit"] {
@@ -168,7 +168,7 @@ table.tablesorter thead tr .checkBox {
     -moz-background-origin:padding;
     background:#333333 url(h300.png) repeat scroll 0 0;
     border:1px solid #333333;
-    width:700px;
+    width:100%;
 }
 
 
@@ -216,7 +216,7 @@ table.tablesorter thead tr .checkBox {
     color:#6E6E6E;
     margin-left:10px;
     margin-top:5px;
-    width:420px;
+    width:900px;
     font-size:11px
 }
 
@@ -249,6 +249,7 @@ dl#navigation {
   font-size: 0.75em;
   line-height: 1.7em;
   margin: 1.5em 0 1em 0;
+  margin-top: 2em;
   padding-left: 2em;;
   border-bottom: 1px solid #cbcbcb;
   float: left;
@@ -525,6 +526,7 @@ dl#footer dt {
 
 #page-body {
     margin-bottom:2em;
+    margin-top:2em;
     margin-left:0;
 }
 
@@ -542,4 +544,13 @@ dl#footer dt {
 
 #page-body .description {
    margin-bottom: 2em;
+}
+
+.info-message {
+ background-color:#F4F4F4;
+ border:1px solid #DDDDDD;
+ font-size:90%;
+ margin-top:2em;
+ margin-bottom:2em;
+ margin-left:0em;
 }

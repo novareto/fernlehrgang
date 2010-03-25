@@ -34,6 +34,8 @@ class FernlehrgangListing(DeleteFormTablePage):
     grok.require('uvc.managefernlehrgang')
     extends(DeleteFormTablePage)
     
+    template = grok.PageTemplateFile('templates/base_listing.pt')
+
     title = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgaenge der BG-Verwalten"
 
@@ -51,6 +53,7 @@ class FernlehrgangListing(DeleteFormTablePage):
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
+        self.flash(u'Der Fernlehrgang wurde erfolgreich gelöscht.')
         self.nextURL = self.url(self.context, 'fernlehrgang_listing')
 
     def render(self):
@@ -84,7 +87,7 @@ class AddFernlehrgang(PageAddForm):
         session.add(object)
 
     def nextURL(self):
-        self.flash(u'Der Fernlehrgang wurde erfolgreich angelegt')
+        self.flash(u'Der Fernlehrgang wurde erfolgreich angelegt.')
         url = self.url(self.context)
         return url
 
@@ -110,6 +113,7 @@ class Edit(models.Edit):
     def handleDeleteFernlehrgang(self, action):
         session = Session()
         session.delete(self.context)
+        self.flash(u'Der Fernlehrgang wurde erfolgreich gelöscht.')
         self.redirect(self.url(self.context.__parent__)) 
 
 ### Spalten

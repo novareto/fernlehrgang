@@ -30,8 +30,12 @@ class LehrhefteListing(DeleteFormTablePage):
     grok.context(IFernlehrgang)
     grok.name('lehrhefte_listing')
     grok.title(u'Lehrhefte verwalten')
+
+    template = grok.PageTemplateFile('templates/base_listing.pt')
+
     title = u"Lehrhefte"
     description = u"Hier können Sie die Lehrhefte zu Ihrem Fernlehrgang bearbeiten."
+
     extends(DeleteFormTablePage)
     cssClasses = {'table': 'tablesorter myTable'}
 
@@ -47,6 +51,7 @@ class LehrhefteListing(DeleteFormTablePage):
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
+        self.flash(u'Das Lehrheft wurde erfolgreich gelöscht.')
         self.nextURL = self.url(self.context, 'lehrhefte_listing')
 
     def render(self):
@@ -80,6 +85,7 @@ class AddLehrheft(PageAddForm):
         self.context.lehrhefte.append(object)
 
     def nextURL(self):
+        self.flash(u'Das Lehrheft wurde erfolgreich angelegt')
         return self.url(self.context, 'lehrhefte_listing')
 
 
@@ -102,6 +108,7 @@ class Edit(models.Edit):
     def handleDeleteFernlehrgang(self, action):
         session = Session()
         session.delete(self.context)
+        self.flash(u'Das Lehrheft wurde erfolgreich gelöscht.')
         self.redirect(self.url(self.context.__parent__)) 
 
 ## Spalten

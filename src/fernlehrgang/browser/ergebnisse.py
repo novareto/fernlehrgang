@@ -28,7 +28,9 @@ grok.templatedir('templates')
 @menuentry(NavigationMenu)
 class Resultate(Page):
     grok.context(IKursteilnehmer)
+    grok.title('Ergebnisse')
     grok.name('resultate')
+
     title = u"Resultate"
     description = u"Hier Können Sie die Resultate des Kursteilnehmers einsehen"
 

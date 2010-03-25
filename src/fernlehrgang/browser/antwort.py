@@ -26,9 +26,51 @@ from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 grok.templatedir('templates')
 
 
+@menuentry(NavigationMenu)
+class AntwortListing(DeleteFormTablePage):
+    grok.context(IKursteilnehmer)
+    grok.name('antwort_listing')
+    grok.title(u'Antworten verwalten')
+
+    template = grok.PageTemplateFile('templates/base_listing.pt')
+
+    title = u"Antworten"
+    description = u"Hier können Sie die Antworten zu Ihren Lehrheften bearbeiten."
+
+    extends(DeleteFormTablePage)
+    cssClasses = {'table': 'tablesorter myTable'}
+
+    status = None
+
+    @property
+    def values(self):
+        root = getSite()
+        for x in self.context.antworten:
+            locate(root, x, DefaultModel)
+        return self.context.antworten
+
+    def executeDelete(self, item):
+        session = Session()
+        session.delete(item)
+        self.nextURL = self.url(self.context, 'antwort_listing')
+
+    def render(self):
+        if self.nextURL is not None:
+            self.flash(u'Die Objecte wurden gelöscht')
+            self.request.response.redirect(self.nextURL)
+            return ""
+        return self.renderFormTable()
+    render.base_method = True    
+
+    @button.buttonAndHandler(u'Antwort anlegen')
+    def handleChangeWorkflowState(self, action):
+         self.redirect(self.url(self.context, 'addantwort')) 
+
+
 @menuentry(AddMenu)
 class AddAntwort(PageAddForm):
     grok.context(IKursteilnehmer)
+    grok.title(u'Antwort')
     title = u'Antwort'
     label = u'Antwort anlegen'
 
@@ -69,42 +111,6 @@ class Edit(models.Edit):
         session = Session()
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
-
-@menuentry(NavigationMenu)
-class AntwortListing(DeleteFormTablePage):
-    grok.context(IKursteilnehmer)
-    grok.name('antwort_listing')
-    grok.title(u'Antworten verwalten')
-    title = u"Antworten"
-    description = u"Hier können Sie die Antworten zu Ihren Lehrheften bearbeiten."
-    extends(DeleteFormTablePage)
-    cssClasses = {'table': 'tablesorter myTable'}
-
-    status = None
-
-    @property
-    def values(self):
-        root = getSite()
-        for x in self.context.antworten:
-            locate(root, x, DefaultModel)
-        return self.context.antworten
-
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.nextURL = self.url(self.context, 'antwort_listing')
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True    
-
-    @button.buttonAndHandler(u'Antwort anlegen')
-    def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addantwort')) 
 
 
 class JSON_Views(grok.JSON):
