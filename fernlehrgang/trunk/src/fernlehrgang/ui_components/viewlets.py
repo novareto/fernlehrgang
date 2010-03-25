@@ -45,10 +45,11 @@ class GlobalMenuViewlet(grok.Viewlet):
             url = "%s/fernlehrgang/%s" % (
                 self.view.application_url(), fernlehrgang.id)
             rc.append(dict(title=fernlehrgang.jahr, css=self.css[i], url=url))
-        return rc    
+        return rc
 
     def update(self):
         self.flgs = self.getContent()
+        self.flgs.reverse()
 
 
 class ObjectActionMenu(viewlets.ContextualActions):
@@ -67,7 +68,7 @@ class AddMenu(menu.Menu):
     grok.name('uvcsite-addmenu')
     grok.context(Interface)
     grok.view(IDisplayView)
-    grok.title('Add')
+    grok.title(u'Hinzufügen')
     
     menu_class = u"foldable menu"
 

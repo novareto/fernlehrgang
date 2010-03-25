@@ -17,21 +17,29 @@ from zope.interface import Interface
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.menu import menuentry
+from zope.schema import TextLine
 
 
 grok.templatedir('templates')
+
+class IUnternehmenSearch(Interface):
+
+    mnr = TextLine(
+        title = u"Mitgliedsnummer",
+        description = u"Mitgliedsnummer des Unternehmens",
+        )
 
 @menuentry(NavigationMenu)
 class UnternehmenSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
     grok.title(u'Unternehmen suchen')
     title = label = u"Unternehmen Suchen"
-    description = u"Bitte geben Sie das Unternehmen ein, dass Sie suchen möchten"
+    description = u"Bitte geben Sie Mitgliedsnummer für das Unternehmen ein, dass Sie suchen möchten"
     ignoreContext = True
     results = []
 
     cssClasses = {'table': 'tablesorter myTable'}
-    fields = Fields(IUnternehmen).select('name')
+    fields = Fields(IUnternehmenSearch)
 
     @button.buttonAndHandler(u'Suchen')
     def handle_search(self, action):
@@ -41,7 +49,7 @@ class UnternehmenSuche(FormTablePage):
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         sql = sql.filter(Teilnehmer.unternehmen_id == Unternehmen.id)
-        sql = sql.filter(Unternehmen.mnr == data.get('name'))
+        sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
         for kursteilnehmer, teilnehmer, unternehmen in sql.all():
             results = ICalculateResults(kursteilnehmer).summary()
             rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,
