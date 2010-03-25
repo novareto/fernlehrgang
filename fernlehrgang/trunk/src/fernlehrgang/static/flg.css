@@ -310,7 +310,7 @@ dl#navigation ul li.selected a {
 /* ----------- form ----------- */
 
 #stylized {
-  width: 900px;
+  padding-top: 2em;
 }
 
 #stylized .form-header {
@@ -319,10 +319,11 @@ dl#navigation ul li.selected a {
 
 #stylized .formspace,
 #stylized form {
+ -moz-border-radius:10px 10px 10px 10px;
   margin: 1em auto;
-  width: 750px;
+  width: 900px;
   border: 2px solid #ddd;
-  background-color: #f4f4f4;
+  background-color: #F4F4F4;
 }
 
 #stylized .viewspace {
@@ -525,4 +526,20 @@ dl#footer dt {
 #page-body {
     margin-bottom:2em;
     margin-left:0;
+}
+
+#uvc-user-preferences {
+   display: none
+}
+
+.menu dt {
+    display:block;
+}
+
+#uvcsite-footer dt {
+    display:none;
+}
+
+#page-body .description {
+   margin-bottom: 2em;
 }
