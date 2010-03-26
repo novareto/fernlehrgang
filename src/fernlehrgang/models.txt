@@ -59,9 +59,9 @@ Fernlehrgang angeschrieben. Anschließend können die Unternehmen Mitarbeiter (P
 benennen die für das Unternehmen am Fernlehrgang teilnehmen...
 
    >>> from fernlehrgang.models import Unternehmen
-   >>> novareto = Unternehmen(mnr = "0000-00025", name = "Novareto")
+   >>> novareto = Unternehmen(mnr = "000000025", name = "Novareto")
    >>> novareto
-   <Unternehmen(mnr='0000-00025')>
+   <Unternehmen(mnr='000000025')>
 
 Normalerweise sollten wir keine Unternehmen in der Datenbank haben:
 
@@ -76,7 +76,7 @@ Speichern wir nun die Instanz novareto in die Datenbank:
 Wir können nun nachsehen ob wir *** novareto *** auch finden.
 
    >>> session.query(Unternehmen).one()
-   <Unternehmen(mnr='0000-00025')>
+   <Unternehmen(mnr='000000025')>
 
 
 Teilnehmer
@@ -95,7 +95,10 @@ Auch hier sollte die Datenbank noch keine Einträge für Teilnehmer haben:
    >>> int(session.query(Teilnehmer).count())
    0
 
-Speichern wir den Teilnehmer lars:
+Bevor wir den Teilnehmer Lars speichern weißen wir ihm noch ein Unternehmen zu:
+
+   >>> lars.unternehmen = novareto
+
 
    >>> session.add(lars)
 
@@ -180,7 +183,7 @@ alle Referenzen auf die Objekte bekommen.
    >>> lehrheft = fernlehrgang.lehrhefte[0]
 
    >>> from fernlehrgang.models import Frage
-   >>> frage = Frage(frage=1, antwortschema="abac")
+   >>> frage = Frage(frage=1, antwortschema="abac", gewichtung=1)
    >>> frage
    <Frage(id='None', frage='1', antwort='abac')>
 
@@ -191,6 +194,11 @@ alle Referenzen auf die Objekte bekommen.
 
 XML-Export
 ----------
+
+   >>> session = Session()
+   >>> fernlehrgang = session.query(Fernlehrgang).one()
+   >>> fernlehrgang
+   <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
 
    >>> from fernlehrgang.export import IXMLExport
    >>> exporter = IXMLExport(fernlehrgang)

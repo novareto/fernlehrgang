@@ -85,14 +85,12 @@ class Unternehmen(Base, RDBMixin):
 
     #id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", String(12), primary_key=True)
-    typ = Column("TYP", String(3))
     name = Column("NAME1", String(32))
     name2 = Column("NAME2", String(32))
     name3 = Column("NAME3", String(32))
     str = Column("STR", String(70))
     plz = Column("PLZ", String(10))
     ort = Column("ORT", String(30))
-    plz = Column("PLZ", String(10))
 
     @property
     def title(self):
