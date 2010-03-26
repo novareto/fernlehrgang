@@ -6,11 +6,29 @@ import grok
 
 from zope.schema import *
 from zope.interface import Interface
+from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-def vocabulary(*terms):
-    """ """
-    return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
+LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
+                ('L2', u'Grund- bzw. Regelbetreuung'),
+                ('L3', u'Keine Beschäftigten'),
+                ('L4', u'Teilnahme aus pers. Gründen verschoben'),
+                ('L5', u'Teilnahme ist bereits erfolgt'),
+                ('L6', u'Aufgabe des Unternehmens'),
+                ('A1', u'aktiv'),
+                ('A2', u'nicht registriert'),
+               ) 
+
+class Lieferstopps(grok.GlobalUtility):
+    grok.name('uvc.lieferstopps')
+    grok.implements(IVocabularyFactory)
+
+    def __call__(self, context):
+        items = []
+        for key, value in LIEFERSTOPPS:
+            items.append(SimpleTerm(key, key, value))
+        return SimpleVocabulary(items)
+
 
 class IKursteilnehmer(Interface):
 
@@ -32,9 +50,6 @@ class IKursteilnehmer(Interface):
         title = u"Status",
         description = u"Bitte geben Sie in diesen Feld den Status des Teilnehmers ein",
         required = True,
-        default = 1,
-        vocabulary = vocabulary(
-            (1, 'aktiv', 'aktiv'),
-            (2, 'nicht registriert', 'nicht registriert'),
-            (3, 'beendet', 'beendet'),)
+        default = '1',
+        vocabulary = 'uvc.lieferstopps' 
         )

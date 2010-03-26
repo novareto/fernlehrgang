@@ -35,10 +35,8 @@ setup(name='fernlehrgang',
                         'dolmen.menu',
                         'megrok.pagetemplate',
                         'collective.z3cform.datetimewidget',
-                        'elementtree',
                         'dolmen.app.layout',
                         'dolmen.app.viewselector',
-                        'z3c.securitytool',
                         # Add extra requirements here
                         ],
       entry_points = """

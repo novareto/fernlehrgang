@@ -79,12 +79,12 @@ class Fernlehrgang(Base, RDBMixin):
 class Unternehmen(Base, RDBMixin):
     grok.implements(IUnternehmen, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
-    traject.pattern("unternehmen/:unternehmen_id")
+    traject.pattern("unternehmen/:unternehmen_mnr")
 
     __tablename__ = 'adr'
 
-    id = Column("ID", Numeric, primary_key=True)
-    mnr = Column("MNR", String(12))
+    #id = Column("ID", Numeric, primary_key=True)
+    mnr = Column("MNR", String(12), primary_key=True)
     typ = Column("TYP", String(3))
     name = Column("NAME1", String(32))
     name2 = Column("NAME2", String(32))
@@ -101,19 +101,19 @@ class Unternehmen(Base, RDBMixin):
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
 
-    def factory(unternehmen_id):
+    def factory(unternehmen_mnr):
         session = Session()
         return session.query(Unternehmen).filter(
-            Unternehmen.id == unternehmen_id).one()
+            Unternehmen.mnr == unternehmen_mnr).one()
 
     def arguments(unternehmen):
-        return dict(unternehmen_id = unternehmen.id)
+        return dict(unternehmen_mnr = unternehmen.mnr)
 
 
 class Teilnehmer(Base, RDBMixin):
     grok.implements(ITeilnehmer, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
-    traject.pattern("unternehmen/:unternehmen_id/teilnehmer/:id")
+    traject.pattern("unternehmen/:unternehmen_mnr/teilnehmer/:id")
 
     __tablename__ = 'teilnehmer'
 
@@ -130,7 +130,7 @@ class Teilnehmer(Base, RDBMixin):
     ort = Column(String(50))
     email = Column(String(50))
 
-    unternehmen_id = Column(Numeric, ForeignKey('adr.ID'))
+    unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR'))
 
     unternehmen = relation(Unternehmen,
                            backref = backref('teilnehmer', order_by=id))
@@ -145,10 +145,10 @@ class Teilnehmer(Base, RDBMixin):
     def factory(id, unternehmen_id):
         session = Session()
         return session.query(Teilnehmer).filter(
-            and_(Teilnehmer.id == id, Teilnehmer.unternehmen_id == unternehmen_id)).one()
+            and_(Teilnehmer.id == id, Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
 
     def arguments(teilnehmer):
-        return dict(id = teilnehmer.id, unternehmen_id = teilnehmer.unternehmen_id)
+        return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
 
 
 class Lehrheft(Base, RDBMixin):

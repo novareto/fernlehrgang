@@ -36,8 +36,6 @@ class FernlehrgangApp(grok.Application, grok.Container):
         )
 
 
-
-
 class Index(models.Index):
     grok.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
