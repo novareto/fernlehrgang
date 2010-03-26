@@ -119,7 +119,7 @@ Kursteilnehmer.
 Zunächst erzeugen wir eine Instanz eines Kursteilnehmers
 
    >>> from fernlehrgang.models import Kursteilnehmer
-   >>> ktn = Kursteilnehmer(teilnehmer_id=1, unternehmen_mnr='0000-00025')
+   >>> ktn = Kursteilnehmer(teilnehmer_id=1)
    >>> ktn
    <Kursteilnehmer(id='None', fernlehrgangid='None')>
 
@@ -139,17 +139,11 @@ Kursteilnehmer
    >>> ktn
    <Kursteilnehmer(id='1', fernlehrgangid='1')>
 
-Wir haben unser Unternehmen des Kursteilnehmers
-
-   >>> ktn.unternehmen
-   <Unternehmen(mnr='0000-00025')>
 
 und natürlich den Teilnehmer selbst.
 
    >>> ktn.teilnehmer
    <Teilnehmer(id='1', name='Lars Walther')>
-
-
 
 
 Lehrhefte für den Fernlehrgang
@@ -193,6 +187,17 @@ alle Referenzen auf die Objekte bekommen.
    >>> lehrheft.fragen.append(frage)
 
    >>> import transaction; transaction.commit() 
+
+
+XML-Export
+----------
+
+   >>> from fernlehrgang.export import IXMLExport
+   >>> exporter = IXMLExport(fernlehrgang)
+   >>> print exporter.createXML()
+
+
+
 
 Cleaning
 --------

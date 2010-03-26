@@ -27,8 +27,18 @@
       password="mgrpw"
       />
 
+  <principal
+      id="uvc.user"
+      title="user"
+      login="user"
+      password="user"
+      />
+
+
   <role id="zope.Manager" title="Site Manager" />
   <grantAll role="zope.Manager" />
+
   <grant role="zope.Manager" principal="zope.mgr" />
+  <grant role="uvc.bgeadministrator" principal="uvc.user" />
 
 </configure>

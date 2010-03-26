@@ -123,6 +123,7 @@ das traject System aufrufen können.
 
    >>> from zope.testbrowser.testing import Browser
    >>> browser = Browser()
+   >>> browser.addHeader('Authorization', 'Basic user:user')
    >>> browser.handleErrors = False
 
 Applikation

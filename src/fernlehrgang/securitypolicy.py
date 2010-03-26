@@ -31,10 +31,12 @@ class ManageTeilnehmer(grok.Permission):
 
 
 class BGEAdminstrator(grok.Role):
-    grok.name('uvc.bgeadminstrator')
+    grok.name('uvc.bgeadministrator')
     grok.title('BGHW Administrator')
     grok.permissions('uvc.managefernlehrgang', 
                      'dolmen.content.Edit',
+                     'dolmen.content.View',
+                     'zope.View',
                      'uvc.manageteilnehmer')
 
 class DAABenutzer(grok.Role):

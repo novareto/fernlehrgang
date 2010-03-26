@@ -16,14 +16,18 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
+from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn, Column
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.app.layout import models, ContextualMenuEntry
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
+
 
 grok.templatedir('templates')
+
 
 @menuentry(NavigationMenu)
 class KursteilnehmerListing(DeleteFormTablePage):
@@ -65,6 +69,7 @@ class KursteilnehmerListing(DeleteFormTablePage):
     @button.buttonAndHandler(u'Kursteilnehmer anlegen')
     def handleChangeWorkflowState(self, action):
          self.redirect(self.url(self.context, 'addkursteilnehmer')) 
+
 
 @menuentry(AddMenu)
 class AddKursteilnehmer(PageAddForm):
@@ -130,12 +135,15 @@ class Name(LinkColumn):
         return "%s %s" % (item.teilnehmer.name, item.teilnehmer.vorname)
 
 
-class Status(GetAttrColumn):
+class Status(Column):
     grok.name('Status')
     grok.context(IFernlehrgang)
     weight = 20 
     header = u"Status"
-    attrName = "status"
+
+    def renderCell(self, item):
+        vocab = getUtility(IVocabularyFactory, name='uvc.lieferstopps')(None)
+        return vocab.getTerm(item.status).title
 
 
 class Unternehmen(LinkColumn):
