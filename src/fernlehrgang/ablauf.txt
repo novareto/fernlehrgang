@@ -157,6 +157,140 @@ Unternehmen
    '200 OK'
 
 
+XML-Export
+----------
+
+   >>> session = Session()
+   >>> fernlehrgang = session.query(Fernlehrgang).one()
+   >>> fernlehrgang
+   <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
+
+   >>> from fernlehrgang.export import IXMLExport
+   >>> exporter = IXMLExport(fernlehrgang)
+   >>> print exporter.createXML()
+   <?xml version="1.0" ?>
+   <xml>
+     <lehrgaenge>
+       <fernlehrgang flgid="1" titel="Fernlehrgang">
+         <jahr>
+           2009
+         </jahr>
+         <lehrheft lehrheft_id="1">
+           <frage frageid="1">
+             <loesung>
+               ab
+             </loesung>
+             <maxpunkte>
+               None
+             </maxpunkte>
+           </frage>
+           <frage frageid="2">
+             <loesung>
+               bc
+             </loesung>
+             <maxpunkte>
+               None
+             </maxpunkte>
+           </frage>
+         </lehrheft>
+         <lehrheft lehrheft_id="2">
+           <frage frageid="3">
+             <loesung>
+               cd
+             </loesung>
+             <maxpunkte>
+               None
+             </maxpunkte>
+           </frage>
+         </lehrheft>
+         <kursteilnehmer ktlnid="1">
+           <teilnehmer tlnid="1">
+             <anrede/>
+             <titel/>
+             <name>
+               Lars Walther
+             </name>
+             <vorname/>
+             <gebdat/>
+             <email/>
+             <telpriv/>
+             <teldienst/>
+             <telmobil/>
+             <telefax/>
+             <unternehmen unternehmensid="0000-00025">
+               <name1>
+                 Novareto
+               </name1>
+               <name2/>
+               <name3/>
+               <strhnr/>
+               <plz/>
+               <ort/>
+             </unternehmen>
+             <versandanschrift>
+               <name1>
+               </name1>
+               <name2>
+                 Lars Walther 
+               </name2>
+               <strhnr>
+               </strhnr>
+               <plz/>
+               <ort/>
+             </versandanschrift>
+             <antworten>
+               <antwort antwortid="1" frageid="1" lehrheftid="None">
+                 <loesung>
+                   AB
+                 </loesung>
+                 <maxpunkte/>
+               </antwort>
+             </antworten>
+           </teilnehmer>
+         </kursteilnehmer>
+         <kursteilnehmer ktlnid="2">
+           <teilnehmer tlnid="2">
+             <anrede/>
+             <titel/>
+             <name>
+               Bernd Probst 
+             </name>
+             <vorname/>
+             <gebdat/>
+             <email/>
+             <telpriv/>
+             <teldienst/>
+             <telmobil/>
+             <telefax/>
+             <unternehmen unternehmensid="0000-00026">
+               <name1>
+                 Econtec
+               </name1>
+               <name2/>
+               <name3/>
+               <strhnr/>
+               <plz/>
+               <ort/>
+             </unternehmen>
+             <versandanschrift>
+               <name1>
+               </name1>
+               <name2>
+                 Bernd Probst
+               </name2>
+               <strhnr>
+               </strhnr>
+               <plz/>
+               <ort/>
+             </versandanschrift>
+             <antworten/>
+           </teilnehmer>
+         </kursteilnehmer>
+       </fernlehrgang>
+     </lehrgaenge>
+   </xml>
+
+
 Cleaning
 --------
 

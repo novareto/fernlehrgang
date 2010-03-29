@@ -192,21 +192,6 @@ alle Referenzen auf die Objekte bekommen.
    >>> import transaction; transaction.commit() 
 
 
-XML-Export
-----------
-
-   >>> session = Session()
-   >>> fernlehrgang = session.query(Fernlehrgang).one()
-   >>> fernlehrgang
-   <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
-
-   >>> from fernlehrgang.export import IXMLExport
-   >>> exporter = IXMLExport(fernlehrgang)
-   >>> print exporter.createXML()
-
-
-
-
 Cleaning
 --------
 

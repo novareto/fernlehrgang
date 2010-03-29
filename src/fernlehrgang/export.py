@@ -105,6 +105,17 @@ class XMLExport(grok.Adapter):
             SubElement(v_elem, 'plz').text = teilnehmer.plz
             SubElement(v_elem, 'ort').text = teilnehmer.ort
 
+            #Antworten
+            a_elem = SubElement(t_elem, 'antworten')
+            antworten = kursteilnehmer.antworten
+            for antwort in antworten:
+                an_elem = SubElement(a_elem, 'antwort')
+                an_elem.attrib['antwortid'] = str(antwort.id)
+                an_elem.attrib['lehrheftid'] = str(antwort.lehrheft_id) 
+                an_elem.attrib['frageid'] = str(antwort.frage_id)
+                SubElement(an_elem, 'loesung').text = notNone(antwort.antwortschema)
+                SubElement(an_elem, 'maxpunkte').text = notNone(antwort.frage.gewichtung)
+
 
         return prettify(root)
 
