@@ -18,6 +18,8 @@ from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.menu import menuentry
 from zope.schema import TextLine
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
 
 
 grok.templatedir('templates')
@@ -41,6 +43,10 @@ class UnternehmenSuche(FormTablePage):
     cssClasses = {'table': 'tablesorter myTable'}
     fields = Fields(IUnternehmenSearch)
 
+    def locateit(self, obj):
+        site = grok.getSite()
+        locate(site, obj, DefaultModel)
+
     @button.buttonAndHandler(u'Suchen')
     def handle_search(self, action):
         rc = []
@@ -48,15 +54,25 @@ class UnternehmenSuche(FormTablePage):
         session = Session()
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
-        sql = sql.filter(Teilnehmer.unternehmen_id == Unternehmen.id)
+        sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
         sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
         for kursteilnehmer, teilnehmer, unternehmen in sql.all():
             results = ICalculateResults(kursteilnehmer).summary()
+            flg = kursteilnehmer.fernlehrgang
+            self.locateit(flg)
+            self.locateit(unternehmen)
+            self.locateit(kursteilnehmer)
+            link_flg = self.url(flg)
+            link_unternehmen = self.url(unternehmen)
+            link_kursteilnehmer = self.url(kursteilnehmer)
             rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,
+                           link_flg = link_flg, 
                            name = teilnehmer.name,
                            vorname = teilnehmer.vorname,
+                           link_kt = link_kursteilnehmer,
                            id = teilnehmer.id,
                            unternehmen = unternehmen.name,
+                           link_unternehmen = link_unternehmen,
                            mnr = unternehmen.mnr,
                            bestanden = results['comment'],
                           ))
@@ -78,7 +94,7 @@ class ColumnFernlehrgang(Column):
     header = "Fernlehrgang"
 
     def renderCell(self, item):
-        return item.get('flg', '-') 
+        return '<a href="%s"> %s </a>' % (item.get('link_flg'), item.get('flg', '-')) 
 
 
 class ColumnTeilnehmer(Column):
@@ -88,7 +104,7 @@ class ColumnTeilnehmer(Column):
 
     def renderCell(self, item):
         teilnehmer = "%s, %s" %(item.get('name','-'), item.get('vorname','-'))
-        return teilnehmer 
+        return '<a href="%s"> %s </a>' %(item.get('link_kt'), teilnehmer)
 
 
 class ColumnUnternehmen(Column):
@@ -98,7 +114,7 @@ class ColumnUnternehmen(Column):
 
     def renderCell(self, item):
         unternehmen = "%s, %s" % (item.get('mnr','-'), item.get('unternehmen', '-'))
-        return unternehmen 
+        return '<a href="%s"> %s </a>' %(item.get('link_unternehmen'), unternehmen) 
 
 
 class ColumnResult(Column):
@@ -107,4 +123,4 @@ class ColumnResult(Column):
     header = "Ergebnis"
 
     def renderCell(self, item):
-        return item['bestanden']
+        return '<a href="%s/resultate"> %s </a>' % (item.get('link_kt'), item['bestanden'])
