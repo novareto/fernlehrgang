@@ -20,7 +20,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from dolmen.app.layout import ContextualMenuEntry
 from dolmen.app.layout import models
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from megrok.z3cform.base import extends, PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 
 
 grok.templatedir('templates')
@@ -106,7 +106,7 @@ class Edit(models.Edit):
     grok.context(IFernlehrgang)
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
-
+    extends(PageEditForm)
     fields = Fields(IFernlehrgang).omit('id')
 
     @button.buttonAndHandler(u'Fernlehrgang entfernen')

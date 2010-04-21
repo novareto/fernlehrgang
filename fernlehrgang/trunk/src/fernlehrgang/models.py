@@ -140,7 +140,7 @@ class Teilnehmer(Base, RDBMixin):
     def __repr__(self):
         return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
 
-    def factory(id, unternehmen_id):
+    def factory(id, unternehmen_mnr):
         session = Session()
         return session.query(Teilnehmer).filter(
             and_(Teilnehmer.id == id, Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
