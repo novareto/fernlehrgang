@@ -18,6 +18,7 @@ from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn, Column
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from megrok.z3cform.base.directives import cancellable
 
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
@@ -79,6 +80,7 @@ class AddKursteilnehmer(PageAddForm):
     title = u'Kursteilnehmer'
     label = u'Kursteilnehmer anlegen'
     description = u'Kursteilnehmer anlegen'
+    cancellable(True)
 
     fields = Fields(IKursteilnehmer).omit('id')
 

@@ -17,6 +17,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from megrok.z3cform.base.directives import cancellable 
 
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from dolmen.app.layout import models
@@ -87,6 +88,7 @@ class AddUnternehmen(PageAddForm):
     title = u'Unternehmen'
     label = u'Unternehmen anlegen'
     description = u"Unternehmen anlegen"
+    cancellable(True)
 
     fields = Fields(IUnternehmen)
 

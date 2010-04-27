@@ -17,6 +17,7 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from megrok.z3cform.base.directives import cancellable
 from dolmen.app.layout import models, ContextualMenuEntry
 
 from dolmen.menu import menuentry
@@ -73,7 +74,7 @@ class AddTeilnehmer(PageAddForm):
     grok.title(u'Teilnehmer')
     title = u'Teilnehmer'
     label = u'Teilnehmer anlegen'
-    id = "stylized"
+    cancellable(True)
 
     fields = Fields(ITeilnehmer).omit('id')
 
