@@ -162,7 +162,7 @@ class Lehrheft(Base, RDBMixin):
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
     fernlehrgang = relation(Fernlehrgang, 
-                            backref = backref('lehrhefte', order_by=nummer),
+                            backref = backref('lehrhefte', order_by=nummer.asc()),
                            ) 
 
     @property

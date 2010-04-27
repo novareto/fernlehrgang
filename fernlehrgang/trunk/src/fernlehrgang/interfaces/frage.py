@@ -45,6 +45,6 @@ class IFrage(Interface):
         title = u'Gewichtung',
         description = u'Bitte geben Sie die Gewichtung für diese Frage ein.',
         required = True,
-        vocabulary=vocabulary((1,1,1),(2,2,2),),
+        vocabulary=vocabulary((2,2,2),(3,3,3),),
         )
 

@@ -74,12 +74,13 @@ class ReduceFrageSource(grok.GlobalUtility):
     
     def __call__(self, context):
         rc = []
+        reduce = []
         alle = range(1, 11)
         if ILehrheft.providedBy(context):
             fragen = context.fragen
+            reduce = [int(x.frage) for x in fragen]
         if IFrage.providedBy(context):
             fragen = context.lehrheft.fragen
-        reduce = [int(x.frage) for x in fragen]
         for x in alle:
             if x not in reduce:
                 rc.append(SimpleTerm(str(x), str(x), str(x)))
@@ -92,12 +93,13 @@ class ReduceLehrheftSource(grok.GlobalUtility):
     
     def __call__(self, context):
         rc = []
+        reduce = []
         alle = range(1, 11)
         if ILehrheft.providedBy(context):
             lehrhefte = context.fernlehrgang.lehrhefte
         if IFernlehrgang.providedBy(context):
             lehrhefte = context.lehrhefte
-        reduce = [x.nummer for x in lehrhefte]
+            reduce = [int(x.nummer) for x in lehrhefte]
         for x in alle:
             if x not in reduce:
                 rc.append(SimpleTerm(str(x), str(x), str(x)))

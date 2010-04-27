@@ -124,11 +124,14 @@ class ColumnVorName(GetAttrColumn):
     attrName = "vorname"
 
 
-class ColumnGebDat(GetAttrColumn):
+class ColumnGebDat(Column):
     grok.name('teilnehmergebdat')
     grok.context(Interface)
     header = "Geburtsdatum"
-    attrName = "geburtsdatum"
+
+    def renderCell(self, item):
+        return item.geburtsdatum.strftime('%d.%m.%Y')
+
 
 class ColumnMNR(Column):
     grok.name('teilnehmermnr')

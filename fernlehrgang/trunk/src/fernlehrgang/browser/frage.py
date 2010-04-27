@@ -17,6 +17,7 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from megrok.z3cform.base.directives import cancellable
 from dolmen.app.layout import models, ContextualMenuEntry
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
@@ -72,6 +73,7 @@ class AddFrage(PageAddForm):
     grok.title(u'Frage')
     title = u'Frage'
     label = u'Frage anlegen'
+    cancellable(True)
 
     fields = Fields(IFrage).omit('id')
 

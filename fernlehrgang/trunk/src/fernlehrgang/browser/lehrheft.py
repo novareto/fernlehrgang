@@ -17,6 +17,7 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
+from megrok.z3cform.base.directives import cancellable
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.app.layout import models, ContextualMenuEntry
@@ -52,7 +53,7 @@ class LehrheftListing(DeleteFormTablePage):
         session = Session()
         session.delete(item)
         self.flash(u'Das Lehrheft wurde erfolgreich gelöscht.')
-        self.nextURL = self.url(self.context, 'lehrhefte_listing')
+        self.nextURL = self.url(self.context, 'lehrheft_listing')
         self.request.response.redirect(self.nextURL)
 
     def render(self):
@@ -75,6 +76,7 @@ class AddLehrheft(PageAddForm):
     title = u'Lehrheft'
     label = u'Lehrheft anlegen'
     description = u'Lehrheft anlegen'
+    cancellable(True)
 
     fields = Fields(ILehrheft).omit('id')
 
@@ -87,7 +89,7 @@ class AddLehrheft(PageAddForm):
 
     def nextURL(self):
         self.flash(u'Das Lehrheft wurde erfolgreich angelegt')
-        return self.url(self.context, 'lehrhefte_listing')
+        return self.url(self.context, 'lehrheft_listing')
 
 
 class Index(models.DefaultView):
