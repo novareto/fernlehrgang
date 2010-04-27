@@ -36,6 +36,7 @@ class ITeilnehmer(Interface):
         description = u'Bitte wählen Sie eine Anrede.',
         required = True,
         vocabulary = vocabulary(
+            ('0', 'kein Titel', 'kein Titel'),
             ('1', 'Dr.', 'Dr.'),
             ('2', 'Prof.', 'Prof.'),)
         )
@@ -61,25 +62,25 @@ class ITeilnehmer(Interface):
     strasse = TextLine(
         title = u'Straße',
         description = u'Straße des Teilnehmers',
-        required = True
+        required = False, 
         )
     
     nr = TextLine(
         title = u'Hausnummer',
         description = u'Hausnummer des Teilnehmers',
-        required = True
+        required = False, 
         )
 
     plz = TextLine(
         title = u'Postleitzahl',
         description = u'Postleitzahl des Teilnehmers',
-        required = True
+        required = False, 
         )
 
     ort = TextLine(
         title = u'Ort',
         description = u'Ort des Teilnehmers',
-        required = True
+        required = False, 
         )
 
     email = TextLine(

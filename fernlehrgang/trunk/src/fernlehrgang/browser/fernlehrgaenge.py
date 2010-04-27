@@ -32,6 +32,7 @@ class FernlehrgangListing(DeleteFormTablePage):
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
     grok.require('uvc.managefernlehrgang')
+    grok.order(10)
     extends(DeleteFormTablePage)
     
     template = grok.PageTemplateFile('templates/base_listing.pt')
@@ -55,6 +56,7 @@ class FernlehrgangListing(DeleteFormTablePage):
         session.delete(item)
         self.flash(u'Der Fernlehrgang wurde erfolgreich gelöscht.')
         self.nextURL = self.url(self.context, 'fernlehrgang_listing')
+        self.request.response.redirect(self.nextURL)
 
     def render(self):
         if self.nextURL is not None:

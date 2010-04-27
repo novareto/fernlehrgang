@@ -20,6 +20,10 @@ from zope.app.authentication.authentication import PluggableAuthentication
 from zope.app.security.interfaces import IAuthentication
 from zope.app.authentication.interfaces import IAuthenticatorPlugin
 
+from z3c.form.converter import DateDataConverter
+from zope.schema.interfaces import IDate
+from z3c.form.interfaces import IWidget, IDataConverter
+
 
 grok.templatedir('templates')
 
@@ -50,3 +54,4 @@ class Kontakt(Page):
 
     def render(self):
         return "KONTAKT"
+

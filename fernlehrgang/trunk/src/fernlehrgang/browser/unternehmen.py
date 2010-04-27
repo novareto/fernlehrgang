@@ -32,6 +32,7 @@ class UnternehmenListing(DeleteFormTablePage):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmen_listing')
     grok.title(u"Unternehmen verwalten")
+    grok.order(20)
 
     template = grok.PageTemplateFile('templates/base_listing.pt')
 

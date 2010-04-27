@@ -79,10 +79,10 @@ class ReduceFrageSource(grok.GlobalUtility):
             fragen = context.fragen
         if IFrage.providedBy(context):
             fragen = context.lehrheft.fragen
-        reduce = [x.frage for x in fragen]
+        reduce = [int(x.frage) for x in fragen]
         for x in alle:
             if x not in reduce:
-                rc.append(SimpleTerm(x, x, x))
+                rc.append(SimpleTerm(str(x), str(x), str(x)))
         return SimpleVocabulary(rc)   
 
 
@@ -100,5 +100,5 @@ class ReduceLehrheftSource(grok.GlobalUtility):
         reduce = [x.nummer for x in lehrhefte]
         for x in alle:
             if x not in reduce:
-                rc.append(SimpleTerm(x, x, x))
+                rc.append(SimpleTerm(str(x), str(x), str(x)))
         return SimpleVocabulary(rc)   

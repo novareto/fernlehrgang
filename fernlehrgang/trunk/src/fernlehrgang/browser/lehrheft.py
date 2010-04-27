@@ -26,9 +26,9 @@ grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu)
-class LehrhefteListing(DeleteFormTablePage):
+class LehrheftListing(DeleteFormTablePage):
     grok.context(IFernlehrgang)
-    grok.name('lehrhefte_listing')
+    grok.name('lehrheft_listing')
     grok.title(u'Lehrhefte verwalten')
 
     template = grok.PageTemplateFile('templates/base_listing.pt')
@@ -53,6 +53,7 @@ class LehrhefteListing(DeleteFormTablePage):
         session.delete(item)
         self.flash(u'Das Lehrheft wurde erfolgreich gelöscht.')
         self.nextURL = self.url(self.context, 'lehrhefte_listing')
+        self.request.response.redirect(self.nextURL)
 
     def render(self):
         if self.nextURL is not None:
@@ -63,7 +64,7 @@ class LehrhefteListing(DeleteFormTablePage):
     render.base_method = True    
 
     @button.buttonAndHandler(u'Lehrheft anlegen')
-    def handleChangeWorkflowState(self, action):
+    def handleAddLehrheft(self, action):
          self.redirect(self.url(self.context, 'addlehrheft')) 
 
 
@@ -102,6 +103,7 @@ class Edit(models.Edit):
     grok.title(u'Edit')
     grok.name('edit')
 
+    extends(PageEditForm)
     fields = Fields(ILehrheft).omit('id')
 
     @button.buttonAndHandler(u'Lehrhefte entfernen')
