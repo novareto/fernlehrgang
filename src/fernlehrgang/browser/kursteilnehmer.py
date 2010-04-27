@@ -57,6 +57,7 @@ class KursteilnehmerListing(DeleteFormTablePage):
         session = Session()
         session.delete(item)
         self.nextURL = self.url(self.context, 'kursteilnehmer_listing')
+        self.request.response.redirect(self.nextURL)
 
     def render(self):
         if self.nextURL is not None:

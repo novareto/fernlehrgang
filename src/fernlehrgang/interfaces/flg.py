@@ -16,7 +16,7 @@ class IFernlehrgang(Interface):
         readonly = True
         )
 
-    jahr = Int(
+    jahr = TextLine(
         title = u'Jahr',
         description = u'Das Jahr in dem der Fernlehrgang stattfindent',
         required = True

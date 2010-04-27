@@ -53,7 +53,7 @@ class Fernlehrgang(Base, RDBMixin):
     __tablename__ = 'fernlehrgang'
 
     id = Column(Integer, Sequence('fernlehrgang_id'), primary_key=True)
-    jahr = Column(Integer)
+    jahr = Column(String(50))
     titel = Column(String(50))
     beschreibung = Column(String(50))
     punktzahl = Column(Integer(4))
@@ -157,7 +157,7 @@ class Lehrheft(Base, RDBMixin):
     __tablename__ = 'lehrheft'
 
     id = Column(Integer, Sequence('lehrheft_seq'), primary_key=True)
-    nummer = Column(Integer)
+    nummer = Column(String(5))
     titel = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
@@ -192,7 +192,7 @@ class Frage(Base, RDBMixin):
     __tablename__ = 'frage'
 
     id = Column(Integer, Sequence('frage_id'), primary_key=True)
-    frage = Column(Integer)
+    frage = Column(String(5))
     titel = Column(String(50))
     antwortschema = Column(String(50))
     gewichtung = Column(Integer)

@@ -50,7 +50,9 @@ class TeilnehmerListing(DeleteFormTablePage):
     def executeDelete(self, item):
         session = Session()
         session.delete(item)
+        self.flash(u'Der Teilnehmer wurde erfolgreich gelöscht.')
         self.nextURL = self.url(self.context, 'teilnehmer_listing')
+        self.request.response.redirect(self.nextURL)
 
     def render(self):
         if self.nextURL is not None:

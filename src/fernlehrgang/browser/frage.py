@@ -51,6 +51,7 @@ class FrageListing(DeleteFormTablePage):
         session = Session()
         session.delete(item)
         self.nextURL = self.url(self.context, 'frage_listing')
+        self.request.response.redirect(self.nextURL)
 
     def render(self):
         if self.nextURL is not None:
@@ -104,7 +105,7 @@ class Edit(models.Edit):
     extends(PageEditForm)
     fields = Fields(IFrage).omit('id')
 
-    @button.buttonAndHandler(u'Fernlehrgang entfernen')
+    @button.buttonAndHandler(u'Entfernen')
     def handleDeleteFernlehrgang(self, action):
         session = Session()
         session.delete(self.context)

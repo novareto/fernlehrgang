@@ -29,12 +29,21 @@ class IUnternehmenSearch(Interface):
     mnr = TextLine(
         title = u"Mitgliedsnummer",
         description = u"Mitgliedsnummer des Unternehmens",
+        required = False,
         )
+
+    name = TextLine(
+        title = u"Name",
+        description = u"Name des Unternehmens",
+        required = False,
+        )
+
 
 @menuentry(NavigationMenu)
 class UnternehmenSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
     grok.title(u'Unternehmen suchen')
+    grok.order(20)
     title = label = u"Unternehmen Suchen"
     description = u"Bitte geben Sie Mitgliedsnummer für das Unternehmen ein, dass Sie suchen möchten"
     ignoreContext = True
@@ -50,12 +59,23 @@ class UnternehmenSuche(FormTablePage):
     @button.buttonAndHandler(u'Suchen')
     def handle_search(self, action):
         rc = []
+        v = False
         data, errors = self.extractData()
         session = Session()
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
-        sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
+        if data.get('mnr'):
+            v = True
+            constraint = "%%%s%%" % data.get('mnr')
+            sql = sql.filter(Unternehmen.mnr.like(constraint))
+        if data.get('name'):
+            v = True
+            constraint = "%%%s%%" % data.get('name')
+            sql = sql.filter(Unternehmen.name.like(constraint))
+        if not v:
+            self.flash(u'Bitte geben Sie entsprechende Kriterien ein.')
+            return
         for kursteilnehmer, teilnehmer, unternehmen in sql.all():
             results = ICalculateResults(kursteilnehmer).summary()
             flg = kursteilnehmer.fernlehrgang
