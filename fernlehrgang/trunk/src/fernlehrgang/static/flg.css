@@ -256,6 +256,7 @@ dl#navigation {
   width: 925px;
   top: 140px;
   position: absolute;
+  background-color: transparent;
 }
 
 dl#navigation ul {
@@ -554,3 +555,56 @@ dl#footer dt {
  margin-bottom:2em;
  margin-left:0em;
 }
+
+div#page-body {
+ -moz-border-radius:0px 0px 0px 0px;
+ background-color:#EFEFEF;
+ border:1px solid #DDDDDD;
+ margin:0;
+ padding:0.5em 1em 1em;
+ margin-top: 2.2em;
+}
+
+#uvc-global-menu ul {
+  display: inline;
+  list-style: none;
+  padding: 0px;
+  border-left: 1px #6e6e6e solid;
+  height: 21px;
+  float: left;
+  width: 100px;
+  color: white;
+  text-align: center;
+}
+
+
+#uvc-global-menu ul li.blue {
+ background-color: #6094B1;
+ height: 23px;
+}
+
+#uvc-global-menu ul li.orange {
+ background-color: #E2A35E;
+ height: 23px;
+}
+
+#uvc-global-menu ul li.violet {
+ background-color: #986B98;
+ height: 23px;
+}
+
+#uvc-global-menu ul li.green {  
+ background-color: #85B076;
+ height: 23px;
+}
+
+#uvc-global-menu ul li.brown {  
+ background-color: #A5786E;
+ height: 23px;
+}
+
+#uvc-global-menu ul li.purple {
+ background-color: #5BA1A4;
+ height: 23px;
+}
+
