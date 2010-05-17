@@ -8,7 +8,7 @@ from grok import url, getSite
 from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
-from uvc.layout.interfaces import ISidebar
+from uvc.layout.interfaces import ISidebar, IExtraInfo
 from fernlehrgang.models import Kursteilnehmer 
 from zope.traversing.browser import absoluteURL
 from megrok.traject.components import DefaultModel
@@ -118,6 +118,23 @@ class Edit(models.Edit):
         session = Session()
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
+
+
+# More Info Viewlets
+
+class MoreInfoKursteilnehmer(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(IFernlehrgang) 
+
+    def render(self):
+        return "<h3>Fernlehrgang %s - %s </h3>" %(self.context.jahr, self.context.titel)
+
+class MoreInfoOnKursteilnehmer(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(IKursteilnehmer)
+
+    def render(self):
+        return "<h3>Fernlehrgang: %s - %s </h3>" %(self.context.fernlehrgang.jahr, self.context.fernlehrgang.titel)
 
 ## Spalten
 

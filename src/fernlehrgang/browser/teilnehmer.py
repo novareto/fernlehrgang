@@ -9,7 +9,7 @@ from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
 from fernlehrgang.models import Teilnehmer 
-from uvc.layout.interfaces import ISidebar
+from uvc.layout.interfaces import ISidebar, IExtraInfo
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
@@ -89,6 +89,7 @@ class AddTeilnehmer(PageAddForm):
         return self.url(self.context, 'teilnehmer_listing')
 
 
+
 class Index(models.DefaultView):
     grok.context(ITeilnehmer)
     title = label = u"Teilnehmer"
@@ -110,6 +111,23 @@ class Edit(models.Edit):
         session = Session()
         session.delete(self.context)
         self.redirect(self.url(self.context.__parent__)) 
+
+
+# More Info Viewlets
+
+class MoreInfoUnternehmen(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(IUnternehmen) 
+
+    def render(self):
+        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.mnr, self.context.name)
+
+class MoreInfoOnTeilnehmer(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(ITeilnehmer)
+
+    def render(self):
+        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
 
 ## Spalten
 
