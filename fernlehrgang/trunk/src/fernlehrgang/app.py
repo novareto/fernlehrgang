@@ -43,7 +43,7 @@ class FernlehrgangApp(grok.Application, grok.Container):
 class Index(models.Index):
     grok.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
-    description = u"Beschreibugn Fernlehrgang"
+    description = u"Beschreibung Fernlehrgang"
     grok.require('zope.View')
 
 

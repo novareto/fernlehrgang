@@ -572,7 +572,6 @@ div#page-body {
   border-left: 1px #6e6e6e solid;
   height: 21px;
   float: left;
-  width: 100px;
   color: white;
   text-align: center;
 }
@@ -581,30 +580,36 @@ div#page-body {
 #uvc-global-menu ul li.blue {
  background-color: #6094B1;
  height: 23px;
+ float: left;
 }
 
 #uvc-global-menu ul li.orange {
  background-color: #E2A35E;
  height: 23px;
+ float: left;
 }
 
 #uvc-global-menu ul li.violet {
  background-color: #986B98;
  height: 23px;
+ float: left;
 }
 
 #uvc-global-menu ul li.green {  
  background-color: #85B076;
  height: 23px;
+ float: left;
 }
 
 #uvc-global-menu ul li.brown {  
  background-color: #A5786E;
  height: 23px;
+ float: left;
 }
 
 #uvc-global-menu ul li.purple {
  background-color: #5BA1A4;
  height: 23px;
+ float: left;
 }
 
