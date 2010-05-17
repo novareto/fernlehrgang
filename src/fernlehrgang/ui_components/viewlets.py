@@ -44,7 +44,7 @@ class GlobalMenuViewlet(grok.Viewlet):
         for i, fernlehrgang in enumerate(session.query(Fernlehrgang).all()):
             url = "%s/fernlehrgang/%s" % (
                 self.view.application_url(), fernlehrgang.id)
-            rc.append(dict(title="%s %s" %(fernlehrgang.jahr, fernlehrgang.titel), css=self.css[i], url=url))
+            rc.append(dict(title="%s %s..." %(fernlehrgang.jahr, fernlehrgang.titel[:10]), css=self.css[i], url=url))
         return rc
 
     def update(self):

@@ -2,9 +2,9 @@
   <h1 tal:content="view/title"></h1>
    <p class="description" tal:content="view/description"/>
 
-<fieldset>
+<fieldset tal:define="summary view/getSummary">
 
-    <div tal:define="summary view/getSummary">
+    <div>
        <h3> Auswertung </h3>
          <ul>
           <li>Folgende Punktzahl ist nötig um den Kurs zu bestehen: <span tal:replace="summary/points"/></li> 
@@ -27,6 +27,9 @@
               <td> <span tal:content="python: len(lh.get('antworten', []))" /> </td>
               <td> <span tal:content="lh/punkte" /> </td>
             </tr>
+            <tr>
+              <td colspan=2> Gesamt </td>
+              <td tal:content="summary/resultpoints"/> 
           </table>
         </div> 
     </div>
@@ -50,6 +53,10 @@
               <td> <span tal:content="ant/antwort"/> </td>
               <td> <span tal:content="ant/res"/> </td>
             </tr>
+            <tr>
+              <td colspan="3"> Gesamt </td>
+              <td tal:content="lh/punkte"/>
+            <tr>
           </table>
         </div> 
       </div>
