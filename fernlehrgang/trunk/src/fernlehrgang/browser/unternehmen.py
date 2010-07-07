@@ -11,7 +11,6 @@ from megrok.traject import locate
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.models import Unternehmen 
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp 
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
