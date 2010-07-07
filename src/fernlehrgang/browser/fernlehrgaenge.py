@@ -13,7 +13,6 @@ from fernlehrgang.models import Fernlehrgang
 from megrok.traject.components import DefaultModel
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from fernlehrgang.interfaces.flg import IFernlehrgang
-from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 

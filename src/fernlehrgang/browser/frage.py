@@ -12,7 +12,6 @@ from fernlehrgang.models import Frage
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.frage import IFrage
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn

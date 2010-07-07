@@ -13,7 +13,6 @@ from fernlehrgang.models import Kursteilnehmer
 from zope.traversing.browser import absoluteURL
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.flg import IFernlehrgang
-from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn, Column

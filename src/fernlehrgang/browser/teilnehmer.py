@@ -11,7 +11,6 @@ from dolmen.menu import menuentry
 from fernlehrgang.models import Teilnehmer 
 from uvc.layout.interfaces import ISidebar, IExtraInfo
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen

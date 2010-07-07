@@ -15,7 +15,6 @@ from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable.ftests import Container, Content
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3cform.tabular import DeleteFormTablePage
 from megrok.z3ctable.components import GetAttrColumn, CheckBoxColumn, LinkColumn

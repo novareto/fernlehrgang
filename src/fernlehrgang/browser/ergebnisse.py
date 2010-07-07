@@ -13,7 +13,6 @@ from fernlehrgang.models import Antwort, Frage
 from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable.ftests import Container, Content
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
