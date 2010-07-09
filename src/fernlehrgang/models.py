@@ -266,6 +266,8 @@ class Antwort(Base, RDBMixin):
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))
+    datum = Column(DateTime)
+    system = Column(String(50))
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 

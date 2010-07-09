@@ -6,6 +6,12 @@ import grok
 
 from zope.schema import *
 from zope.interface import Interface
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from datetime import datetime
+
+def vocabulary(*terms):
+    return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
 
 class IAntwort(Interface):
 
@@ -36,3 +42,18 @@ class IAntwort(Interface):
         required = True,
         )
 
+    datum = Datetime(
+        title = u'Datum',
+        description = u'Modifikationsdatum',
+        required = True,
+        readonly = True,
+        default = datetime.now()
+        )
+
+    system = Choice(
+        title = u'Eingabesystem',
+        description = u'Bitte geben Sie an wie diese Antwort ins System gekommen ist.',
+        required = True,
+        vocabulary=vocabulary(('FernlehrgangApp', 'FernlehrgangApp', 'FernlehrgangApp'),
+                              ('Extranet', 'Extranet', 'Extranet'),),
+        )

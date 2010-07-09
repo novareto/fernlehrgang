@@ -14,60 +14,89 @@ from megrok.traject.components import DefaultModel
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp 
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
+from megrok.z3ctable import Column, CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from megrok.z3cform.base.directives import cancellable 
+from megrok.z3cform.tabular import FormTablePage
+
 
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from dolmen.app.layout import models
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from profilehooks import profile
 
 
 
 grok.templatedir('templates')
 
 @menuentry(NavigationMenu)
-class UnternehmenListing(DeleteFormTablePage):
+class UnternehmenListing(FormTablePage):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmen_listing')
     grok.title(u"Unternehmen verwalten")
     grok.order(20)
 
-    template = grok.PageTemplateFile('templates/base_listing.pt')
+    fields = Fields(IUnternehmen).select('mnr', 'name', 'str', 'plz', 'ort') 
+
+    sortOn = None 
 
     title = "Unternehmen verwalten"
     description = u"Hier können Sie die Unternehmen der BG-Verwalten"
-    extends(DeleteFormTablePage)
+    ignoreContext = True
 
     cssClasses = {'table': 'tablesorter myTable'}
     status = None
+    results = []
+
+    def updateWidgets(self):
+        super(UnternehmenListing, self).updateWidgets()
+        for field in self.fields.values():
+            field.field.required = False
+
+    #@button.buttonAndHandler(u'Unternehmen anlegen')
+    #def handleAddUnternehmen(self, action):
+    #     self.redirect(self.url(self.context, 'addunternehmen')) 
+
+    @button.buttonAndHandler(u'Suchen') 
+    def handle_search(self, action): 
+        rc = [] 
+        v=False 
+        data, errors = self.extractData() 
+        session = Session() 
+        sql = session.query(Unternehmen) 
+        if data.get('mnr'): 
+            sql = sql.filter(Unternehmen.mnr == data.get('mnr')) 
+            v = True 
+        if data.get('name'): 
+            constraint = "%%%s%%" % data.get('name') 
+            sql = sql.filter(Unternehmen.name.like(constraint)) 
+            v = True 
+        if data.get('str'): 
+            constraint = "%%%s%%" % data.get('str') 
+            sql = sql.filter(Unternehmen.str.like(constraint)) 
+            v = True 
+        if data.get('plz'): 
+            sql = sql.filter(Unternehmen.plz == data.get('plz')) 
+            v = True 
+        if data.get('ort'): 
+            constraint = "%%%s%%" % data.get('ort') 
+            sql = sql.filter(Unternehmen.ort.like(constraint)) 
+            v = True 
+        if not v: 
+            self.flash(u'Bitte geben Sie Suchkriterien ein.') 
+            return 
+        self.results = sql.all() 
 
     @property
     def values(self):
-        root = getSite()
-        session = Session()
-        for unternehmen in session.query(Unternehmen).filter(Unternehmen.plz == "91438").all():
-            locate(root, unternehmen, DefaultModel)
-            yield unternehmen 
+        return self.results
 
+    @property
+    def displaytable(self):
+        self.update()
+        return self.renderTable()
 
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.nextURL = self.url(self.context, 'unternehmen_listing')
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True
-
-    @button.buttonAndHandler(u'Unternehmen anlegen')
-    def handleAddUnternehmen(self, action):
-         self.redirect(self.url(self.context, 'addunternehmen')) 
 
 
 class Index(models.DefaultView):
@@ -102,26 +131,23 @@ class AddUnternehmen(PageAddForm):
         return self.url(self.context, 'unternehmen_listing')
 
 
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
-    grok.context(IFernlehrgangApp)
-    weight = 0
-    cssClasses = {'th': 'checkBox'}
 
-
-class Mitgliedsnummer(LinkColumn):
+class Mitgliedsnummer(Column):
     grok.name('Mitgliedsnummer')
     grok.context(IFernlehrgangApp)
     weight = 10
     header = u"Mitgliedsnummer"
 
-    def getLinkContent(self, item):
-        return item.mnr
+    def renderCell(self, item):
+        locate(grok.getSite(), item, DefaultModel)
+        url = grok.url(self.request, item)
+        return '<a href="%s"> %s </a>' % (url, item.mnr)
 
-
-class Name(GetAttrColumn):
+class Name(Column):
     grok.name('Name')
     grok.context(IFernlehrgangApp)
     weight = 20
     header = u"Name"
-    attrName = u"name"
+   
+    def renderCell(self, item):
+        return item.name 

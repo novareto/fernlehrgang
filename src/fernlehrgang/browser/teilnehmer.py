@@ -14,7 +14,7 @@ from megrok.traject.components import DefaultModel
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
+from megrok.z3ctable import Column, GetAttrColumn, CheckBoxColumn, LinkColumn
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from megrok.z3cform.base.directives import cancellable
 from dolmen.app.layout import models, ContextualMenuEntry
@@ -33,7 +33,10 @@ class TeilnehmerListing(DeleteFormTablePage):
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     title = u"Teilnehmer"
-    description = u"Hier können Sie die Teilnehmer zu Ihrem Fernlehrgang bearbeiten."
+
+    @property
+    def description(self):
+        return u"Hier können Sie die Teilnehmer zum Unternehmen '%s %s' verwalten." %(self.context.mnr, self.context.name)
 
     extends(DeleteFormTablePage)
     cssClasses = {'table': 'tablesorter myTable'}
@@ -72,7 +75,7 @@ class AddTeilnehmer(PageAddForm):
     grok.context(IUnternehmen)
     grok.title(u'Teilnehmer')
     title = u'Teilnehmer'
-    label = u'Teilnehmer anlegen'
+    label = u'Teilnehmer anlegen für Unternehmen'
     cancellable(True)
 
     fields = Fields(ITeilnehmer).omit('id')
@@ -155,9 +158,11 @@ class VorName(GetAttrColumn):
     attrName = "vorname"
 
 
-class Geburtsdatum(GetAttrColumn):    
+class Geburtsdatum(Column):    
     grok.name('Geburtsdatum')
     grok.context(IUnternehmen)
     weight = 30 
     header = u"Geburtsdatum"
-    attrName = "geburtsdatum"
+
+    def renderCell(self, item):
+        return item.geburtsdatum.strftime('%d.%m.%Y')

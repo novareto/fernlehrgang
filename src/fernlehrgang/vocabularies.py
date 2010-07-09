@@ -30,7 +30,8 @@ class UnternehmenSources(grok.GlobalUtility):
         session = Session()
         for id, name, vorname in session.query(Teilnehmer.id, Teilnehmer.name, Teilnehmer.vorname).all():
             value = "%s - %s %s" % (id, name, vorname)
-            rc.append(SimpleTerm(id, value, value))
+            print value
+            rc.append(SimpleTerm(id, id, value))
         return SimpleVocabulary(rc)    
 
 
@@ -64,7 +65,7 @@ class FragenSources(grok.GlobalUtility):
         for lehrheft in fernlehrgang.lehrhefte:
             for frage in lehrheft.fragen: 
                 term = "%s - %s" %(frage.frage, frage.titel)
-                rc.append(SimpleTerm(frage.id, term, term))           
+                rc.append(SimpleTerm(frage.id, frage.id, term))           
         return SimpleVocabulary(rc)    
 
 

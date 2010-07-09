@@ -109,7 +109,7 @@ class Edit(models.Edit):
     extends(PageEditForm)
     fields = Fields(IAntwort).omit('id')
 
-    @button.buttonAndHandler(u'Fernlehrgang entfernen')
+    @button.buttonAndHandler(u'Antwort entfernen')
     def handleDeleteFernlehrgang(self, action):
         session = Session()
         session.delete(self.context)
@@ -146,7 +146,7 @@ class Link(LinkColumn):
     linkContent = "edit"
 
     def getLinkContent(self, item):
-        return u"Antwort für Frage %s" %item.id
+        return u"Antwort für Frage %s Lehrheft %s" %(item.frage.titel, item.frage.lehrheft.titel)
 
 class Antworten(GetAttrColumn):
     grok.name('Antworten')

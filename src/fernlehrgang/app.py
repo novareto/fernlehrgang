@@ -55,3 +55,9 @@ class Kontakt(Page):
     def render(self):
         return "KONTAKT"
 
+
+class CustomCalendarDataConverter(DateDataConverter, grok.MultiAdapter):
+    """A special calendar data converter for Dates"""
+    grok.adapts(IDate, IWidget)
+    grok.implements(IDataConverter)
+    length = 'medium'

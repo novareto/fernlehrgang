@@ -39,11 +39,10 @@ class IKursteilnehmer(Interface):
         readonly = True
         )
 
-    teilnehmer_id = Choice(
+    teilnehmer_id = TextLine(
         title = u'Id des Teilnehmers',
         description = u'Die Eindeutige Nummer des Teilnehmers',
         required = True,
-        vocabulary = 'unternehmen', 
         )
 
     status = Choice(
