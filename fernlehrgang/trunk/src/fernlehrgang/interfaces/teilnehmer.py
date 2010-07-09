@@ -32,8 +32,8 @@ class ITeilnehmer(Interface):
         )
 
     titel = Choice(
-        title = u"Anrede",
-        description = u'Bitte wählen Sie eine Anrede.',
+        title = u"Titel",
+        description = u'Bitte wählen Sie einen Titel.',
         required = True,
         vocabulary = vocabulary(
             ('0', 'kein Titel', 'kein Titel'),

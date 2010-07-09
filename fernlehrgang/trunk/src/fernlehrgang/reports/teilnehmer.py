@@ -59,10 +59,10 @@ class CreateTeilnehmer(PageForm):
 @menuentry(NavigationMenu)
 class TeilnehmerSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
-    grok.title(u'Teilnehmer suchen')
+    grok.title(u'Statusabfrage Teilnehmer')
     grok.require('uvc.manageteilnehmer')
     grok.order(50)
-    title = label = u"Teilnehmer suchen"
+    title = label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
     ignoreContext = True
     results = []
@@ -136,7 +136,7 @@ class ColumnGebDat(Column):
 class ColumnMNR(Column):
     grok.name('teilnehmermnr')
     grok.context(Interface)
-    header = "Mitgliedsnummer"
+    header = "Unternehmen"
 
     def renderCell(self, item):
         locate(grok.getSite(), item.unternehmen, DefaultModel)

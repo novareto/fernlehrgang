@@ -15,7 +15,7 @@ from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn, Column
+from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn, Column, TablePage
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from megrok.z3cform.base.directives import cancellable
 
@@ -24,7 +24,8 @@ from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from dolmen.app.layout import models, ContextualMenuEntry
 from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
-
+from profilehooks import profile
+from zope.cachedescriptors import property
 
 grok.templatedir('templates')
 
@@ -46,7 +47,7 @@ class KursteilnehmerListing(DeleteFormTablePage):
 
     status = None
 
-    @property
+    @property.CachedProperty
     def values(self):
         root = getSite()
         for x in self.context.kursteilnehmer:
@@ -173,7 +174,7 @@ class Unternehmen(LinkColumn):
     header = "Unternehmen"
 
     def getLinkContent(self, item):
-        return item.teilnehmer.unternehmen.name
+        return "%s %s" %(item.teilnehmer.unternehmen.mnr, item.teilnehmer.unternehmen.name)
 
     def getLinkURL(self, item):    
         root = grok.getSite()

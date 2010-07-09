@@ -128,7 +128,7 @@ class Link(LinkColumn):
     linkContent = "edit"
 
     def getLinkContent(self, item):
-        return "Frage %s" %item.frage 
+        return "%s, %s" %(item.frage, item.titel)
 
 
 class Antwortschema(GetAttrColumn):

@@ -42,9 +42,9 @@ class IUnternehmenSearch(Interface):
 @menuentry(NavigationMenu)
 class UnternehmenSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
-    grok.title(u'Unternehmen suchen')
+    grok.title(u'Statusabfrage Unternehmen')
     grok.order(20)
-    title = label = u"Unternehmen Suchen"
+    title = label = u"Statusabfrage Unternehmen"
     description = u"Bitte geben Sie Mitgliedsnummer für das Unternehmen ein, dass Sie suchen möchten"
     ignoreContext = True
     results = []
@@ -85,7 +85,7 @@ class UnternehmenSuche(FormTablePage):
             link_flg = self.url(flg)
             link_unternehmen = self.url(unternehmen)
             link_kursteilnehmer = self.url(kursteilnehmer)
-            rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr,
+            rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr + ' ' + kursteilnehmer.fernlehrgang.titel,
                            link_flg = link_flg, 
                            name = teilnehmer.name,
                            vorname = teilnehmer.vorname,

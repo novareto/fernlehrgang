@@ -34,7 +34,10 @@ class LehrheftListing(DeleteFormTablePage):
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     title = u"Lehrhefte"
-    description = u"Hier können Sie die Lehrhefte zu Ihrem Fernlehrgang bearbeiten."
+
+    @property
+    def description(self):
+        return u"Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." %(self.context.titel, self.context.jahr)
 
     extends(DeleteFormTablePage)
     cssClasses = {'table': 'tablesorter myTable'}

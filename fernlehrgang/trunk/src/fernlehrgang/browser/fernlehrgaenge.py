@@ -21,6 +21,7 @@ from dolmen.app.layout import models
 from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from megrok.z3cform.base.directives import cancellable 
+from uvc.widgets import DatePickerCSS, DatePicker
 
 
 grok.templatedir('templates')
@@ -82,6 +83,13 @@ class AddFernlehrgang(PageAddForm):
 
     fields = Fields(IFernlehrgang).omit('id')
 
+    def updateWidgets(self):
+        super(AddFernlehrgang, self).updateWidgets()
+        DatePickerCSS.need()
+        DatePicker.need()
+        self.widgets['beginn'].klass = "datepicker"
+        self.widgets['ende'].klass = "datepicker"
+
     def create(self, data):
         return Fernlehrgang(**data)
 
@@ -118,6 +126,13 @@ class Edit(models.Edit):
         session.delete(self.context)
         self.flash(u'Der Fernlehrgang wurde erfolgreich gelöscht.')
         self.redirect(self.url(self.context.__parent__)) 
+
+    def updateWidgets(self):
+        super(Edit, self).updateWidgets()
+        DatePickerCSS.need()
+        DatePicker.need()
+        self.widgets['beginn'].klass = "datepicker"
+        self.widgets['ende'].klass = "datepicker"
 
 ### Spalten
 
