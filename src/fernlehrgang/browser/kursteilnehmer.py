@@ -9,11 +9,12 @@ from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
 from uvc.layout.interfaces import ISidebar, IExtraInfo
-from fernlehrgang.models import Kursteilnehmer 
+from fernlehrgang.models import Kursteilnehmer, Teilnehmer 
 from zope.traversing.browser import absoluteURL
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.flg import IFernlehrgang
-from megrok.z3cform.tabular import DeleteFormTablePage
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from megrok.z3cform.tabular import FormTablePage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn, Column, TablePage
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
@@ -25,48 +26,70 @@ from dolmen.app.layout import models, ContextualMenuEntry
 from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
 from profilehooks import profile
-from zope.cachedescriptors import property
+from sqlalchemy import and_
+from zope.cachedescriptors.property import CachedProperty
 
 grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu)
-class KursteilnehmerListing(DeleteFormTablePage):
+class KursteilnehmerListing(FormTablePage):
     grok.context(IFernlehrgang)
     grok.name('kursteilnehmer_listing')
     grok.title("Kursteilnehmer verwalten")
     grok.order(10)
-
+    ignoreContext = True
     template = grok.PageTemplateFile('templates/base_listing.pt')
-    extends(DeleteFormTablePage)
-    
+    fields = Fields(IKursteilnehmer).select('id') + Fields(ITeilnehmer).select('name', 'geburtsdatum')
+    fields['id'].field.readonly = False
+
+
     title = u"Kursteilnehmer"
     description = u"Hier können Sie die Kursteilnehmer zu Ihrem Fernlehrgang bearbeiten."
 
     cssClasses = {'table': 'tablesorter myTable'}
 
     status = None
+    results = []
 
-    @property.CachedProperty
+    def updateWidgets(self):
+        super(KursteilnehmerListing, self).updateWidgets()
+        for field in self.fields.values():
+            field.field.required = False
+
+    @button.buttonAndHandler(u'Suchen') 
+    def handle_search(self, action): 
+        rc = [] 
+        v=False 
+        data, errors = self.extractData() 
+        session = Session() 
+        flg_id = self.context.id
+        sql = session.query(Teilnehmer, Kursteilnehmer)
+        sql = sql.filter(and_(Kursteilnehmer.fernlehrgang_id == flg_id, Kursteilnehmer.teilnehmer_id == Teilnehmer.id)) 
+        if data.get('id'): 
+            sql = sql.filter(Kursteilnehmer.id == data.get('id')) 
+            v = True 
+        if data.get('name'): 
+            qu = "%%%s%%" % data.get('name')
+            sql = sql.filter(Teilnehmer.name.like(qu)) 
+            v = True 
+        if data.get('geburtsdatum'): 
+            sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum')) 
+            v = True 
+        if not v: 
+            self.flash(u'Bitte geben Sie Suchkriterien ein.') 
+            return 
+        print sql    
+        self.results = sql.all()
+
+    @property    
     def values(self):
-        root = getSite()
-        for x in self.context.kursteilnehmer:
-            locate(root, x, DefaultModel)
-        return self.context.kursteilnehmer
+        return self.results
 
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.nextURL = self.url(self.context, 'kursteilnehmer_listing')
-        self.request.response.redirect(self.nextURL)
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True    
+    @CachedProperty
+    def displaytable(self):
+        self.update()
+        return self.renderTable()
 
     @button.buttonAndHandler(u'Kursteilnehmer anlegen')
     def handleChangeWorkflowState(self, action):
@@ -132,27 +155,32 @@ class MoreInfoKursteilnehmer(grok.Viewlet):
 class MoreInfoOnKursteilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IKursteilnehmer)
+    script = ""
+
+    def update(self):
+        url = grok.url(self.request, self.context)
+        self.script = "<script> var base_url = '%s'; </script>" % url
 
     def render(self):
-        return "<h3>Fernlehrgang: %s - %s </h3>" %(self.context.fernlehrgang.jahr, self.context.fernlehrgang.titel)
+        return "%s <h3>Fernlehrgang: %s - %s </h3>" %(self.script, 
+            self.context.fernlehrgang.jahr, self.context.fernlehrgang.titel)
 
 ## Spalten
 
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
-    grok.context(IFernlehrgang)
-    weight = 0
-    cssClasses = {'th': 'checkBox'}
-    
 
-class Name(LinkColumn):
+class Name(Column):
     grok.name('Nummer')
     grok.context(IFernlehrgang)
     weight = 10 
-    linkContent = "edit"
+    header = "Kursteilnehmer"
 
-    def getLinkContent(self, item):
-        return "%s %s" % (item.teilnehmer.name, item.teilnehmer.vorname)
+    def renderCell(self, item):
+        teilnehmer, kursteilnehmer = item
+        root = grok.getSite()
+        locate(root, kursteilnehmer, DefaultModel)
+        url = absoluteURL(kursteilnehmer, self.request)
+        name = "%s %s" %(teilnehmer.name, teilnehmer.vorname)
+        return '<a href="%s"> %s </a>' %(url, name)
 
 
 class Status(Column):
@@ -162,21 +190,22 @@ class Status(Column):
     header = u"Status"
 
     def renderCell(self, item):
+        teilnehmer, kursteilnehmer = item
         vocab = getUtility(IVocabularyFactory, name='uvc.lieferstopps')(None)
-        return vocab.getTerm(item.status).title
+        return vocab.getTerm(kursteilnehmer.status).title
 
 
-class Unternehmen(LinkColumn):
+class Unternehmen(Column):
     grok.name('Unternehmen')
     grok.context(IFernlehrgang)
     weight = 99
     linkContent = "index"
     header = "Unternehmen"
 
-    def getLinkContent(self, item):
-        return "%s %s" %(item.teilnehmer.unternehmen.mnr, item.teilnehmer.unternehmen.name)
-
-    def getLinkURL(self, item):    
+    def renderCell(self, item):
+        teilnehmer, kursteilnehmer = item
         root = grok.getSite()
-        locate(root, item.teilnehmer.unternehmen, DefaultModel)
-        return absoluteURL(item.teilnehmer.unternehmen, self.request)
+        locate(root, teilnehmer.unternehmen, DefaultModel)
+        url = absoluteURL(teilnehmer.unternehmen, self.request)
+        name = "%s %s" %(teilnehmer.unternehmen.mnr, teilnehmer.unternehmen.name)
+        return '<a href="%s"> %s </a>' %(url, name)

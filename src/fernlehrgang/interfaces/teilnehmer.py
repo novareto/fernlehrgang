@@ -88,3 +88,10 @@ class ITeilnehmer(Interface):
         description = u'E-Mail des Teilnehmers',
         required = True
         )
+
+    lehrgang = Choice(
+        title = u"Lehrgang",
+        description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
+        required = True,
+        vocabulary = "FernlehrgangVocab" 
+        )

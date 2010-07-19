@@ -25,7 +25,8 @@ from dolmen.app.layout import models
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
 from profilehooks import profile
-
+from zope import component
+from zope import interface
 
 
 grok.templatedir('templates')
@@ -102,11 +103,29 @@ class UnternehmenListing(FormTablePage):
 class Index(models.DefaultView):
     grok.context(IUnternehmen)
     grok.name('index')
+    template = grok.PageTemplateFile('templates/unternehmen_view.pt')
+
     title = u"Unternehmen"
     label = u"Unternehmen"
     description = u"Details zu Ihrem Unternehmen"
 
     fields = Fields(IUnternehmen)
+
+    def getTeilnehmerListing(self):
+        rc = []
+        for teilnehmer in self.context.teilnehmer:
+            person = dict(name = "%s %s" %(teilnehmer.name, teilnehmer.vorname),
+                          gebdat = teilnehmer.geburtsdatum,
+                          lehrgang = [])
+            for kursteilnehmer in self.context.kursteilnehmer:
+                if teilnehmer.id == kursteilnehmer.teilnehmer.id:
+                    person['lehrgang'].append(kursteilnehmer.fernlehrgang.titel)
+            rc.append(person)
+        return rc
+    
+    def render(self):
+        return "BlA"
+    render.base_method=True
 
 
 @menuentry(AddMenu)

@@ -1,0 +1,42 @@
+<html>
+ <body>
+  <div id="stylized">
+    <h1> <span tal:content="view/title"/> </h1>
+
+
+    <div class="formspace" id="accordion">
+
+      <div>
+        <h2 class="current"> Anschrift des Unternehmens </h2>
+        <div class="pane" style="display:block">
+          <div metal:use-macro="macro:widget-rows" />
+        </div>  
+      </div> 
+
+      <div>
+        <h2> Teilnehmer & Kursteilnehmer des Unternehmers </h2> 
+        <div class="pane">
+         <table>
+          <tr>
+            <th> Name Vorname </th>
+            <th> Geburtsdatum </th>
+            <th> Lehrgang </th>
+          </tr>
+          <tr tal:repeat="teilnehmer view/getTeilnehmerListing">
+             <td tal:content="teilnehmer/name" /> 
+             <td tal:content="teilnehmer/gebdat" /> 
+             <td tal:content="python: ', '.join(teilnehmer['lehrgang'])" /> 
+          </tr>
+         </table> 
+
+         <a href="" tal:attributes="href python: view.url(context, 'addteilnehmer')"> Neuen Teilnehmer anlegen </a>
+
+        </div>
+      </div>
+
+    </div>  
+
+
+  </div>
+ </body>
+</html>

@@ -24,12 +24,11 @@ from dolmen.menu import menuentry
 
 grok.templatedir('templates')
 
-@menuentry(NavigationMenu)
+@menuentry(NavigationMenu, order=500)
 class CreateTeilnehmer(PageForm):
     grok.context(IFernlehrgangApp)
     grok.title(u'Teilnehmer registrieren')
     grok.require('uvc.manageteilnehmer')
-    grok.order(40)
     title = label = u"Teilnehmer registrieren"
     description = u"Bitte geben Sie die Teilnehmer ID ein, den Sie registrieren möchten."
     ignoreContext = True
@@ -56,12 +55,12 @@ class CreateTeilnehmer(PageForm):
             self.flash('Es wurde kein Teilnehmer gefunden')
 
 
-@menuentry(NavigationMenu)
+@menuentry(NavigationMenu, order=450)
 class TeilnehmerSuche(FormTablePage):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage Teilnehmer')
     grok.require('uvc.manageteilnehmer')
-    grok.order(50)
+    grok.order(1500)
     title = label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
     ignoreContext = True
