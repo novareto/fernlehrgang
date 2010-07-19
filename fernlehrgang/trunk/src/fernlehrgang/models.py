@@ -232,11 +232,11 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    #unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.mnr',))
+    unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR',))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
-    #unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     @property
     def title(self):
@@ -247,6 +247,9 @@ class Kursteilnehmer(Base, RDBMixin):
 
     def factory(fernlehrgang_id, kursteilnehmer_id):
         session = Session()
+        ### Hack
+        #if kursteilnehmer_id == 'context_fragen':
+        #    return None
         return  session.query(Kursteilnehmer).filter(
             and_( Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
                   Kursteilnehmer.id == int(kursteilnehmer_id))).one()

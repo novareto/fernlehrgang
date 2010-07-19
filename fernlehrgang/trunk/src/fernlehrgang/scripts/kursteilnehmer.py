@@ -47,6 +47,15 @@ def parse_options():
         """
     )
 
+    parser.add_option("-p", "--portal",
+        dest = "portal",
+        action = "store",
+        help = u"""Geben Sie an für welches Portal dieses File importiert werden soll.
+                  Achtung wir brauchen die ID des Portals http://localhost:8080/app.
+                  app ist hier der richtige Parameter
+        """
+    )
+
     (options, args) = parser.parse_args()
     return (options, args, parser)
 
@@ -55,32 +64,41 @@ def parse_options():
 def main(argv=None):
     """ Script zum Anlegen von Kursteilnehmern"""
 
-    NICHT_REGISTRIERT = 2
+    NICHT_REGISTRIERT = "A2"
 
     # Einlesen der options
     if argv is None:
         argv = sys.argv
     options, args, parser = parse_options()
     if not options.file:
-         parser.error("Bitte eine CSV-Datei angeben.")
+        parser.error("Bitte eine CSV-Datei angeben.")
     if not options.fernlehrgang:
-         parser.error("Bitte geben Sie die ID des Fernlehrgangs an.")
+        parser.error("Bitte geben Sie die ID des Fernlehrgangs an.")
+    
+    if not options.portal:
+        parse.error("Bitte die Id des Portals angeben")
 
     # Setup der Site
     zope_conf=os.path.join('parts', 'etc', 'zope.conf')
     db = zope.app.wsgi.config(zope_conf)
     connection = db.open()
     root = connection.root()[ZopePublication.root_name]
-    app = root['flg']
+    app = root[options.portal]
     
     # Logik
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
-    for line in DictReader(open(options.file, 'r')):
-        unternehmen = Session.query(Unternehmen).get(line['MNR'])
-        teilnehmer = Teilnehmer()
-        unternehmen.teilnehmer.append(teilnehmer)
-        session.flush()
-        kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, status = NICHT_REGISTRIERT)
-        fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+    for i, line in enumerate(DictReader(open(options.file, 'r'))):
+        print i+1
+        unternehmen = Session.query(Unternehmen).get(line['MNR'].replace('-', ''))
+        if unternehmen:
+            teilnehmer = Teilnehmer()
+            unternehmen.teilnehmer.append(teilnehmer)
+            session.flush()
+            kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
+                status = NICHT_REGISTRIERT)
+            import pdb; pdb.set_trace() 
+            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+        if i == 100:
+            break
     import transaction; transaction.commit()    

@@ -34,7 +34,7 @@ class FernlehrgangListing(DeleteFormTablePage):
     grok.title(u"Fernlehrgänge")
     grok.require('uvc.managefernlehrgang')
     grok.order(10)
-    extends(DeleteFormTablePage)
+    #extends(DeleteFormTablePage)
     
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
@@ -136,11 +136,11 @@ class Edit(models.Edit):
 
 ### Spalten
 
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
-    grok.context(IFernlehrgangApp)
-    weight = 0
-    cssClasses = {'th': 'checkBox'}
+#class CheckBox(CheckBoxColumn):
+#    grok.name('checkBox')
+#    grok.context(IFernlehrgangApp)
+#    weight = 0
+#    cssClasses = {'th': 'checkBox'}
 
 
 class Title(LinkColumn):

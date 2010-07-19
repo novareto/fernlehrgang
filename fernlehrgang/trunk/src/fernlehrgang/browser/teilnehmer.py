@@ -8,7 +8,7 @@ from grok import url, getSite
 from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
-from fernlehrgang.models import Teilnehmer 
+from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang 
 from uvc.layout.interfaces import ISidebar, IExtraInfo
 from megrok.traject.components import DefaultModel
 from megrok.z3cform.tabular import DeleteFormTablePage
@@ -81,11 +81,22 @@ class AddTeilnehmer(PageAddForm):
     fields = Fields(ITeilnehmer).omit('id')
 
     def create(self, data):
-        return Teilnehmer(**data)
+        lehrgang = data.pop('lehrgang')
+        kursteilnehmer = Kursteilnehmer(
+            fernlehrgang_id = lehrgang, 
+            status="A1", 
+            unternehmen_mnr=self.context.mnr)
+        teilnehmer = Teilnehmer(**data)
+        return (kursteilnehmer, teilnehmer)
 
     def add(self, object):
-        self.object = object
-        self.context.teilnehmer.append(object)
+        kursteilnehmer, teilnehmer = object
+        session = Session()
+        fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+        self.context.teilnehmer.append(teilnehmer)
+        kursteilnehmer.teilnehmer = teilnehmer
+        kursteilnehmer.unternehmen = self.context
+        fernlehrgang.kursteilnehmer.append(kursteilnehmer)
 
     def nextURL(self):
         return self.url(self.context, 'teilnehmer_listing')
@@ -165,4 +176,6 @@ class Geburtsdatum(Column):
     header = u"Geburtsdatum"
 
     def renderCell(self, item):
-        return item.geburtsdatum.strftime('%d.%m.%Y')
+        if item.geburtsdatum != None:
+            return item.geburtsdatum.strftime('%d.%m.%Y')
+        return ""

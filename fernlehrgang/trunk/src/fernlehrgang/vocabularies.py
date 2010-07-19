@@ -5,7 +5,7 @@
 import grok
 
 from z3c.saconfig import Session
-from fernlehrgang.models import Teilnehmer 
+from fernlehrgang.models import Teilnehmer, Fernlehrgang 
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.antwort import IAntwort 
 from zope.schema.interfaces import IVocabularyFactory
@@ -30,7 +30,6 @@ class UnternehmenSources(grok.GlobalUtility):
         session = Session()
         for id, name, vorname in session.query(Teilnehmer.id, Teilnehmer.name, Teilnehmer.vorname).all():
             value = "%s - %s %s" % (id, name, vorname)
-            print value
             rc.append(SimpleTerm(id, id, value))
         return SimpleVocabulary(rc)    
 
@@ -40,7 +39,7 @@ class LehrheftSources(grok.GlobalUtility):
     grok.name(u'LehrheftVocab')
     
     def __call__(self, context):
-        rc = []
+        rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen', 'Bitte eine Auswahl treffen')]
         if IAntwort.providedBy(context):
             fernlehrgang = context.kursteilnehmer.fernlehrgang
         if IKursteilnehmer.providedBy(context):
@@ -61,12 +60,13 @@ class FragenSources(grok.GlobalUtility):
         if IAntwort.providedBy(context):
             fernlehrgang = context.kursteilnehmer.fernlehrgang
         if IKursteilnehmer.providedBy(context):
+            return SimpleVocabulary(rc)
             fernlehrgang = context.fernlehrgang
         for lehrheft in fernlehrgang.lehrhefte:
             for frage in lehrheft.fragen: 
                 term = "%s - %s" %(frage.frage, frage.titel)
                 rc.append(SimpleTerm(frage.id, frage.id, term))           
-        return SimpleVocabulary(rc)    
+        return SimpleVocabulary(sorted(rc, key=lambda term: term.value))    
 
 
 class ReduceFrageSource(grok.GlobalUtility):
@@ -105,3 +105,16 @@ class ReduceLehrheftSource(grok.GlobalUtility):
             if x not in reduce:
                 rc.append(SimpleTerm(str(x), str(x), str(x)))
         return SimpleVocabulary(rc)   
+
+
+class FernlehrgangSource(grok.GlobalUtility):
+    grok.implements(IVocabularyFactory)
+    grok.name(u'FernlehrgangVocab')
+    
+    def __call__(self, context):
+        rc = []
+        session = Session()
+        for id, titel, jahr in session.query(Fernlehrgang.id, Fernlehrgang.titel, Fernlehrgang.jahr).all():
+            value = "%s - %s" % (titel, jahr)
+            rc.append(SimpleTerm(id, id, value))
+        return SimpleVocabulary(rc)    

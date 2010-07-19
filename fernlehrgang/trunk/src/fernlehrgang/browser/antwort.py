@@ -17,9 +17,10 @@ from fernlehrgang.interfaces.antwort import IAntwort
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable.components import GetAttrColumn, CheckBoxColumn, LinkColumn
+from megrok.z3ctable.components import GetAttrColumn, CheckBoxColumn, LinkColumn, Column
 from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
 from megrok.z3cform.base.directives import cancellable
+from sqlalchemy import not_, and_
 
 from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 
@@ -122,10 +123,14 @@ class JSON_Views(grok.JSON):
  
     def context_fragen(self, lehrheft_id=None):
         rc = []
+        li = []
         session = Session()
         i=0
+        for antwort in [x for x in self.context.antworten]:
+            li.append(antwort.frage.id)
         for id, nr, titel in session.query(Frage.id, Frage.frage, Frage.titel).filter(
-                                           Frage.lehrheft_id == int(lehrheft_id)).all():
+                                           and_(Frage.lehrheft_id == int(lehrheft_id),
+                                                not_(Frage.id.in_(li)))).all():
             rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s - %s </option>' %(i, id, nr, titel))
             i+=1
         return {'fragen': ''.join(rc)}
@@ -138,7 +143,6 @@ class CheckBox(CheckBoxColumn):
     grok.context(IKursteilnehmer)
     weight = 0
 
-
 class Link(LinkColumn):
     grok.name('Nummer')
     grok.context(IKursteilnehmer)
@@ -148,11 +152,18 @@ class Link(LinkColumn):
     def getLinkContent(self, item):
         return u"Antwort für Frage %s Lehrheft %s" %(item.frage.titel, item.frage.lehrheft.titel)
 
+class Lehrheft(Column):
+    grok.name('Lehrheft')
+    grok.context(IKursteilnehmer)
+    weight = 9 
+    header = "Lehrheft"
+
+    def renderCell(self, item):
+        return item.frage.lehrheft.title
+
 class Antworten(GetAttrColumn):
     grok.name('Antworten')
     grok.context(IKursteilnehmer)
     weight = 10
     header = "Antworten"
     attrName = "antwortschema"
-
-
