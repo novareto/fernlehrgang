@@ -93,6 +93,7 @@ class TeilnehmerSuche(FormTablePage):
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return
+        print sql    
         self.results = sql.all()
 
     @property
@@ -129,7 +130,8 @@ class ColumnGebDat(Column):
     header = "Geburtsdatum"
 
     def renderCell(self, item):
-        return item.geburtsdatum.strftime('%d.%m.%Y')
+        if item.geburtsdatum != None:
+            return item.geburtsdatum.strftime('%d.%m.%Y')
 
 
 class ColumnMNR(Column):
