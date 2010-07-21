@@ -24,7 +24,6 @@ from z3c.form.converter import DateDataConverter
 from zope.schema.interfaces import IDate
 from z3c.form.interfaces import IWidget, IDataConverter
 
-
 grok.templatedir('templates')
 
 
@@ -61,3 +60,5 @@ class CustomCalendarDataConverter(DateDataConverter, grok.MultiAdapter):
     grok.adapts(IDate, IWidget)
     grok.implements(IDataConverter)
     length = 'medium'
+
+

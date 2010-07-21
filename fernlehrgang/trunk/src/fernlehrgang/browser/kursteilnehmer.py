@@ -79,7 +79,6 @@ class KursteilnehmerListing(FormTablePage):
         if not v: 
             self.flash(u'Bitte geben Sie Suchkriterien ein.') 
             return 
-        print sql    
         self.results = sql.all()
 
     @property    

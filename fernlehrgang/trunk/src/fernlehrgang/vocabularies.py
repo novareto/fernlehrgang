@@ -60,7 +60,6 @@ class FragenSources(grok.GlobalUtility):
         if IAntwort.providedBy(context):
             fernlehrgang = context.kursteilnehmer.fernlehrgang
         if IKursteilnehmer.providedBy(context):
-            return SimpleVocabulary(rc)
             fernlehrgang = context.fernlehrgang
         for lehrheft in fernlehrgang.lehrhefte:
             for frage in lehrheft.fragen: 

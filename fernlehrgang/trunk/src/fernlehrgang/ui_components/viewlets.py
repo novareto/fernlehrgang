@@ -15,7 +15,6 @@ from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
 from uvc.layout.menus import PersonalPreferences 
 
-
 class UserName(menu.Entry):
     grok.name('myname')
     grok.context(Interface)
