@@ -104,7 +104,7 @@ class UnternehmenSuche(FormTablePage):
 
     @property
     def displaytable(self):
-        self.update()
+        self.rows = self.setUpRows()
         return self.renderTable()
 
 

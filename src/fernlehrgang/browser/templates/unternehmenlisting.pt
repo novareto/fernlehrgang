@@ -3,7 +3,6 @@
     <div metal:use-macro="macro:completeform">
       <div metal:use-macro="macro:widget-rows" />
     </div>
-
     <div class="results">
       <span tal:replace="structure view/displaytable" />
     </div>    

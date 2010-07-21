@@ -126,6 +126,7 @@ class JSON_Views(grok.JSON):
         li = []
         session = Session()
         i=0
+        print "Lehrheft_id", lehrheft_id
         for antwort in [x for x in self.context.antworten]:
             li.append(antwort.frage.id)
         for id, nr, titel in session.query(Frage.id, Frage.frage, Frage.titel).filter(

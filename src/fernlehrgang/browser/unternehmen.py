@@ -95,7 +95,7 @@ class UnternehmenListing(FormTablePage):
 
     @property
     def displaytable(self):
-        self.update()
+        self.rows = self.setUpRows() #Dont know why it's needed
         return self.renderTable()
 
 
