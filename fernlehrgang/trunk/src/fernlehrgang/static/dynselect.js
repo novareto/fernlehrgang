@@ -5,7 +5,6 @@ $(document).ready(function()
           {
             $('#form-widgets-frage_id').attr('disabled', true);
           }
-        console.log(v1)
 
         $("#form-widgets-lehrheft_id").change(function()
            {

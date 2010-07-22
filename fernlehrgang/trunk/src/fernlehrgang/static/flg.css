@@ -612,3 +612,6 @@ div#page-body {
  float: left;
 }
 
+dl#navigation ul li a.selected {
+  background-color: #EFEFEF;
+}
