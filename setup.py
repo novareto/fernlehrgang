@@ -39,6 +39,7 @@ setup(name='fernlehrgang',
                         'profilehooks',
                         'dolmen.app.viewselector',
                         'repoze.profile',
+                        'pygooglechart',
                         # Add extra requirements here
                         ],
       entry_points = """

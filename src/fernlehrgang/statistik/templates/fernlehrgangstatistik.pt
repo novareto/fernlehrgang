@@ -1,0 +1,22 @@
+<html>
+   <h1 tal:content="view/title"/>
+   <p class="description"> <span tal:content="view/description"/> </p>
+ <div>
+   <h3> Kursteilnehmer am Fernlehrgang </h3>
+
+   <div class="chart" style="float:right;">
+    <img src="" tal:attributes="src view/chart"/>
+   </div>
+
+    <ul>
+      <li> Anzahl aller Teilnehmer <span tal:replace="view/alle_kursteilnehmer"/> </li>
+      <li tal:repeat="ktn view/kursteilnehmer_detail">
+        <span tal:content="python: ktn[0]"/>
+        <span tal:content="python: ktn[1]"/>
+      </li>
+    </ul>
+
+
+
+ </div>
+</html>
