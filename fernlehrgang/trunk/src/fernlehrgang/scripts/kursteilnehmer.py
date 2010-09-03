@@ -19,6 +19,7 @@ from zope.app.publication.zopepublication import ZopePublication
 
 from z3c.saconfig import Session
 from fernlehrgang.models import Fernlehrgang, Kursteilnehmer, Teilnehmer, Unternehmen
+from fernlehrgang.interfaces.teilnehmer import generatePassword
 
 
 def parse_options():
@@ -96,7 +97,9 @@ def main(argv=None):
             unternehmen.teilnehmer.append(teilnehmer)
             session.flush()
             kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
+                passwort = generatePassword,
                 status = NICHT_REGISTRIERT)
+
             import pdb; pdb.set_trace() 
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
         if i == 100:

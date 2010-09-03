@@ -92,11 +92,12 @@ class AddTeilnehmer(PageAddForm):
     def add(self, object):
         kursteilnehmer, teilnehmer = object
         session = Session()
-        fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
         self.context.teilnehmer.append(teilnehmer)
         kursteilnehmer.teilnehmer = teilnehmer
         kursteilnehmer.unternehmen = self.context
-        fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+        if kursteilnehmer.fernlehrgang_id:
+            fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
 
     def nextURL(self):
         return self.url(self.context, 'teilnehmer_listing')
