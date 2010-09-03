@@ -3,10 +3,17 @@
 # cklinger@novareto.de 
 
 import grok
+import string
 
+from random import choice
 from zope.schema import *
 from zope.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+
+def generatePassword():
+    pool = string.ascii_letters + string.digits
+    return ''.join([choice(pool) for i in range(8)])
 
 
 def vocabulary(*terms):
@@ -89,9 +96,15 @@ class ITeilnehmer(Interface):
         required = True
         )
 
+    passwort = TextLine(
+        title = u'Passwort',
+        description = u'Passwort des Teilnehmers',
+        required = True,
+        )
+
     lehrgang = Choice(
         title = u"Lehrgang",
         description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
-        required = True,
+        required = False,
         vocabulary = "FernlehrgangVocab" 
         )

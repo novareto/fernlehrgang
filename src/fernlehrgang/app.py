@@ -62,3 +62,6 @@ class CustomCalendarDataConverter(DateDataConverter, grok.MultiAdapter):
     length = 'medium'
 
 
+class RestLayer(grok.IRESTLayer):
+    """ Layer for Rest Access"""
+    grok.restskin('api')
