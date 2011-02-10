@@ -39,7 +39,7 @@ class FernlehrgangListing(DeleteFormTablePage):
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     title = u"Fernlehrgänge"
-    description = u"Hier können Sie die Fernlehrgaenge der BG-Verwalten"
+    description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
 
     cssClasses = {'table': 'tablesorter myTable'}
     status = None

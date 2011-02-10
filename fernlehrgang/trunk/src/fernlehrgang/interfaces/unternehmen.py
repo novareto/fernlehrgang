@@ -10,7 +10,7 @@ from zope.interface import Interface
 class IUnternehmen(Interface):
 
     mnr = TextLine(
-        title = u'mnr',
+        title = u'Mitgliedsnummer',
         description = u'Mitgliedsnummer des Unternehmens',
         required = False,
         readonly = True

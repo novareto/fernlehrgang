@@ -76,8 +76,8 @@ class AddLehrheft(PageAddForm):
     grok.context(IFernlehrgang)
     grok.title(u'Lehrheft')
     title = u'Lehrheft'
-    label = u'Lehrheft anlegen'
-    description = u'Lehrheft anlegen'
+    label = u'Lehrhefte'
+    description = u'Hier können Sie die Lehrhefte für den Fernlehrgang anlegen.'
     cancellable(True)
 
     fields = Fields(ILehrheft).omit('id')
