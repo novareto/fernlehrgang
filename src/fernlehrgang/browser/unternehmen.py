@@ -43,7 +43,7 @@ class UnternehmenListing(FormTablePage):
     sortOn = None 
 
     title = "Unternehmen verwalten"
-    description = u"Hier können Sie die Unternehmen der BG-Verwalten"
+    description = u"Hier können Sie die am Fernlehrgang teilnehmenden Unternehmen verwalten"
     ignoreContext = True
 
     cssClasses = {'table': 'tablesorter myTable'}
@@ -85,7 +85,7 @@ class UnternehmenListing(FormTablePage):
             sql = sql.filter(Unternehmen.ort.like(constraint)) 
             v = True 
         if not v: 
-            self.flash(u'Bitte geben Sie Suchkriterien ein.') 
+            self.flash(u'Bitte geben Sie die Suchkriterien ein.') 
             return 
         self.results = sql.all() 
 
@@ -107,7 +107,7 @@ class Index(models.DefaultView):
 
     title = u"Unternehmen"
     label = u"Unternehmen"
-    description = u"Details zu Ihrem Unternehmen"
+    description = u"Details zum Unternehmen"
 
     fields = Fields(IUnternehmen)
 

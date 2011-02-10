@@ -99,8 +99,6 @@ def main(argv=None):
             kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
                 passwort = generatePassword,
                 status = NICHT_REGISTRIERT)
-
-            import pdb; pdb.set_trace() 
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
         if i == 100:
             break
