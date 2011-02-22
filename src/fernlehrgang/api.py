@@ -58,10 +58,8 @@ class TeilnehmerAPI(grok.REST):
 
     def GET(self):
         context = self.context
-        print context.strasse
-
         teilnehmer = dict(
-           anreder = context.anrede,
+           anrede = context.anrede,
            titel = context.titel,
            vorname = context.vorname,
            name = context.name,

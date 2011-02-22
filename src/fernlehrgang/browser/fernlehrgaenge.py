@@ -94,6 +94,7 @@ class AddFernlehrgang(PageAddForm):
         return Fernlehrgang(**data)
 
     def add(self, object):
+        print object.titel
         session = Session()
         session.add(object)
 
