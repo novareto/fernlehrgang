@@ -1,89 +1,62 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
+import uvc.layout
 
-from grok import url, getSite
-from z3c.saconfig import Session
-from megrok.traject import locate
+from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
-from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang 
-from uvc.layout.interfaces import ISidebar, IExtraInfo
-from megrok.traject.components import DefaultModel
-from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from megrok.z3ctable import Column, GetAttrColumn, CheckBoxColumn, LinkColumn
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from megrok.z3cform.base.directives import cancellable
-from dolmen.app.layout import models, ContextualMenuEntry
-
-from dolmen.menu import menuentry
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
+from uvc.layout.interfaces import IExtraInfo
+from z3c.saconfig import Session
+from zeam.form.base import Fields
+
 
 grok.templatedir('templates')
 
+
 @menuentry(NavigationMenu)
-class TeilnehmerListing(DeleteFormTablePage):
+class TeilnehmerListing(TablePage):
+    grok.implements(IDisplayView)
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
 
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
-    title = u"Teilnehmer"
+    label = u"Teilnehmer"
 
     @property
     def description(self):
-        return u"Hier können Sie die Teilnehmer zum Unternehmen '%s %s' verwalten." %(self.context.mnr, self.context.name)
-
-    extends(DeleteFormTablePage)
-    cssClasses = {'table': 'tablesorter myTable'}
-
-    status = None
+        return u"Hier können Sie die Teilnehmer zum Unternehmen '%s %s' verwalten." % (self.context.mnr, self.context.name)
 
     @property
     def values(self):
-        root = getSite()
+        root = grok.getSite()
         for x in self.context.teilnehmer:
             locate(root, x, DefaultModel)
         return self.context.teilnehmer
 
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.flash(u'Der Teilnehmer wurde erfolgreich gelöscht.')
-        self.nextURL = self.url(self.context, 'teilnehmer_listing')
-        self.request.response.redirect(self.nextURL)
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True
-
-    @button.buttonAndHandler(u'Teilnehmer anlegen')
-    def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addteilnehmer')) 
-
 
 @menuentry(AddMenu)
-class AddTeilnehmer(PageAddForm):
+class AddTeilnehmer(uvc.layout.AddForm):
     grok.context(IUnternehmen)
     grok.title(u'Teilnehmer')
-    title = u'Teilnehmer'
     label = u'Teilnehmer anlegen für Unternehmen'
-    cancellable(True)
 
     fields = Fields(ITeilnehmer).omit('id')
 
     def create(self, data):
         lehrgang = data.pop('lehrgang')
         kursteilnehmer = Kursteilnehmer(
-            fernlehrgang_id = lehrgang, 
+            fernlehrgang_id=lehrgang,
             status="A1", 
             unternehmen_mnr=self.context.mnr)
         teilnehmer = Teilnehmer(**data)
@@ -103,7 +76,6 @@ class AddTeilnehmer(PageAddForm):
         return self.url(self.context, 'teilnehmer_listing')
 
 
-
 class Index(models.DefaultView):
     grok.context(ITeilnehmer)
     title = label = u"Teilnehmer"
@@ -115,16 +87,9 @@ class Index(models.DefaultView):
 class Edit(models.Edit):
     grok.context(ITeilnehmer)
     grok.name('edit')
-    extends(PageEditForm)
-    title = label = u"Teilnehmer"
+    label = u"Teilnehmer"
 
     fields = Fields(ITeilnehmer).omit('id')
-
-    @button.buttonAndHandler(u'Teilnehmer entfernen')
-    def handleDeleteFernlehrgang(self, action):
-        session = Session()
-        session.delete(self.context)
-        self.redirect(self.url(self.context.__parent__)) 
 
 
 # More Info Viewlets
@@ -145,13 +110,6 @@ class MoreInfoOnTeilnehmer(grok.Viewlet):
 
 ## Spalten
 
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
-    grok.context(IUnternehmen)
-    weight = 0
-    cssClasses = {'th': 'checkBox'}
-    
-
 class Name(LinkColumn):
     grok.name('Name')
     grok.context(IUnternehmen)
@@ -165,15 +123,15 @@ class Name(LinkColumn):
 class VorName(GetAttrColumn):
     grok.name('VorName')
     grok.context(IUnternehmen)
-    weight = 20 
+    weight = 20
     header = u"Vorname"
     attrName = "vorname"
 
 
-class Geburtsdatum(Column):    
+class Geburtsdatum(Column):
     grok.name('Geburtsdatum')
     grok.context(IUnternehmen)
-    weight = 30 
+    weight = 30
     header = u"Geburtsdatum"
 
     def renderCell(self, item):

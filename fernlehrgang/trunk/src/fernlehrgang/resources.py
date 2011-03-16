@@ -22,7 +22,7 @@ class FernlehrgangResources(resource.ResourceLibrary):
     resource.resource('flg.js')
     resource.resource('dropdown.js')
     resource.resource('flg.css')
-    resource.resource('dynselect.js', bottom=True)
+    resource.resource('dynselect.js', depends=[jquery,])
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):

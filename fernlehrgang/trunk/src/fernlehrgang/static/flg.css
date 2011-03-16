@@ -195,7 +195,7 @@ table.tablesorter thead tr .checkBox {
     border:1px solid #fff;
     border-width:0 2px;
     display:none;
-    height:300px;
+    height:auto;
     padding:15px;
     font-size:12px;
 }
@@ -246,14 +246,13 @@ dl#navigation a {
 dl#navigation {
   font-size: 0.75em;
   line-height: 1.7em;
-  margin: 1.5em 0 1em 0;
+  margin: 0 0 1em 0;
   margin-top: 2em;
   padding-left: 2em;;
   border-bottom: 1px solid #cbcbcb;
   float: left;
   width: 925px;
   top: 140px;
-  position: absolute;
   background-color: transparent;
 }
 
@@ -460,7 +459,7 @@ dl.foldable {
   float: right;
   width: 10em;
   font-size: 0.8em;
-  margin: 3.5em 0 0 0;
+  margin-top: 3px;
 }
 
 dl.unfolding dt {
@@ -472,6 +471,7 @@ dl.foldable dt {
   padding: 0.2em 0.4em 0.3em 0.4em;
   border: 1px solid #cbcbcb;
   color: #555;
+  margin-top: -16px;
 }
 
 dl.foldable dd {
@@ -564,54 +564,11 @@ div#page-body {
  margin-top: 2.2em;
 }
 
-#uvc-global-menu ul {
-  display: inline;
-  list-style: none;
-  padding: 0px;
-  border-left: 1px #6e6e6e solid;
-  height: 21px;
-  float: left;
-  color: white;
-  text-align: center;
-}
-
-
-#uvc-global-menu ul li.blue {
- background-color: #6094B1;
- height: 23px;
- float: left;
-}
-
-#uvc-global-menu ul li.orange {
- background-color: #E2A35E;
- height: 23px;
- float: left;
-}
-
-#uvc-global-menu ul li.violet {
- background-color: #986B98;
- height: 23px;
- float: left;
-}
-
-#uvc-global-menu ul li.green {  
- background-color: #85B076;
- height: 23px;
- float: left;
-}
-
-#uvc-global-menu ul li.brown {  
- background-color: #A5786E;
- height: 23px;
- float: left;
-}
-
-#uvc-global-menu ul li.purple {
- background-color: #5BA1A4;
- height: 23px;
- float: left;
-}
 
 dl#navigation ul li a.selected {
   background-color: #EFEFEF;
+}
+
+dl#contextual-actions {
+  display: none;
 }

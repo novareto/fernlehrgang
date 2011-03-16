@@ -8,21 +8,20 @@ from z3c.saconfig import Session
 from megrok.traject import locate
 from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.interfaces.app import IFernlehrgangApp
-from megrok.z3cform.base import PageDisplayForm, PageAddForm, Fields
 from dolmen.app.layout import models
 from zope.interface import Interface
 from dolmen.menu import menuentry
-from uvc.layout.interfaces import IFooter
+from uvc.layout.interfaces import IFooter, IExtraInfo
 from megrok.layout import Page
 
 from uvc.auth.auth import UserAuthenticatorPlugin, setup_authentication
-from zope.app.authentication.authentication import PluggableAuthentication
-from zope.app.security.interfaces import IAuthentication
-from zope.app.authentication.interfaces import IAuthenticatorPlugin
+from zope.pluggableauth import PluggableAuthentication
+from zope.pluggableauth.interfaces import IAuthenticatorPlugin
+from zope.authentication.interfaces import IAuthentication
+from zeam.form.ztk.widgets.date import DateWidgetExtractor, DateFieldWidget
+from zope.i18n.format import DateTimeParseError
+from zeam.form.base import NO_VALUE
 
-from z3c.form.converter import DateDataConverter
-from zope.schema.interfaces import IDate
-from z3c.form.interfaces import IWidget, IDataConverter
 
 grok.templatedir('templates')
 
@@ -55,13 +54,51 @@ class Kontakt(Page):
         return "KONTAKT"
 
 
-class CustomCalendarDataConverter(DateDataConverter, grok.MultiAdapter):
-    """A special calendar data converter for Dates"""
-    grok.adapts(IDate, IWidget)
-    grok.implements(IDataConverter)
-    length = 'medium'
-
 
 class RestLayer(grok.IRESTLayer):
     """ Layer for Rest Access"""
     grok.restskin('api')
+
+
+class Favicon(grok.View):
+    """ Helper for Favicon.ico Errors Request
+    """
+    grok.context(Interface)
+    grok.name('favicon.ico')
+    grok.require('zope.Public')
+
+    def render(self):
+        return "BLA"
+
+
+class ExtraInfo(grok.ViewletManager):
+    grok.implements(IExtraInfo)
+    grok.name('uvc.layout.extrainfo')
+    grok.context(Interface)
+
+
+class CustomDateFieldWidget(DateFieldWidget):
+    """ Extractor for German Date Notation
+    """
+
+    def valueToUnicode(self, value):
+        locale = self.request.locale
+        formatter = locale.dates.getFormatter(self.valueType, 'medium')
+        return formatter.format(value)
+
+
+class CustomDateWidgetExtractor(DateWidgetExtractor):
+    """ Extractor for German Date Notation
+    """
+
+    def extract(self):
+        value, error = super(DateWidgetExtractor, self).extract()
+        if value is not NO_VALUE:
+            locale = self.request.locale
+            formatter = locale.dates.getFormatter(self.valueType, 'medium')
+            try:
+                value = formatter.parse(value)
+            except (ValueError, DateTimeParseError), error:
+                return None, u"Bitte überprüfen Sie das Datumsformat. (tt.mm.jjjj)"
+        return value, error
+

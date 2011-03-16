@@ -3,8 +3,8 @@
 # cklinger@novareto.de 
 
 import grok
+import uvc.layout
 
-from grok import url, getSite
 from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
@@ -13,66 +13,40 @@ from uvc.layout.interfaces import ISidebar
 from fernlehrgang.interfaces.frage import IFrage
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import GetAttrColumn, CheckBoxColumn, LinkColumn
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from megrok.z3cform.base.directives import cancellable
-from dolmen.app.layout import models, ContextualMenuEntry
+from megrok.z3ctable import TablePage, GetAttrColumn, CheckBoxColumn, LinkColumn
+from dolmen.app.layout import models, IDisplayView 
 from dolmen.menu import menuentry
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from zeam.form.base import Fields
 
 
 grok.templatedir('templates')
 
 @menuentry(NavigationMenu)
-class FrageListing(DeleteFormTablePage):
+class FrageListing(TablePage):
+    grok.implements(IDisplayView)
     grok.context(ILehrheft)
     grok.name('frage_listing')
     grok.title(u'Fragen verwalten')
 
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
-    title = u"Fragen"
+    label = u"Fragen"
     description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
-
-    extends(DeleteFormTablePage)
-    cssClasses = {'table': 'tablesorter myTable'}
-
-    status = None
 
     @property
     def values(self):
-        root = getSite()
+        root = grok.getSite()
         for x in self.context.fragen:
             locate(root, x, DefaultModel)
         return self.context.fragen
 
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.nextURL = self.url(self.context, 'frage_listing')
-        self.request.response.redirect(self.nextURL)
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True    
-
-    @button.buttonAndHandler(u'Frage anlegen')
-    def handleChangeWorkflowState(self, action):
-         self.redirect(self.url(self.context, 'addfrage')) 
-
 
 @menuentry(AddMenu)
-class AddFrage(PageAddForm):
+class AddFrage(uvc.layout.AddForm):
     grok.context(ILehrheft)
     grok.title(u'Frage')
-    title = u'Frage'
     label = u'Frage anlegen'
-    cancellable(True)
 
     fields = Fields(IFrage).omit('id')
 
@@ -103,14 +77,7 @@ class Edit(models.Edit):
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."
 
-    extends(PageEditForm)
     fields = Fields(IFrage).omit('id')
-
-    @button.buttonAndHandler(u'Entfernen')
-    def handleDeleteFernlehrgang(self, action):
-        session = Session()
-        session.delete(self.context)
-        self.redirect(self.url(self.context.__parent__)) 
 
 
 ### Spalten

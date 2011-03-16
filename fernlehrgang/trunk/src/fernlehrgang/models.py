@@ -11,6 +11,8 @@ from sqlalchemy import *
 from sqlalchemy.orm import relation, backref
 from sqlalchemy.ext.declarative import declarative_base
 
+from dolmen.content import IContent, schema
+
 from z3c.saconfig import Session
 from z3c.saconfig.interfaces import IEngineCreatedEvent
 
@@ -38,6 +40,7 @@ def setUpDatabase(event):
 
 class RDBMixin(traject.Model, Contained):
     """ Base Mixin for RDB-Base Classes """
+    grok.implements(IContent)
     grok.baseclass()
 
     def __init__(self, **kwargs):
@@ -48,6 +51,7 @@ class RDBMixin(traject.Model, Contained):
 class Fernlehrgang(Base, RDBMixin):
     grok.implements(IFernlehrgang, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
+    schema(IFernlehrgang)
     traject.pattern("fernlehrgang/:fernlehrgang_id")
 
     __tablename__ = 'fernlehrgang'

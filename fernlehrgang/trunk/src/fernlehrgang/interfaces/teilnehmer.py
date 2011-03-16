@@ -2,13 +2,26 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import grokcore.component as grok
 import string
 
+from z3c.saconfig import Session
 from random import choice
 from zope.schema import *
 from zope.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.interfaces import IContextSourceBinder
+
+
+@grok.provider(IContextSourceBinder)
+def fernlehrgang_vocab(context):
+    rc = []
+    session = Session()
+    from fernlehrgang.models import Fernlehrgang
+    for id, titel, jahr in session.query(Fernlehrgang.id, Fernlehrgang.titel, Fernlehrgang.jahr).all():
+        value = "%s - %s" % (titel, jahr)
+        rc.append(SimpleTerm(id, id, value))
+    return SimpleVocabulary(rc)    
 
 
 def generatePassword():
@@ -23,7 +36,7 @@ def vocabulary(*terms):
 class ITeilnehmer(Interface):
 
     id = TextLine(
-        title = u'id',
+        title = u'Id',
         description = u'Eindeutige Id für den Teilnehmer',
         required = False,
         readonly = True
@@ -106,5 +119,5 @@ class ITeilnehmer(Interface):
         title = u"Lehrgang",
         description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
         required = False,
-        vocabulary = "FernlehrgangVocab" 
+        source = fernlehrgang_vocab,
         )

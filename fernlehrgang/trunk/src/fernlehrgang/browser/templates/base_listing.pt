@@ -1,8 +1,8 @@
 <div>
-  <h1 tal:content="view/title"></h1>
+  <h1 tal:content="view/label"></h1>
   <p class="description" tal:content="view/description"/>
 
    <fieldset>
-       <span tal:replace="structure view/renderFormTable"/>
+       <span tal:replace="structure view/renderTable"/>
    </fieldset>
 </div>

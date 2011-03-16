@@ -2,12 +2,13 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import grokcore.component as grok
 
 from zope.schema import *
 from zope.interface import Interface
-from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+
 
 LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
                 ('L2', u'Grund- bzw. Regelbetreuung'),
@@ -19,15 +20,13 @@ LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
                 ('A2', u'nicht registriert'),
                ) 
 
-class Lieferstopps(grok.GlobalUtility):
-    grok.name('uvc.lieferstopps')
-    grok.implements(IVocabularyFactory)
 
-    def __call__(self, context):
-        items = []
-        for key, value in LIEFERSTOPPS:
-            items.append(SimpleTerm(key, key, value))
-        return SimpleVocabulary(items)
+@grok.provider(IContextSourceBinder)
+def lieferstopps(context):
+    items = []
+    for key, value in LIEFERSTOPPS:
+        items.append(SimpleTerm(key, key, value))
+    return SimpleVocabulary(items)
 
 
 class IKursteilnehmer(Interface):
@@ -49,6 +48,6 @@ class IKursteilnehmer(Interface):
         title = u"Status",
         description = u"Bitte geben Sie in diesen Feld den Status des Teilnehmers ein",
         required = True,
-        default = '1',
-        vocabulary = 'uvc.lieferstopps' 
+        default = 'A1',
+        source = lieferstopps,
         )
