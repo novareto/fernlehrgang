@@ -33,6 +33,8 @@ class FrageListing(TablePage):
 
     label = u"Fragen"
     description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
+    cssClasses = {'table': 'tablesorter myTable'}
+
 
     @property
     def values(self):
@@ -82,20 +84,23 @@ class Edit(models.Edit):
 
 ### Spalten
 
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
+class Nummer(GetAttrColumn):
+    grok.name('Nummer')
     grok.context(ILehrheft)
-    weight = 0
+    weight = 3 
+    header = "Nummer"
+    attrName = "frage"
 
 
 class Link(LinkColumn):
-    grok.name('Nummer')
+    grok.name('Titel')
     grok.context(ILehrheft)
     weight = 5 
     linkContent = "edit"
+    header = "Titel"
 
     def getLinkContent(self, item):
-        return "%s, %s" %(item.frage, item.titel)
+        return "%s" % (item.titel)
 
 
 class Antwortschema(GetAttrColumn):

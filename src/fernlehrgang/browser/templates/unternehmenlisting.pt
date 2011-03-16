@@ -7,7 +7,8 @@
         <th> Mitgliedsnummer </th>
         <th> Name </th>
       </tr>
-      <tr tal:repeat="result results">
+      <tr tal:repeat="result results"
+          tal:attributes="class python: repeat['result'].odd() and 'odd' or 'even'">
         <td tal:content="result/mnr" />
         <td>
            <a href="#" tal:attributes="href python: view.url(result)">

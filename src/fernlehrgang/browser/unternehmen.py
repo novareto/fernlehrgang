@@ -94,6 +94,9 @@ class Index(models.DefaultView):
                           lehrgang = [])
             for kursteilnehmer in self.context.kursteilnehmer:
                 if teilnehmer.id == kursteilnehmer.teilnehmer.id:
-                    person['lehrgang'].append(kursteilnehmer.fernlehrgang.titel)
+                    if kursteilnehmer.fernlehrgang:
+                        person['lehrgang'].append(kursteilnehmer.fernlehrgang.titel)
+                    else:
+                        person['lehrgang'].append(u'Noch für keinen Fernlehrgang registriert.')
             rc.append(person)
         return rc

@@ -132,6 +132,7 @@ class Teilnehmer(Base, RDBMixin):
     ort = Column(String(50))
     email = Column(String(50))
     passwort = Column(String(8))
+    un_klasse = Column(String(3))
 
     unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR'))
 
