@@ -1,0 +1,17 @@
+<dl tal:condition="python: viewlet.actions and viewlet.available()"
+    tal:attributes="id viewlet/id;
+                    class string: foldable">
+  <dt tal:content="viewlet/title"
+      tal:condition="viewlet/title" />
+  <dd>
+    <ul>
+      <tal:loop repeat="action viewlet/actions">
+      <li tal:attributes="class action/class">
+        <a tal:attributes="href action/url;
+                           title action/title;"
+           tal:content="action/title" />
+      </li>
+      </tal:loop>
+    </ul>
+  </dd>
+</dl>

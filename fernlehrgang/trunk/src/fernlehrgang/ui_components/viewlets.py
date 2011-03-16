@@ -10,19 +10,23 @@ from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
 from uvc.layout.layout import IUVCLayer
+from fernlehrgang.interfaces import IListing
 from fernlehrgang.models import Fernlehrgang
 from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
 from uvc.layout.menus import PersonalPreferences 
 
-class UserName(menu.Entry):
+
+class UserName(grok.Viewlet):
+    """ User Viewlet"""
     grok.name('myname')
     grok.context(Interface)
-    menu.menu(PersonalPreferences)
+    grok.viewletmanager(PersonalPreferences)
     grok.order(10)
+    group = ""
 
     def render(self):
-        return '<a href="#"> %s </a>' % self.request.principal.description or self.request.principal.id
+        return '<a href="#"> -%s </a>' % self.request.principal.description or self.request.principal.id
 
 
 class GlobalMenuViewlet(grok.Viewlet):
@@ -32,38 +36,49 @@ class GlobalMenuViewlet(grok.Viewlet):
     grok.order(1)
     flgs = []
 
-    css = ['blue', 'orange', 'violet', 'green', 'brown', 'purple']
 
-    def getClass(self, index):
-        return self.css[index]
+    def getCss(self, flg):
+        css = {'2011': 'blue',
+               '2012': 'orange',
+               '2013': 'violet', 
+               '2014': 'green',
+               '2015': 'brown', 
+               '2016': 'purple'}
+        return "dropdown %s" % css[flg]
 
     def getContent(self):
         session = Session()
-        rc = []
-        for i, fernlehrgang in enumerate(session.query(Fernlehrgang).all()):
+        d = {}
+        for fernlehrgang in session.query(Fernlehrgang).all():
             url = "%s/fernlehrgang/%s" % (
                 self.view.application_url(), fernlehrgang.id)
-            titel = "%s %s" %(fernlehrgang.jahr, fernlehrgang.titel) 
-            if len(fernlehrgang.titel) > 10:
-                titel = "%s %s..." %(fernlehrgang.jahr, fernlehrgang.titel[:10]) 
-            rc.append(dict(title=titel, css=self.css[i], url=url))
-        return rc
+            titel = fernlehrgang.titel
+            if not fernlehrgang.jahr in d.keys():
+                d[fernlehrgang.jahr] = []
+            d[fernlehrgang.jahr].append(dict(url=url, title=titel))
+        return d 
 
     def update(self):
         self.flgs = self.getContent()
-        self.flgs.reverse()
 
 
 class ObjectActionMenu(viewlets.ContextualActions):
     grok.name('contextualactions')
     grok.layer(IUVCLayer)
     grok.title('Actions')
+    grok.viewletmanager(master.AboveBody)
+    grok.order(50)
 
+    menu_template = grok.PageTemplateFile('templates/objectmenu.pt')
+
+    id = "uvcobjectmenu"
     menu_class = u"foldable menu"
-    title = "Actions"
+    title = "Menu"
 
-    def get_actions(self, context):
-        return MenuViewlet.get_actions(self, context)
+    def available(self):
+        if IListing.providedBy(self.view):
+            return False 
+        return True
 
 
 class AddMenu(menu.Menu):
@@ -78,7 +93,7 @@ class AddMenu(menu.Menu):
 class AddMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.view(IDisplayView)
-    grok.viewletmanager(master.Top)
+    grok.viewletmanager(master.AboveBody)
     grok.order(70)
 
     def render(self):
