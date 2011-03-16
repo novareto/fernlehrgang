@@ -3,84 +3,69 @@
 # cklinger@novareto.de 
 
 import grok
+import uvc.layout
 
-from grok import url, getSite
-from z3c.saconfig import Session
-from dolmen.menu import menuentry
-from megrok.traject import locate
-from uvc.layout.interfaces import ISidebar
-from fernlehrgang.models import Unternehmen 
-from megrok.traject.components import DefaultModel
-from megrok.z3cform.tabular import DeleteFormTablePage
-from fernlehrgang.interfaces.app import IFernlehrgangApp 
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from megrok.z3ctable import Column, CheckBoxColumn, LinkColumn, GetAttrColumn 
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from megrok.z3cform.base.directives import cancellable 
-from megrok.z3cform.tabular import FormTablePage
-
-
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
 from dolmen.app.layout import models
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
-from profilehooks import profile
-from zope import component
-from zope import interface
+from fernlehrgang.interfaces.app import IFernlehrgangApp 
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.models import Unternehmen 
+from fernlehrgang.ui_components import NavigationMenu
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from z3c.saconfig import Session
+from zeam.form.base import Fields
+from zeam.form.base import NO_VALUE
+from zeam.form.base import action
 
 
 grok.templatedir('templates')
 
 @menuentry(NavigationMenu)
-class UnternehmenListing(FormTablePage):
+class UnternehmenListing(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmen_listing')
     grok.title(u"Unternehmen verwalten")
     grok.order(20)
+    
+    fields = Fields(IUnternehmen).select('mnr', 'name', 'str', 'plz', 'ort')
 
-    fields = Fields(IUnternehmen).select('mnr', 'name', 'str', 'plz', 'ort') 
-
-    sortOn = None 
-
-    title = "Unternehmen verwalten"
+    label = u"Unternehmen verwalten"
     description = u"Hier können Sie die am Fernlehrgang teilnehmenden Unternehmen verwalten"
-    ignoreContext = True
 
-    cssClasses = {'table': 'tablesorter myTable'}
-    status = None
     results = []
 
-    def updateWidgets(self):
-        super(UnternehmenListing, self).updateWidgets()
-        for field in self.fields.values():
-            field.field.required = False
+    def update(self):
+        for field in self.fields:
+            field.required = False
+            field.readonly = False
 
-    #@button.buttonAndHandler(u'Unternehmen anlegen')
-    #def handleAddUnternehmen(self, action):
-    #     self.redirect(self.url(self.context, 'addunternehmen')) 
+    def getResults(self):
+        for item in self.results:
+            locate(grok.getSite(), item, DefaultModel)
+            yield item
 
-    @button.buttonAndHandler(u'Suchen') 
-    def handle_search(self, action): 
-        rc = [] 
+    @action(u"Suchen")
+    def handle_search(self): 
         v=False 
         data, errors = self.extractData() 
         session = Session() 
         sql = session.query(Unternehmen) 
-        if data.get('mnr'): 
+        if data.get('mnr') != NO_VALUE: 
             sql = sql.filter(Unternehmen.mnr == data.get('mnr')) 
             v = True 
-        if data.get('name'): 
+        if data.get('name') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('name') 
             sql = sql.filter(Unternehmen.name.like(constraint)) 
             v = True 
-        if data.get('str'): 
+        if data.get('str') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('str') 
             sql = sql.filter(Unternehmen.str.like(constraint)) 
             v = True 
-        if data.get('plz'): 
+        if data.get('plz') != NO_VALUE: 
             sql = sql.filter(Unternehmen.plz == data.get('plz')) 
             v = True 
-        if data.get('ort'): 
+        if data.get('ort') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('ort') 
             sql = sql.filter(Unternehmen.ort.like(constraint)) 
             v = True 
@@ -88,16 +73,6 @@ class UnternehmenListing(FormTablePage):
             self.flash(u'Bitte geben Sie die Suchkriterien ein.') 
             return 
         self.results = sql.all() 
-
-    @property
-    def values(self):
-        return self.results
-
-    @property
-    def displaytable(self):
-        self.rows = self.setUpRows() #Dont know why it's needed
-        return self.renderTable()
-
 
 
 class Index(models.DefaultView):
@@ -122,51 +97,3 @@ class Index(models.DefaultView):
                     person['lehrgang'].append(kursteilnehmer.fernlehrgang.titel)
             rc.append(person)
         return rc
-    
-    def render(self):
-        return "BlA"
-    render.base_method=True
-
-
-@menuentry(AddMenu)
-class AddUnternehmen(PageAddForm):
-    grok.context(IFernlehrgangApp)
-    grok.title(u'Unternehmen')
-    title = u'Unternehmen'
-    label = u'Unternehmen anlegen'
-    description = u"Unternehmen anlegen"
-    cancellable(True)
-
-    fields = Fields(IUnternehmen)
-
-    def create(self, data):
-        return Unternehmen(**data)
-
-    def add(self, object):
-        session = Session()
-        session.add(object)
-
-    def nextURL(self):
-        return self.url(self.context, 'unternehmen_listing')
-
-
-
-class Mitgliedsnummer(Column):
-    grok.name('Mitgliedsnummer')
-    grok.context(IFernlehrgangApp)
-    weight = 10
-    header = u"Mitgliedsnummer"
-
-    def renderCell(self, item):
-        locate(grok.getSite(), item, DefaultModel)
-        url = grok.url(self.request, item)
-        return '<a href="%s"> %s </a>' % (url, item.mnr)
-
-class Name(Column):
-    grok.name('Name')
-    grok.context(IFernlehrgangApp)
-    weight = 20
-    header = u"Name"
-   
-    def renderCell(self, item):
-        return item.name 

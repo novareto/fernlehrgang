@@ -1,10 +1,20 @@
 <html>
- <body>
-    <div metal:use-macro="macro:completeform">
-      <div metal:use-macro="macro:widget-rows" />
+  <body>
+    <div metal:use-macro="macro:editform">
     </div>
-    <div class="results">
-      <span tal:replace="structure view/displaytable" />
-    </div>    
- </body>
+    <table tal:define="results view/getResults" tal:condition="results">
+      <tr>
+        <th> Mitgliedsnummer </th>
+        <th> Name </th>
+      </tr>
+      <tr tal:repeat="result results">
+        <td tal:content="result/mnr" />
+        <td>
+           <a href="#" tal:attributes="href python: view.url(result)">
+             <span tal:content="result/name" />
+           </a>
+         </td>
+      </tr>
+    </table>  
+  </body>
 </html>

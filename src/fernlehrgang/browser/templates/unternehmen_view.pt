@@ -1,15 +1,15 @@
 <html>
  <body>
-  <div id="stylized">
+  <div>
     <h1> <span tal:content="view/title"/> </h1>
 
 
-    <div class="formspace" id="accordion">
+    <div id="accordion">
 
       <div>
         <h2 class="current"> Anschrift des Unternehmens </h2>
         <div class="pane" style="display:block">
-          <div metal:use-macro="macro:widget-rows" />
+          <div metal:use-macro="macro:editform" />
         </div>  
       </div> 
 

@@ -3,143 +3,100 @@
 # cklinger@novareto.de 
 
 import grok
+import uvc.layout
 
-from z3c.saconfig import Session
 from dolmen.menu import menuentry
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
-from megrok.z3cform.base import PageForm, Fields, button 
-from megrok.z3cform.tabular import FormTablePage 
-from megrok.z3ctable import Column, GetAttrColumn 
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.models import Teilnehmer
-from fernlehrgang.interfaces.resultate import ICalculateResults
-from zope.interface import Interface
-from dolmen.app.layout import IDisplayView, ContextualMenuEntry
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
-from dolmen.menu import menuentry
+from fernlehrgang.ui_components import NavigationMenu
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from z3c.saconfig import Session
+from zeam.form.base import action, NO_VALUE, Fields
 
 
 grok.templatedir('templates')
 
+
 @menuentry(NavigationMenu, order=500)
-class CreateTeilnehmer(PageForm):
+class CreateTeilnehmer(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Teilnehmer registrieren')
     grok.require('uvc.manageteilnehmer')
     title = label = u"Teilnehmer registrieren"
     description = u"Bitte geben Sie die Teilnehmer ID ein, den Sie registrieren möchten."
-    ignoreContext = True
     results = []
 
     cssClasses = {'table': 'tablesorter myTable'}
-    fields = Fields(ITeilnehmer).select('id')
-    fields['id'].field.readonly = False
 
-    @button.buttonAndHandler(u'Suchen')
-    def handle_search(self, action):
-        rc = []
+    fields = Fields(ITeilnehmer).select('id')
+    fields['id'].readonly = False
+
+    @action(u'Suchen')
+    def handle_search(self):
         data, errors = self.extractData()
         session = Session()
         sql = session.query(Teilnehmer)
         sql = sql.filter(Teilnehmer.id == data.get('id'))
-        print sql
         teilnehmer = sql.first()
         if teilnehmer:
             site = grok.getSite()
             locate(site, teilnehmer, DefaultModel)
             self.redirect(self.url(teilnehmer, 'edit'))
-        else:    
+        else:
             self.flash('Es wurde kein Teilnehmer gefunden')
 
 
 @menuentry(NavigationMenu, order=450)
-class TeilnehmerSuche(FormTablePage):
+class TeilnehmerSuche(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage Teilnehmer')
     grok.require('uvc.manageteilnehmer')
     grok.order(1500)
-    title = label = u"Statusabfrage Teilnehmer."
+
+    label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
-    ignoreContext = True
+
+    fields = Fields(ITeilnehmer).select('id', 'name') + Fields(IUnternehmen).select('mnr')
+    fields['id'].readonly = False
+    fields['mnr'].readonly = False
+    fields['name'].required = False
+
     results = []
 
-    cssClasses = {'table': 'tablesorter myTable'}
-    fields = Fields(ITeilnehmer).select('id', 'name') + Fields(IUnternehmen).select('mnr')
-    fields['id'].field.readonly = False
-    fields['mnr'].field.readonly = False
-    fields['name'].field.required = False
+    def getResults(self):
+        root = grok.getSite()
+        for item in self.results:
+            locate(root, item, DefaultModel)
+            locate(root, item.unternehmen, DefaultModel)
+            name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
+            unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
+            d = dict(name=name,
+                     vorname=item.vorname,
+                     gebdat=item.geburtsdatum.strftime('%d.%m.%Y'),
+                     unternehmen=unternehmen)
+            yield d
 
-    @button.buttonAndHandler(u'Suchen')
-    def handle_search(self, action):
-        rc = []
-        v=False
+    @action(u'Suchen')
+    def handle_search(self):
+        v = False
         data, errors = self.extractData()
         session = Session()
         sql = session.query(Teilnehmer)
-        if data.get('id'):
+        if data.get('id') != NO_VALUE:
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
-        if data.get('name'):
+        if data.get('name') != NO_VALUE:
             constraint = "%%%s%%" % data.get('name')
             sql = sql.filter(Teilnehmer.name.like(constraint))
             v = True
-        if data.get('mnr'):
+        if data.get('mnr') != NO_VALUE:
             constraint = "%%%s%%" % data.get('mnr')
             sql = sql.filter(Teilnehmer.unternehmen_mnr.like(constraint))
             v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return
-        print sql    
         self.results = sql.all()
-
-    @property
-    def values(self):
-        return self.results
-
-    @property
-    def displaytable(self):
-        self.update()
-        return self.renderTable()
-
-
-class ColumnName(Column):
-    grok.name('teilnehmername')
-    grok.context(Interface)
-    header = "Name"
-
-    def renderCell(self, item):
-        locate(grok.getSite(), item, DefaultModel)
-        url = grok.url(self.request, item)
-        return '<a href="%s"> %s </a>' % (url, item.name)
-
-
-class ColumnVorName(GetAttrColumn):
-    grok.name('teilnehmervorname')
-    grok.context(Interface)
-    header = "Vorname"
-    attrName = "vorname"
-
-
-class ColumnGebDat(Column):
-    grok.name('teilnehmergebdat')
-    grok.context(Interface)
-    header = "Geburtsdatum"
-
-    def renderCell(self, item):
-        if item.geburtsdatum != None:
-            return item.geburtsdatum.strftime('%d.%m.%Y')
-
-
-class ColumnMNR(Column):
-    grok.name('teilnehmermnr')
-    grok.context(Interface)
-    header = "Unternehmen"
-
-    def renderCell(self, item):
-        locate(grok.getSite(), item.unternehmen, DefaultModel)
-        url = grok.url(self.request, item.unternehmen)
-        return '<a href="%s"> %s </a>' % (url, item.unternehmen.name)

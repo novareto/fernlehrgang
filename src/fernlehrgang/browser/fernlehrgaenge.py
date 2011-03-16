@@ -1,44 +1,37 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
+import uvc.layout
 
-from grok import url, getSite
-from z3c.saconfig import Session
-from megrok.traject import locate
+from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
-from uvc.layout.interfaces import ISidebar
-from fernlehrgang.models import Fernlehrgang
-from megrok.traject.components import DefaultModel
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from megrok.z3cform.tabular import DeleteFormTablePage
 from fernlehrgang.interfaces.app import IFernlehrgangApp
-
-from dolmen.app.layout import ContextualMenuEntry
-from dolmen.app.layout import models
-from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn 
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from megrok.z3cform.base.directives import cancellable 
-from uvc.widgets import DatePickerCSS, DatePicker
-
+from fernlehrgang.interfaces.flg import IFernlehrgang
+from fernlehrgang.models import Fernlehrgang
+from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
+from z3c.saconfig import Session
+from zeam.form.base import Fields
 
 grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu)
-class FernlehrgangListing(DeleteFormTablePage):
+class FernlehrgangListing(TablePage):
+    grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
     grok.require('uvc.managefernlehrgang')
     grok.order(10)
-    #extends(DeleteFormTablePage)
-    
+
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
-    title = u"Fernlehrgänge"
+    label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
 
     cssClasses = {'table': 'tablesorter myTable'}
@@ -46,55 +39,28 @@ class FernlehrgangListing(DeleteFormTablePage):
 
     @property
     def values(self):
-        root = getSite()
+        root = grok.getSite()
         session = Session()
         for fernlehrgang in session.query(Fernlehrgang).all():
             locate(root, fernlehrgang, DefaultModel)
-            yield fernlehrgang 
-
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.flash(u'Der Fernlehrgang wurde erfolgreich gelöscht.')
-        self.nextURL = self.url(self.context, 'fernlehrgang_listing')
-        self.request.response.redirect(self.nextURL)
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True    
-
-    @button.buttonAndHandler(u'Fernlehrgang anlegen')
-    def handleAddUnternehmen(self, action):
-         self.redirect(self.url(self.context, 'addfernlehrgang')) 
+            yield fernlehrgang
 
 
 @menuentry(AddMenu)
-class AddFernlehrgang(PageAddForm):
+class AddFernlehrgang(uvc.layout.AddForm):
+    grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
     grok.title(u'Fernlehrgang')
     title = u'Fernlehrgang'
     label = u'Fernlehrgang anlegen'
     description = u""
-    cancellable(True)
 
     fields = Fields(IFernlehrgang).omit('id')
-
-    def updateWidgets(self):
-        super(AddFernlehrgang, self).updateWidgets()
-        DatePickerCSS.need()
-        DatePicker.need()
-        self.widgets['beginn'].klass = "datepicker"
-        self.widgets['ende'].klass = "datepicker"
 
     def create(self, data):
         return Fernlehrgang(**data)
 
     def add(self, object):
-        print object.titel
         session = Session()
         session.add(object)
 
@@ -105,7 +71,7 @@ class AddFernlehrgang(PageAddForm):
 
 
 class Index(models.DefaultView):
-    grok.context(IFernlehrgang)   
+    grok.context(IFernlehrgang)
     fields = Fields(IFernlehrgang).omit('id')
 
     @property
@@ -118,31 +84,10 @@ class Edit(models.Edit):
     grok.context(IFernlehrgang)
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
-    extends(PageEditForm)
     fields = Fields(IFernlehrgang).omit('id')
 
-    @button.buttonAndHandler(u'Fernlehrgang entfernen')
-    def handleDeleteFernlehrgang(self, action):
-        session = Session()
-        session.delete(self.context)
-        self.flash(u'Der Fernlehrgang wurde erfolgreich gelöscht.')
-        self.redirect(self.url(self.context.__parent__)) 
-
-    def updateWidgets(self):
-        super(Edit, self).updateWidgets()
-        DatePickerCSS.need()
-        DatePicker.need()
-        self.widgets['beginn'].klass = "datepicker"
-        self.widgets['ende'].klass = "datepicker"
 
 ### Spalten
-
-#class CheckBox(CheckBoxColumn):
-#    grok.name('checkBox')
-#    grok.context(IFernlehrgangApp)
-#    weight = 0
-#    cssClasses = {'th': 'checkBox'}
-
 
 class Title(LinkColumn):
     grok.name('titel')
@@ -192,4 +137,3 @@ class Jahr(GetAttrColumn):
 #
 #    def render(self):
 #        return self.xml
-

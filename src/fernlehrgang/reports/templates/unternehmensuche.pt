@@ -1,11 +1,35 @@
 <html>
- <body>
-    <div metal:use-macro="macro:completeform">
-      <div metal:use-macro="macro:widget-rows" />
-    </div>
-
-    <div class="results">
-      <span tal:replace="structure view/displaytable" />
-    </div>    
- </body>
+  <body>
+    <div metal:use-macro="macro:editform" />
+    <table tal:define="results view/results" tal:condition="results">
+      <tr>
+        <th> Fernlehrgang </th>
+        <th> Teilnehmer </th>
+        <th> Unternehmen</th>
+        <th> Ergebnis</th>
+      </tr>
+      <tr tal:repeat="result results">
+        <td> 
+          <a href="" tal:attributes="href result/link_flg">
+            <span tal:content="result/flg" /> 
+          </a>
+        </td>
+        <td> 
+          <a href="" tal:attributes="href result/link_kt">
+            <span tal:content="string:${result/name} - ${result/vorname}"/>
+          </a>
+        </td>
+        <td>
+          <a href="" tal:attributes="href result/link_unternehmen">
+            <span tal:content="string:${result/mnr} - ${result/unternehmen}"/>
+          </a> 
+        </td>
+        <td>
+          <a href="" tal:attributes="href result/link_kt">
+            <span tal:content="result/bestanden" /> 
+          </a>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

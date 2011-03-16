@@ -4,34 +4,29 @@
            xmlns:grok="http://namespaces.zope.org/grok">
   <include package="grok" />
   <includeDependencies package="." />
-  <includeDependenciesOverrides package="." />
-  <i18n:registerTranslations directory="locales" />
-  <include package="megrok.pagetemplate" file="meta.zcml" />
-
-   <z3c:template
-      template="templates/div-form.pt"
-      for="z3c.form.interfaces.IInputForm"
-      layer="uvc.skin.skin.IUVCSkin"
-      />
-
-   <z3c:macro
-       name="completeform"
-       template="templates/div-form.pt"
-       layer="uvc.skin.skin.IUVCSkin"
-       />
-
-   <z3c:macro
-       name="widget-rows"
-       macro="widget-rows"
-       template="templates/div-form.pt"
-       layer="uvc.skin.skin.IUVCSkin"
-       />
-
-  <adapter
-      factory="z3c.form.hint.FieldDescriptionAsHint"
-      name="title"/>
 
 
-  
+  <include package="zope.i18n" />
+  <include package="zope.session" />
+  <include package="zope.dublincore" />
+  <include package="zope.authentication" />
+
+
+  <include package="megrok.layout" />
+  <include package="megrok.navigation" />
+  <include package="megrok.navigation" file="meta.zcml" />
+  <include package="megrok.resource" />
+  <include package="megrok.z3ctable" />
+  <include package="megrok.z3ctable" file="meta.zcml" />
+
+  <include package="uvc.layout" />
+  <include package="uvc.skin" />
+
+  <include package="dolmen.menu" />
+  <include package="dolmen.app.security" />
+  <include package="dolmen.app.breadcrumbs" />
+
+  <includeOverrides package="uvc.skin" file="overrides.zcml" />
+
   <grok:grok package="." />
 </configure>

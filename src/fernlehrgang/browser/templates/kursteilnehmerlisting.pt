@@ -1,11 +1,18 @@
 <html>
- <body>
-    <div metal:use-macro="macro:completeform">
-      <div metal:use-macro="macro:widget-rows" />
-    </div>
+  <body>
+    <div metal:use-macro="macro:editform" />
 
-    <div class="results">
-      <span tal:replace="structure view/displaytable" />
-    </div>    
- </body>
+    <table tal:define="results view/getResults" tal:condition="results">
+      <tr>
+        <th> Name </th>
+        <th> Status </th>
+        <th> Unternehmen </th>
+      </tr>
+      <tr tal:repeat="result results">
+        <td> <span tal:replace="structure result/name" /> </td>
+        <td> <span tal:replace="result/status" /> </td>
+        <td> <span tal:replace="structure result/unternehmen" /> </td>
+      </tr>
+    </table>  
+  </body>
 </html>

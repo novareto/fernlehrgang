@@ -13,8 +13,10 @@ from fernlehrgang import models
 
 
 from fernlehrgang.interfaces.flg import IFernlehrgang
+from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
 from fernlehrgang.ui_components import NavigationMenu
 from zope.schema.interfaces import IVocabularyFactory
+
 
 from pygooglechart import PieChart2D, PieChart3D
 
@@ -38,12 +40,12 @@ class FernlehrgangStatistik(layout.Page):
 
     def update(self):
         session = saconfig.Session()
-        lieferstopps = component.getUtility(IVocabularyFactory, 'uvc.lieferstopps')(None)
+        lfs = lieferstopps(None)
         self.alle_kursteilnehmer = len(self.context.kursteilnehmer)
         sql = session.query(models.Kursteilnehmer)
         kursteilnehmer_status = session.query(models.Kursteilnehmer.status, func.count()).group_by(
             models.Kursteilnehmer.status).all()
-        self.kursteilnehmer_detail = [(lieferstopps.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
+        self.kursteilnehmer_detail = [(lfs.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
 
     def chart(self):
         chart = PieChart3D(250, 100)

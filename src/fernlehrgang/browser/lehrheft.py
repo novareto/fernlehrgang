@@ -1,84 +1,58 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
+import uvc.layout
 
-from grok import url, getSite
-from z3c.saconfig import Session
 from megrok.traject import locate
 from dolmen.menu import menuentry
-from fernlehrgang.models import Lehrheft 
-from uvc.layout.interfaces import ISidebar
+from fernlehrgang.models import Lehrheft
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from megrok.z3cform.tabular import DeleteFormTablePage
-from megrok.z3ctable import CheckBoxColumn, LinkColumn, GetAttrColumn
-from megrok.z3cform.base import PageEditForm, PageDisplayForm, PageAddForm, Fields, button, extends
-from megrok.z3cform.base.directives import cancellable
-from dolmen.menu import menuentry
+from megrok.z3ctable import (TablePage,
+    CheckBoxColumn, LinkColumn, GetAttrColumn)
 from fernlehrgang.ui_components import AddMenu, NavigationMenu
-from dolmen.app.layout import models, ContextualMenuEntry
-
+from dolmen.app.layout import models, IDisplayView
+from zeam.form.base import Fields
+from fernlehrgang.interfaces import IListing
 
 grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu)
-class LehrheftListing(DeleteFormTablePage):
+class LehrheftListing(TablePage):
+    grok.implements(IDisplayView, IListing)
     grok.context(IFernlehrgang)
     grok.name('lehrheft_listing')
     grok.title(u'Lehrhefte verwalten')
 
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
-    title = u"Lehrhefte"
+    label = u"Lehrhefte"
 
     @property
     def description(self):
-        return u"Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." %(self.context.titel, self.context.jahr)
+        return u"Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." % (self.context.titel, self.context.jahr)
 
-    extends(DeleteFormTablePage)
     cssClasses = {'table': 'tablesorter myTable'}
-
-    status = None
 
     @property
     def values(self):
-        root = getSite()
+        root = grok.getSite()
         for x in self.context.lehrhefte:
             locate(root, x, DefaultModel)
         return self.context.lehrhefte
 
-    def executeDelete(self, item):
-        session = Session()
-        session.delete(item)
-        self.flash(u'Das Lehrheft wurde erfolgreich gelöscht.')
-        self.nextURL = self.url(self.context, 'lehrheft_listing')
-        self.request.response.redirect(self.nextURL)
-
-    def render(self):
-        if self.nextURL is not None:
-            self.flash(u'Die Objecte wurden gelöscht')
-            self.request.response.redirect(self.nextURL)
-            return ""
-        return self.renderFormTable()
-    render.base_method = True    
-
-    @button.buttonAndHandler(u'Lehrheft anlegen')
-    def handleAddLehrheft(self, action):
-         self.redirect(self.url(self.context, 'addlehrheft')) 
-
 
 @menuentry(AddMenu)
-class AddLehrheft(PageAddForm):
+class AddLehrheft(uvc.layout.AddForm):
     grok.context(IFernlehrgang)
     grok.title(u'Lehrheft')
     title = u'Lehrheft'
     label = u'Lehrhefte'
     description = u'Hier können Sie die Lehrhefte für den Fernlehrgang anlegen.'
-    cancellable(True)
 
     fields = Fields(ILehrheft).omit('id')
 
@@ -107,15 +81,8 @@ class Edit(models.Edit):
     grok.title(u'Edit')
     grok.name('edit')
 
-    extends(PageEditForm)
     fields = Fields(ILehrheft).omit('id')
 
-    @button.buttonAndHandler(u'Lehrhefte entfernen')
-    def handleDeleteFernlehrgang(self, action):
-        session = Session()
-        session.delete(self.context)
-        self.flash(u'Das Lehrheft wurde erfolgreich gelöscht.')
-        self.redirect(self.url(self.context.__parent__)) 
 
 ## Spalten
 
@@ -124,12 +91,12 @@ class CheckBox(CheckBoxColumn):
     grok.context(IFernlehrgang)
     weight = 0
     cssClasses = {'th': 'checkBox'}
-    
+
 
 class Nummer(GetAttrColumn):
     grok.name('nummer')
     grok.context(IFernlehrgang)
-    weight = 10 
+    weight = 10
     attrName = "nummer"
     header = "Nummer"
 
