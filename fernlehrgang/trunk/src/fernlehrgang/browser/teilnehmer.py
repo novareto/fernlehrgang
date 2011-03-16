@@ -16,15 +16,23 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from uvc.layout.interfaces import IExtraInfo
 from z3c.saconfig import Session
-from zeam.form.base import Fields
-
+from zeam.form.base import Fields, NO_VALUE
+from fernlehrgang.interfaces import IListing
+from profilestats import profile
 
 grok.templatedir('templates')
 
 
+def no_value(d):
+    for key, value in d.items():
+        if value is NO_VALUE:
+            d[key] = None
+    return d
+
+
 @menuentry(NavigationMenu)
 class TeilnehmerListing(TablePage):
-    grok.implements(IDisplayView)
+    grok.implements(IDisplayView, IListing)
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
@@ -32,6 +40,7 @@ class TeilnehmerListing(TablePage):
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     label = u"Teilnehmer"
+    cssClasses = {'table': 'tablesorter myTable'}
 
     @property
     def description(self):
@@ -39,9 +48,6 @@ class TeilnehmerListing(TablePage):
 
     @property
     def values(self):
-        root = grok.getSite()
-        for x in self.context.teilnehmer:
-            locate(root, x, DefaultModel)
         return self.context.teilnehmer
 
 
@@ -54,6 +60,7 @@ class AddTeilnehmer(uvc.layout.AddForm):
     fields = Fields(ITeilnehmer).omit('id')
 
     def create(self, data):
+        data = no_value(data)
         lehrgang = data.pop('lehrgang')
         kursteilnehmer = Kursteilnehmer(
             fernlehrgang_id=lehrgang,
@@ -69,10 +76,12 @@ class AddTeilnehmer(uvc.layout.AddForm):
         kursteilnehmer.teilnehmer = teilnehmer
         kursteilnehmer.unternehmen = self.context
         if kursteilnehmer.fernlehrgang_id:
+            print "BBB----->", kursteilnehmer.fernlehrgang_id
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
 
     def nextURL(self):
+        self.flash(u'Der Teilnehmer wurde erfolgreich gespeichert')
         return self.url(self.context, 'teilnehmer_listing')
 
 
@@ -81,7 +90,7 @@ class Index(models.DefaultView):
     title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
 
-    fields = Fields(ITeilnehmer).omit(id)
+    fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
 
 
 class Edit(models.Edit):
@@ -89,7 +98,7 @@ class Edit(models.Edit):
     grok.name('edit')
     label = u"Teilnehmer"
 
-    fields = Fields(ITeilnehmer).omit('id')
+    fields = Fields(ITeilnehmer).omit('id', 'lehrgang')
 
 
 # More Info Viewlets
@@ -115,6 +124,9 @@ class Name(LinkColumn):
     grok.context(IUnternehmen)
     weight = 10 
     linkContent = "edit"
+
+    def getLinkURL(self, item):
+        return self.table.url().replace('_listing', '/'+str(item.id))
 
     def getLinkContent(self, item):
         return item.name

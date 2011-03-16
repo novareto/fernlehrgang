@@ -2,14 +2,14 @@
  <body>
   <div>
     <h1> <span tal:content="view/title"/> </h1>
-
-
     <div id="accordion">
 
       <div>
         <h2 class="current"> Anschrift des Unternehmens </h2>
         <div class="pane" style="display:block">
-          <div metal:use-macro="macro:editform" />
+          <div class="input-form"> 
+            <div metal:use-macro="macro:form"/> 
+          </div>
         </div>  
       </div> 
 

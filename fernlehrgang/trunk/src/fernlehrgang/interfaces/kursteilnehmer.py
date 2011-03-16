@@ -51,3 +51,4 @@ class IKursteilnehmer(Interface):
         default = 'A1',
         source = lieferstopps,
         )
+

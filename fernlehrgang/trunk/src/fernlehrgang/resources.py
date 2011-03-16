@@ -10,19 +10,16 @@ from hurry.jquery import jquery
 from zope.interface import Interface
 from uvc.layout.interfaces import IHeaders
 
+from uvc.widgets import double
+
 
 class FernlehrgangResources(resource.ResourceLibrary):
     resource.name('flgresource')
     resource.path('static')
     resource.resource('jquery.tools.min.js')
     resource.resource('jquery.tablesorter.min.js')
-    #resource.resource('jquery.tablesorter.pager.js')
-    #resource.resource('jquery.metadata.js')
-    resource.resource('jquery.autocomplete.js')
-    resource.resource('flg.js')
-    resource.resource('dropdown.js')
     resource.resource('flg.css')
-    resource.resource('dynselect.js', depends=[jquery,])
+    resource.resource('flg.js', depends=[double,])
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):
