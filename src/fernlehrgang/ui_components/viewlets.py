@@ -26,7 +26,7 @@ class UserName(grok.Viewlet):
     group = ""
 
     def render(self):
-        return '<a href="#"> -%s </a>' % self.request.principal.description or self.request.principal.id
+        return '<a href="#"> %s </a>' % self.request.principal.description or self.request.principal.id
 
 
 class GlobalMenuViewlet(grok.Viewlet):

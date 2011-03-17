@@ -6,16 +6,14 @@
         <th>Benutzername</th>
         <th>Vollstaendiger Name</th>
         <th>Benutzerrolle</th>
-        <th>Gruppen-Zuordnung</th>
     </tr>
     <tr tal:repeat="user view/users">
         <td tal:define="curl python: view.url(context)">
-          <a href="" tal:attributes="href string:${curl}/${user/name}/edit"> 
-            <span tal:content="user/name">type </span>
+          <a href="" tal:attributes="href string:${curl}/${user/login}/edit"> 
+            <span tal:content="user/login">type </span>
           </a>  
         </td>
         <td tal:content="user/real_name">type</td>
         <td tal:content="user/role">type</td>
-        <td tal:content="user/zuordnung">type</td>
     </tr>
 </table>

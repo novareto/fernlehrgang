@@ -14,28 +14,42 @@ from dolmen.menu import menuentry
 from uvc.layout.interfaces import IFooter, IExtraInfo
 from megrok.layout import Page
 
-from uvc.auth.auth import UserAuthenticatorPlugin, setup_authentication
+from fernlehrgang.auth.handler import UserAuthenticatorPlugin
 from zope.pluggableauth import PluggableAuthentication
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 from zope.authentication.interfaces import IAuthentication
 from zeam.form.ztk.widgets.date import DateWidgetExtractor, DateFieldWidget
 from zope.i18n.format import DateTimeParseError
 from zeam.form.base import NO_VALUE
+from zope.component import getUtility
 
 
 grok.templatedir('templates')
 
 
+def setup_pau(PAU):
+    PAU.authenticatorPlugins = ('principals', )
+    PAU.credentialsPlugins = ("cookies", "No Challenge if Authenticated")
+
+
 class FernlehrgangApp(grok.Application, grok.Container):
     grok.implements(IFernlehrgangApp) 
+    grok.traversable(attr='benutzer')
+
     grok.local_utility(
         UserAuthenticatorPlugin, provides=IAuthenticatorPlugin,
-        name='users',
+        name='principals',
         )
+
     grok.local_utility(
-        PluggableAuthentication, provides=IAuthentication,
-        setup=setup_authentication,
+        PluggableAuthentication, 
+        provides=IAuthentication,
+        public=True,
+        setup=setup_pau,
         )
+
+    def benutzer(self):
+        return getUtility(IAuthenticatorPlugin, 'principals').user_folder
 
 
 class Index(models.Index):
@@ -52,7 +66,6 @@ class Kontakt(Page):
 
     def render(self):
         return "KONTAKT"
-
 
 
 class RestLayer(grok.IRESTLayer):
@@ -101,4 +114,3 @@ class CustomDateWidgetExtractor(DateWidgetExtractor):
             except (ValueError, DateTimeParseError), error:
                 return None, u"Bitte überprüfen Sie das Datumsformat. (tt.mm.jjjj)"
         return value, error
-

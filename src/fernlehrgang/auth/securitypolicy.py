@@ -4,23 +4,20 @@
 
 import grok
 
-
+from grokcore.component import provider
 from zope.component import getUtilitiesFor
 from zope.securitypolicy.interfaces import IRole
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 
 
-class Roles(grok.GlobalUtility):
-    grok.name('uvc.auth.roles')
-    grok.implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        items = []
-        for name, utility in getUtilitiesFor(IRole, context):
-            if name.startswith('uvc'):
-                items.append((grok.title.bind().get(utility), name))
-        return SimpleVocabulary.fromItems(items)
+@provider(IContextSourceBinder)
+def roles(context):
+    items = []
+    for name, utility in getUtilitiesFor(IRole, context):
+        if name.startswith('uvc'):
+            items.append((grok.title.bind().get(utility), name))
+    return SimpleVocabulary.fromItems(items)
 
 
 class ManageFernlehrgang(grok.Permission):
@@ -32,15 +29,10 @@ class ManageTeilnehmer(grok.Permission):
 
 class BGEAdminstrator(grok.Role):
     grok.name('uvc.bgeadministrator')
-    grok.title('BGHW Administrator')
+    grok.title('Administrator - Fernlehrgang')
     grok.permissions('uvc.managefernlehrgang', 
                      'dolmen.content.Edit',
                      'dolmen.content.View',
                      'zope.View',
                      'uvc.manageteilnehmer')
 
-class DAABenutzer(grok.Role):
-    grok.name('uvc.daabenutzer')
-    grok.title('DAA Mitarbeiter')
-    grok.permissions('uvc.manageteilnehmer',
-                     'dolmen.content.Edit',)

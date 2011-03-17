@@ -10,20 +10,22 @@ from handler import Account, UserFolder
 from interfaces import IAddUserForm
 from megrok import navigation
 from megrok.layout import Page
-from uvc.layout.interfaces import IGlobalMenu
+from uvc.layout.interfaces import IFooter
 from uvc.layout.zeamform import Form
 from zeam.form.base import Fields, action
 from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
+from dolmen.menu import menuentry
 
 grok.templatedir('templates')
 
 
+@menuentry(IFooter)
 class BenuzterVerwaltung(grok.View):
     grok.title('Benutzerverwaltung')
     grok.context(interface.Interface)
     grok.require('zope.ManageApplication')
-    navigation.sitemenuitem(IGlobalMenu, order=200)
+    navigation.sitemenuitem(IFooter, order=100)
 
     def render(self):
         self.redirect(self.application_url() + '/benutzer')
@@ -32,7 +34,7 @@ class BenuzterVerwaltung(grok.View):
 class UserList(Page):
     grok.name('index')
     grok.context(UserFolder)
-    grok.require('uf.ueberfallmanager')
+    grok.require('zope.ManageApplication')
     
     def update(self):
         users = component.getUtility(IAuthenticatorPlugin, 'principals')
@@ -53,7 +55,7 @@ class AddUser(Form):
             self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
             return
         users = component.getUtility(IAuthenticatorPlugin, 'principals')
-        users.addUser(data['login'],data['password'],data['real_name'],data['role'],data['zuordnung'])
+        users.addUser(data['login'], data['password'], data['real_name'], data['role'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
 
 

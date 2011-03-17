@@ -12,17 +12,6 @@ from zope.pluggableauth.interfaces import IPrincipalInfo, IAuthenticatorPlugin
 
 
 
-def getAccountfromPrincipal(principalobj):
-    """
-    Gibt ein Account-Objekt zum Principal zurück. Dieses Account-Objekt
-    beinhaltet das Attribute zuordnung.
-    """
-    utility = component.getUtility(IAuthenticatorPlugin, 'principals')
-    account = utility.getAccount(principalobj.id)
-    return account    
-
-
-
 class PrincipalInfo(object):
     grok.implements(IPrincipalInfo)
 
@@ -51,7 +40,7 @@ class UserAuthenticatorPlugin(grok.LocalUtility):
             return None
         if not account.checkPassword(credentials['password']):
             return None
-        return PrincipalInfo(id=account.name,
+        return PrincipalInfo(id=account.login,
                              title=account.real_name,
                              description=account.real_name)
 
@@ -59,19 +48,18 @@ class UserAuthenticatorPlugin(grok.LocalUtility):
         account = self.getAccount(id)
         if account is None:
             return None
-        return PrincipalInfo(id=account.name,
+        return PrincipalInfo(id=account.login,
                              title=account.real_name,
                              description=account.real_name)
 
     def getAccount(self, login):
         return login in self.user_folder and self.user_folder[login] or None
     
-    def addUser(self, username, password, real_name, role, zuordnung):
+    def addUser(self, username, password, real_name, role):
         if username not in self.user_folder:
-            user = Account(username, password, real_name, role, zuordnung)
+            user = Account(name, password, real_name, role)
             self.user_folder[username] = user
             role_manager = IPrincipalRoleManager(grok.getSite())
-            print role, username
             role_manager.assignRoleToPrincipal(role, username)
             
     def listUsers(self):
@@ -83,12 +71,11 @@ class UserFolder(grok.Container):
 
 
 class Account(grok.Model):
-    def __init__(self, name, password, real_name, role, zuordnung):
-        self.name = name
+    def __init__(self, name, password, real_name, role):
+        self.login = name
         self.real_name = real_name
         self.role = role
         self.password = password
-        self.zuordnung = zuordnung
 
     def checkPassword(self, password):
         if password == self.password:
