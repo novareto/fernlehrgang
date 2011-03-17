@@ -5,12 +5,10 @@
   <include package="grok" />
   <includeDependencies package="." />
 
-
   <include package="zope.i18n" />
   <include package="zope.session" />
   <include package="zope.dublincore" />
   <include package="zope.authentication" />
-
 
   <include package="megrok.layout" />
   <include package="megrok.navigation" />
@@ -23,6 +21,7 @@
   <include package="uvc.skin" />
 
   <include package="dolmen.menu" />
+  <include package="dolmen.app.authentication" />
   <include package="dolmen.app.security" />
   <include package="dolmen.app.breadcrumbs" />
 

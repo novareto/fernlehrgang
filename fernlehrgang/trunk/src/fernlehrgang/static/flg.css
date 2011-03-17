@@ -203,9 +203,6 @@ dl#footer dt {
     margin-left:0;
 }
 
-#uvc-user-preferences {
-   display: none
-}
 
 .menu dt {
     display:block;
@@ -224,7 +221,7 @@ dl#navigation ul li a.selected {
   background-color: #EFEFEF;
 }
 
-dl#contextual-actions {
+dl#user-actions {
   display: none;
 }
 

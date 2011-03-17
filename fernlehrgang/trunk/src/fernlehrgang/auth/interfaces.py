@@ -2,36 +2,39 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-from vocabs import roles, zuordnung, zuordnung_police
 from zope import component, interface, schema
+from fernlehrgang.auth.securitypolicy import roles
+
 
 class IAddUserForm(interface.Interface):
 
     login = schema.BytesLine(
-        title=u'Benutzername',
-        description = u"Bitte geben Sie einen Benutzernamen ein z.b HMustermann",  
-        required=True
+        title = u'Anmeldename',
+        description = u"Bitte geben Sie hier den Anmeldenamen ein.",  
+        required = True
         )
 
     password = schema.Password(
-        title=u'Passwort', 
-        required=True
+        title = u'Passwort', 
+        description = u"Bitte tragen Sie hier das Passwort ein.",  
+        required = True
         )
 
     confirm_password = schema.Password(
-        title=u'Passwort bestaetigen', 
+        title = u'Passwort bestätigen', 
+        description = u"Bitte wiederholen Sie aus Sicherheitsgründen das Passwort.",  
         required=True
         )
 
     real_name = schema.BytesLine(
-        title=u'Vollstaendiger Name',
-        description = u"Bitte geben Sie den vollstaendigen Namen ein z.b Heinz Mustermann", 
+        title=u'Vollständiger Name',
+        description = u"Bitte geben Sie den vollständigen Namen ein.", 
         required=True
         )
 
     role = schema.Choice(
-        title=u'Benutzerrolle',
-        description = u"Bitte waehlen Sie die richtige Rolle aus.",
+        title=u'Rolle',
+        description = u"Bitte wählen Sie eine Rolle für den Benuzter aus.",
         source=roles,
         required=True
         )
