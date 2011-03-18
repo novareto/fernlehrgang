@@ -2,10 +2,23 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import grokcore.component as grok
 
 from zope.schema import *
 from zope.interface import Interface
+
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+
+
+@grok.provider(IContextSourceBinder)
+def jahre(context):
+    items = []
+    for jahr in range(2011, 2020, 1):
+        jahr = str(jahr)
+        items.append(SimpleTerm(jahr, jahr, jahr))
+    return SimpleVocabulary(items)
+
 
 class IFernlehrgang(Interface):
 
@@ -16,10 +29,11 @@ class IFernlehrgang(Interface):
         readonly = True
         )
 
-    jahr = TextLine(
+    jahr = Choice(
         title = u'Jahr',
         description = u'Das Jahr in dem der Fernlehrgang stattfindent',
-        required = True
+        required = True,
+        source = jahre,
         )
 
     titel = TextLine(

@@ -36,14 +36,17 @@ class GlobalMenuViewlet(grok.Viewlet):
     grok.order(11)
     flgs = []
 
-
     def getCss(self, flg):
         css = {'2011': 'blue',
                '2012': 'orange',
                '2013': 'violet', 
                '2014': 'green',
                '2015': 'brown', 
-               '2016': 'purple'}
+               '2016': 'purple',
+               '2017': 'blue',
+               '2018': 'orange',
+               '2019': 'violet',
+               '2020': 'green'}
         return "dropdown %s" % css[flg]
 
     def getContent(self):
@@ -56,7 +59,7 @@ class GlobalMenuViewlet(grok.Viewlet):
             if not fernlehrgang.jahr in d.keys():
                 d[fernlehrgang.jahr] = []
             d[fernlehrgang.jahr].append(dict(url=url, title=titel))
-        return d 
+        return d
 
     def update(self):
         self.flgs = self.getContent()

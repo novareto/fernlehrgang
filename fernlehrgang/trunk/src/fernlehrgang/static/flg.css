@@ -221,6 +221,7 @@ dl#navigation ul li a.selected {
   background-color: #EFEFEF;
 }
 
+dl#contextual-actions,
 dl#user-actions {
   display: none;
 }
@@ -232,11 +233,18 @@ body {
 
 /* Felder */
 
+#form-field-titel {
+ width: 300px;
+}
+
+#form-field-punktzahl,
 #form-field-nr, 
 #form-field-plz {
  width: 4em;
 }
 
+#form-field-ende,
+#form-field-beginn,
 #form-field-geburtsdatum {
  width: 6em;
 }
