@@ -86,13 +86,6 @@ class Edit(models.Edit):
 
 ## Spalten
 
-class CheckBox(CheckBoxColumn):
-    grok.name('checkBox')
-    grok.context(IFernlehrgang)
-    weight = 0
-    cssClasses = {'th': 'checkBox'}
-
-
 class Nummer(GetAttrColumn):
     grok.name('nummer')
     grok.context(IFernlehrgang)

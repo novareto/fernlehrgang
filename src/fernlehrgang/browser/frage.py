@@ -15,7 +15,7 @@ from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3ctable import TablePage, GetAttrColumn, CheckBoxColumn, LinkColumn
 from dolmen.app.layout import models, IDisplayView 
-from dolmen.menu import menuentry
+from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from zeam.form.base import Fields
 
@@ -44,7 +44,6 @@ class FrageListing(TablePage):
         return self.context.fragen
 
 
-@menuentry(AddMenu)
 class AddFrage(uvc.layout.AddForm):
     grok.context(ILehrheft)
     grok.title(u'Frage')
@@ -63,9 +62,17 @@ class AddFrage(uvc.layout.AddForm):
         return self.url(self.context, 'frage_listing')
 
 
+class HelperEntry(Entry):
+    grok.context(IFrage)
+    grok.order(1)
+    grok.title('Frage')
+    menu(NavigationMenu)
+
+
+
 class Index(models.DefaultView):
     grok.context(IFrage)
-    grok.title(u'View')
+    grok.title(u'Ansicht')
     title = label = u"Frage"
     description = u"Hier können Sie Deteils zu Ihren Fragen ansehen."
 
@@ -74,7 +81,7 @@ class Index(models.DefaultView):
 
 class Edit(models.Edit):
     grok.context(IFrage)
-    grok.title(u'Edit')
+    grok.title(u'Bearbeiten')
     grok.name('edit')
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."

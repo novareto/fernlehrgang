@@ -24,7 +24,7 @@
            public access -->
       <grant permission="zope.View"
              principal="zope.Authenticated" />
-      <grant permission="zope.app.dublincore.view"
+      <grant permission="zope.dublincore.view"
              principal="zope.Authenticated" />
 
       <role id="zope.Manager" title="Site Manager" />

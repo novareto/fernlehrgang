@@ -26,27 +26,25 @@ setup(name='fernlehrgang',
                         'grokcore.startup',
                         'megrok.traject',
                         'z3c.saconfig',
-                        'uvc.skin',
-                        'uvc.auth',
                         'uvc.layout',
                         'uvc.widgets',
-                        'z3c.menu.simple',
-                        'megrok.z3cform.base',
-                        'megrok.z3cform.ui',
-                        'megrok.z3cform.tabular',
+                        'uvc.skin',
                         'dolmen.menu',
-                        'megrok.pagetemplate',
-                        'dolmen.app.layout',
                         'profilehooks',
                         'dolmen.app.viewselector',
+                        'dolmen.forms.crud',
+                        'dolmen.app.authentication',
+                        'dolmen.content',
                         'repoze.profile',
+                        'profilestats',
                         'pygooglechart',
+                        'megrok.navigation',
+                        'megrok.z3ctable',
+                        'zope.pluggableauth',
+                        'hurry.jquerytools',
                         # Add extra requirements here
                         ],
       entry_points = """
-      [console_scripts]
-      fernlehrgang-debug = grokcore.startup:interactive_debug_prompt
-      fernlehrgang-ctl = grokcore.startup:zdaemon_controller
       [paste.app_factory]
       main = grokcore.startup:application_factory
       debug = grokcore.startup:debug_application_factory
