@@ -9,7 +9,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.models import Unternehmen, Kursteilnehmer, Teilnehmer
-from fernlehrgang.ui_components import NavigationMenu
+from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from z3c.saconfig import Session

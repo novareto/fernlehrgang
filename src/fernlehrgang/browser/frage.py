@@ -16,7 +16,7 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3ctable import TablePage, GetAttrColumn, CheckBoxColumn, LinkColumn
 from dolmen.app.layout import models, IDisplayView 
 from dolmen.menu import menuentry
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from zeam.form.base import Fields
 
 

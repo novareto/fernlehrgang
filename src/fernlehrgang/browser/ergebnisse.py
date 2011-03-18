@@ -8,7 +8,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.config import POSTVERSANDSPERRE
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
-from fernlehrgang.ui_components import NavigationMenu
+from fernlehrgang.viewlets import NavigationMenu
 from megrok.layout import Page
 
 
