@@ -11,7 +11,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Antwort, Frage
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.components import TablePage, GetAttrColumn, LinkColumn, Column

@@ -22,7 +22,7 @@ class UserName(grok.Viewlet):
     grok.name('myname')
     grok.context(Interface)
     grok.viewletmanager(PersonalPreferences)
-    grok.order(10)
+    grok.order(14)
     group = ""
 
     def render(self):
@@ -33,7 +33,7 @@ class GlobalMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(IPageTop)
     template = grok.PageTemplateFile('templates/globalmenu.pt')
-    grok.order(1)
+    grok.order(11)
     flgs = []
 
 
@@ -112,6 +112,7 @@ class NavigationMenu(menu.Menu):
 class NavigationMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(master.AboveBody)
+    grok.order(15)
     
     def render(self):
         menu = NavigationMenu(self.context, self.request, self.view)

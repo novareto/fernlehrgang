@@ -14,7 +14,7 @@ from fernlehrgang import models
 
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
-from fernlehrgang.ui_components import NavigationMenu
+from fernlehrgang.viewlets import NavigationMenu
 from zope.schema.interfaces import IVocabularyFactory
 
 

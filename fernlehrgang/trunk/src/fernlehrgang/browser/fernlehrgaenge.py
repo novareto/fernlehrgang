@@ -10,7 +10,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn

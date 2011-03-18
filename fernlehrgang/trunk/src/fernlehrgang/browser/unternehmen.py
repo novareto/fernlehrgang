@@ -10,7 +10,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp 
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.models import Unternehmen 
-from fernlehrgang.ui_components import NavigationMenu
+from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from z3c.saconfig import Session

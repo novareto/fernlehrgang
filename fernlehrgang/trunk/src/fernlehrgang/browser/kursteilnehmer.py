@@ -11,7 +11,7 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer, lieferstopps
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
-from fernlehrgang.ui_components import AddMenu, NavigationMenu
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from sqlalchemy import and_

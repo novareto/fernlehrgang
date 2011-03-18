@@ -18,14 +18,31 @@ function dd_canceltimer() {
 }
 
 
+$.tools.dateinput.localize("de", {
+   months: 'Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember',
+   shortMonths:  'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Okt,Nov,Dez',
+   days:         'Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag',
+   shortDays:    'So,Mo,Di,Mi,Do,Fr,Sa'
+});
+
+$.tools.dateinput.conf.lang = 'de';
+
+
 $(document).ready(function() 
   { 
+
+  $.each($('input.field-date'), function() {
+     $(this).dateinput({ format: 'dd.mm.yyyy', 'firstDay': 1 });
+  })
+
 
   $('#form-form-field-nr').appendFieldTo('#form-form-field-strasse');
   $('#form-form-field-ort').appendFieldTo('#form-form-field-plz');
 
   $(".myTable").tablesorter( {widgets: ['zebra'], }); 
   $("#accordion").tabs("#accordion div.pane", {tabs: 'h2', effect: 'slide', initialIndex: null});
+
+
 
   var v1 = $("#form-field-lehrheft_id :selected").val();
   if (v1 == 'Bitte eine Auswahl treffen')
