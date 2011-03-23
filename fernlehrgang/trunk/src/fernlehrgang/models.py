@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2007-2008 NovaReto GmbH
+# Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
 
 
@@ -29,13 +29,12 @@ from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 
 Base = declarative_base()
-Base1 = declarative_base()
+
 
 @grok.subscribe(IEngineCreatedEvent)
 def setUpDatabase(event):
     metadata = Base.metadata
     metadata.create_all(event.engine, checkfirst=True)
-
 
 
 class RDBMixin(traject.Model, Contained):
@@ -253,9 +252,6 @@ class Kursteilnehmer(Base, RDBMixin):
 
     def factory(fernlehrgang_id, kursteilnehmer_id):
         session = Session()
-        ### Hack
-        #if kursteilnehmer_id == 'context_fragen':
-        #    return None
         return  session.query(Kursteilnehmer).filter(
             and_( Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
                   Kursteilnehmer.id == int(kursteilnehmer_id))).one()
@@ -280,7 +276,7 @@ class Antwort(Base, RDBMixin):
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 
-                              backref = backref('antworten', order_by=frage_id),
+                              backref = backref('antworten', order_by=frage_id, cascade="all,delete"),
                              )
 
     frage = relation(Frage)
