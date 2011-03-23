@@ -6,19 +6,23 @@ import grok
 import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
+from dolmen.forms.base.utils import set_fields_data, apply_data_event
+from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
+from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
 from z3c.saconfig import Session
-from zeam.form.base import Fields, NO_VALUE
-from fernlehrgang.interfaces import IListing
-from profilestats import profile
+from zeam.form.base import Fields, NO_VALUE, action
+from zeam.form.base import NO_VALUE
+from zeam.form.base.markers import SUCCESS, FAILURE
 
 grok.templatedir('templates')
 
@@ -93,13 +97,41 @@ class Index(models.DefaultView):
     fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
 
 
+
 class Edit(models.Edit):
     grok.context(ITeilnehmer)
     grok.name('edit')
     label = u"Teilnehmer"
 
-    fields = Fields(ITeilnehmer).omit('id', 'lehrgang')
+    fields = Fields(ITeilnehmer).omit('id')
 
+    @action('Bearbeiten')
+    def handle_edit(self):
+        data, errors = self.extractData()
+        if errors:
+            self.submissionError = errors
+            return FAILURE
+
+        lehrgang = data.pop('lehrgang')
+        if lehrgang is not NO_VALUE:
+            session = Session()
+            kursteilnehmer = Kursteilnehmer(
+                fernlehrgang_id=lehrgang,
+                status="A1", 
+                unternehmen_mnr=self.context.unternehmen.mnr)
+            kursteilnehmer.teilnehmer = self.context
+            fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+            
+        apply_data_event(self.fields, self.getContentData(), data)
+        self.flash(_(u"Content updated"))
+        self.redirect(self.url(self.context))
+
+    
+    @action('Abbrechen')
+    def handle_cancel(self):
+        self.flash(u'Ihre Aktion wurde abgebrochen.')
+        self.redirect(self.url(self.context))
 
 # More Info Viewlets
 
