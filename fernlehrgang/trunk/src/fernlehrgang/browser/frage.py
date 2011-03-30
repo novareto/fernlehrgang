@@ -44,6 +44,7 @@ class FrageListing(TablePage):
         return self.context.fragen
 
 
+@menuentry(AddMenu)
 class AddFrage(uvc.layout.AddForm):
     grok.context(ILehrheft)
     grok.title(u'Frage')

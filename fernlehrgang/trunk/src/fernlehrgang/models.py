@@ -167,7 +167,7 @@ class Lehrheft(Base, RDBMixin):
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
     fernlehrgang = relation(Fernlehrgang, 
-                            backref = backref('lehrhefte', order_by=nummer.asc()),
+                            backref = backref('lehrhefte', order_by=nummer.asc(), cascade="all,delete"),
                            ) 
 
     @property
@@ -204,7 +204,7 @@ class Frage(Base, RDBMixin):
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
 
     lehrheft = relation(Lehrheft, 
-                        backref = backref('fragen', order_by=frage),
+                        backref = backref('fragen', order_by=frage, cascade="all,delete"),
                         )
 
     @property
@@ -266,6 +266,7 @@ class Antwort(Base, RDBMixin):
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id")
 
     __tablename__ = 'antwort'
+    __table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
 
     id = Column(Integer, Sequence('antwort_seq'), primary_key=True)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
