@@ -62,6 +62,7 @@ class AddTeilnehmer(uvc.layout.AddForm):
     label = u'Teilnehmer anlegen für Unternehmen'
 
     fields = Fields(ITeilnehmer).omit('id')
+    fields['branche'].mode = "radio"
 
     def create(self, data):
         data = no_value(data)
