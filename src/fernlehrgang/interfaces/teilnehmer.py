@@ -15,10 +15,10 @@ from zope.schema.interfaces import IContextSourceBinder
 
 # VOCABULARIES
 
-UN_KLASSE = (('G3', u'Gruppe III - Mitarbeiter <= 10'),
+UN_KLASSE = (('G3', u'Gruppe III - Mitarbeiteranzahl kleiner/gleich 10'),
              #('G2', u'G III -  = 10, Abschlußgespräch'),
              #('G3', u'G II  - <= 10, Abschlußgespräch'),
-             ('G2', u'Gruppe II  - Mitarbeiter > 10'),
+             ('G2', u'Gruppe II  - Mitarbeiteranzahl zwischen 10 und 30'),
             ) 
 
 
@@ -40,6 +40,12 @@ def un_klasse(context):
         items.append(SimpleTerm(key, key, value))
     return SimpleVocabulary(items)
 
+@grok.provider(IContextSourceBinder)
+def janein(context):
+    items = []
+    for key in ('ja', 'nein'):
+        items.append(SimpleTerm(key, key, key))
+    return SimpleVocabulary(items)
 
 def vocabulary(*terms):
     return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
@@ -145,4 +151,11 @@ class ITeilnehmer(Interface):
         description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
         required = False,
         source = un_klasse,
+        )
+
+    branche = Choice(
+        title = u"Branche des Unternehmens",
+        description = u'Ist der Betrieb in einer der Branchen Schrotthandel, Motorradhandel oder Spedition tätig.',
+        required = True,
+        source = janein,
         )
