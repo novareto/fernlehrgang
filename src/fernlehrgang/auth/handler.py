@@ -57,7 +57,7 @@ class UserAuthenticatorPlugin(grok.LocalUtility):
     
     def addUser(self, username, password, real_name, role):
         if username not in self.user_folder:
-            user = Account(name, password, real_name, role)
+            user = Account(username, password, real_name, role)
             self.user_folder[username] = user
             role_manager = IPrincipalRoleManager(grok.getSite())
             role_manager.assignRoleToPrincipal(role, username)

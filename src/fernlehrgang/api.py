@@ -68,7 +68,9 @@ class TeilnehmerAPI(grok.REST):
            nr = context.nr,
            plz = context.plz,
            ort = context.ort,
-           email = context.email
+           email = context.email,
+           un_klasse = context.un_klasse,
+           branche = context.branche,
            )
         return json.dumps(teilnehmer)
 
