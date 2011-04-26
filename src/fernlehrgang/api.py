@@ -41,7 +41,7 @@ class HelperAPI(grok.XMLRPC):
     def canLogin(self, teilnehmer_id, passwort):
         session = Session()
         ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
-        if ret.count != 1:
+        if ret.count() != 1:
             return False
         ret = ret.one()
         if ret and ret.passwort == passwort:

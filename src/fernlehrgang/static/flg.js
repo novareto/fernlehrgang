@@ -43,7 +43,7 @@ $(document).ready(function()
   $('#form-form-field-nr').appendFieldTo('#form-form-field-strasse');
   $('#form-form-field-ort').appendFieldTo('#form-form-field-plz');
 
-  $(".myTable").tablesorter( {widgets: ['zebra'], }); 
+  $(".myTable").tablesorter( {widgets: ['zebra']}); 
   $("#accordion").tabs("#accordion div.pane", {tabs: 'h2', effect: 'slide', initialIndex: null});
 
 
