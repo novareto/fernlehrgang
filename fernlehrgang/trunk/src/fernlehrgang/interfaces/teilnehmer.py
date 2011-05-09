@@ -54,7 +54,7 @@ def vocabulary(*terms):
 # DEFAULTS
 def generatePassword():
     pool = string.ascii_letters + string.digits
-    return ''.join([choice(pool) for i in range(8)])
+    return unicode(''.join([choice(pool) for i in range(8)]))
 
 
 class ITeilnehmer(Interface):
@@ -104,25 +104,25 @@ class ITeilnehmer(Interface):
         )
 
     strasse = TextLine(
-        title = u'Straße',
+        title = u'Lieferanschrift (Str. ',
         description = u'Straße des Teilnehmers',
         required = False, 
         )
     
     nr = TextLine(
-        title = u'Hausnummer',
+        title = u'Hnr.)',
         description = u'Hausnummer des Teilnehmers',
         required = False, 
         )
 
     plz = TextLine(
-        title = u'Postleitzahl',
+        title = u'Lieferanschrift (Plz. ',
         description = u'Postleitzahl des Teilnehmers',
         required = False, 
         )
 
     ort = TextLine(
-        title = u'Ort',
+        title = u'Ort)',
         description = u'Ort des Teilnehmers',
         required = False, 
         )
@@ -137,6 +137,7 @@ class ITeilnehmer(Interface):
         title = u'Passwort',
         description = u'Passwort des Teilnehmers',
         required = True,
+        defaultFactory = generatePassword,
         )
 
     lehrgang = Choice(

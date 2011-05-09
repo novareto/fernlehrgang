@@ -36,7 +36,7 @@ class KursteilnehmerListing(uvc.layout.Form):
     fields = Fields(IKursteilnehmer).select('id') + Fields(ITeilnehmer).select('name', 'geburtsdatum')
 
     label = u"Kursteilnehmer"
-    description = u"Hier können Sie die Kursteilnehmer zu Ihrem Fernlehrgang bearbeiten."
+    description = u"Hier können Sie die Kursteilnehmer für Ihren Fernlehrgang suchen und bearbeiten."
 
     results = []
 

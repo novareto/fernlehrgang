@@ -22,7 +22,7 @@ class UserName(grok.Viewlet):
     grok.name('myname')
     grok.context(Interface)
     grok.viewletmanager(PersonalPreferences)
-    grok.order(14)
+    grok.order(300)
     group = ""
 
     def render(self):

@@ -11,8 +11,9 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from dolmen.app.layout import models
 from zope.interface import Interface
 from dolmen.menu import menuentry
-from uvc.layout.interfaces import IFooter, IExtraInfo
+from uvc.layout.interfaces import IFooter, IExtraInfo, IPersonalPreferences
 from megrok.layout import Page
+from megrok import navigation
 
 from fernlehrgang.auth.handler import UserAuthenticatorPlugin
 from zope.pluggableauth import PluggableAuthentication
@@ -22,6 +23,7 @@ from zeam.form.ztk.widgets.date import DateWidgetExtractor, DateFieldWidget
 from zope.i18n.format import DateTimeParseError
 from zeam.form.base import NO_VALUE
 from zope.component import getUtility
+from zope.authentication.interfaces import IUnauthenticatedPrincipal
 
 
 grok.templatedir('templates')
@@ -59,13 +61,34 @@ class Index(models.Index):
     grok.require('zope.View')
 
 
-@menuentry(IFooter)
 class Kontakt(Page):
     grok.context(Interface)
     grok.title(u"Kontakt")
+    navigation.sitemenuitem(IFooter)
 
     def render(self):
         return "KONTAKT"
+
+class Logout(Page):
+    grok.title('Abmelden')
+    grok.context(Interface)
+    grok.require('zope.Public')
+    navigation.sitemenuitem(IPersonalPreferences)
+    grok.order(200)
+
+    KEYS = ("beaker.session.id", "dolmen.authcookie", "auth_pubtkt")
+
+    def update(self):
+        if not IUnauthenticatedPrincipal.providedBy(self.request.principal):
+            for key in self.KEYS:
+                self.request.response.expireCookie(key,
+                path='/', domain="bg-kooperation.de")
+        else:
+            self.request.response.expireCookie("auth_pubtkt",
+                path='/', domain="bg-kooperation.de")
+
+    def render(self):
+        return self.redirect(self.application_url() + '/login')
 
 
 class RestLayer(grok.IRESTLayer):

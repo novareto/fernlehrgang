@@ -32,9 +32,11 @@ class FrageListing(TablePage):
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     label = u"Fragen"
-    description = u"Hier können Sie die Fragen zu Ihren Lehrheften bearbeiten."
     cssClasses = {'table': 'tablesorter myTable'}
 
+    @property
+    def description(self):
+        return u"Hier können Sie die Fragen zu Ihrem Lehrheft '%s' verwalten." % self.context.titel
 
     @property
     def values(self):
