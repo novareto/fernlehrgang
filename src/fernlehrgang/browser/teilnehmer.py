@@ -21,8 +21,9 @@ from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
-from zeam.form.base import NO_VALUE
+from zeam.form.base import NO_VALUE, DictDataManager
 from zeam.form.base.markers import SUCCESS, FAILURE
+from fernlehrgang.interfaces.teilnehmer import generatePassword
 
 grok.templatedir('templates')
 
@@ -106,7 +107,7 @@ class Edit(models.Edit):
 
     fields = Fields(ITeilnehmer).omit('id')
 
-    @action('Bearbeiten')
+    @action('Speichern')
     def handle_edit(self):
         data, errors = self.extractData()
         if errors:
@@ -151,6 +152,14 @@ class MoreInfoOnTeilnehmer(grok.Viewlet):
         return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
 
 ## Spalten
+
+class ID(GetAttrColumn):
+    grok.name('Id')
+    grok.context(IUnternehmen)
+    weight = 5 
+    header = u"Id"
+    attrName = "id"
+
 
 class Name(LinkColumn):
     grok.name('Name')

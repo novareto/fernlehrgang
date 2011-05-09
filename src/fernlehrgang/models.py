@@ -57,8 +57,8 @@ class Fernlehrgang(Base, RDBMixin):
 
     id = Column(Integer, Sequence('fernlehrgang_id'), primary_key=True)
     jahr = Column(String(50))
-    titel = Column(String(50))
-    beschreibung = Column(String(50))
+    titel = Column(String(256))
+    beschreibung = Column(String(256))
     punktzahl = Column(Integer(4))
     beginn = Column(Date)
     ende = Column(Date)
