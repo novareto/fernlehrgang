@@ -9,12 +9,13 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.models import Teilnehmer
+from fernlehrgang.models import Teilnehmer, Kursteilnehmer
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from z3c.saconfig import Session
 from zeam.form.base import action, NO_VALUE, Fields
+from fernlehrgang.interfaces.resultate import ICalculateResults
 
 
 grok.templatedir('templates')
@@ -68,15 +69,20 @@ class TeilnehmerSuche(uvc.layout.Form):
 
     def getResults(self):
         root = grok.getSite()
-        for item in self.results:
+        for item, kursteilnehmer in self.results:
+            results = ICalculateResults(kursteilnehmer).summary()
+            locate(root, kursteilnehmer, DefaultModel)            
             locate(root, item, DefaultModel)
             locate(root, item.unternehmen, DefaultModel)
-            name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
+            flg = kursteilnehmer.fernlehrgang
+            locate(root, flg, DefaultModel)
+            link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
+            name = '<a href="%s"> %s %s </a>' % (self.url(kursteilnehmer), item.name, item.vorname)
             unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
             d = dict(name=name,
-                     vorname=item.vorname,
-                     gebdat=item.geburtsdatum.strftime('%d.%m.%Y'),
-                     unternehmen=unternehmen)
+                     link_flg=link_flg,
+                     unternehmen=unternehmen,
+                     bestanden = results['comment'])
             yield d
 
     @action(u'Suchen')
@@ -84,7 +90,8 @@ class TeilnehmerSuche(uvc.layout.Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Teilnehmer)
+        sql = session.query(Teilnehmer, Kursteilnehmer)
+        sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         if data.get('id') != NO_VALUE:
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
@@ -94,7 +101,7 @@ class TeilnehmerSuche(uvc.layout.Form):
             v = True
         if data.get('mnr') != NO_VALUE:
             constraint = "%%%s%%" % data.get('mnr')
-            sql = sql.filter(Teilnehmer.unternehmen_mnr.like(constraint))
+            sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
             v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')

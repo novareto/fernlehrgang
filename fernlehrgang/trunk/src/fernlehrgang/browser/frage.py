@@ -94,10 +94,18 @@ class Edit(models.Edit):
 
 ### Spalten
 
+class Id(GetAttrColumn):
+    grok.name('id')
+    grok.context(ILehrheft)
+    weight = 5 
+    header = "Id"
+    attrName = "id"
+
+
 class Nummer(GetAttrColumn):
     grok.name('Nummer')
     grok.context(ILehrheft)
-    weight = 3 
+    weight =  10 
     header = "Nummer"
     attrName = "frage"
 
@@ -105,7 +113,7 @@ class Nummer(GetAttrColumn):
 class Link(LinkColumn):
     grok.name('Titel')
     grok.context(ILehrheft)
-    weight = 5 
+    weight = 20 
     linkContent = "edit"
     header = "Titel"
 

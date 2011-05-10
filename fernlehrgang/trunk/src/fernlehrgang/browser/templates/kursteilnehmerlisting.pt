@@ -4,11 +4,13 @@
 
     <table tal:define="results view/getResults" tal:condition="results">
       <tr>
+        <th> Id </th>
         <th> Name </th>
         <th> Status </th>
         <th> Unternehmen </th>
       </tr>
       <tr tal:repeat="result results">
+        <td> <span tal:replace="result/id" /> </td>
         <td> <span tal:replace="structure result/name" /> </td>
         <td> <span tal:replace="result/status" /> </td>
         <td> <span tal:replace="structure result/unternehmen" /> </td>
