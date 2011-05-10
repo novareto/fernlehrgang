@@ -56,18 +56,18 @@ class UnternehmenListing(uvc.layout.Form):
             v = True 
         if data.get('name') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('name') 
-            sql = sql.filter(Unternehmen.name.like(constraint)) 
+            sql = sql.filter(Unternehmen.name.ilike(constraint)) 
             v = True 
         if data.get('str') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('str') 
-            sql = sql.filter(Unternehmen.str.like(constraint)) 
+            sql = sql.filter(Unternehmen.str.ilike(constraint)) 
             v = True 
         if data.get('plz') != NO_VALUE: 
             sql = sql.filter(Unternehmen.plz == data.get('plz')) 
             v = True 
         if data.get('ort') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('ort') 
-            sql = sql.filter(Unternehmen.ort.like(constraint)) 
+            sql = sql.filter(Unternehmen.ort.ilike(constraint)) 
             v = True 
         if not v: 
             self.flash(u'Bitte geben Sie die Suchkriterien ein.') 

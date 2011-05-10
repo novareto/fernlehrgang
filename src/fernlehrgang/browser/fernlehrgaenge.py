@@ -89,6 +89,13 @@ class Edit(models.Edit):
 
 ### Spalten
 
+class ID(GetAttrColumn):
+    grok.name('Id')
+    grok.context(IFernlehrgangApp)
+    weight = 5 
+    header = u"Id"
+    attrName = u"id"
+
 class Title(LinkColumn):
     grok.name('titel')
     grok.context(IFernlehrgangApp)

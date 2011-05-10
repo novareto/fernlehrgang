@@ -3,16 +3,16 @@
     <div metal:use-macro="macro:editform" />
     <table tal:define="results view/getResults" tal:condition="results">
       <tr>
-        <th> Name </th>
-        <th> Vorname </th>
-        <th> Geburtsdatum </th>
+        <th> Fernlehrgang </th>
+        <th> Kursteilnehmer </th>
         <th> Unternehmen </th>
+        <th> Ergebnis </th>
       </tr>
       <tr tal:repeat="result results">
+        <td> <span tal:content="structure result/link_flg" /> </td>
         <td> <span tal:content="structure result/name" /> </td>
-        <td> <span tal:content="result/vorname" /> </td>
-        <td> <span tal:content="result/gebdat" /> </td>
         <td> <span tal:content="structure result/unternehmen" /> </td>
+        <td> <span tal:content="structure result/bestanden" /> </td>
       </tr>
     </table>
   </body>

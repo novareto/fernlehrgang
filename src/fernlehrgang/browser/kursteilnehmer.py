@@ -20,7 +20,11 @@ from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
+from zeam.form.base.errors import Error
+from zope.i18nmessageid import MessageFactory
 
+
+_ = MessageFactory('zeam.form.base')
 
 grok.templatedir('templates')
 
@@ -49,6 +53,7 @@ class KursteilnehmerListing(uvc.layout.Form):
             name = '<a href="%s"> %s %s </a>' %(self.url(kursteilnehmer), teilnehmer.name, teilnehmer.vorname)
             unternehmen = '<a href="%s"> %s %s </a>' %(self.url(teilnehmer.unternehmen), teilnehmer.unternehmen.mnr, teilnehmer.unternehmen.name)
             r = dict(name=name,
+                     id = kursteilnehmer.id,
                      status=lf_vocab.getTerm(kursteilnehmer.status).title,
                      unternehmen=unternehmen)
             yield r 
@@ -71,7 +76,7 @@ class KursteilnehmerListing(uvc.layout.Form):
             v = True
         if data.get('name') != NO_VALUE:
             qu = "%%%s%%" % data.get('name')
-            sql = sql.filter(Teilnehmer.name.like(qu))
+            sql = sql.filter(Teilnehmer.name.ilike(qu))
             v = True
         if data.get('geburtsdatum') != NO_VALUE:
             sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
@@ -92,6 +97,23 @@ class AddKursteilnehmer(uvc.layout.AddForm):
 
     fields = Fields(IKursteilnehmer).omit('id')
 
+    def validateData(self, fields, data, errors):
+        super(AddKursteilnehmer, self).validateData(fields, data, errors)
+        if len(errors) > 0:
+            return errors
+        session = Session()
+        sql = session.query(Kursteilnehmer).filter( and_(
+            Kursteilnehmer.teilnehmer_id == data.get('teilnehmer_id'),
+            Kursteilnehmer.fernlehrgang_id == self.context.id))
+        if sql.count() > 0:
+            errors.append(Error(u"Es ist bereits in Kursteilnehmer mit der Id '%s' angelegt." % data.get('teilnehmer_id'), 'teilnehmer_id'))
+        teilnehmer = session.query(Teilnehmer).get(data.get('teilnehmer_id'))
+        if not teilnehmer:
+            errors.append(Error(u"Es ist kein Teilnehmer mit der Id '%s' vorhanden." % data.get('teilnehmer_id'), 'teilnehmer_id'))
+        if len(errors):
+            errors.append(Error(_(u"There were errors."), self.prefix))
+        return errors
+
     def create(self, data):
         return Kursteilnehmer(**data)
 
@@ -102,6 +124,7 @@ class AddKursteilnehmer(uvc.layout.AddForm):
     def nextURL(self):
         self.flash(u'Der Kursteilnehmer wurde erfolgreich angemeldet')
         return self.url(self.context, 'kursteilnehmer_listing')
+
 
 
 class Index(models.DefaultView):

@@ -32,6 +32,7 @@ class BGEAdminstrator(grok.Role):
     grok.title('Administrator - Fernlehrgang')
     grok.permissions('uvc.managefernlehrgang', 
                      'dolmen.content.Edit',
+                     #'dolmen.content.Delete',
                      'dolmen.content.View',
                      'zope.View',
                      'uvc.manageteilnehmer')
