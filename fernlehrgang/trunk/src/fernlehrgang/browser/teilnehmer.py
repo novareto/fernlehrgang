@@ -8,7 +8,7 @@ import uvc.layout
 from dolmen.app.layout import models, IDisplayView
 from dolmen.forms.base.utils import set_fields_data, apply_data_event
 from dolmen.forms.crud import i18n as _
-from dolmen.menu import menuentry
+from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
@@ -150,6 +150,15 @@ class MoreInfoOnTeilnehmer(grok.Viewlet):
 
     def render(self):
         return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
+
+
+class HelperEntry(Entry):
+    grok.name('index')
+    grok.context(ITeilnehmer)
+    grok.order(1)
+    grok.title('Teilnehmer')
+    menu(NavigationMenu)
+
 
 ## Spalten
 
