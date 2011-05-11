@@ -145,7 +145,7 @@ dl.foldable dt {
   padding: 0.2em 0.4em 0.3em 0.4em;
   border: 1px solid #cbcbcb;
   color: #555;
-  margin-top: -14px;
+  margin-bottom: -2px;
 }
 
 dl.foldable dd {
