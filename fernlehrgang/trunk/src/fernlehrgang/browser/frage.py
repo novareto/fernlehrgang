@@ -67,8 +67,9 @@ class AddFrage(uvc.layout.AddForm):
 
 class HelperEntry(Entry):
     grok.context(IFrage)
-    grok.order(1)
+    grok.name('index')
     grok.title('Frage')
+    grok.order(1)
     menu(NavigationMenu)
 
 
@@ -90,6 +91,7 @@ class Edit(models.Edit):
     description = u"Hier können Sie die Frage bearbeiten."
 
     fields = Fields(IFrage).omit('id')
+    fields['frage'].mode = 'hiddendisplay'
 
 
 ### Spalten
@@ -135,4 +137,3 @@ class Gewichtung(GetAttrColumn):
     weight = 20
     attrName = 'gewichtung'
     header = u"Gewichtung"
-

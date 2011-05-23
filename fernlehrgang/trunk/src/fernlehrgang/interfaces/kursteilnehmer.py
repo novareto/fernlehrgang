@@ -16,7 +16,7 @@ LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
                 ('L4', u'Teilnahme aus pers. Gründen verschoben'),
                 ('L5', u'Teilnahme ist bereits erfolgt'),
                 ('L6', u'Aufgabe des Unternehmens'),
-                ('A1', u'aktiv'),
+                ('A1', u'angemeldet'),
                 ('A2', u'nicht registriert'),
                ) 
 
@@ -32,7 +32,7 @@ def lieferstopps(context):
 class IKursteilnehmer(Interface):
 
     id = Int(
-        title = u'Id',
+        title = u'Id (Kursteilnehmer Id)',
         description = u'Eindeutige Kennzeichnung des Teilnehmers für den Fernlehrgang',
         required = False,
         readonly = True

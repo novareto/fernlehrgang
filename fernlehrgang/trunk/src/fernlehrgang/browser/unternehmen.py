@@ -7,6 +7,7 @@ import uvc.layout
 
 from dolmen.app.layout import models
 from dolmen.menu import menuentry
+from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.app import IFernlehrgangApp 
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.models import Unternehmen 
@@ -89,14 +90,21 @@ class Index(models.DefaultView):
     def getTeilnehmerListing(self):
         rc = []
         for teilnehmer in self.context.teilnehmer:
+
             person = dict(name = "%s %s" %(teilnehmer.name, teilnehmer.vorname),
-                          gebdat = teilnehmer.geburtsdatum,
+                          gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y'),
                           lehrgang = [])
-            for kursteilnehmer in self.context.kursteilnehmer:
-                if teilnehmer.id == kursteilnehmer.teilnehmer.id:
-                    if kursteilnehmer.fernlehrgang:
-                        person['lehrgang'].append(kursteilnehmer.fernlehrgang.titel)
-                    else:
-                        person['lehrgang'].append(u'Noch für keinen Fernlehrgang registriert.')
+            for kurs in teilnehmer.kursteilnehmer:
+                print kurs.fernlehrgang
+                if kurs.fernlehrgang:
+                    person['lehrgang'].append(kurs.fernlehrgang.titel)
+            if not len(person['lehrgang']):
+                person['lehrgang'].append(u'Noch für keinen Fernlehrgang registriert.')
             rc.append(person)
         return rc
+
+
+class Edit(models.Edit):
+    grok.context(IUnternehmen)
+    grok.implements(IListing)
+    template = grok.PageTemplateFile('templates/unternehmen_edit.pt')

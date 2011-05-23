@@ -15,10 +15,10 @@ from zope.schema.interfaces import IContextSourceBinder
 
 # VOCABULARIES
 
-UN_KLASSE = (('G3', u'Gruppe III - Mitarbeiteranzahl kleiner/gleich 10'),
+UN_KLASSE = (('G3', u'<= 10'),
              #('G2', u'G III -  = 10, Abschlußgespräch'),
              #('G3', u'G II  - <= 10, Abschlußgespräch'),
-             ('G2', u'Gruppe II  - Mitarbeiteranzahl zwischen 10 und 30'),
+             ('G2', u'10 und 30'),
             ) 
 
 
@@ -148,15 +148,15 @@ class ITeilnehmer(Interface):
         )
 
     un_klasse = Choice(
-        title = u"Gruppen Kategorie",
+        title = u"Mitarbeiteranzahl",
         description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
         required = False,
         source = un_klasse,
         )
 
     branche = Choice(
-        title = u"Branche des Unternehmens",
-        description = u'Ist der Betrieb in einer der Branchen Schrotthandel, Motorradhandel oder Spedition tätig.',
+        title = u"Branche",
+        description = u'Betrieb ist ein Recyclingunternehmen, ein Motorradhandel oder ein Speditions- oder Umschalgunternehmen.',
         required = True,
         source = janein,
         )

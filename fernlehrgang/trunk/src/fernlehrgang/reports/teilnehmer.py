@@ -53,35 +53,42 @@ class CreateTeilnehmer(uvc.layout.Form):
 @menuentry(NavigationMenu, order=450)
 class TeilnehmerSuche(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
-    grok.title(u'Statusabfrage Teilnehmer')
+    grok.title(u'Statusabfrage KursTeilnehmer')
     grok.require('uvc.manageteilnehmer')
     grok.order(1500)
 
     label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
 
-    fields = Fields(ITeilnehmer).select('id', 'name') + Fields(IUnternehmen).select('mnr')
+    fields = Fields(ITeilnehmer).select('id', 'name', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
     fields['id'].readonly = False
     fields['mnr'].readonly = False
     fields['name'].required = False
+    fields['geburtsdatum'].required = False
 
     results = []
 
     def getResults(self):
         root = grok.getSite()
-        for item, kursteilnehmer in self.results:
-            results = ICalculateResults(kursteilnehmer).summary()
-            locate(root, kursteilnehmer, DefaultModel)            
+        for kursteilnehmer, item in self.results:
             locate(root, item, DefaultModel)
             locate(root, item.unternehmen, DefaultModel)
-            flg = kursteilnehmer.fernlehrgang
-            locate(root, flg, DefaultModel)
-            link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
-            name = '<a href="%s"> %s %s </a>' % (self.url(kursteilnehmer), item.name, item.vorname)
+            results = {"comment": "Kein Fernlehrgang."}
+            if kursteilnehmer.fernlehrgang:
+                results = ICalculateResults(kursteilnehmer).summary()
+                locate(root, kursteilnehmer, DefaultModel)            
+                name = '<a href="%s"> %s %s </a>' % (self.url(kursteilnehmer), item.name, item.vorname)
+                flg = kursteilnehmer.fernlehrgang
+                locate(root, flg, DefaultModel)
+                link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
+            else:
+                name = '<a href="%s"> %s %s </a>' % (self.url(item), item.name, item.vorname)
+                link_flg = "Kein Fernlehrgang"
             unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
             d = dict(name=name,
-                     link_flg=link_flg,
-                     unternehmen=unternehmen,
+                     link_flg = link_flg,
+                     gebdat = item.geburtsdatum.strftime('%d.%m.%Y'),
+                     unternehmen = unternehmen,
                      bestanden = results['comment'])
             yield d
 
@@ -90,7 +97,7 @@ class TeilnehmerSuche(uvc.layout.Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Teilnehmer, Kursteilnehmer)
+        sql = session.query(Kursteilnehmer, Teilnehmer)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         if data.get('id') != NO_VALUE:
             sql = sql.filter(Teilnehmer.id == data.get('id'))
@@ -102,6 +109,9 @@ class TeilnehmerSuche(uvc.layout.Form):
         if data.get('mnr') != NO_VALUE:
             constraint = "%%%s%%" % data.get('mnr')
             sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
+            v = True
+        if data.get('geburtsdatum') != NO_VALUE:
+            sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
             v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
