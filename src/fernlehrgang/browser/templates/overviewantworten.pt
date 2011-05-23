@@ -1,0 +1,25 @@
+<div tal:define="results view/getResults">
+  <h1 tal:content="view/title"></h1>
+   <p class="description" tal:content="view/description"/>
+
+    <h3> Die einzelnen Lehrhefte </h3>
+     <div id="accordion">
+      <div tal:repeat="lh results">
+        <h2> <span tal:content="lh/titel" /> </h2> 
+        <div class="pane">
+          <table>
+            <tr>
+             <th> Name </th>
+             <th> Lehrheft </th>
+             <th> Antworten </th>
+            </tr>
+            <tr tal:repeat="ant lh/antworten">
+              <td> <a href="" tal:attributes="href ant/url"> <span tal:content="ant/titel"/> </a> </td>
+              <td> <span tal:content="ant/lehrheft_nr"/> </td>
+              <td> <span tal:content="ant/aw"/> </td>
+            </tr>
+          </table>
+        </div> 
+      </div>
+    </div>
+</div>

@@ -68,10 +68,12 @@ class AddTeilnehmer(uvc.layout.AddForm):
     def create(self, data):
         data = no_value(data)
         lehrgang = data.pop('lehrgang')
-        kursteilnehmer = Kursteilnehmer(
-            fernlehrgang_id=lehrgang,
-            status="A1", 
-            unternehmen_mnr=self.context.mnr)
+        kursteilnehmer = None
+        if lehrgang:
+            kursteilnehmer = Kursteilnehmer(
+                fernlehrgang_id=lehrgang,
+                status="A1", 
+                unternehmen_mnr=self.context.mnr)
         teilnehmer = Teilnehmer(**data)
         return (kursteilnehmer, teilnehmer)
 
@@ -79,9 +81,10 @@ class AddTeilnehmer(uvc.layout.AddForm):
         kursteilnehmer, teilnehmer = object
         session = Session()
         self.context.teilnehmer.append(teilnehmer)
-        kursteilnehmer.teilnehmer = teilnehmer
-        kursteilnehmer.unternehmen = self.context
-        if kursteilnehmer.fernlehrgang_id:
+        if kursteilnehmer:
+            kursteilnehmer.teilnehmer = teilnehmer
+            kursteilnehmer.unternehmen = self.context
+            #if kursteilnehmer.fernlehrgang_id:
             print "BBB----->", kursteilnehmer.fernlehrgang_id
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
@@ -123,6 +126,7 @@ class Edit(models.Edit):
                 unternehmen_mnr=self.context.unternehmen.mnr)
             kursteilnehmer.teilnehmer = self.context
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+            print "ADD Kursteilnehmer to Fernlehrgang"
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
             
         apply_data_event(self.fields, self.getContentData(), data)

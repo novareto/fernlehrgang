@@ -5,6 +5,7 @@
 import grok
 import uvc.layout
 
+from fernlehrgang.interfaces import IListing
 from dolmen.app.layout import IDisplayView
 from dolmen.app.layout import models
 from dolmen.menu import menuentry
@@ -18,29 +19,33 @@ from megrok.z3ctable.components import TablePage, GetAttrColumn, LinkColumn, Col
 from sqlalchemy import not_, and_
 from z3c.saconfig import Session
 from zeam.form.base import Fields
-
+from uvc.layout.interfaces import IExtraInfo
+from megrok.layout import Page
 
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
 class AntwortListing(TablePage):
-    grok.implements(IDisplayView)
+    grok.implements(IDisplayView, IListing)
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
+    grok.baseclass()
 
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     label = u"Antworten"
-    description = u"Hier können Sie die Antworten zu Ihren Lehrheften bearbeiten."
+    description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
 
     @property
     def values(self):
+        rc = []
         root = grok.getSite()
         for x in self.context.antworten:
             locate(root, x, DefaultModel)
-        return self.context.antworten
+            rc.append(x)
+        return sorted(rc, key=lambda antwort: antwort.frage.frage)
 
 
 @menuentry(AddMenu)
@@ -66,7 +71,7 @@ class Index(models.DefaultView):
     grok.context(IAntwort)
     grok.title(u'Index')
     title = label = u"Antwort"
-    description = u"Hier können Sie Deteils zu Ihren Antworten ansehen."
+    description = u"" #Hier können Sie Deteils zu Ihren Antworten ansehen."
 
     fields = Fields(IAntwort).omit('id')
 
@@ -79,6 +84,23 @@ class Edit(models.Edit):
     description = u"Hier können Sie die Antwort bearbeiten."
 
     fields = Fields(IAntwort).omit('id')
+    fields['lehrheft_id'].mode = "hiddendisplay"
+    fields['frage_id'].mode = "hiddendisplay"
+
+
+### ExtraInfo
+
+class MoreInfoOnKursteilnehmer(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(IAntwort)
+    script = ""
+
+    def update(self):
+        url = grok.url(self.request, self.context.kursteilnehmer)
+        self.script = "<script> var base_url = '%s'; </script>" % url
+
+    def render(self):
+        return self.script
 
 
 class JSON_Views(grok.JSON):
@@ -108,8 +130,11 @@ class Link(LinkColumn):
     weight = 5
     linkContent = "edit"
 
+    def getSortKey(self, item):
+        return int(item.frage.lehrheft.nummer+item.frage.frage.zfill(2))
+
     def getLinkContent(self, item):
-        return u"Antwort für Frage %s Lehrheft %s" %(item.frage.titel, item.frage.lehrheft.titel)
+        return u"Antwort auf Frage '%s'; %s" %(item.frage.frage, item.frage.titel)
 
 
 class Lehrheft(Column):
@@ -119,7 +144,7 @@ class Lehrheft(Column):
     header = "Lehrheft"
 
     def renderCell(self, item):
-        return item.frage.lehrheft.title
+        return item.frage.lehrheft.nummer
 
 
 class Antworten(GetAttrColumn):
@@ -128,3 +153,36 @@ class Antworten(GetAttrColumn):
     weight = 10
     header = "Antworten"
     attrName = "antwortschema"
+
+
+
+@menuentry(NavigationMenu)
+class OverviewAntworten(Page):
+    grok.implements(IDisplayView, IListing)
+    grok.context(IKursteilnehmer)
+    grok.name('antwort_listing')
+    grok.title(u'Antworten verwalten')
+
+    label = title = u"Antworten"
+    description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
+
+    def getResults(self):
+        context = self.context
+        rc = []
+        for lehrheft in context.fernlehrgang.lehrhefte:
+            res = dict()
+            res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
+            lehrheft_id = lehrheft.id
+            fragen = []
+            for antwort in context.antworten:
+                if antwort.frage.lehrheft_id == lehrheft_id:
+                    titel = u"Antwort auf Frage '%s'; '%s'" %(antwort.frage.frage, antwort.frage.titel)
+                    url = "%s/antwort/%s" % (self.url(self.context), antwort.id)
+                    d=dict(titel = titel,
+                           url = url, 
+                           lehrheft_nr = lehrheft.nummer, 
+                           aw = antwort.antwortschema)
+                    fragen.append(d)
+            res['antworten'] = fragen
+            rc.append(res)
+        return rc
