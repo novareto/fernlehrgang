@@ -55,7 +55,7 @@ class Fernlehrgang(Base, RDBMixin):
 
     __tablename__ = 'fernlehrgang'
 
-    id = Column(Integer, Sequence('fernlehrgang_id'), primary_key=True)
+    id = Column(Integer, Sequence('fernlehrgang_id', start=1000, increment=1), primary_key=True)
     jahr = Column(String(50))
     titel = Column(String(256))
     beschreibung = Column(String(256))
@@ -118,7 +118,7 @@ class Teilnehmer(Base, RDBMixin):
 
     __tablename__ = 'teilnehmer'
 
-    id = Column(Integer, Sequence('teilnehmer_seq'), primary_key=True)
+    id = Column(Integer, Sequence('teilnehmer_seq', start=100000, increment=1), primary_key=True)
 
     anrede = Column(String(50))
     titel = Column(String(50))
@@ -129,7 +129,9 @@ class Teilnehmer(Base, RDBMixin):
     nr = Column(String(50))
     plz = Column(String(50))
     ort = Column(String(50))
+    adresszusatz = Column(String(50))
     email = Column(String(50))
+    telefon = Column(String(50))
     passwort = Column(String(8))
     un_klasse = Column(String(3))
     branche = Column(String(5))
@@ -162,7 +164,7 @@ class Lehrheft(Base, RDBMixin):
 
     __tablename__ = 'lehrheft'
 
-    id = Column(Integer, Sequence('lehrheft_seq'), primary_key=True)
+    id = Column(Integer, Sequence('lehrheft_seq', start=1000, increment=1), primary_key=True)
     nummer = Column(String(5))
     titel = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
@@ -197,7 +199,7 @@ class Frage(Base, RDBMixin):
 
     __tablename__ = 'frage'
 
-    id = Column(Integer, Sequence('frage_id'), primary_key=True)
+    id = Column(Integer, Sequence('frage_seq', start=1000, increment=1), primary_key=True)
     frage = Column(String(5))
     titel = Column(String(50))
     antwortschema = Column(String(50))
@@ -234,7 +236,7 @@ class Kursteilnehmer(Base, RDBMixin):
 
     __tablename__ = 'kursteilnehmer'
 
-    id = Column(Integer, Sequence('kursteilnehmer_id'), primary_key=True)
+    id = Column(Integer, Sequence('kursteilnehmer_seq', start=900000, increment=1), primary_key=True)
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
@@ -269,7 +271,7 @@ class Antwort(Base, RDBMixin):
     __tablename__ = 'antwort'
     __table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
 
-    id = Column(Integer, Sequence('antwort_seq'), primary_key=True)
+    id = Column(Integer, Sequence('antwort_seq', start=100000, increment=1), primary_key=True)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))

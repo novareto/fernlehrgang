@@ -60,10 +60,11 @@ class TeilnehmerSuche(uvc.layout.Form):
     label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
 
-    fields = Fields(ITeilnehmer).select('id', 'name', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
+    fields = Fields(ITeilnehmer).select('id', 'name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
     fields['id'].readonly = False
     fields['mnr'].readonly = False
     fields['name'].required = False
+    fields['vorname'].required = False
     fields['geburtsdatum'].required = False
 
     results = []
@@ -77,18 +78,19 @@ class TeilnehmerSuche(uvc.layout.Form):
             if kursteilnehmer.fernlehrgang:
                 results = ICalculateResults(kursteilnehmer).summary()
                 locate(root, kursteilnehmer, DefaultModel)            
-                name = '<a href="%s"> %s %s </a>' % (self.url(kursteilnehmer), item.name, item.vorname)
+                name = '<a href="%s"> %s </a>' % (self.url(kursteilnehmer), item.name)
                 flg = kursteilnehmer.fernlehrgang
                 locate(root, flg, DefaultModel)
                 link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
             else:
-                name = '<a href="%s"> %s %s </a>' % (self.url(item), item.name, item.vorname)
+                name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
                 link_flg = "Kein Fernlehrgang"
             unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
             d = dict(name=name,
                      link_flg = link_flg,
                      gebdat = item.geburtsdatum.strftime('%d.%m.%Y'),
                      unternehmen = unternehmen,
+                     vorname = item.vorname,
                      bestanden = results['comment'])
             yield d
 
@@ -104,7 +106,11 @@ class TeilnehmerSuche(uvc.layout.Form):
             v = True
         if data.get('name') != NO_VALUE:
             constraint = "%%%s%%" % data.get('name')
-            sql = sql.filter(Teilnehmer.name.like(constraint))
+            sql = sql.filter(Teilnehmer.name.ilike(constraint))
+            v = True
+        if data.get('vorname') != NO_VALUE:
+            constraint = "%%%s%%" % data.get('vorname')
+            sql = sql.filter(Teilnehmer.vorname.ilike(constraint))
             v = True
         if data.get('mnr') != NO_VALUE:
             constraint = "%%%s%%" % data.get('mnr')

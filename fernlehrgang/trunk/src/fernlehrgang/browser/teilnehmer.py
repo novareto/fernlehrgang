@@ -19,6 +19,7 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
+from uvc.layout import GroupForm, SubForm
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
@@ -101,6 +102,9 @@ class Index(models.DefaultView):
 
     fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
 
+
+class Edit(GroupForm):
+    grok.context(ITeilnehmer)
 
 
 class Edit(models.Edit):

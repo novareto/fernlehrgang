@@ -127,10 +127,22 @@ class ITeilnehmer(Interface):
         required = False, 
         )
 
+    adresszusatz = TextLine(
+        title = u'Adresszusatz',
+        description = u'Adresszusatz des Teilnehmers',
+        required = False 
+        )
+
     email = TextLine(
         title = u'E-Mail',
         description = u'E-Mail des Teilnehmers',
-        required = True
+        required = False 
+        )
+
+    telefon = TextLine(
+        title = u'Telefon',
+        description = u'Telefon des Teilnehmers',
+        required = False 
         )
 
     passwort = TextLine(
