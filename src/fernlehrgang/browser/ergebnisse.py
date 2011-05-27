@@ -22,7 +22,12 @@ class Resultate(Page):
     grok.name('resultate')
 
     title = u"Resultate"
-    description = u"Hier Können Sie die Resultate des Kursteilnehmers einsehen"
+
+    @property
+    def description(self):
+        teilnehmer = self.context.teilnehmer
+        return u"Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen." % (
+                teilnehmer.name, teilnehmer.vorname, self.context.id)
 
     @property
     def getResults(self):

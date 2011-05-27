@@ -142,6 +142,7 @@ class Edit(models.Edit):
     grok.title(u'Edit')
 
     fields = Fields(IKursteilnehmer).omit('id')
+    fields['teilnehmer_id'].mode = 'hiddendisplay'
 
 # More Info Viewlets
 
@@ -160,7 +161,10 @@ class MoreInfoOnKursteilnehmer(grok.Viewlet):
     def update(self):
         url = grok.url(self.request, self.context)
         self.script = "<script> var base_url = '%s'; </script>" % url
+        locate(grok.getSite(), self.context.teilnehmer, DefaultModel)
+        self.turl = '<a href="%s/edit"> %s %s </a>' %(
+                self.view.url(self.context.teilnehmer), self.context.teilnehmer.name, self.context.teilnehmer.vorname)
 
     def render(self):
-        return "%s <h3>Fernlehrgang: %s - %s </h3>" % (self.script,
-            self.context.fernlehrgang.jahr, self.context.fernlehrgang.titel)
+        return "%s <h3>Fernlehrgang: %s - %s <br> Teilnehmer %s </h3>" % (self.script,
+            self.context.fernlehrgang.jahr, self.context.fernlehrgang.titel, self.turl)

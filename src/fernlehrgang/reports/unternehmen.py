@@ -69,7 +69,7 @@ class UnternehmenSuche(uvc.layout.Form):
         if data.get('name') != NO_VALUE:
             v = True
             constraint = "%%%s%%" % data.get('name')
-            sql = sql.filter(Unternehmen.name.like(constraint))
+            sql = sql.filter(Unternehmen.name.ilike(constraint))
         if not v:
             self.flash(u'Bitte geben Sie entsprechende Kriterien ein.')
             return

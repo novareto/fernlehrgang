@@ -71,6 +71,7 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
     options, args, parser = parse_options()
+    import pdb; pdb.set_trace() 
     if not options.file:
         parser.error("Bitte eine CSV-Datei angeben.")
     if not options.fernlehrgang:
