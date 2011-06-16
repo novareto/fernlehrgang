@@ -37,7 +37,7 @@ class KursteilnehmerListing(uvc.layout.Form):
     grok.title("Kursteilnehmer verwalten")
     grok.order(10)
 
-    fields = Fields(IKursteilnehmer).select('id') + Fields(ITeilnehmer).select('name', 'geburtsdatum')
+    fields = Fields(ITeilnehmer).select('id', 'name', 'geburtsdatum')
 
     label = u"Kursteilnehmer"
     description = u"Hier können Sie die Kursteilnehmer für Ihren Fernlehrgang suchen und bearbeiten."
@@ -53,7 +53,7 @@ class KursteilnehmerListing(uvc.layout.Form):
             name = '<a href="%s"> %s %s </a>' %(self.url(kursteilnehmer), teilnehmer.name, teilnehmer.vorname)
             unternehmen = '<a href="%s"> %s %s </a>' %(self.url(teilnehmer.unternehmen), teilnehmer.unternehmen.mnr, teilnehmer.unternehmen.name)
             r = dict(name=name,
-                     id = kursteilnehmer.id,
+                     id = teilnehmer.id,
                      status=lf_vocab.getTerm(kursteilnehmer.status).title,
                      unternehmen=unternehmen)
             yield r 
@@ -72,7 +72,7 @@ class KursteilnehmerListing(uvc.layout.Form):
         sql = session.query(Teilnehmer, Kursteilnehmer)
         sql = sql.filter(and_(Kursteilnehmer.fernlehrgang_id == flg_id, Kursteilnehmer.teilnehmer_id == Teilnehmer.id))
         if data.get('id') != NO_VALUE:
-            sql = sql.filter(Kursteilnehmer.id == data.get('id'))
+            sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
         if data.get('name') != NO_VALUE:
             qu = "%%%s%%" % data.get('name')
@@ -89,42 +89,26 @@ class KursteilnehmerListing(uvc.layout.Form):
 
 
 @menuentry(AddMenu)
-class AddKursteilnehmer(uvc.layout.AddForm):
+class AddKursteilnehmer(uvc.layout.Form):
     grok.context(IFernlehrgang)
     grok.title(u'Kursteilnehmer')
     label = u'Kursteilnehmer anlegen'
     description = u'Kursteilnehmer anlegen'
 
-    fields = Fields(IKursteilnehmer).omit('id')
+    fields = Fields(IKursteilnehmer).select('teilnehmer_id')
 
-    def validateData(self, fields, data, errors):
-        super(AddKursteilnehmer, self).validateData(fields, data, errors)
-        if len(errors) > 0:
-            return errors
+    @action(u'Suchen und Registrieren')
+    def handleSearch(self):
+        data, errors = self.extractData()
+        if errors:
+            return
         session = Session()
-        sql = session.query(Kursteilnehmer).filter( and_(
-            Kursteilnehmer.teilnehmer_id == data.get('teilnehmer_id'),
-            Kursteilnehmer.fernlehrgang_id == self.context.id))
-        if sql.count() > 0:
-            errors.append(Error(u"Es ist bereits in Kursteilnehmer mit der Id '%s' angelegt." % data.get('teilnehmer_id'), 'teilnehmer_id'))
-        teilnehmer = session.query(Teilnehmer).get(data.get('teilnehmer_id'))
-        if not teilnehmer:
-            errors.append(Error(u"Es ist kein Teilnehmer mit der Id '%s' vorhanden." % data.get('teilnehmer_id'), 'teilnehmer_id'))
-        if len(errors):
-            errors.append(Error(_(u"There were errors."), self.prefix))
-        return errors
-
-    def create(self, data):
-        return Kursteilnehmer(**data)
-
-    def add(self, object):
-        self.object = object
-        self.context.kursteilnehmer.append(object)
-
-    def nextURL(self):
-        self.flash(u'Der Kursteilnehmer wurde erfolgreich angemeldet')
-        return self.url(self.context, 'kursteilnehmer_listing')
-
+        sql = session.query(Teilnehmer).filter(Teilnehmer.id == data.get('teilnehmer_id'))
+        if sql.count() == 0:
+            self.flash('Es wurde kein Teilnehmer mit der ID %s gefunden' %data.get('teilnehmer_id'))
+        teilnehmer = sql.one()
+        locate(grok.getSite(), teilnehmer, DefaultModel)
+        self.redirect(self.url(teilnehmer, 'register'))
 
 
 class Index(models.DefaultView):
@@ -143,6 +127,7 @@ class Edit(models.Edit):
 
     fields = Fields(IKursteilnehmer).omit('id')
     fields['teilnehmer_id'].mode = 'hiddendisplay'
+    fields['branche'].mode = "radio"
 
 # More Info Viewlets
 

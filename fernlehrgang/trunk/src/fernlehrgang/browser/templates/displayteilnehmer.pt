@@ -1,0 +1,16 @@
+<script>
+ $(document).ready(function() {
+  $('h3#cliteilnehmer').click(function() {
+    $('div#displayteilnehmer').slideToggle();
+  });
+ });
+</script>
+
+<h3 id="cliteilnehmer"> Für Teilnehmer + </h3>
+<div id="displayteilnehmer" style="display: none;">
+  Teilnehmer Id: <span tal:content="context/id" /> <br>
+  Name:          <span tal:content="context/name"/> <br>
+  Vorname:       <span tal:content="context/vorname"/> <br>
+  Geburtsdatum:  <span tal:content="context/geburtsdatum"/> <br>
+</div>
+<hr>

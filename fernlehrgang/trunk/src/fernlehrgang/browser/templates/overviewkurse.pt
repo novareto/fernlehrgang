@@ -1,0 +1,19 @@
+<script>
+ $(document).ready(function() {
+  $('h3#overviewteilnehmer').click(function() {
+    $('div#overviewkurse').slideToggle();
+  });
+ });
+</script>
+
+<div tal:condition="viewlet/res">
+<h3 id="overviewteilnehmer"> Dieser Teilnehmer besucht folgende Lehrgänge: + </h3>
+<div id="overviewkurse" style="display: none;">
+  <span tal:content="context/id" /> <span tal:content="context/name"/>  <span tal:content="context/vorname"/> 
+  <ul tal:repeat="ktl viewlet/res">
+    <li> <span tal:content="ktl/fernlehrgang/titel"/> <span tal:content="ktl/fernlehrgang/jahr"/> </li>
+  </ul>
+</div>
+</div>
+<hr>
+
