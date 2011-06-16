@@ -12,6 +12,7 @@ from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
@@ -19,12 +20,15 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
-from uvc.layout import GroupForm, SubForm
+from uvc.layout.zeamform import Form 
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
 from zeam.form.base.markers import SUCCESS, FAILURE
 from fernlehrgang.interfaces.teilnehmer import generatePassword
+from zope.interface import Interface
+from zope.component import getMultiAdapter
+
 
 grok.templatedir('templates')
 
@@ -64,11 +68,11 @@ class AddTeilnehmer(uvc.layout.AddForm):
     label = u'Teilnehmer anlegen für Unternehmen'
 
     fields = Fields(ITeilnehmer).omit('id')
-    fields['branche'].mode = "radio"
 
     def create(self, data):
         data = no_value(data)
-        lehrgang = data.pop('lehrgang')
+        #lehrgang = data.pop('lehrgang')
+        lehrgang = None
         kursteilnehmer = None
         if lehrgang:
             kursteilnehmer = Kursteilnehmer(
@@ -82,29 +86,28 @@ class AddTeilnehmer(uvc.layout.AddForm):
         kursteilnehmer, teilnehmer = object
         session = Session()
         self.context.teilnehmer.append(teilnehmer)
-        if kursteilnehmer:
-            kursteilnehmer.teilnehmer = teilnehmer
-            kursteilnehmer.unternehmen = self.context
-            #if kursteilnehmer.fernlehrgang_id:
-            print "BBB----->", kursteilnehmer.fernlehrgang_id
-            fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
-            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+        self.tn = teilnehmer
+        #if kursteilnehmer:
+        #    kursteilnehmer.teilnehmer = teilnehmer
+        #    kursteilnehmer.unternehmen = self.context
+        #    #if kursteilnehmer.fernlehrgang_id:
+        #    print "BBB----->", kursteilnehmer.fernlehrgang_id
+        #    fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+        #    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
 
     def nextURL(self):
         self.flash(u'Der Teilnehmer wurde erfolgreich gespeichert')
-        return self.url(self.context, 'teilnehmer_listing')
+        locate(grok.getSite(), self.tn, DefaultModel)
+        return self.url(self.tn)
 
 
 class Index(models.DefaultView):
     grok.context(ITeilnehmer)
     title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
+    __name__ = "index"
 
     fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
-
-
-class Edit(GroupForm):
-    grok.context(ITeilnehmer)
 
 
 class Edit(models.Edit):
@@ -121,17 +124,17 @@ class Edit(models.Edit):
             self.submissionError = errors
             return FAILURE
 
-        lehrgang = data.pop('lehrgang')
-        if lehrgang is not NO_VALUE:
-            session = Session()
-            kursteilnehmer = Kursteilnehmer(
-                fernlehrgang_id=lehrgang,
-                status="A1", 
-                unternehmen_mnr=self.context.unternehmen.mnr)
-            kursteilnehmer.teilnehmer = self.context
-            fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
-            print "ADD Kursteilnehmer to Fernlehrgang"
-            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+        #lehrgang = data.pop('lehrgang')
+        #if lehrgang is not NO_VALUE:
+        #    session = Session()
+        #    kursteilnehmer = Kursteilnehmer(
+        #        fernlehrgang_id=lehrgang,
+        #        status="A1", 
+        #        unternehmen_mnr=self.context.unternehmen.mnr)
+        #    kursteilnehmer.teilnehmer = self.context
+        #    fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+        #    print "ADD Kursteilnehmer to Fernlehrgang"
+        #    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
             
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(_(u"Content updated"))
@@ -143,21 +146,79 @@ class Edit(models.Edit):
         self.flash(u'Ihre Aktion wurde abgebrochen.')
         self.redirect(self.url(self.context))
 
+
+@menuentry(NavigationMenu, order=200)
+class Register(Form):
+    grok.context(ITeilnehmer)
+    grok.name('register')
+    grok.title('Registrierung')
+    label = u"Teilnehmer für Lehrgang registrieren"
+    __name__ = "register"
+
+    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
+
+    @action('Registrieren')
+    def handle_register(self):
+        data, errors = self.extractData()
+        if errors:
+            return FAILURE
+        if data.get('lehrgang') is not NO_VALUE:
+            session = Session()
+            kursteilnehmer = Kursteilnehmer(
+                fernlehrgang_id=data.get('lehrgang'),
+                status=data.get('status'),
+                un_klasse = data.get('un_klasse'),
+                branche = data.get('branche'),
+                unternehmen_mnr=self.context.unternehmen.mnr)
+            kursteilnehmer.teilnehmer = self.context
+            fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
+            print "ADD Kursteilnehmer to Fernlehrgang"
+            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+        self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
+
+
 # More Info Viewlets
 
 class MoreInfoUnternehmen(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IUnternehmen) 
+    grok.order(10)
 
     def render(self):
         return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.mnr, self.context.name)
 
+
 class MoreInfoOnTeilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(ITeilnehmer)
+    grok.order(10)
 
     def render(self):
         return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
+
+
+class OverviewKurse(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(ITeilnehmer)
+    grok.order(30)
+
+    def update(self):
+        session = Session()
+        sql = session.query(Kursteilnehmer).filter(Kursteilnehmer.teilnehmer_id == self.context.id)
+        self.res = sql.all()
+
+
+class DisplayTeilnehmer(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(ITeilnehmer)
+    grok.view(Register)
+    grok.order(20)
+
+    def update(self):
+        self.view = getMultiAdapter((self.context, self.request), Interface, name="index")
+        self.view.update()
+        self.view.updateWidgets()
+
 
 
 class HelperEntry(Entry):

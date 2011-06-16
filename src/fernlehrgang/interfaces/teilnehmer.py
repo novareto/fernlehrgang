@@ -15,37 +15,6 @@ from zope.schema.interfaces import IContextSourceBinder
 
 # VOCABULARIES
 
-UN_KLASSE = (('G3', u'<= 10'),
-             #('G2', u'G III -  = 10, Abschlußgespräch'),
-             #('G3', u'G II  - <= 10, Abschlußgespräch'),
-             ('G2', u'10 und 30'),
-            ) 
-
-
-@grok.provider(IContextSourceBinder)
-def fernlehrgang_vocab(context):
-    rc = [SimpleTerm('Keine Registrierung vornehmen', '', '')]
-    session = Session()
-    from fernlehrgang.models import Fernlehrgang
-    for id, titel, jahr in session.query(Fernlehrgang.id, Fernlehrgang.titel, Fernlehrgang.jahr).all():
-        value = "%s - %s" % (titel, jahr)
-        rc.append(SimpleTerm(id, id, value))
-    return SimpleVocabulary(rc)    
-
-
-@grok.provider(IContextSourceBinder)
-def un_klasse(context):
-    items = []
-    for key, value in UN_KLASSE:
-        items.append(SimpleTerm(key, key, value))
-    return SimpleVocabulary(items)
-
-@grok.provider(IContextSourceBinder)
-def janein(context):
-    items = []
-    for key in ('ja', 'nein'):
-        items.append(SimpleTerm(key, key, key))
-    return SimpleVocabulary(items)
 
 def vocabulary(*terms):
     return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
@@ -152,23 +121,4 @@ class ITeilnehmer(Interface):
         defaultFactory = generatePassword,
         )
 
-    lehrgang = Choice(
-        title = u"Lehrgang",
-        description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
-        required = False,
-        source = fernlehrgang_vocab,
-        )
 
-    un_klasse = Choice(
-        title = u"Mitarbeiteranzahl",
-        description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
-        required = False,
-        source = un_klasse,
-        )
-
-    branche = Choice(
-        title = u"Branche",
-        description = u'Betrieb ist ein Recyclingunternehmen, ein Motorradhandel oder ein Speditions- oder Umschalgunternehmen.',
-        required = True,
-        source = janein,
-        )

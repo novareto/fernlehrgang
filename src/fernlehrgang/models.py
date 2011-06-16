@@ -55,7 +55,7 @@ class Fernlehrgang(Base, RDBMixin):
 
     __tablename__ = 'fernlehrgang'
 
-    id = Column(Integer, Sequence('fernlehrgang_id', start=1000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('fernlehrgang_seq', start=100, increment=1), primary_key=True)
     jahr = Column(String(50))
     titel = Column(String(256))
     beschreibung = Column(String(256))
@@ -133,8 +133,6 @@ class Teilnehmer(Base, RDBMixin):
     email = Column(String(50))
     telefon = Column(String(50))
     passwort = Column(String(8))
-    un_klasse = Column(String(3))
-    branche = Column(String(5))
 
     unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR'))
 
@@ -166,7 +164,7 @@ class Lehrheft(Base, RDBMixin):
 
     id = Column(Integer, Sequence('lehrheft_seq', start=1000, increment=1), primary_key=True)
     nummer = Column(String(5))
-    titel = Column(String(50))
+    titel = Column(String(256))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
     fernlehrgang = relation(Fernlehrgang, 
@@ -199,9 +197,9 @@ class Frage(Base, RDBMixin):
 
     __tablename__ = 'frage'
 
-    id = Column(Integer, Sequence('frage_seq', start=1000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('frage_seq', start=10000, increment=1), primary_key=True)
     frage = Column(String(5))
-    titel = Column(String(50))
+    titel = Column(String(256))
     antwortschema = Column(String(50))
     gewichtung = Column(Integer)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
@@ -241,6 +239,9 @@ class Kursteilnehmer(Base, RDBMixin):
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
     unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR',))
+    un_klasse = Column(String(3))
+    branche = Column(String(5))
+    gespraech = Column(String(20))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))

@@ -7,7 +7,7 @@ import json
 
 from sqlalchemy import *
 from z3c.saconfig import Session
-from fernlehrgang.models import Teilnehmer, Antwort, Kursteilnehmer
+from fernlehrgang.models import Frage, Teilnehmer, Antwort, Kursteilnehmer
 from fernlehrgang.app import RestLayer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.app import IFernlehrgangApp
@@ -21,6 +21,14 @@ from fernlehrgang.interfaces.resultate import ICalculateResults
 
 class HelperAPI(grok.XMLRPC):
     grok.context(IFernlehrgangApp)
+
+    def getFrageIds(self, lehrheft_id):
+        session = Session()
+        d = dict()
+        ret = session.query(Frage).filter(Frage.lehrheft_id==lehrheft_id)
+        for frage in ret.all():
+            d[frage.frage] = frage.id
+        return d
 
     def getMNRFromTeilnehmerID(self, teilnehmer_id):
         session = Session()
@@ -40,6 +48,8 @@ class HelperAPI(grok.XMLRPC):
 
     def canLogin(self, teilnehmer_id, passwort):
         session = Session()
+        if teilnehmer_id == "admin":
+            return False
         ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
         if ret.count() != 1:
             return False
@@ -58,6 +68,14 @@ class TeilnehmerAPI(grok.REST):
 
     def GET(self):
         context = self.context
+        kt_id = self.request.get('kt', None)
+        branche = ""
+        un_klasse = ""
+        if kt_id:
+            for ktn in context.kursteilnehmer: 
+                if ktn.id == int(kt_id):
+                    branche = ktn.branche
+                    un_klasse = ktn.un_klasse
         teilnehmer = dict(
            anrede = context.anrede,
            titel = context.titel,
@@ -69,8 +87,8 @@ class TeilnehmerAPI(grok.REST):
            plz = context.plz,
            ort = context.ort,
            email = context.email,
-           un_klasse = context.un_klasse,
-           branche = context.branche,
+           un_klasse = un_klasse,
+           branche = branche,
            )
         return json.dumps(teilnehmer)
 
@@ -78,9 +96,17 @@ class TeilnehmerAPI(grok.REST):
     def PUT(self):
         teilnehmer = self.context
         data = json.loads(self.body)
+        un_klasse = data.pop('un_klasse')
+        branche = data.pop('branche')
+        flg_id = data.pop('flg_id')
         for key, value in data.items():
             if value:
                 setattr(teilnehmer, key, value)
+
+        for ktm in teilnehmer.kursteilnehmer:
+            if ktm.fernlehrgang_id == int(flg_id):
+                ktm.un_klasse = un_klasse
+                ktm.branche = branche
         return "1"
 
 

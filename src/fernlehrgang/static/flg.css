@@ -254,3 +254,7 @@ body {
  float: left;
  margin-right: 1em;
 }
+
+#page-body h3 {
+ width: 100%;
+}

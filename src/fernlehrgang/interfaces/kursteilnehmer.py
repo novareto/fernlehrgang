@@ -4,6 +4,8 @@
 
 import grokcore.component as grok
 
+from sqlalchemy.sql import and_
+from z3c.saconfig import Session
 from zope.schema import *
 from zope.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
@@ -21,12 +23,63 @@ LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
                ) 
 
 
+UN_KLASSE = (('G3', u'<= 10'),
+             ('G2', u'10 und 30'),
+            ) 
+
+
+GESPRAECH = (('0', u'Nicht notwendig'),
+             ('1', u'Bestanden'),
+             ('2', u'Nicht Bestanden'),
+            ) 
+
+@grok.provider(IContextSourceBinder)
+def un_klasse(context):
+    items = []
+    for key, value in UN_KLASSE:
+        items.append(SimpleTerm(key, key, value))
+    return SimpleVocabulary(items)
+
+
+@grok.provider(IContextSourceBinder)
+def janein(context):
+    items = []
+    for key in ('ja', 'nein'):
+        items.append(SimpleTerm(key, key, key))
+    return SimpleVocabulary(items)
+
+
 @grok.provider(IContextSourceBinder)
 def lieferstopps(context):
     items = []
     for key, value in LIEFERSTOPPS:
         items.append(SimpleTerm(key, key, value))
     return SimpleVocabulary(items)
+
+
+@grok.provider(IContextSourceBinder)
+def gespraech(context):
+    items = []
+    for key, value in GESPRAECH:
+        items.append(SimpleTerm(key, key, value))
+    return SimpleVocabulary(items)
+
+
+@grok.provider(IContextSourceBinder)
+def fernlehrgang_vocab(context):
+    rc = [SimpleTerm('Keine Registrierung vornehmen', '', '')]
+    rc = []
+    session = Session()
+    from fernlehrgang.models import Fernlehrgang, Kursteilnehmer
+    sql = session.query(Fernlehrgang)
+    ktsql = session.query(Kursteilnehmer).filter(Kursteilnehmer.teilnehmer_id == context.id)
+    if ktsql.count() > 0:
+        sql = sql.filter(and_(Kursteilnehmer.teilnehmer_id == context.id,
+                          Fernlehrgang.id != Kursteilnehmer.fernlehrgang_id))
+    for flg in sql.all():
+        value = "%s - %s" % (flg.titel, flg.jahr)
+        rc.append(SimpleTerm(flg.id, flg.id, value))
+    return SimpleVocabulary(rc)    
 
 
 class IKursteilnehmer(Interface):
@@ -44,6 +97,13 @@ class IKursteilnehmer(Interface):
         required = True,
         )
 
+    lehrgang = Choice(
+        title = u"Lehrgang",
+        description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
+        required = False,
+        source = fernlehrgang_vocab,
+        )
+
     status = Choice(
         title = u"Status",
         description = u"Bitte geben Sie in diesen Feld den Status des Teilnehmers ein",
@@ -52,3 +112,23 @@ class IKursteilnehmer(Interface):
         source = lieferstopps,
         )
 
+    un_klasse = Choice(
+        title = u"Mitarbeiteranzahl",
+        description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
+        required = False,
+        source = un_klasse,
+        )
+
+    branche = Choice(
+        title = u"Branche",
+        description = u'Betrieb ist ein Recyclingunternehmen, ein Motorradhandel oder ein Speditions- oder Umschalgunternehmen.',
+        required = True,
+        source = janein,
+        )
+
+    gespraech = Choice(
+        title = u"Abschlussgesräch / Abschlusseminar",
+        description = u'Wie hat der Teilnehmer, falls nötig, das Abschlussgespräch / Abschussseminar absolviert?',
+        required = True,
+        source = gespraech,
+        )
