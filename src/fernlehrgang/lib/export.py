@@ -77,10 +77,6 @@ def nN(value):
         return ''
     return value
 
-RDATUM = "01.12.2010"
-STICHTAG = "30.12.2010"
-LEHRHEFT_ID = "222"
-
 
 class XLSExport(grok.Adapter):
     """ XML Export"""
@@ -114,7 +110,7 @@ class XLSExport(grok.Adapter):
             row.write(7, nN(teilnehmer.titel))
             row.write(8, nN(teilnehmer.vorname))
             row.write(9, nN(teilnehmer.name))
-            row.write(10, nN(teilnehmer.strasse) + ' '  + nN(teilnehmer.nr) or nN(unternehmen.str))
+            row.write(10, nN(teilnehmer.strasse) + nN(teilnehmer.nr) or nN(unternehmen.str))
             row.write(11, nN(teilnehmer.ort or unternehmen.ort))
             row.write(12, nN(teilnehmer.passwort))
             row.write(13, '') # Beliefart --> Leer laut Frau Esche 
@@ -129,6 +125,7 @@ class XLSExport(grok.Adapter):
             z = 22 
             for lehrheft in flg.lehrhefte:
                 for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
+                    r=""
                     for antwort in ktn.antworten:
                         if frage.id == antwort.frage_id:
                             r = "%s %s %s" %(
@@ -145,7 +142,6 @@ class XLSExport(grok.Adapter):
                 z += 1
 
     def createXLS(self, form):
-        print form 
         self.createSpalten()
         self.createRows(form)
         file = open('/tmp/adr.xls', 'w+')

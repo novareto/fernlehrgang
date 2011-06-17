@@ -7,7 +7,7 @@ import grok
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.viewlets import NavigationMenu
-from fernlehrgang.export import IXLSExport
+from fernlehrgang.lib.export import IXLSExport
 from uvc.layout import Form
 from zeam.form.base import Fields, action
 
@@ -36,8 +36,9 @@ class XMLExport(grok.View):
         self.file = IXLSExport(self.context).createXLS(self.request.form)
 
     def render(self):
+        dateiname = self.request.form.get('dateiname', 'flg.xls')
         RESPONSE = self.request.response
-        RESPONSE.setHeader('content-type', 'application/vnd.ms-excel')
-        RESPONSE.setHeader('content-disposition', 'attachment; filename=flgadressen.xls')
+        RESPONSE.setHeader('content-type', 'application/ms-excel')
+        RESPONSE.setHeader('content-disposition', 'attachment; filename=%s' % dateiname )
         self.file.seek(0)
         return self.file.read()
