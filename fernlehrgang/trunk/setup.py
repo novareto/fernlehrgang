@@ -42,6 +42,7 @@ setup(name='fernlehrgang',
                         'megrok.z3ctable',
                         'zope.pluggableauth',
                         'hurry.jquerytools',
+                        'xlwt',
                         # Add extra requirements here
                         ],
       entry_points = """
