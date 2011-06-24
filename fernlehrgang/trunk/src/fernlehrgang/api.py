@@ -22,6 +22,12 @@ from fernlehrgang.interfaces.resultate import ICalculateResults
 class HelperAPI(grok.XMLRPC):
     grok.context(IFernlehrgangApp)
 
+    def getFlgIds(self, teilnehmer_id):
+        session = Session()
+        ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
+                Kursteilnehmer.teilnehmer_id == teilnehmer_id)
+        return ret.one()
+
     def getFrageIds(self, lehrheft_id):
         session = Session()
         d = dict()
