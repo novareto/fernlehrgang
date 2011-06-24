@@ -24,7 +24,7 @@ LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
 
 
 UN_KLASSE = (('G3', u'<= 10'),
-             ('G2', u'10 und 30'),
+             ('G2', u'zwischen 10 und 30'),
             ) 
 
 

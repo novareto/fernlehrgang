@@ -83,7 +83,7 @@ class CalculateResults(grok.Adapter):
 
     def summary(self):
         punkte = 0
-        comment = "Nicht Bestanden"
+        comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context
         mindest_punktzahl = context.fernlehrgang.punktzahl
         lehrhefte = self.lehrhefte()
@@ -93,4 +93,18 @@ class CalculateResults(grok.Adapter):
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
             comment = "Bestanden"
+        # Abschlussgespräch Seminar
+        if True:
+            if context.branche == "ja":
+                if context.un_klasse == 'G2':
+                    if context.gespraech != '1':
+                        comment = u'Nicht Bestnaden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
+                if context.un_klasse == 'G3':
+                    if context.gespraech != '1':
+                        comment = u'Nicht Bestnaden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+            elif context.branche == "nein":
+                if context.un_klasse == 'G2':
+                    if context.gespraech != '1':
+                        comment = u'Nicht Bestnaden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
