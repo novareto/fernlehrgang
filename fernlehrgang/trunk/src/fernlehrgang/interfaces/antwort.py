@@ -73,6 +73,7 @@ class IAntwort(Interface):
         title = u'Antwortschema',
         description = u'Bitte geben Sie Antwortmöglichkeiten ein.',
         required = True,
+        default = u'',
         )
 
     datum = Datetime(

@@ -124,6 +124,7 @@ class IKursteilnehmer(Interface):
         description = u'Betrieb ist ein Recyclingunternehmen, ein Motorradhandel oder ein Speditions- oder Umschalgunternehmen.',
         required = True,
         source = janein,
+        default = 'nein',
         )
 
     gespraech = Choice(

@@ -11,6 +11,8 @@ from zope.interface import Interface
 from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from z3c.saconfig import Session
+from fernlehrgang import models
 
 
 
@@ -76,6 +78,8 @@ def nN(value):
     if value == None:
         return ''
     return value
+
+from profilehooks import profile
 
 
 class XLSExport(grok.Adapter):

@@ -86,9 +86,12 @@ class TeilnehmerSuche(uvc.layout.Form):
                 name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
                 link_flg = "Kein Fernlehrgang"
             unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
+            gebdat = ""
+            if item.geburtsdatum:
+                gebdat = item.geburtsdatum.strftime('%d.%m.%Y')
             d = dict(name=name,
                      link_flg = link_flg,
-                     gebdat = item.geburtsdatum.strftime('%d.%m.%Y'),
+                     gebdat = gebdat,
                      unternehmen = unternehmen,
                      vorname = item.vorname,
                      bestanden = results['comment'])
