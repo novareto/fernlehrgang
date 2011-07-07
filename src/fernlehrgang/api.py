@@ -82,24 +82,28 @@ class TeilnehmerAPI(grok.REST):
                 if ktn.id == int(kt_id):
                     branche = ktn.branche
                     un_klasse = ktn.un_klasse
+        geburtsdatum = ""
+        if context.geburtsdatum:
+            geburtsdatum = context.geburtsdatum.strftime('%d.%m.%Y')
         teilnehmer = dict(
-           anrede = context.anrede,
-           titel = context.titel,
-           vorname = context.vorname,
-           name = context.name,
-           geburtsdatum = context.geburtsdatum.strftime('%d.%m.%Y'),
-           strasse = context.strasse,
-           nr = context.nr,
-           plz = context.plz,
-           ort = context.ort,
-           email = context.email,
-           un_klasse = un_klasse,
-           branche = branche,
-           )
+            anrede = context.anrede,
+            titel = context.titel,
+            vorname = context.vorname,
+            name = context.name,
+            geburtsdatum = geburtsdatum,
+            strasse = context.strasse,
+            nr = context.nr,
+            plz = context.plz,
+            ort = context.ort,
+            email = context.email,
+            un_klasse = un_klasse,
+            branche = branche,
+            )
         return json.dumps(teilnehmer)
 
 
     def PUT(self):
+        print "PUT"
         teilnehmer = self.context
         data = json.loads(self.body)
         un_klasse = data.pop('un_klasse')
@@ -113,6 +117,7 @@ class TeilnehmerAPI(grok.REST):
             if ktm.fernlehrgang_id == int(flg_id):
                 ktm.un_klasse = un_klasse
                 ktm.branche = branche
+                ktm.status = "A1"
         return "1"
 
 
@@ -131,3 +136,4 @@ class KursteilnehmerAPI(grok.REST):
         data = json.loads(self.body)
         antwort = Antwort(**data)
         kursteilnehmer.antworten.append(antwort)
+        return "SYSTEM OK" 

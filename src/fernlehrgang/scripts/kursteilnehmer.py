@@ -20,6 +20,7 @@ from zope.app.publication.zopepublication import ZopePublication
 from z3c.saconfig import Session
 from fernlehrgang.models import Fernlehrgang, Kursteilnehmer, Teilnehmer, Unternehmen
 from fernlehrgang.interfaces.teilnehmer import generatePassword
+from fernlehrgang import log
 
 
 def parse_options():
@@ -71,7 +72,6 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
     options, args, parser = parse_options()
-    import pdb; pdb.set_trace() 
     if not options.file:
         parser.error("Bitte eine CSV-Datei angeben.")
     if not options.fernlehrgang:
@@ -88,19 +88,24 @@ def main(argv=None):
     app = root[options.portal]
     
     # Logik
+    err = []
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
     for i, line in enumerate(DictReader(open(options.file, 'r'))):
-        print i+1
-        unternehmen = Session.query(Unternehmen).get(line['MNR'].replace('-', ''))
+        unternehmen = Session.query(Unternehmen).get(line['MNR'].strip().replace('-', ''))
+        i+=1
+        print '%s, %s %s' %(i, line['MNR'], unternehmen)
         if unternehmen:
             teilnehmer = Teilnehmer()
+            teilnehmer.passwort = generatePassword()
             unternehmen.teilnehmer.append(teilnehmer)
             session.flush()
             kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
-                passwort = generatePassword,
                 status = NICHT_REGISTRIERT)
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
-        if i == 100:
-            break
+        else:
+            print "Kein Unternehmen gefunden --> %s" % line['MNR']
+            err.append(line['MNR'])
     import transaction; transaction.commit()    
+    for x in err:
+        print x+','

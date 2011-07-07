@@ -73,6 +73,8 @@ class CalculateResults(grok.Adapter):
         return rc
 
     def calculateResult(self, antworten, antwortschema, gewichtung):
+        if not antworten:
+            return 0
         if len(antworten) != len(antwortschema):
             return 0
         antwortschema = list(antwortschema.lower())

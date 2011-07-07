@@ -32,18 +32,17 @@ class FernlehrgangStatistik(layout.Page):
     alle_kursteilnehmer = 0
     kursteilnehmer_detail = []
 
-
     @property
     def description(self):
         return u"Hier Sie verschiedene Statstiken zum Fernlehrgang '%s' aufrufen" % self.context.titel
-
 
     def update(self):
         session = saconfig.Session()
         lfs = lieferstopps(None)
         self.alle_kursteilnehmer = len(self.context.kursteilnehmer)
         sql = session.query(models.Kursteilnehmer)
-        kursteilnehmer_status = session.query(models.Kursteilnehmer.status, func.count()).group_by(
+        kursteilnehmer_status = session.query(models.Kursteilnehmer.status, func.count()).filter(
+            models.Kursteilnehmer.fernlehrgang_id == self.context.id).group_by(
             models.Kursteilnehmer.status).all()
         self.kursteilnehmer_detail = [(lfs.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
 
