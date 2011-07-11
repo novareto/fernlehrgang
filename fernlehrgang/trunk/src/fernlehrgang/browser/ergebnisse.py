@@ -100,13 +100,13 @@ class CalculateResults(grok.Adapter):
             if context.branche == "ja":
                 if context.un_klasse == 'G2':
                     if context.gespraech != '1':
-                        comment = u'Nicht Bestnaden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
+                        comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
                 if context.un_klasse == 'G3':
                     if context.gespraech != '1':
-                        comment = u'Nicht Bestnaden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
             elif context.branche == "nein":
                 if context.un_klasse == 'G2':
                     if context.gespraech != '1':
-                        comment = u'Nicht Bestnaden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
 
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
