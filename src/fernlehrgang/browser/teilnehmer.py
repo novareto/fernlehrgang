@@ -174,7 +174,8 @@ class Register(Form):
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
             print "ADD Kursteilnehmer to Fernlehrgang"
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
-        self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
+            self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
+        self.flash('Es wurde kein Lehrgang spezifiziert.', type="warning")
 
 
 # More Info Viewlets
