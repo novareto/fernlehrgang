@@ -94,6 +94,7 @@ class Unternehmen(Base, RDBMixin):
     str = Column("STR", String(70))
     plz = Column("PLZ", String(10))
     ort = Column("ORT", String(30))
+    betriebsart = Column("BETRIEBSART", String(1))
 
     @property
     def title(self):
