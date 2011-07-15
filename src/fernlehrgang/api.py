@@ -136,4 +136,4 @@ class KursteilnehmerAPI(grok.REST):
         data = json.loads(self.body)
         antwort = Antwort(**data)
         kursteilnehmer.antworten.append(antwort)
-        return "SYSTEM OK" 
+        return antwort.id 
