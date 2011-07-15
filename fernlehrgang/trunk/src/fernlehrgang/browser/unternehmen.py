@@ -90,9 +90,11 @@ class Index(models.DefaultView):
     def getTeilnehmerListing(self):
         rc = []
         for teilnehmer in self.context.teilnehmer:
-
+            gebdat = ""
+            if teilnehmer.geburtsdatum:
+                gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
             person = dict(name = "%s %s" %(teilnehmer.name, teilnehmer.vorname),
-                          gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y'),
+                          gebdat = gebdat,
                           lehrgang = [])
             for kurs in teilnehmer.kursteilnehmer:
                 print kurs.fernlehrgang
