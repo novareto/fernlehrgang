@@ -121,4 +121,15 @@ class ITeilnehmer(Interface):
         defaultFactory = generatePassword,
         )
 
+    kategorie = Choice(
+        title = u"Kategorie",
+        description = u'Bitte wählen Sie eine Kategorie.',
+        required = True,
+        default = '0',
+        vocabulary = vocabulary(
+            ('0', '0', 'Keine Kategorie'),
+            ('1', 'K1', 'Kategorie 1'),
+            ('2', 'K2', 'Kategorie 2'),)
+        )
+
 
