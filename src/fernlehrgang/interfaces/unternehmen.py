@@ -2,10 +2,31 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import grokcore.component as grok
 
 from zope.schema import *
 from zope.interface import Interface
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+
+
+BETRIEBSARTEN = (
+        ('', u'Keine Angabe'),
+        ('F', u'Filiale'),
+        ('E', u'Einzelbetrieb'),
+        ('Z', u'Zentrale'),
+        ('H', u'Hauptbetrieb'),
+        ('B', u'Betriebsteil')
+        )
+
+
+@grok.provider(IContextSourceBinder)
+def voc_betriebsart(context):
+    items = []
+    for key, value in BETRIEBSARTEN:
+        items.append(SimpleTerm(key, key, value))
+    return SimpleVocabulary(items)
+
 
 class IUnternehmen(Interface):
 
@@ -52,3 +73,9 @@ class IUnternehmen(Interface):
         required = True
         )
 
+    betriebsart = Choice(
+        title = u'Betriebsart',
+        description = u'Betriebsart des Unternehmens',
+        source = voc_betriebsart,
+        required = True
+        )
