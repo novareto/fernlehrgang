@@ -21,7 +21,8 @@ def lehrhefte(context):
     rc = []
     for lehrheft in context.lehrhefte:
         titel = "%s, %s" %(lehrheft.nummer, lehrheft.titel)
-        rc.append(SimpleTerm(lehrheft.id, lehrheft.id, titel))
+        key = "%s-%s" %(lehrheft.id, lehrheft.nummer)
+        rc.append(SimpleTerm(key, key, titel))
     return SimpleVocabulary(rc)
 
 
@@ -98,6 +99,7 @@ class XLSExport(grok.Adapter):
 
     def createRows(self, form):
         flg = self.context
+        lh_id, lh_nr = form['lehrheft'].split('-')
         for i, ktn in enumerate(self.context.kursteilnehmer):
             cal_res = ICalculateResults(ktn)
             summary = cal_res.summary()
@@ -106,7 +108,7 @@ class XLSExport(grok.Adapter):
             unternehmen = teilnehmer.unternehmen
             row.write(0, nN(flg.id))
             row.write(1, nN(teilnehmer.id))
-            row.write(2, form['lehrheft'])
+            row.write(2, lh_id)
             row.write(3, nN(teilnehmer.plz or unternehmen.plz))
             row.write(4, nN(unternehmen.mnr))
             row.write(5, nN(unternehmen.name))
@@ -122,7 +124,7 @@ class XLSExport(grok.Adapter):
             row.write(15, '2') # RSENDUNG --> Anzahl der Rücksendung
             row.write(16, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
             row.write(17, form['stichtag']) # Variable
-            row.write(18, '3') # LEHRHEFT --> Variable Für Welchen Ausdruck
+            row.write(18, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
             row.write(19, nN(teilnehmer.titel))
             row.write(20, nN(teilnehmer.vorname))
             row.write(21, nN(teilnehmer.name))
