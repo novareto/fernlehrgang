@@ -9,6 +9,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces.kursteilnehmer import lieferstopps 
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
@@ -71,6 +72,7 @@ class TeilnehmerSuche(uvc.layout.Form):
 
     def getResults(self):
         root = grok.getSite()
+        lfs = lieferstopps(None)
         for kursteilnehmer, item in self.results:
             locate(root, item, DefaultModel)
             locate(root, item.unternehmen, DefaultModel)
@@ -94,6 +96,7 @@ class TeilnehmerSuche(uvc.layout.Form):
                      gebdat = gebdat,
                      unternehmen = unternehmen,
                      vorname = item.vorname,
+                     status = lfs.getTerm(kursteilnehmer.status).title,
                      bestanden = results['comment'])
             yield d
 
