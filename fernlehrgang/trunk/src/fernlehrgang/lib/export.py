@@ -69,7 +69,8 @@ spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'PLZ', 'MITGLNRMIT', 'FIRMA
     'L6_F_10', 'L7_F_1', 'L7_F_2', 'L7_F_3', 'L7_F_4', 'L7_F_5', 'L7_F_6', 'L7_F_7',
     'L7_F_8', 'L7_F_9', 'L7_F_10', 'L8_F_1', 'L8_F_2', 'L8_F_3', 'L8_F_4', 'L8_F_5',
     'L8_F_6', 'L8_F_7', 'L8_F_8', 'L8_F_9', 'L8_F_10','L1_P', 'L2_P', 'L3_P',
-    'L4_P', 'L5_P', 'L6_P', 'L7_P', 'L8_P', 'L9_P', 'L10_P'
+    'L4_P', 'L5_P', 'L6_P', 'L7_P', 'L8_P', 'L9_P', 'L10_P', 'BDANZSDG', 'BDNR', 'BDGEWICHT',
+    'BZANZSDG', 'BZANZBD', 'BDANFANG', 'BDENDE',
 )
 
 
@@ -116,12 +117,11 @@ class XLSExport(grok.Adapter):
             row.write(7, nN(teilnehmer.titel))
             row.write(8, nN(teilnehmer.vorname))
             row.write(9, nN(teilnehmer.name))
-            row.write(10, nN(teilnehmer.strasse) + nN(teilnehmer.nr) or nN(unternehmen.str))
+            row.write(10, nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr) or nN(unternehmen.str))
             row.write(11, nN(teilnehmer.ort or unternehmen.ort))
             row.write(12, nN(teilnehmer.passwort))
             row.write(13, '') # Beliefart --> Leer laut Frau Esche 
             row.write(14, form['rdatum']) # Variable
-            row.write(15, '2') # RSENDUNG --> Anzahl der Rücksendung
             row.write(16, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
             row.write(17, form['stichtag']) # Variable
             row.write(18, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
@@ -134,7 +134,7 @@ class XLSExport(grok.Adapter):
                     r=""
                     for antwort in ktn.antworten:
                         if frage.id == antwort.frage_id:
-                            r = "%s %s %s" %(
+                            r = "%s\r %s\n %s\r" %(
                                     frage.antwortschema.upper(), 
                                     antwort.antwortschema, 
                                     cal_res.calculateResult(
@@ -143,9 +143,15 @@ class XLSExport(grok.Adapter):
                                         frage.gewichtung))
                     row.write(z, r) 
                     z += 1
+            lhid = ""        
             for lhr in cal_res.lehrhefte():
                 row.write(z, lhr.get('punkte'))
                 z += 1
+                if len(lhr['antworten']):
+                   lhid = lhr['titel'].split('-')[0] 
+            row.write(15, lhid) # RSENDUNG --> Anzahl der Rücksendung
+            print i
+
 
     def createXLS(self, form):
         self.createSpalten()
