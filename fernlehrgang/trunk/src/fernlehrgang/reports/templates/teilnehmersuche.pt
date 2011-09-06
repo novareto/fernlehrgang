@@ -9,6 +9,7 @@
         <th> Vorname </th>
         <th> Geburtsdatum </th>
         <th> Unternehmen </th>
+        <th> Status </th>
         <th> Ergebnis </th>
       </tr>
       </thead>
@@ -19,6 +20,7 @@
         <td> <span tal:content="structure result/vorname" /> </td>
         <td> <span tal:content="structure result/gebdat" /> </td>
         <td> <span tal:content="structure result/unternehmen" /> </td>
+        <td> <span tal:content="structure result/status" /> </td>
         <td> <span tal:content="structure result/bestanden" /> </td>
       </tr>
       </tbody>
