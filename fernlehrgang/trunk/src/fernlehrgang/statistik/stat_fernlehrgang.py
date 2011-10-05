@@ -8,7 +8,7 @@ from z3c import saconfig
 from zope import component
 from dolmen import menu
 from megrok import layout
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from fernlehrgang import models
 
 
@@ -46,8 +46,12 @@ class FernlehrgangStatistik(layout.Page):
             models.Kursteilnehmer.status).all()
         self.kursteilnehmer_detail = [(lfs.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
 
-    def chart(self):
-        chart = PieChart3D(250, 100)
-        chart.add_data([(x[1]) for x in self.kursteilnehmer_detail])
-        chart.set_pie_labels([(x[0]) for x in self.kursteilnehmer_detail])
-        return chart.get_url()
+    def getAntworten(self):
+        session = saconfig.Session()
+        return session.query(models.Lehrheft.nummer, func.count()).filter(
+            and_(models.Kursteilnehmer.fernlehrgang_id==self.context.id,
+                 models.Kursteilnehmer.id==models.Antwort.kursteilnehmer_id,
+                 models.Antwort.lehrheft_id == models.Lehrheft.id)).group_by(
+                 models.Lehrheft.nummer).order_by(
+                 models.Lehrheft.nummer).all()
+        
