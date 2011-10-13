@@ -109,6 +109,9 @@ class XLSExport(grok.Adapter):
         flg = self.context
         lh_id, lh_nr = form['lehrheft'].split('-')
         for i, ktn in enumerate(self.context.kursteilnehmer):
+            if ktn.status not in ('A1', 'A2'):
+                print ktn.status
+                continue
             cal_res = ICalculateResults(ktn)
             summary = cal_res.summary()
             row = self.adressen.row(i+1)
