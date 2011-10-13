@@ -56,7 +56,8 @@ class IXLSExport(Interface):
 
 
 
-spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'PLZ', 'MITGLNRMIT', 'FIRMA', 'ANREDE', 'TITEL', 'VORNAME', 'NAME',
+spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
+    'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME',
     'STRASSE', 'WOHNORT', 'PASSWORT', 'BELIEFART', 'R_DATUM', 'RSENDUNG', 'PUNKTZAHL',
     'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME', 'L1_F_1', 'L1_F_2',
     'L1_F_3', 'L1_F_4', 'L1_F_5', 'L1_F_6', 'L1_F_7', 'L1_F_8', 'L1_F_9', 'L1_F_10',
@@ -81,7 +82,7 @@ def nN(value):
         return ''
     return value
 
-from profilehooks import profile
+from profilehooks import profile, timecall
 
 
 class XLSExport(grok.Adapter):
@@ -98,6 +99,12 @@ class XLSExport(grok.Adapter):
         for i, spalte in enumerate(spalten):
             self.adressen.write(0, i, spalte)
 
+    def versandanschrift(self, teilnehmer):
+        if teilnehmer.strasse != None or teilnehmer.nr != None or teilnehmer.plz != None or teilnehmer.ort != None:
+            return "JA"
+        return ""
+
+    @timecall
     def createRows(self, form):
         flg = self.context
         lh_id, lh_nr = form['lehrheft'].split('-')
@@ -110,25 +117,30 @@ class XLSExport(grok.Adapter):
             row.write(0, nN(flg.id))
             row.write(1, nN(teilnehmer.id))
             row.write(2, lh_id)
-            row.write(3, nN(teilnehmer.plz or unternehmen.plz))
-            row.write(4, nN(unternehmen.mnr))
-            row.write(5, nN(unternehmen.name))
-            row.write(6, nN(teilnehmer.anrede))
-            row.write(7, nN(teilnehmer.titel))
-            row.write(8, nN(teilnehmer.vorname))
-            row.write(9, nN(teilnehmer.name))
-            row.write(10, nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr) or nN(unternehmen.str))
-            row.write(11, nN(teilnehmer.ort or unternehmen.ort))
-            row.write(12, nN(teilnehmer.passwort))
-            row.write(13, '') # Beliefart --> Leer laut Frau Esche 
-            row.write(14, form['rdatum']) # Variable
-            row.write(16, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
-            row.write(17, form['stichtag']) # Variable
-            row.write(18, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
-            row.write(19, nN(teilnehmer.titel))
-            row.write(20, nN(teilnehmer.vorname))
-            row.write(21, nN(teilnehmer.name))
-            z = 22 
+            row.write(3, self.versandanschrift(teilnehmer))
+            row.write(4, nN(teilnehmer.plz or unternehmen.plz))
+            row.write(5, nN(unternehmen.mnr))
+            row.write(6, nN(unternehmen.name))
+            row.write(7, nN(unternehmen.name2))
+            row.write(8, nN(teilnehmer.anrede))
+            row.write(9, nN(teilnehmer.titel))
+            row.write(10, nN(teilnehmer.vorname))
+            row.write(11, nN(teilnehmer.name))
+            strasse = nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr)
+            if strasse == " ":
+                strasse = nN(unternehmen.str)
+            row.write(12, strasse)
+            row.write(13, nN(teilnehmer.ort or unternehmen.ort))
+            row.write(14, nN(teilnehmer.passwort))
+            row.write(15, '') # Beliefart --> Leer laut Frau Esche 
+            row.write(16, form['rdatum']) # Variable
+            row.write(18, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
+            row.write(19, form['stichtag']) # Variable
+            row.write(20, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
+            row.write(21, nN(teilnehmer.titel))
+            row.write(22, nN(teilnehmer.vorname))
+            row.write(23, nN(teilnehmer.name))
+            z = 24 
             for lehrheft in flg.lehrhefte:
                 for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
                     r=""
@@ -149,7 +161,7 @@ class XLSExport(grok.Adapter):
                 z += 1
                 if len(lhr['antworten']):
                    lhid = lhr['titel'].split('-')[0] 
-            row.write(15, lhid) # RSENDUNG --> Anzahl der Rücksendung
+            row.write(17, lhid) # RSENDUNG --> Anzahl der Rücksendung
             print i
 
 
