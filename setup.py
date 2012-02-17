@@ -22,9 +22,9 @@ setup(name='fernlehrgang',
                         'grok',
                         'grokui.admin',
                         'z3c.testsetup',
-                        'cx-Oracle',
                         'grokcore.startup',
                         'megrok.traject',
+                        'cx_Oracle',
                         'z3c.saconfig',
                         'uvc.layout',
                         'uvc.widgets',
@@ -43,6 +43,7 @@ setup(name='fernlehrgang',
                         'zope.pluggableauth',
                         'hurry.jquerytools',
                         'xlwt',
+                        'openpyxl'
                         # Add extra requirements here
                         ],
       entry_points = """
