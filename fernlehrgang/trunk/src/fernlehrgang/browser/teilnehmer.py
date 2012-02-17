@@ -135,7 +135,9 @@ class Edit(models.Edit):
         #    fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
         #    print "ADD Kursteilnehmer to Fernlehrgang"
         #    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
-            
+        for x in ['adresszusatz', 'ort', 'plz', 'nr', 'email', 'strasse', 'telefon']:
+            if data[x] == NO_VALUE:
+                data[x] = ""
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))

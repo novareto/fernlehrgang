@@ -26,7 +26,7 @@ class HelperAPI(grok.XMLRPC):
         session = Session()
         ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
                 Kursteilnehmer.teilnehmer_id == teilnehmer_id)
-        return ret.one()
+        return ret.all()
 
     def getFrageIds(self, lehrheft_id):
         session = Session()
@@ -134,6 +134,7 @@ class KursteilnehmerAPI(grok.REST):
     def PUT(self):
         kursteilnehmer = self.context
         data = json.loads(self.body)
+        print data
         antwort = Antwort(**data)
         kursteilnehmer.antworten.append(antwort)
         return antwort.id 

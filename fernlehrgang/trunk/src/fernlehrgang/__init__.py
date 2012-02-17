@@ -6,6 +6,6 @@
 import logging
 logger = logging.getLogger('fernlehrgang')
 
-def log(message, summary='', severity=logging.DEBUG):
+def log(message, summary='', severity=logging.INFO):
     logger.log(severity, '%s %s', summary, message)
 
