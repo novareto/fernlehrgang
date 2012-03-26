@@ -47,13 +47,13 @@ class XMLExport(grok.View):
 class XLSReport(grok.View):
     grok.context(IFernlehrgang)
     grok.name('xlsreport')
-    grok.title('Versandliste')
+    grok.title('Statusliste')
 
     def update(self):
         self.file = IXLSReport(self.context).createXLS(self.request.form)
 
     def render(self):
-        dateiname = "Versandliste-Fernlehrgang.xls"
+        dateiname = "Statusliste-Fernlehrgang.xlsx"
         RESPONSE = self.request.response
         RESPONSE.setHeader('content-type', 'application/ms-excel')
         RESPONSE.setHeader('content-disposition', 'attachment; filename=%s' % dateiname )
