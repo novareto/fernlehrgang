@@ -52,8 +52,8 @@ filter-with = translogger
 
 [server:main]
 use = egg:Paste#http
-host = 0.0.0.0
-port = 8080 
+host = ${settings:host}
+port = ${settings:port}
 
 [DEFAULT]
 # set the name of the zope.conf file

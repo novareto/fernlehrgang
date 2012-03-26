@@ -1,11 +1,13 @@
 import grok 
 from z3c.saconfig import EngineFactory, GloballyScopedSession 
 from z3c.saconfig.interfaces import IEngineCreatedEvent 
+from zope.app.appsetup.product import getProductConfiguration
+
+config = getProductConfiguration('database')
+DSN = config['dsn']
+
  
-#DSN = 'postgres://cklinger@localhost:5432/fernlehrgang' 
-#DSN = 'oracle://flg:flg@192.168.2.104/XE'
-DSN = 'oracle://flgprod:prodflg!@10.30.4.80/BGETest'
-#DSN = 'mysql://root:thasake39@localhost/fernlehrgang'
+#DSN = 'oracle://flgprod:prodflg!@10.30.4.80/BGETest'
 
 engine_factory = EngineFactory(DSN, convert_unicode=False, encoding='utf-8', echo=False) 
 scoped_session = GloballyScopedSession() 
