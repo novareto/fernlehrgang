@@ -53,8 +53,9 @@ pipeline =
 
 [server:main]
 use = egg:Paste#http
-host = 127.0.0.1
-port = 9099 
+host = ${settings:host}
+port = ${settings:port}
+
 
 [DEFAULT]
 # set the name of the zope.conf file
