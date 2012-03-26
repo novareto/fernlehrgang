@@ -194,22 +194,22 @@ from fernlehrgang.interfaces.kursteilnehmer import un_klasse, gespraech
 v_un_klasse = un_klasse(None)
 v_gespraech = gespraech(None)
 
+
 class XLSReport(XLSExport):
     """ XML Export"""
     grok.implements(IXLSReport)
     grok.provides(IXLSReport)
     grok.context(IFernlehrgang)
-    spalten = ['Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT',
-        'Mitgliedsnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Betriebsart', 'Kategorie',
+    spalten = ['TEILNEHMER_ID', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT',
+        'Mitgliedsnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Registriert', 'Kategorie', 'Lieferstopps',
         'Mitarbeiteranzahl', 'Branche (Schrotthandel etc..)', u'Abschlussgespräch', 'Status', 'Punktzahl',
-       u'Antwortbögen']
-    rc = [spalten]
-
+        u'Antwortbögen']
 
     def __init__(self, context):
         self.context = context
         self.book = NewWorkbook(optimized_write=True)
         self.adressen = self.book.create_sheet()
+        self.rc = [self.spalten]
 
     def createSpalten(self):
         for i, spalte in enumerate(self.spalten):
@@ -255,6 +255,7 @@ class XLSReport(XLSExport):
                 if teilnehmer.geburtsdatum:
                     gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
                 #unternehmen = teilnehmer.unternehmen
+                liste.append(nN(teilnehmer.id))
                 liste.append(nN(teilnehmer.titel))
                 liste.append(nN(teilnehmer.anrede))
                 liste.append(nN(teilnehmer.name))
@@ -271,8 +272,12 @@ class XLSReport(XLSExport):
                 liste.append(nN(unternehmen.str))
                 liste.append(nN(unternehmen.plz))
                 liste.append(nN(unternehmen.ort))
-                liste.append(nN(unternehmen.betriebsart))
+                if teilnehmer.name:
+                    liste.append('ja')
+                else:
+                    liste.append('nein')
                 liste.append(nN(teilnehmer.kategorie))
+                liste.append(ktn.status)
                 liste.append(self.un_helper(ktn.un_klasse))
                 liste.append(nN(ktn.branche))
                 liste.append(self.ges_helper(ktn.gespraech))
