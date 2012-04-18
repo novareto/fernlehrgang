@@ -14,6 +14,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from z3c.saconfig import Session
 from fernlehrgang import models
 from fernlehrgang import log
+from sqlalchemy import and_
 
 
 class IXLSReport(Interface):
@@ -113,13 +114,20 @@ class XLSExport(grok.Adapter):
         flg = self.context
         lh_id, lh_nr = form['lehrheft'].split('-')
         ii = 0 
-        for i, ktn in enumerate(self.context.kursteilnehmer):
+        session = Session()
+        FERNLEHRGANG_ID = flg.id
+        result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).filter(
+            and_(
+                models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
+                models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
+                models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id).all()
+        #lehrhefte = session.query(models.Lehrheft).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).all()
+        i=1
+        for teilnehmer, unternehmen, ktn in result:
             if ktn.status in ('A1', 'A2'):
                 cal_res = ICalculateResults(ktn)
                 summary = cal_res.summary()
                 row = self.adressen.row(ii+1)
-                teilnehmer = ktn.teilnehmer
-                unternehmen = teilnehmer.unternehmen
                 row.write(0, nN(flg.id))
                 row.write(1, nN(teilnehmer.id))
                 row.write(2, lh_id)
@@ -171,7 +179,7 @@ class XLSExport(grok.Adapter):
                     if len(lhr['antworten']):
                        lhid = lhr['titel'].split('-')[0] 
                 row.write(17, lhid) # RSENDUNG --> Anzahl der Rücksendung
-                log('Fernlehrgang Anzahl', i)
+                log('Fernlehrgang Anzahl', ii)
                 ii+=1
             else:
                 log('STATUS', ktn.status)
@@ -186,9 +194,6 @@ class XLSExport(grok.Adapter):
 
 
 from openpyxl.workbook import Workbook as NewWorkbook
-from z3c.saconfig import Session
-from fernlehrgang import models
-from sqlalchemy import and_
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, gespraech
 
 v_un_klasse = un_klasse(None)
@@ -229,7 +234,6 @@ class XLSReport(XLSExport):
             pass
         return ''
 
-    @profile
     def createRows(self, form):
         flg = self.context
         session = Session()
@@ -295,3 +299,28 @@ class XLSReport(XLSExport):
         file = '/tmp/report.xls'
         self.book.save(file)
         return open(file, 'r')
+
+
+from zope.interface import Interface
+import grok
+
+class JEx(grok.View):
+    grok.context(Interface)
+
+    @profile
+    def render(self):
+        session = Session()
+        ID = "100026"
+        FERNLEHRGANG_ID = "100"
+        #result = session.query(models.Kursteilnehmer).join(models.Antwort).filter(
+        result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).filter(
+            and_(
+                models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
+                models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
+                models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id).all()
+        for a,b,x in result:
+            cal_res = ICalculateResults(x)
+            print cal_res.summary()
+            print x
+            for y in x.antworten:
+                print y

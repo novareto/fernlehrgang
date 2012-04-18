@@ -158,6 +158,7 @@ class Register(Form):
     __name__ = "register"
 
     fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
+    fields['lehrgang'].mode = "radio"
 
     @action('Registrieren')
     def handle_register(self):
@@ -178,6 +179,7 @@ class Register(Form):
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
             self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
         self.flash('Es wurde kein Lehrgang spezifiziert.', type="warning")
+        self.redirect(self.url(self.context))
 
 
 # More Info Viewlets

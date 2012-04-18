@@ -1,0 +1,5 @@
+<div id="exporte">
+  <h1> Exporte Auswertungen </h1>
+  <p> Hier können Sie diverse Auswertungen für den Fernlehrgang <span tal:content="context/title"> </span> aufrufen. </p>
+    <span tal:content="structure provider:exportitems"> </span>
+</div>

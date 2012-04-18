@@ -138,6 +138,7 @@ class MoreInfoKursteilnehmer(grok.Viewlet):
     def render(self):
         return "<h3>Fernlehrgang %s - %s </h3>" % (self.context.jahr, self.context.titel)
 
+
 class MoreInfoOnKursteilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IKursteilnehmer)

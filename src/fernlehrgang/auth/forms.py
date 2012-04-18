@@ -16,6 +16,7 @@ from zeam.form.base import Fields, action
 from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 from dolmen.menu import menuentry
+from zope.securitypolicy.interfaces import IPrincipalRoleManager
 
 grok.templatedir('templates')
 
@@ -75,9 +76,18 @@ class EditUser(Form):
             self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
             return
         changes = apply_data_event(self.fields, self.context, data)
+        role_manager = IPrincipalRoleManager(grok.getSite())
+        for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
+            role_manager.removeRoleFromPrincipal(role_id, data['login'])
+        role_manager.assignRoleToPrincipal(data['role'], data['login'])
+        print role_manager.getRolesForPrincipal(data['login'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
 
     @action(u'Entfernen')
-    def handle_add(self):
+    def handle_delete(self):
+        data, errors = self.extractData()
         del self.context.__parent__[self.context.__name__]
+        role_manager = IPrincipalRoleManager(grok.getSite())
+        for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
+            role_manager.removeRoleFromPrincipal(role_id, data['login'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))

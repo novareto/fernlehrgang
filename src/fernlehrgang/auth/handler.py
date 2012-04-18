@@ -60,6 +60,7 @@ class UserAuthenticatorPlugin(grok.LocalUtility):
             user = Account(username, password, real_name, role)
             self.user_folder[username] = user
             role_manager = IPrincipalRoleManager(grok.getSite())
+            print role, username
             role_manager.assignRoleToPrincipal(role, username)
             
     def listUsers(self):

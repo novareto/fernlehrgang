@@ -37,3 +37,13 @@ class BGEAdminstrator(grok.Role):
                      'zope.View',
                      'uvc.manageteilnehmer')
 
+
+
+class BGHWReader(grok.Role):
+    grok.name('uvc.reader')
+    grok.title('Leser')
+    grok.permissions(
+        'dolmen.content.View',
+        'zope.View',
+        )
+
