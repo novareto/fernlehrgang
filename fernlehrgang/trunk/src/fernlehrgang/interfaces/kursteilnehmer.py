@@ -18,6 +18,7 @@ LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
                 ('L4', u'Teilnahme aus pers. Gründen verschoben'),
                 ('L5', u'Teilnahme ist bereits erfolgt'),
                 ('L6', u'Aufgabe des Unternehmens'),
+                ('S1', u'Interner Fehler'),
                 ('A1', u'angemeldet'),
                 ('A2', u'nicht registriert'),
                ) 
@@ -67,18 +68,16 @@ def gespraech(context):
 
 @grok.provider(IContextSourceBinder)
 def fernlehrgang_vocab(context):
-    rc = [SimpleTerm('Keine Registrierung vornehmen', '', '')]
     rc = []
     session = Session()
     from fernlehrgang.models import Fernlehrgang, Kursteilnehmer
     sql = session.query(Fernlehrgang)
-    ktsql = session.query(Kursteilnehmer).filter(Kursteilnehmer.teilnehmer_id == context.id)
-    if ktsql.count() > 0:
-        sql = sql.filter(and_(Kursteilnehmer.teilnehmer_id == context.id,
-                          Fernlehrgang.id != Kursteilnehmer.fernlehrgang_id))
+    ktsql = session.query(Kursteilnehmer.fernlehrgang_id).filter(Kursteilnehmer.teilnehmer_id == context.id)
+    ids = [x[0] for x in ktsql.all()]
     for flg in sql.all():
-        value = "%s - %s" % (flg.titel, flg.jahr)
-        rc.append(SimpleTerm(flg.id, flg.id, value))
+        if flg.id not in ids:
+            value = "%s - %s" % (flg.titel, flg.jahr)
+            rc.append(SimpleTerm(flg.id, flg.id, value))
     return SimpleVocabulary(rc)    
 
 

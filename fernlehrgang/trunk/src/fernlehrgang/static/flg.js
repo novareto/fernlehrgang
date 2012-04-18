@@ -35,7 +35,7 @@ $(document).ready(function()
      $(this).dateinput({ 
          format: 'dd.mm.yyyy', 
          selectors: true, 
-         yearRange: [-95, 5],
+         yearRange: [-95, 15],
          'firstDay': 1 });
   })
 
