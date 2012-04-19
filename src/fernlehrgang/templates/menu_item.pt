@@ -1,6 +1,0 @@
-<a href="#" class="active-menu-item or inactive-menu-item"
-   tal:attributes="href view/url;
-                   class view/css"
-   tal:content="view/title"
-   tal:condition="view/url"
-   i18n:translate="">Menu item</a>

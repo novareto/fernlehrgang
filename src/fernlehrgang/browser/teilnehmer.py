@@ -20,7 +20,7 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
-from uvc.layout.zeamform import Form 
+from uvc.layout import Form 
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
@@ -223,7 +223,6 @@ class DisplayTeilnehmer(grok.Viewlet):
         self.view = getMultiAdapter((self.context, self.request), Interface, name="index")
         self.view.update()
         self.view.updateWidgets()
-
 
 
 class HelperEntry(Entry):

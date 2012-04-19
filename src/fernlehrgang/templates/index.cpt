@@ -1,0 +1,12 @@
+<h1 tal:content="view.title"></h1>
+<p class="description" tal:content="view.description" />
+<fieldset>
+  <h2> BGHW Fernlehrgang </h2>
+  <p>
+  Falls Sie Fragen oder Probleme haben wenden Sie ich bitte an
+  </p>
+  <ul>
+    <li> Bernd Niedzwetzki </li>
+    <li> Mordechai Israel </li>
+  </ul>
+</fieldset>

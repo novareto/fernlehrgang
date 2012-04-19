@@ -1,8 +1,0 @@
-<tal:messages 
-    condition="viewlet/messages"
-    tal:repeat="message viewlet/messages">
-  <dl class="" tal:attributes="class string: portalMessage ${message/type}">
-    <dt tal:content="message/type" />
-    <dd tal:content="message/message" />
-  </dl>
-</tal:messages>

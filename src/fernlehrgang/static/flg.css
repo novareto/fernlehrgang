@@ -1,239 +1,18 @@
-
-#accordion {
-    -moz-background-clip:border;
-    -moz-background-inline-policy:continuous;
-    -moz-background-origin:padding;
-    border:1px solid #333333;
-    width:100%;
+/* Menus */
+ul#uvcobjectmenu,
+ul#uvcsite-addmenu {
+ float: right;
 }
 
-
-#accordion h2.current {
-    background-color:#FFFFFF;
-    cursor:default;
-}
-#accordion h2 {
-    -moz-background-clip:border;
-    -moz-background-inline-policy:continuous;
-    -moz-background-origin:padding;
-    background:#CCCCCC url(h30.png) repeat scroll 0 0;
-    border-color:#FFFFFF #FFFFFF #DDDDDD;
-    border-style:solid;
-    border-width:1px;
-    cursor:pointer;
-    font-size:14px;
-    font-weight:normal;
-    margin:0;
-    padding:5px 15px;
+ul#navigation {
+ margin-bottom: 0px;
 }
 
-/* accordion pane */
-#accordion div.pane {
-    border:1px solid #fff;
-    border-width:0 2px;
-    display:none;
-    height:auto;
-    padding:15px;
-    font-size:12px;
+div#uvc-inner-body {
+ margin-top: 20px;
 }
 
-/* a title inside pane */
-#accordion div.pane h3 {
-    font-weight:normal;
-    margin:0 0 -5px 0;
-    font-size:16px;
-    color:#999;
-}
-
-
-/** Content actions tabs **/
-
-#navigation dt {
-  display: none;
-}
-
-dl#navigation,
-dl#navigation dd {
-  padding: 0;
-  margin: 0;
-}
-
-dl#navigation a {
-  color:  #999;
-}
-
-dl#navigation {
-  font-size: 0.75em;
-  line-height: 1.7em;
-  margin: 0 0 1em 0;
-  margin-top: 2em;
-  padding-left: 2em;;
-  border-bottom: 1px solid #cbcbcb;
-  float: left;
-  width: 930px;
-  top: 140px;
-  background-color: transparent;
-}
-
-dl#navigation ul {
-  margin: 0 0 0 -0.25em;
-  padding: 0 1em 0 0;
-  text-align: left;
-  list-style-type: none;
-  text-indent: 0pt;
-  border-collapse: collapse;
-  line-height: 1.70em;
-}
-
-dl#navigation ul li {
-  display: inline;
-}
-
-dl#navigation ul li.entry {
-  height: 1.70em;
-}
-
-dl#navigation ul li a {
-  text-decoration: none;
-  margin-left: 3px;
-  border-color: #cbcbcb #cbcbcb transparent #cbcbcb;
-  border-width: 1px;
-  border-style: solid;
-  height: auto;
-  margin-right: 0.5em;
-  padding: 0.2em 1em;
-  text-decoration: none;
-}
-
-dl#navigation ul li.selected a {
-  background-color: #fff;
-  border: 1px solid #cbcbcb;
-  border-bottom: 1px solid white;
-  color: #333333;
-  font-weight: bold;
-}
-
-.left-col {
-  padding: 1em 0;
-  margin: 0;
-  display: none;
-}
-
-.left-col .box {
-  margin: 0;
-  padding: 0;
-}
-
-
-/* Dropdown menu */
-
-dl.foldable {
-  padding: 0.2em;
-  float: right;
-  position: relative;
-  width: 10em;
-  font-size: 0.8em;
-  margin-top: 3px;
-}
-
-dl.unfolding dt {
-  background-color: #f9f9f9 !important;
-}
-
-dl.foldable dt {
-  font-weight: bold;
-  padding: 0.2em 0.4em 0.3em 0.4em;
-  border: 1px solid #cbcbcb;
-  color: #555;
-  margin-bottom: -2px;
-}
-
-dl.foldable dd {
-  margin: 0;
-  display: none;
-  position: absolute;
-  background-color: white;
-  width: 10em;
-}
-
-dl.foldable dd ul { 
-  list-style: none !important;
-  margin: 0;
-  padding: 0;
-}
-
-dl.foldable li {
-  margin: 0;
-  padding: 0;
-  list-style: none !important;
-}
-
-dl.foldable li.selected a {
-  color: #5aa1a9;
-  font-style: oblique;
-  background: #efefef url(selected.gif) 5px 0.5em no-repeat;
-  padding: 0.2em 0.3em 0.2em 15px;
-}
-
-dl.foldable li a {
-  padding: 0.2em 0.3em;
-  display: block;
-  border-width: 0px 1px 1px 1px;
-  border-style: solid;
-  border-color: #cbcbcb;
-  text-decoration: none !important;
-  background-color: #f9f9f9;
-}
-
-dl.foldable li a img {
-  vertical-align: middle;
-}
-
-dl.foldable li a:hover {
-  color: #000;
-  background-color: #ddd;
-}
-
-dl#footer dt {
-    display: none;
-}
-
-#page-body {
-    margin-bottom:2em;
-    margin-top:2em;
-    margin-left:0;
-}
-
-
-.menu dt {
-    display:block;
-}
-
-#uvcsite-footer dt {
-    display:none;
-}
-
-#page-body .description {
-   margin-bottom: 2em;
-}
-
-
-dl#navigation ul li a.selected {
-  background-color: #EFEFEF;
-}
-
-dl#contextual-actions,
-dl#user-actions {
-  display: none;
-}
-
-body {
-  font:75% arial;
-}
-
-
-/* Felder */
-
+/* Fields */
 #form-field-titel {
  width: 300px;
 }
@@ -250,11 +29,18 @@ body {
  width: 6em;
 }
 
-.action {
- float: left;
- margin-right: 1em;
+textarea {
+ width: 45em;
+ height: 10em;
 }
 
-#page-body h3 {
- width: 100%;
+/* MISC */
+
+.collapse {
+ padding-left: 2em;
+ padding-right: 2em;
+}
+
+.portlet {
+ background-color: #EEEEEE;
 }

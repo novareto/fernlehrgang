@@ -34,7 +34,7 @@ class FernlehrgangListing(TablePage):
     label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
 
-    cssClasses = {'table': 'tablesorter myTable'}
+    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
     status = None
 
     @property

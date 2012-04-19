@@ -13,7 +13,7 @@ from zope.interface import Interface
 from dolmen.menu import menuentry
 from uvc.layout.interfaces import IFooter, IExtraInfo, IPersonalPreferences
 from megrok.layout import Page
-from megrok import navigation
+#from megrok import navigation
 
 from fernlehrgang.auth.handler import UserAuthenticatorPlugin
 from zope.pluggableauth import PluggableAuthentication
@@ -24,6 +24,7 @@ from zope.i18n.format import DateTimeParseError
 from zeam.form.base import NO_VALUE
 from zope.component import getUtility
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
+from uvc.layout import MenuItem
 
 
 grok.templatedir('templates')
@@ -61,19 +62,38 @@ class Index(models.Index):
     grok.require('zope.View')
 
 
+class KontaktMI(MenuItem):
+    grok.context(Interface)
+    grok.title(u"Kontakt")
+    grok.viewletmanager(IFooter)
+
+    @property
+    def action(self):
+        return self.view.application_url() + 'kontakt'
+
+
 class Kontakt(Page):
     grok.context(Interface)
     grok.title(u"Kontakt")
-    navigation.sitemenuitem(IFooter)
 
     def render(self):
         return "KONTAKT"
+
+
+class LogoutMI(MenuItem):
+    grok.context(Interface)
+    grok.title(u"Abmelden")
+    grok.viewletmanager(IPersonalPreferences)
+
+    @property
+    def action(self):
+        return self.view.application_url() + 'logout'
+
 
 class Logout(Page):
     grok.title('Abmelden')
     grok.context(Interface)
     grok.require('zope.Public')
-    navigation.sitemenuitem(IPersonalPreferences)
     grok.order(200)
 
     KEYS = ("beaker.session.id", "dolmen.authcookie", "auth_pubtkt")
@@ -107,10 +127,10 @@ class Favicon(grok.View):
         return "BLA"
 
 
-class ExtraInfo(grok.ViewletManager):
-    grok.implements(IExtraInfo)
-    grok.name('uvc.layout.extrainfo')
-    grok.context(Interface)
+#class ExtraInfo(grok.ViewletManager):
+#    grok.implements(IExtraInfo)
+#    grok.name('uvc.layout.extrainfo')
+#    grok.context(Interface)
 
 
 class CustomDateFieldWidget(DateFieldWidget):

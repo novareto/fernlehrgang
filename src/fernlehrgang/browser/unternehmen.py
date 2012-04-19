@@ -109,4 +109,4 @@ class Index(models.DefaultView):
 class Edit(models.Edit):
     grok.context(IUnternehmen)
     grok.implements(IListing)
-    template = grok.PageTemplateFile('templates/unternehmen_edit.pt')
+    template = grok.PageTemplateFile('templates/unternehmen_edit.cpt')

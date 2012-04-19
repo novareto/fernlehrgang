@@ -9,45 +9,40 @@ from dolmen import menu
 from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
-from uvc.layout.layout import IUVCLayer
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.models import Fernlehrgang
 from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
-from uvc.layout.menus import PersonalPreferences 
+from uvc.layout import IPersonalPreferences, MenuItem 
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 
-class UserName(grok.Viewlet):
+grok.templatedir('templates')
+
+class UserName(MenuItem):
     """ User Viewlet"""
     grok.name('myname')
     grok.context(Interface)
-    grok.viewletmanager(PersonalPreferences)
+    grok.viewletmanager(IPersonalPreferences)
     grok.order(300)
-    group = ""
+    action =""
 
-    def render(self):
-        return '<a href="#"> %s </a>' % self.request.principal.description or self.request.principal.id
+    @property
+    def title(self):
+        return self.request.principal.description or self.request.principal.id
+
+
+#
+## Global Menu
+#
 
 
 class GlobalMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(IPageTop)
-    template = grok.PageTemplateFile('templates/globalmenu.pt')
+    template = ChameleonPageTemplateFile('templates/globalmenu.cpt')
     grok.order(11)
     flgs = []
-
-    def getCss(self, flg):
-        css = {'2011': 'blue',
-               '2012': 'orange',
-               '2013': 'violet', 
-               '2014': 'green',
-               '2015': 'brown', 
-               '2016': 'purple',
-               '2017': 'blue',
-               '2018': 'orange',
-               '2019': 'violet',
-               '2020': 'green'}
-        return "dropdown %s" % css[flg]
 
     def getContent(self):
         session = Session()
@@ -65,14 +60,18 @@ class GlobalMenuViewlet(grok.Viewlet):
         self.flgs = self.getContent()
 
 
+#
+## Object Menu
+#
+
+
 class ObjectActionMenu(viewlets.ContextualActions):
     grok.name('contextualactions')
-    grok.layer(IUVCLayer)
     grok.title('Actions')
-    grok.viewletmanager(master.AboveBody)
-    grok.order(50)
+    grok.viewletmanager(IAboveContent)
+    grok.order(119)
 
-    menu_template = grok.PageTemplateFile('templates/objectmenu.pt')
+    menu_template = ChameleonPageTemplateFile('templates/objectmenu.cpt')
 
     id = "uvcobjectmenu"
     menu_class = u"foldable menu"
@@ -83,46 +82,54 @@ class ObjectActionMenu(viewlets.ContextualActions):
             return False 
         return True
 
+#
+## Add Menu
+#
 
 class AddMenu(menu.Menu):
     grok.name('uvcsite-addmenu')
     grok.context(Interface)
     grok.view(IDisplayView)
     grok.title(u'Hinzufügen')
-    
-    menu_class = u"foldable menu"
+    menu_class = u'nav nav-pills'
+
+
+class AddMenuTemplate(pagetemplate.PageTemplate):
+    grok.view(AddMenu)
 
 
 class AddMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.view(IDisplayView)
-    grok.viewletmanager(master.AboveBody)
-    grok.order(70)
+    grok.viewletmanager(IAboveContent)
+    grok.order(120)
 
     def render(self):
         menu = AddMenu(self.context, self.request, self.view)
         menu.update()
         return menu.render()
 
+#
+## Navigation
+#
 
 class NavigationMenu(menu.Menu):
     grok.name('navigation')
     grok.title('Navigation')
     grok.context(Interface)
-    menu_class = u'menu'
+    menu_class = u'nav nav-tabs'
+
+
+class NavigationMenuTemplate(pagetemplate.PageTemplate):
+    grok.view(NavigationMenu)
 
 
 class NavigationMenuViewlet(grok.Viewlet):
     grok.context(Interface)
-    grok.viewletmanager(master.AboveBody)
-    grok.order(15)
+    grok.viewletmanager(IAboveContent)
+    grok.order(100)
     
     def render(self):
         menu = NavigationMenu(self.context, self.request, self.view)
         menu.update()
         return menu.render()
-
-
-class MenuTemplate(pagetemplate.PageTemplate):
-    pagetemplate.view(IAboveContent)
-    template = grok.PageTemplateFile("templates/menu.pt")
