@@ -28,27 +28,32 @@ setup(name='fernlehrgang',
                         'z3c.saconfig',
                         'uvc.layout',
                         'uvc.widgets',
-                        'uvc.skin',
+                        'uvc.tbskin',
+                        'python-gettext',
                         'dolmen.menu',
                         'profilehooks',
                         'dolmen.app.viewselector',
                         'dolmen.forms.crud',
+                        'dolmen.forms.wizard',
                         'dolmen.app.authentication',
                         'dolmen.content',
                         'repoze.profile',
                         'profilestats',
                         'pygooglechart',
-                        'megrok.navigation',
+                        'plone.memoize',
                         'megrok.z3ctable',
                         'zope.pluggableauth',
-                        'hurry.jquerytools',
                         'xlwt',
                         'openpyxl'
                         # Add extra requirements here
                         ],
-      entry_points = """
-      [paste.app_factory]
-      main = grokcore.startup:application_factory
-      debug = grokcore.startup:debug_application_factory
-      """,
+      entry_points = { 
+          'paste.app_factory': [
+               'main = grokcore.startup:application_factory',
+               'debug = grokcore.startup:debug_application_factory'
+               ],
+          'fanstatic.libraries': [
+              'fernlehrgang = fernlehrgang.resources:library',
+              ],
+          }
       )

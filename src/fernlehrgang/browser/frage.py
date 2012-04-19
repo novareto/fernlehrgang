@@ -18,6 +18,7 @@ from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from zeam.form.base import Fields
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 
 grok.templatedir('templates')
@@ -29,7 +30,7 @@ class FrageListing(TablePage):
     grok.name('frage_listing')
     grok.title(u'Fragen verwalten')
 
-    template = grok.PageTemplateFile('templates/base_listing.pt')
+    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Fragen"
     cssClasses = {'table': 'table table-striped table-bordered table-condensed'}

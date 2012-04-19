@@ -21,6 +21,7 @@ from z3c.saconfig import Session
 from zeam.form.base import Fields
 from uvc.layout.interfaces import IExtraInfo
 from megrok.layout import Page
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 grok.templatedir('templates')
 
@@ -33,7 +34,7 @@ class AntwortListing(TablePage):
     grok.title(u'Antworten verwalten')
     grok.baseclass()
 
-    template = grok.PageTemplateFile('templates/base_listing.pt')
+    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Antworten"
     description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
@@ -90,7 +91,7 @@ class Edit(models.Edit):
 
 ### ExtraInfo
 
-class MoreInfoOnKursteilnehmer(grok.Viewlet):
+class MoireInfoOnKursteilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IAntwort)
     script = ""

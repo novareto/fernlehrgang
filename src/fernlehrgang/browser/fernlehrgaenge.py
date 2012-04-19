@@ -16,6 +16,7 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from z3c.saconfig import Session
 from zeam.form.base import Fields
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 grok.templatedir('templates')
 
@@ -29,7 +30,7 @@ class FernlehrgangListing(TablePage):
     grok.require('uvc.managefernlehrgang')
     grok.order(10)
 
-    template = grok.PageTemplateFile('templates/base_listing.pt')
+    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."

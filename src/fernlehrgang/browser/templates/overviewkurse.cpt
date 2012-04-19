@@ -1,0 +1,23 @@
+<div tal:condition="viewlet.res" class="portlet">
+  <h6> Lehrgänge dieses Teilnehmers </h6>
+  <dl>
+    <dt> ID </dt>
+    <dd tal:content="context.id"> </dd> 
+    <dt> Name Vorname Geburtsdatum</dt>
+    <dd> 
+    <span tal:content="context.name"> </span> 
+    <span tal:content="context.vorname"> </span>
+    <span tal:content="context.geburtsdatum"> </span>
+    </dd> 
+    <dt> Unternehmen <dt>
+    <dd>
+    <span tal:content="context.unternehmen.mnr"> </span> <br>
+    <span tal:content="context.unternehmen.name"> </span>
+    </dd>
+    <dt> Angemeldete Lehrgänge </dt>
+    <dd tal:repeat="ktl viewlet.res">
+    <span tal:content="ktl.fernlehrgang.titel"> </span> 
+    <span tal:content="ktl.fernlehrgang.jahr"></span>
+    </dd>
+  </dl>
+</div>

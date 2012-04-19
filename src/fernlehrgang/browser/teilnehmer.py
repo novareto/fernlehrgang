@@ -28,6 +28,7 @@ from zeam.form.base.markers import SUCCESS, FAILURE
 from fernlehrgang.interfaces.teilnehmer import generatePassword
 from zope.interface import Interface
 from zope.component import getMultiAdapter
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 
 grok.templatedir('templates')
@@ -47,10 +48,10 @@ class TeilnehmerListing(TablePage):
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
 
-    template = grok.PageTemplateFile('templates/base_listing.pt')
+    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Teilnehmer"
-    cssClasses = {'table': 'tablesorter myTable'}
+    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
 
     @property
     def description(self):
@@ -184,22 +185,22 @@ class Register(Form):
 
 # More Info Viewlets
 
-class MoreInfoUnternehmen(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(IUnternehmen) 
-    grok.order(10)
-
-    def render(self):
-        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.mnr, self.context.name)
-
-
-class MoreInfoOnTeilnehmer(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(ITeilnehmer)
-    grok.order(10)
-
-    def render(self):
-        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
+#class MoreInfoUnternehmen(grok.Viewlet):
+#    grok.viewletmanager(IExtraInfo)
+#    grok.context(IUnternehmen) 
+#    grok.order(10)
+#
+#    def render(self):
+#        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.mnr, self.context.name)
+#
+#
+#class MoreInfoOnTeilnehmer(grok.Viewlet):
+#    grok.viewletmanager(IExtraInfo)
+#    grok.context(ITeilnehmer)
+#    grok.order(10)
+#
+#    def render(self):
+#        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
 
 
 class OverviewKurse(grok.Viewlet):
@@ -213,16 +214,16 @@ class OverviewKurse(grok.Viewlet):
         self.res = sql.all()
 
 
-class DisplayTeilnehmer(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(ITeilnehmer)
-    grok.view(Register)
-    grok.order(20)
-
-    def update(self):
-        self.view = getMultiAdapter((self.context, self.request), Interface, name="index")
-        self.view.update()
-        self.view.updateWidgets()
+#class DisplayTeilnehmer(grok.Viewlet):
+#    grok.viewletmanager(IExtraInfo)
+#    grok.context(ITeilnehmer)
+#    grok.view(Register)
+#    grok.order(20)
+#
+#    def update(self):
+#        self.view = getMultiAdapter((self.context, self.request), Interface, name="index")
+#        self.view.update()
+#        self.view.updateWidgets()
 
 
 class HelperEntry(Entry):
