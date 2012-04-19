@@ -1,0 +1,12 @@
+<ul tal:condition="viewlet.actions and viewlet.available()"
+  tal:attributes="id viewlet.id; class string: nav nav-pills">
+  <li class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown">
+    <span tal:content="viewlet.title" tal:condition="viewlet.title"> </span> <b class="caret"></b>
+  </a>
+  <ul class="dropdown-menu">
+    <li tal:repeat="action viewlet.actions">
+    <a tal:attributes="href action.url; title action.title;" tal:content="action.title"> </a>
+    </li>
+  </ul>
+</ul>

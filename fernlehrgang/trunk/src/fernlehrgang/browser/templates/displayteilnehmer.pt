@@ -5,7 +5,7 @@
   });
  });
 </script>
-
+ SSSSSSSSSSS
 <h3 id="cliteilnehmer"> Für Teilnehmer + </h3>
 <div id="displayteilnehmer" style="display: none;">
   Teilnehmer Id: <span tal:content="context/id" /> <br>

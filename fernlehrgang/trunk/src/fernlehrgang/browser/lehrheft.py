@@ -36,7 +36,7 @@ class LehrheftListing(TablePage):
     def description(self):
         return u"Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." % (self.context.titel, self.context.jahr)
 
-    cssClasses = {'table': 'tablesorter myTable'}
+    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
 
     @property
     def values(self):

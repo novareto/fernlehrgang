@@ -32,7 +32,7 @@ class FrageListing(TablePage):
     template = grok.PageTemplateFile('templates/base_listing.pt')
 
     label = u"Fragen"
-    cssClasses = {'table': 'tablesorter myTable'}
+    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
 
     @property
     def description(self):

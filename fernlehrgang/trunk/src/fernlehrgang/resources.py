@@ -5,21 +5,18 @@
 
 import grok
 
-from megrok import resource
-from hurry.jquery import jquery
-from hurry.jquerytools import jquerytools
+from fanstatic import Library, Resource
 from zope.interface import Interface
 from uvc.layout.interfaces import IHeaders
 
 from uvc.widgets import double, DatePickerCSS
 
 
-class FernlehrgangResources(resource.ResourceLibrary):
-    resource.name('flgresource')
-    resource.path('static')
-    resource.resource('jquery.tablesorter.min.js')
-    resource.resource('flg.css', depends=[DatePickerCSS])
-    resource.resource('flg.js', depends=[double,])
+library = Library('fernlehrgang', 'static')
+
+ts = Resource(library, 'jquery.tablesorter.min.js')
+css = Resource(library, 'flg.css', depends=[DatePickerCSS])
+js = Resource(library, 'flg.js', depends=[double,])
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):
@@ -27,6 +24,7 @@ class FernlehrgangResourceViewlet(grok.Viewlet):
     grok.context(Interface)
 
     def render(self):
-        jquerytools.need()
-        FernlehrgangResources.need()
+        ts.need()
+        css.need()
+        js.need()
         return u''

@@ -1,0 +1,6 @@
+<ul tal:condition="viewletmanager.viewlets" class="css-tabs">
+   <li tal:attributes="class viewletmanager.entry_class"
+      tal:repeat="action viewletmanager.viewlets">
+    <tal:entry content="structure action.render()" />
+   </li>
+</ul>

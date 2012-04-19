@@ -109,7 +109,6 @@ class XLSExport(grok.Adapter):
             return "JA"
         return ""
 
-    @timecall
     def createRows(self, form):
         flg = self.context
         lh_id, lh_nr = form['lehrheft'].split('-')
@@ -307,7 +306,6 @@ import grok
 class JEx(grok.View):
     grok.context(Interface)
 
-    @profile
     def render(self):
         session = Session()
         ID = "100026"
