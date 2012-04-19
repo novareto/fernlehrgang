@@ -10,8 +10,9 @@ from handler import Account, UserFolder
 from interfaces import IAddUserForm
 from megrok import navigation
 from megrok.layout import Page
+from uvc.layout import MenuItem
 from uvc.layout.interfaces import IFooter
-from uvc.layout.zeamform import Form
+from uvc.layout.forms.components import Form
 from zeam.form.base import Fields, action
 from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
@@ -21,15 +22,15 @@ from zope.securitypolicy.interfaces import IPrincipalRoleManager
 grok.templatedir('templates')
 
 
-@menuentry(IFooter)
-class BenuzterVerwaltung(grok.View):
-    grok.title('Benutzerverwaltung')
+class BenutzerMI(MenuItem):
     grok.context(interface.Interface)
     grok.require('zope.ManageApplication')
-    navigation.sitemenuitem(IFooter, order=100)
+    grok.title(u'Benutzerverwaltung')
+    grok.viewletmanager(IFooter)
 
-    def render(self):
-        self.redirect(self.application_url() + '/benutzer')
+    @property
+    def action(self):
+        return self.view.application_url() + '/benutzer'
 
 
 class UserList(Page):
