@@ -5,6 +5,8 @@
 
 import grok
 
+from time import time
+from plone.memoize import ram
 from dolmen import menu
 from megrok import pagetemplate
 from z3c.saconfig import Session
@@ -44,6 +46,7 @@ class GlobalMenuViewlet(grok.Viewlet):
     grok.order(11)
     flgs = []
 
+    @ram.cache(lambda *args: time() // (60 * 60))
     def getContent(self):
         session = Session()
         d = {}

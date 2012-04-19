@@ -129,20 +129,11 @@ class Edit(models.Edit):
     fields['teilnehmer_id'].mode = 'hiddendisplay'
     fields['branche'].mode = "radio"
 
-# More Info Viewlets
-
-class MoreInfoKursteilnehmer(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(IFernlehrgang) 
-
-    def render(self):
-        return "<h3>Fernlehrgang %s - %s </h3>" % (self.context.jahr, self.context.titel)
 
 
 class MoreInfoOnKursteilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IKursteilnehmer)
-    script = ""
 
     def update(self):
         url = grok.url(self.request, self.context)
@@ -150,7 +141,3 @@ class MoreInfoOnKursteilnehmer(grok.Viewlet):
         locate(grok.getSite(), self.context.teilnehmer, DefaultModel)
         self.turl = '<a href="%s/edit"> %s %s </a>' %(
                 self.view.url(self.context.teilnehmer), self.context.teilnehmer.name, self.context.teilnehmer.vorname)
-
-    def render(self):
-        return "%s <h3>Fernlehrgang: %s - %s <br> Teilnehmer %s </h3>" % (self.script,
-            self.context.fernlehrgang.jahr, self.context.fernlehrgang.titel, self.turl)

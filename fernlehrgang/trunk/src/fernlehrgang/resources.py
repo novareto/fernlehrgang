@@ -14,7 +14,6 @@ from uvc.widgets import double, DatePickerCSS
 
 library = Library('fernlehrgang', 'static')
 
-ts = Resource(library, 'jquery.tablesorter.min.js')
 css = Resource(library, 'flg.css', depends=[DatePickerCSS])
 js = Resource(library, 'flg.js', depends=[double,])
 
@@ -24,7 +23,6 @@ class FernlehrgangResourceViewlet(grok.Viewlet):
     grok.context(Interface)
 
     def render(self):
-        ts.need()
         css.need()
         js.need()
         return u''

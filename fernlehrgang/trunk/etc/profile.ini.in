@@ -46,10 +46,22 @@ use = egg:Paste#translogger
 setup_console_handler = False
 logger_name = wsgi
 
+[app:grok]
+use = egg:grokcore.startup
+
 [pipeline:main]
 pipeline = 
     egg:repoze.profile#profile
-    egg:fernlehrgang
+    fanstatic
+    grok
+
+[filter:fanstatic]
+use = egg:fanstatic#fanstatic
+bottom = true
+versioning = true
+minified = true
+rollup = true
+recompute_hashes = true
 
 [server:main]
 use = egg:Paste#http

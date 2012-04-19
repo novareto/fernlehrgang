@@ -18,6 +18,7 @@ from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 
 grok.templatedir('templates')
@@ -48,7 +49,7 @@ class UnternehmenListing(uvc.layout.Form):
 
     @action(u"Suchen")
     def handle_search(self): 
-        v=False 
+        v = False 
         data, errors = self.extractData() 
         session = Session() 
         sql = session.query(Unternehmen) 
@@ -79,7 +80,7 @@ class UnternehmenListing(uvc.layout.Form):
 class Index(models.DefaultView):
     grok.context(IUnternehmen)
     grok.name('index')
-    template = grok.PageTemplateFile('templates/unternehmen_view.pt')
+    template = ChameleonPageTemplateFile('templates/unternehmen_view.cpt')
 
     title = u"Unternehmen"
     label = u"Unternehmen"

@@ -17,6 +17,7 @@ from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from dolmen.app.layout import models, IDisplayView
 from zeam.form.base import Fields
 from fernlehrgang.interfaces import IListing
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 grok.templatedir('templates')
 
@@ -28,7 +29,7 @@ class LehrheftListing(TablePage):
     grok.name('lehrheft_listing')
     grok.title(u'Lehrhefte verwalten')
 
-    template = grok.PageTemplateFile('templates/base_listing.pt')
+    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Lehrhefte"
 
