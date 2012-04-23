@@ -2,8 +2,8 @@
   <ul tal:repeat="flg sorted(flgs.keys())" class="nav">
     <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown"> <span tal:content="flg"> </span> <b class="caret"></b></a>
-    <ul class="dropdown-menu" tal:repeat="item flgs[flg]">
-      <li> <a href="" tal:attributes="href item.url"> <span tal:content="item.title"> </span> </a> </li>
+    <ul class="dropdown-menu">
+      <li tal:repeat="item flgs[flg]"> <a href="" tal:attributes="href item.url"> <span tal:content="item.title"> </span> </a> </li>
     </ul>
     </li>
   </ul>

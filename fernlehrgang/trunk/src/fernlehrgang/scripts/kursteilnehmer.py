@@ -91,21 +91,28 @@ def main(argv=None):
     err = []
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
-    for i, line in enumerate(DictReader(open(options.file, 'r'))):
-        unternehmen = Session.query(Unternehmen).get(line['MNR'].strip().replace('-', ''))
+    for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=";")):
+        unternehmen = Session.query(Unternehmen).get(line['MNR'][:8].strip().replace('-', ''))
         i+=1
-        print '%s, %s %s' %(i, line['MNR'], unternehmen)
+        print '%s, %s %s' %(i, line['MNR'][:8], unternehmen)
         if unternehmen:
             teilnehmer = Teilnehmer()
             teilnehmer.passwort = generatePassword()
+            if 'Name' in line.keys():
+                teilnehmer.name = line['Name'].strip()
+            if 'Vorname' in line.keys():
+                teilnehmer.vorname = line['Vorname'].strip()
+            if 'Anrede' in line.keys():
+                teilnehmer.anrede = line['Anrede'].strip()
             unternehmen.teilnehmer.append(teilnehmer)
             session.flush()
             kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
                 status = NICHT_REGISTRIERT)
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
         else:
-            print "Kein Unternehmen gefunden --> %s" % line['MNR']
-            err.append(line['MNR'])
+            print "Kein Unternehmen gefunden --> %s" % line['MNR'][:8]
+            err.append(line['MNR'][:8])
     import transaction; transaction.commit()    
+    print len(err)
     for x in err:
         print x+','
