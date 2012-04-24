@@ -27,7 +27,7 @@ class FernlehrgangListing(TablePage):
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
-    grok.require('uvc.managefernlehrgang')
+    #grok.require('uvc.managefernlehrgang')
     grok.order(10)
 
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')

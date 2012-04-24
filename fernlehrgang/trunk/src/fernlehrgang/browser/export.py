@@ -7,7 +7,7 @@ from zope.interface import Interface
 from dolmen.menu import menuentry, Menu
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.viewlets import NavigationMenu
-from fernlehrgang.lib.export import IXLSExport, IXLSReport
+from fernlehrgang.lib.interfaces import IXLSExport, IXLSReport, IXLSFortbildung
 from uvc.layout import Form
 from zeam.form.base import Fields, action
 from megrok.layout import Page
@@ -76,3 +76,46 @@ class XMLExport(grok.View):
         return self.file.read()
 
 
+import zope.component
+from megrok.layout.interfaces import ILayout
+from zope.publisher.publish import mapply
+
+@menuentry(ExportItems)
+class XLSFortbildung(Form):
+    grok.context(IFernlehrgang)
+    grok.name('xlsfortbildung')
+    grok.title(u'Versandliste Fortbildung')
+    bin_data = None
+
+    fields = Fields(IXLSFortbildung)
+
+    def __call__(self):
+        mapply(self.update, (), self.request)
+        if self.request.response.getStatus() in (302, 303):
+            # A redirect was triggered somewhere in update().  Don't
+            # continue rendering the template or doing anything else.
+            return
+        self.updateForm()
+        if self.request.response.getStatus() in (302, 303):
+            return
+        if self.bin_data:
+            return self.asPDF() 
+        self.layout = zope.component.getMultiAdapter(
+            (self.request, self.context), ILayout)
+        return self.layout(self) 
+
+    @action(u"Export Starten")
+    def handle_export(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(u'Fehler beheben')
+            return
+        xls = IXLSFortbildung(self.context)
+        xls.create(data)
+
+    def asPDF(self):
+        RESPONSE = self.request.response
+        dateiname= "bla.txt"
+        RESPONSE.setHeader('content-type', 'application/txt')
+        RESPONSE.setHeader('content-disposition', 'attachment; filename=%s' % dateiname )
+        return self.bin_data

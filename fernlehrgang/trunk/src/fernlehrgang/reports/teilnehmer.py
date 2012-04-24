@@ -26,7 +26,6 @@ grok.templatedir('templates')
 class CreateTeilnehmer(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Teilnehmer registrieren')
-    grok.require('uvc.manageteilnehmer')
     title = label = u"Teilnehmer registrieren"
     description = u"Bitte geben Sie die Teilnehmer ID ein, den Sie registrieren möchten."
     results = []
@@ -55,7 +54,7 @@ class CreateTeilnehmer(uvc.layout.Form):
 class TeilnehmerSuche(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage KursTeilnehmer')
-    grok.require('uvc.manageteilnehmer')
+    grok.require('zope.View')
     grok.order(1500)
 
     label = u"Statusabfrage Teilnehmer."
