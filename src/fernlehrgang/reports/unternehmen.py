@@ -40,6 +40,7 @@ class IUnternehmenSearch(Interface):
 class UnternehmenSuche(uvc.layout.Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage Unternehmen')
+    grok.require('zope.View')
     grok.order(20)
 
     label = u"Statusabfrage Unternehmen"

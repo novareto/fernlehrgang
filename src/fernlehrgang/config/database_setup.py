@@ -5,7 +5,6 @@ from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
 DSN = config['dsn']
-print DSN
  
 #DSN = 'oracle://flgprod:prodflg!@10.30.4.80/BGETest'
 
