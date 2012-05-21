@@ -43,6 +43,7 @@ setup(name='fernlehrgang',
                         'plone.memoize',
                         'megrok.z3ctable',
                         'zope.pluggableauth',
+                        'zeam.form.table',
                         'xlwt',
                         'openpyxl'
                         # Add extra requirements here

@@ -18,7 +18,7 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable.components import TablePage, GetAttrColumn, LinkColumn, Column
 from sqlalchemy import not_, and_
 from z3c.saconfig import Session
-from zeam.form.base import Fields
+from zeam.form.base import Fields, action
 from uvc.layout.interfaces import IExtraInfo
 from megrok.layout import Page
 from grokcore.chameleon.components import ChameleonPageTemplateFile
@@ -66,6 +66,56 @@ class AddAntwort(uvc.layout.AddForm):
 
     def nextURL(self):
         return self.url(self.context, 'antwort_listing')
+
+
+from zeam.form.table import SubTableForm, TableActions
+from zeam.form.composed import ComposedForm
+from zeam.form.base import Action, SUCCESS, Actions
+
+class SaveTableAction(Action):
+
+       def __call__(self, form, content, line):
+           setattr(content, 'antwortschema', line.extractData(form.tableFields)[0].get('antwortschema', ''))
+           form.context.antworten.append(content)
+
+
+@menuentry(AddMenu)
+class AddAntworten(ComposedForm, uvc.layout.Form):
+    grok.context(IKursteilnehmer)
+    grok.title(u'Alle Antworten eingeben')
+    label = u"Alle Antworten eingeben"
+
+
+class AddAntwortenTable(SubTableForm):
+    grok.title(u'Table Form')
+    grok.context(IKursteilnehmer)
+    grok.view(AddAntworten)
+    prefix = "G"
+
+    ignoreContent = False
+    tableFields = Fields(IAntwort).omit('id', 'datum', 'system')
+    tableActions = TableActions(SaveTableAction('Speichern'))
+
+    def checkAntwort(self, lehrheft_id, frage_id):
+        for antwort in self.context.antworten:
+            if antwort.frage_id == frage_id and antwort.lehrheft_id == lehrheft_id:
+                return antwort
+
+    def getItems(self):
+        rc = []
+        for lehrheft in self.context.fernlehrgang.lehrhefte:
+            for frage in lehrheft.fragen:
+                antwort = self.checkAntwort(lehrheft.id, frage.id)
+                if antwort:
+                    rc.append(antwort)
+                else:
+                    rc.append(Antwort(
+                        lehrheft_id = lehrheft.id,
+                        frage_id = frage.id, 
+                        antwortschema = u"",
+                        system = u"FernlehrgangApp", 
+                        ))
+        return rc
 
 
 class Index(models.DefaultView):
