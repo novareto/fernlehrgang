@@ -24,6 +24,7 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.antwort import IAntwort
+from plone.memoize import ram, instance
 
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties

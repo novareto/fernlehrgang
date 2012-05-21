@@ -88,31 +88,36 @@ def main(argv=None):
     app = root[options.portal]
     
     # Logik
+    tids = []
     err = []
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
     for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=";")):
-        unternehmen = Session.query(Unternehmen).get(line['MNR'][:8].strip().replace('-', ''))
+        unternehmen = Session.query(Unternehmen).get(line['MNR'].strip().replace('-', ''))
         i+=1
-        print '%s, %s %s' %(i, line['MNR'][:8], unternehmen)
+        print '%s, %s %s' %(i, line['MNR'], unternehmen)
         if unternehmen:
             teilnehmer = Teilnehmer()
             teilnehmer.passwort = generatePassword()
             if 'Name' in line.keys():
-                teilnehmer.name = line['Name'].strip()
+                teilnehmer.name = line['Name'].strip().decode('iso-8859-15')
             if 'Vorname' in line.keys():
-                teilnehmer.vorname = line['Vorname'].strip()
+                teilnehmer.vorname = line['Vorname'].strip().decode('iso-8859-15')
             if 'Anrede' in line.keys():
                 teilnehmer.anrede = line['Anrede'].strip()
             unternehmen.teilnehmer.append(teilnehmer)
             session.flush()
             kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
                 status = NICHT_REGISTRIERT)
+            tids.append(teilnehmer.id)
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
         else:
-            print "Kein Unternehmen gefunden --> %s" % line['MNR'][:8]
-            err.append(line['MNR'][:8])
+            print "Kein Unternehmen gefunden --> %s" % line['MNR']
+            err.append(line['MNR'])
     import transaction; transaction.commit()    
     print len(err)
+    print "#" * 50
     for x in err:
         print x+','
+    print "#" * 50
+    print tids
