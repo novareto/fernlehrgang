@@ -23,7 +23,7 @@ from profilehooks import profile, timecall
 
 
 spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
-    'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME',
+    'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM',
     'STRASSE', 'WOHNORT', 'PASSWORT', 'BELIEFART', 'R_DATUM', 'RSENDUNG', 'PUNKTZAHL',
     'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME', 'L1_F_1', 'L1_F_2',
     'L1_F_3', 'L1_F_4', 'L1_F_5', 'L1_F_6', 'L1_F_7', 'L1_F_8', 'L1_F_9', 'L1_F_10',
@@ -40,6 +40,11 @@ spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
     'BZANZSDG', 'BZANZBD', 'BDANFANG', 'BDENDE',
 )
 
+
+def fd(v):
+    if v == None:
+        return ""
+    return v.strftime('%d.%m.%Y')
 
 class XLSExport(grok.Adapter):
     """ XML Export"""
@@ -90,24 +95,25 @@ class XLSExport(grok.Adapter):
                 row.write(9, nN(teilnehmer.titel))
                 row.write(10, nN(teilnehmer.vorname))
                 row.write(11, nN(teilnehmer.name))
+                row.write(12, fd(teilnehmer.geburtsdatum))
                 strasse = nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr)
                 if strasse == " ":
                     strasse = nN(unternehmen.str)
                 else:
                     if teilnehmer.adresszusatz:
                         strasse = strasse + ' // ' + teilnehmer.adresszusatz
-                row.write(12, strasse)
-                row.write(13, nN(teilnehmer.ort or unternehmen.ort))
-                row.write(14, nN(teilnehmer.passwort))
-                row.write(15, '') # Beliefart --> Leer laut Frau Esche 
-                row.write(16, form['rdatum']) # Variable
-                row.write(18, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
-                row.write(19, form['stichtag']) # Variable
-                row.write(20, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
-                row.write(21, nN(teilnehmer.titel))
-                row.write(22, nN(teilnehmer.vorname))
-                row.write(23, nN(teilnehmer.name))
-                z = 24 
+                row.write(13, strasse)
+                row.write(14, nN(teilnehmer.ort or unternehmen.ort))
+                row.write(15, nN(teilnehmer.passwort))
+                row.write(16, '') # Beliefart --> Leer laut Frau Esche 
+                row.write(17, form['rdatum']) # Variable
+                row.write(19, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
+                row.write(20, form['stichtag']) # Variable
+                row.write(21, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
+                row.write(22, nN(teilnehmer.titel))
+                row.write(23, nN(teilnehmer.vorname))
+                row.write(24, nN(teilnehmer.name))
+                z = 25 
                 for lehrheft in flg.lehrhefte:
                     for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
                         r=""
@@ -128,7 +134,7 @@ class XLSExport(grok.Adapter):
                     z += 1
                     if len(lhr['antworten']):
                        lhid = lhr['titel'].split('-')[0] 
-                row.write(17, lhid) # RSENDUNG --> Anzahl der Rücksendung
+                row.write(18, lhid) # RSENDUNG --> Anzahl der Rücksendung
                 log('Fernlehrgang Anzahl', ii)
                 ii+=1
             else:
@@ -138,7 +144,7 @@ class XLSExport(grok.Adapter):
     def createXLS(self, form):
         self.createSpalten()
         self.createRows(form)
-        file = open('/tmp/adr13-10.xls', 'w+')
+        file = open('/tmp/fortbildung.xls', 'w+')
         self.book.save(file)
         return file
 
