@@ -11,6 +11,10 @@ $.tools.dateinput.conf.lang = 'de';
 
 $(document).ready(function() { 
 
+  $('div.subform table').addClass('table table-striped table-bordered table-condensed');
+  $('div.subform form table select').attr('disabled', 'disabled');
+
+
   $.each($('input.field-date'), function() {
      $(this).dateinput({ 
          format: 'dd.mm.yyyy', 
