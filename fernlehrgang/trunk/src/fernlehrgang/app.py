@@ -116,23 +116,6 @@ class RestLayer(grok.IRESTLayer):
     grok.restskin('api')
 
 
-class Favicon(grok.View):
-    """ Helper for Favicon.ico Errors Request
-    """
-    grok.context(Interface)
-    grok.name('favicon.ico')
-    grok.require('zope.Public')
-
-    def render(self):
-        return "BLA"
-
-
-#class ExtraInfo(grok.ViewletManager):
-#    grok.implements(IExtraInfo)
-#    grok.name('uvc.layout.extrainfo')
-#    grok.context(Interface)
-
-
 class CustomDateFieldWidget(DateFieldWidget):
     """ Extractor for German Date Notation
     """

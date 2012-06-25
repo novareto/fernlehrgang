@@ -17,6 +17,7 @@ from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
 from uvc.layout import IPersonalPreferences, MenuItem 
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from uvc.layout.slots import managers
 
 
 grok.templatedir('templates')
@@ -136,3 +137,12 @@ class NavigationMenuViewlet(grok.Viewlet):
         menu = NavigationMenu(self.context, self.request, self.view)
         menu.update()
         return menu.render()
+
+
+#
+## FavIcon
+#
+
+class FavIcon(grok.Viewlet):
+    grok.viewletmanager(managers.Headers)
+    grok.context(Interface)
