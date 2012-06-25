@@ -63,6 +63,8 @@ class CalculateResults(grok.Adapter):
                     d=dict(titel = titel,
                            frage = antwort.frage.antwortschema,
                            antwort = antwort.antwortschema,
+                           system = antwort.system,
+                           datum = antwort.datum.strftime('%d.%m.%Y %H:%M'),
                            res = ergebnis)
                     punkte += ergebnis 
                     fragen.append(d)
