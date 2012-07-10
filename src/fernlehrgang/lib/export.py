@@ -44,7 +44,10 @@ spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
 def fd(v):
     if v == None:
         return ""
-    return v.strftime('%d.%m.%Y')
+    try:
+        return v.strftime('%d.%m.%Y')
+    except:
+        return v
 
 class XLSExport(grok.Adapter):
     """ XML Export"""
@@ -71,6 +74,7 @@ class XLSExport(grok.Adapter):
         ii = 0 
         session = Session()
         FERNLEHRGANG_ID = flg.id
+        import pdb; pdb.set_trace() 
         result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).filter(
             and_(
                 models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,

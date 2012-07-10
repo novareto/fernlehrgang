@@ -87,7 +87,7 @@ class LogoutMI(MenuItem):
 
     @property
     def action(self):
-        return self.view.application_url() + 'logout'
+        return self.view.application_url() + '/logout'
 
 
 class Logout(Page):

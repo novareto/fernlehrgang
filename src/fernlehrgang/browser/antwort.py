@@ -91,6 +91,7 @@ class AddAntwortenTable(SubTableForm):
     grok.context(IKursteilnehmer)
     grok.view(AddAntworten)
     prefix = "G"
+    template = ChameleonPageTemplateFile('templates/alleantworten.cpt')
 
     ignoreContent = False
     tableFields = Fields(IAntwort).omit('id', 'datum', 'system')
@@ -103,7 +104,11 @@ class AddAntwortenTable(SubTableForm):
 
     def getItems(self):
         rc = []
-        for lehrheft in self.context.fernlehrgang.lehrhefte:
+        lehrhefte = self.lehrhefte
+        lh_id = self.request.get('lh_id')
+        if lh_id:
+            lehrhefte = [lh for lh in lehrhefte if str(lh.id) == lh_id]
+        for lehrheft in lehrhefte:
             for frage in lehrheft.fragen:
                 antwort = self.checkAntwort(lehrheft.id, frage.id)
                 if antwort:
@@ -116,6 +121,14 @@ class AddAntwortenTable(SubTableForm):
                         system = u"FernlehrgangApp", 
                         ))
         return rc
+
+    @property
+    def lehrhefte(self):
+        return self.context.fernlehrgang.lehrhefte
+
+    @property
+    def script(self):
+        return "<script> var base_url = '%s/addantworten'; </script>" % self.url()
 
 
 class Index(models.DefaultView):
