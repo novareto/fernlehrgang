@@ -41,4 +41,11 @@ $(document).ready(function() {
                 $('#form-field-frage_id').html(d.fragen);
             });
      });
+
+  $("select#select_lehrheft").change(function()
+    {
+        $(location).attr('href', base_url + '?lh_id=' + $(this).val());
+    }
+    );
+
 }); 

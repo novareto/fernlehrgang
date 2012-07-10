@@ -18,7 +18,8 @@ def flgs(context):
     session = Session()
     rc = []
     for flg in session.query(models.Fernlehrgang):
-        rc.append(SimpleTerm(flg.id, flg.id, flg.title))
+        if len(flg.lehrhefte) == 1:
+            rc.append(SimpleTerm(flg.id, flg.id, flg.titel))
     return SimpleVocabulary(rc)
 
 
@@ -75,5 +76,5 @@ class IXLSFortbildung(Interface):
 
     stichtag = Date(
         title=u"Stichtag",
-        description=u"Stichtag für Änderungen"
+        description=u"Anworten ab letztem Versandtag (inklusive)."
         )
