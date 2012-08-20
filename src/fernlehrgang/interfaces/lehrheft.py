@@ -15,7 +15,7 @@ def reduce_lehrheft(context):
     from fernlehrgang.interfaces.flg import IFernlehrgang
     rc = []
     reduce = []
-    alle = range(1, 11)
+    alle = range(1, 9)
     if ILehrheft.providedBy(context):
         lehrhefte = context.fernlehrgang.lehrhefte
     if IFernlehrgang.providedBy(context):
@@ -31,14 +31,14 @@ class ILehrheft(Interface):
 
     id = Int(
         title = u'Id',
-        description = u'Eindeutige Kennzeichnung des Fernlehrgangs',
+        description = u'Eindeutige Kennzeichnung des Lehrhefts.',
         required = False,
         readonly = True
         )
 
     nummer = Choice(
         title = u'Nummer',
-        description = u'Die Nummer des Lehrgangs. Diese sollte Fortlaufend 1-8 sein',
+        description = u'Die Nummer des Lehrhefts. Diese sollte fortlaufend 1-8 sein',
         required = True,
         source = reduce_lehrheft,
         )

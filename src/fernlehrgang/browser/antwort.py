@@ -71,12 +71,15 @@ class AddAntwort(uvc.layout.AddForm):
 from zeam.form.table import SubTableForm, TableActions
 from zeam.form.composed import ComposedForm
 from zeam.form.base import Action, SUCCESS, Actions
+from datetime import datetime
+
 
 class SaveTableAction(Action):
 
        def __call__(self, form, content, line):
            setattr(content, 'antwortschema', line.extractData(form.tableFields)[0].get('antwortschema', ''))
            form.context.antworten.append(content)
+           form.redirect(form.url() + '/addantworten')
 
 
 @menuentry(AddMenu)
@@ -84,6 +87,12 @@ class AddAntworten(ComposedForm, uvc.layout.Form):
     grok.context(IKursteilnehmer)
     grok.title(u'Alle Antworten eingeben')
     label = u"Alle Antworten eingeben"
+
+
+class LHDummy(object):
+    id = None
+    title = u"Bitte Auswahl Treffen"
+    fragen = []
 
 
 class AddAntwortenTable(SubTableForm):
@@ -105,11 +114,11 @@ class AddAntwortenTable(SubTableForm):
     def getItems(self):
         rc = []
         lehrhefte = self.lehrhefte
-        lh_id = self.request.get('lh_id')
+        lh_id = self.request.get('lh_id') or self.request.get('select_lehrhefte')
         if lh_id:
             lehrhefte = [lh for lh in lehrhefte if str(lh.id) == lh_id]
         for lehrheft in lehrhefte:
-            for frage in lehrheft.fragen:
+            for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
                 antwort = self.checkAntwort(lehrheft.id, frage.id)
                 if antwort:
                     rc.append(antwort)
@@ -124,7 +133,7 @@ class AddAntwortenTable(SubTableForm):
 
     @property
     def lehrhefte(self):
-        return self.context.fernlehrgang.lehrhefte
+        return [LHDummy()] + self.context.fernlehrgang.lehrhefte
 
     @property
     def script(self):
@@ -150,6 +159,9 @@ class Edit(models.Edit):
     fields = Fields(IAntwort).omit('id')
     fields['lehrheft_id'].mode = "hiddendisplay"
     fields['frage_id'].mode = "hiddendisplay"
+
+    def update(self):
+        self.context.datum = datetime.now()
 
 
 ### ExtraInfo

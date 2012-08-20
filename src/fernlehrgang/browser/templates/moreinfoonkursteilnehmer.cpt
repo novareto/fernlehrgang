@@ -6,8 +6,7 @@
     <dd tal:content="string: ${context.fernlehrgang.titel}"> </dd>
     <dt> Name, Vorname, Geburtsdatum </dt>
     <dd>
-    <span tal:content="context.teilnehmer.name"> </span>
-    <span tal:content="context.teilnehmer.vorname"> </span>
+    <span tal:content="structure viewlet.turl"/>
     <span tal:content="context.teilnehmer.geburtsdatum"> </span>
     </dd>
   </dl>

@@ -82,6 +82,13 @@ class Edit(models.Edit):
     grok.title(u'Edit')
     grok.name('edit')
 
+    label = u"Bearbeiten"
+
+    @property
+    def description(self):
+        return u"Hier können Sie das '%s' vom Fernlehrgang '%s' bearbeiten." % (
+                self.context.titel, 'MUSS')
+
     fields = Fields(ILehrheft).omit('id')
 
 
