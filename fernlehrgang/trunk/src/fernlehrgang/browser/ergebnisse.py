@@ -40,6 +40,13 @@ class Resultate(Page):
         return results.summary()
 
 
+def checkDate(date):
+    if date:
+        return date.strftime('%d.%m.%Y %H:%M')
+    else:
+        return ""
+
+
 class CalculateResults(grok.Adapter):
     grok.implements(ICalculateResults)
     grok.context(IKursteilnehmer)
@@ -64,7 +71,7 @@ class CalculateResults(grok.Adapter):
                            frage = antwort.frage.antwortschema,
                            antwort = antwort.antwortschema,
                            system = antwort.system,
-                           datum = antwort.datum.strftime('%d.%m.%Y %H:%M'),
+                           datum = checkDate(antwort.datum),
                            res = ergebnis)
                     punkte += ergebnis 
                     fragen.append(d)

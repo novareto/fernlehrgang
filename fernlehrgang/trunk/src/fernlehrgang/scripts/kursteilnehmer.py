@@ -93,6 +93,7 @@ def main(argv=None):
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
     for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=";")):
+        #import pdb; pdb.set_trace() 
         unternehmen = Session.query(Unternehmen).get(line['MNR'].strip().replace('-', ''))
         i+=1
         print '%s, %s %s' %(i, line['MNR'], unternehmen)

@@ -79,9 +79,10 @@ class IAntwort(Interface):
     datum = Datetime(
         title = u'Datum',
         description = u'Modifikationsdatum',
-        required = True,
-        readonly = True,
-        default = datetime.now()
+        required = False,
+        readonly = False,
+        defaultFactory = datetime.now,
+        default = datetime.now(),
         )
 
     system = Choice(

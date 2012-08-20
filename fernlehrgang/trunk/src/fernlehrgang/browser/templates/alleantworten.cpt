@@ -22,8 +22,9 @@
   <div class="control-group">
     <label class="control-label" for="select01">Lehrheft</label>
     <div class="controls">
-      <select name="selcet_lehrhefte" id="select_lehrheft">
-         <option tal:repeat="lh view.lehrhefte" tal:attributes="value lh.id"> <span tal:content="lh.title"/> </option>
+      <select name="select_lehrhefte" id="select_lehrheft" tal:define="dlhid request.get('lh_id')">
+        <option tal:repeat="lh view.lehrhefte" 
+            tal:attributes="value lh.id; selected dlhid == str(lh.id) and 'selected' or None"> <span tal:content="lh.title"/> </option>
       </select>
     </div>
   </div>

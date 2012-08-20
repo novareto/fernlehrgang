@@ -45,7 +45,9 @@ $(document).ready(function() {
   $("select#select_lehrheft").change(function()
     {
         $(location).attr('href', base_url + '?lh_id=' + $(this).val());
+        $(".G-select").attr('checked', 'checked');
     }
     );
 
+  $(".G-select").attr('checked', 'checked');
 }); 
