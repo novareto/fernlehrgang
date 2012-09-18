@@ -88,6 +88,7 @@ class AddTeilnehmer(uvc.layout.AddForm):
         session = Session()
         self.context.teilnehmer.append(teilnehmer)
         self.tn = teilnehmer
+        session.flush()
         #if kursteilnehmer:
         #    kursteilnehmer.teilnehmer = teilnehmer
         #    kursteilnehmer.unternehmen = self.context
@@ -98,8 +99,7 @@ class AddTeilnehmer(uvc.layout.AddForm):
 
     def nextURL(self):
         self.flash(u'Der Teilnehmer wurde erfolgreich gespeichert')
-        locate(grok.getSite(), self.tn, DefaultModel)
-        return self.url(self.tn)
+        return "%s/teilnehmer/%s" %(self.url(), self.tn.id)
 
 
 class Index(models.DefaultView):
