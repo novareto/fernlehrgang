@@ -45,7 +45,8 @@ setup(name='fernlehrgang',
                         'zope.pluggableauth',
                         'zeam.form.table',
                         'xlwt',
-                        'openpyxl'
+                        'openpyxl',
+                        'js.jquery_tablesorter',
                         # Add extra requirements here
                         ],
       entry_points = { 
