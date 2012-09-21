@@ -4,6 +4,7 @@
 
 import grok
 import json
+import datetime
 
 from sqlalchemy import *
 from z3c.saconfig import Session
@@ -109,6 +110,8 @@ class TeilnehmerAPI(grok.REST):
         un_klasse = data.pop('un_klasse')
         branche = data.pop('branche')
         flg_id = data.pop('flg_id')
+        data['geburtsdatum'] = datetime.datetime.strptime(data['geburtsdatum'], "%d.%m.%Y")
+        print data
         for key, value in data.items():
             if value:
                 setattr(teilnehmer, key, value)
@@ -134,6 +137,8 @@ class KursteilnehmerAPI(grok.REST):
     def PUT(self):
         kursteilnehmer = self.context
         data = json.loads(self.body)
+        print data
+        data['datum'] = datetime.datetime.strptime(data['datum'], "%d.%m.%Y")
         print data
         antwort = Antwort(**data)
         kursteilnehmer.antworten.append(antwort)
