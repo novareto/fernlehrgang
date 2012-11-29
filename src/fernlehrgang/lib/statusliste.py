@@ -70,11 +70,15 @@ class XLSReport(grok.Adapter):
             summary = cal_res.summary()
             liste = []
             teilnehmer = ktn.teilnehmer
-            antworten = len(ktn.antworten)/10
+            ss = set([x.lehrheft_id for x in ktn.antworten])
+            antworten = len(ss)
             if teilnehmer:
                 gebdat = ""
                 if teilnehmer.geburtsdatum:
-                    gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
+                    try:
+                        gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
+                    except:
+                        gebdat = ""
                 #unternehmen = teilnehmer.unternehmen
                 liste.append(nN(teilnehmer.id))
                 liste.append(nN(teilnehmer.titel))
