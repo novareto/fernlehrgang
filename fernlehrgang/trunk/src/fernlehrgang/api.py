@@ -100,18 +100,18 @@ class TeilnehmerAPI(grok.REST):
             un_klasse = un_klasse,
             branche = branche,
             )
+        print "GET"
+        print teilnehmer
         return json.dumps(teilnehmer)
 
 
     def PUT(self):
-        print "PUT"
         teilnehmer = self.context
         data = json.loads(self.body)
         un_klasse = data.pop('un_klasse')
         branche = data.pop('branche')
         flg_id = data.pop('flg_id')
         data['geburtsdatum'] = datetime.datetime.strptime(data['geburtsdatum'], "%d.%m.%Y")
-        print data
         for key, value in data.items():
             if value:
                 setattr(teilnehmer, key, value)
