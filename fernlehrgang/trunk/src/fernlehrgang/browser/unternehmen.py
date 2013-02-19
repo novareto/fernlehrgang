@@ -19,12 +19,18 @@ from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang import Form, AddForm
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
+
+
+NO_VALUE = ""
 
 
 grok.templatedir('templates')
 
+
 @menuentry(NavigationMenu)
-class UnternehmenListing(uvc.layout.Form):
+class UnternehmenListing(Form):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmen_listing')
     grok.title(u"Unternehmen verwalten")
@@ -106,6 +112,26 @@ class Index(models.DefaultView):
             rc.append(person)
         return rc
 
+
+@menuentry(AddMenu) 		
+class AddUnternehmen(AddForm): 		
+    grok.context(IFernlehrgangApp) 		
+    grok.title(u'Unternehmen') 		
+    title = u'Unternehmen' 		
+    label = u'Unternehmen anlegen' 		
+    description = u"Unternehmen anlegen" 		
+		
+    fields = Fields(IUnternehmen) 		
+		
+    def create(self, data): 		
+        return Unternehmen(**data) 		
+		
+    def add(self, object): 		
+        session = Session() 		
+        session.add(object) 		
+		
+    def nextURL(self): 		
+        return self.url(self.context, 'unternehmen_listing')
 
 class Edit(models.Edit):
     grok.context(IUnternehmen)

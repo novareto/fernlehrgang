@@ -22,6 +22,7 @@ from zeam.form.base import Fields, action
 from uvc.layout.interfaces import IExtraInfo
 from megrok.layout import Page
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang import AddForm, Form
 
 grok.templatedir('templates')
 
@@ -50,7 +51,7 @@ class AntwortListing(TablePage):
 
 
 @menuentry(AddMenu)
-class AddAntwort(uvc.layout.AddForm):
+class AddAntwort(AddForm):
     grok.context(IKursteilnehmer)
     grok.title(u'Antwort')
     label = u'Antwort anlegen'
@@ -83,7 +84,7 @@ class SaveTableAction(Action):
 
 
 @menuentry(AddMenu)
-class AddAntworten(ComposedForm, uvc.layout.Form):
+class AddAntworten(ComposedForm, Form):
     grok.context(IKursteilnehmer)
     grok.title(u'Alle Antworten eingeben')
     label = u"Alle Antworten eingeben"

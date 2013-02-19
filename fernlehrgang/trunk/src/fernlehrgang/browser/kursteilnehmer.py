@@ -22,6 +22,7 @@ from zeam.form.base import NO_VALUE
 from zeam.form.base import action
 from zeam.form.base.errors import Error
 from zope.i18nmessageid import MessageFactory
+from fernlehrgang import Form, AddForm
 
 
 _ = MessageFactory('zeam.form.base')
@@ -30,7 +31,7 @@ grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu)
-class KursteilnehmerListing(uvc.layout.Form):
+class KursteilnehmerListing(Form):
     grok.context(IFernlehrgang)
     grok.implements(IDisplayView)
     grok.name('kursteilnehmer_listing')
@@ -71,10 +72,10 @@ class KursteilnehmerListing(uvc.layout.Form):
         flg_id = self.context.id
         sql = session.query(Teilnehmer, Kursteilnehmer)
         sql = sql.filter(and_(Kursteilnehmer.fernlehrgang_id == flg_id, Kursteilnehmer.teilnehmer_id == Teilnehmer.id))
-        if data.get('id') != NO_VALUE:
+        if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
-        if data.get('name') != NO_VALUE:
+        if data.get('name') != "":
             qu = "%%%s%%" % data.get('name')
             sql = sql.filter(Teilnehmer.name.ilike(qu))
             v = True
@@ -89,7 +90,7 @@ class KursteilnehmerListing(uvc.layout.Form):
 
 
 @menuentry(AddMenu)
-class AddKursteilnehmer(uvc.layout.Form):
+class AddKursteilnehmer(Form):
     grok.context(IFernlehrgang)
     grok.title(u'Kursteilnehmer')
     label = u'Kursteilnehmer anlegen'
@@ -127,8 +128,12 @@ class Edit(models.Edit):
 
     fields = Fields(IKursteilnehmer).omit('id')
     fields['teilnehmer_id'].mode = 'hiddendisplay'
+    fields['fernlehrgang_id'].mode = 'hiddendisplay'
     fields['branche'].mode = "radio"
 
+#    def update(self):
+#        super(Edit, self).update()
+#        import pdb; pdb.set_trace()                                              
 
 
 class MoreInfoOnKursteilnehmer(grok.Viewlet):

@@ -69,14 +69,28 @@ def gespraech(context):
 
 @grok.provider(IContextSourceBinder)
 def fernlehrgang_vocab(context):
-    rc = []
+    rc = [SimpleTerm('', '', u'Fernlehrgang auswählen')]
     session = Session()
-    from fernlehrgang.models import Fernlehrgang, Kursteilnehmer
+    from fernlehrgang.models import Fernlehrgang
     sql = session.query(Fernlehrgang)
-    ktsql = session.query(Kursteilnehmer.fernlehrgang_id).filter(Kursteilnehmer.teilnehmer_id == context.id)
-    ids = [x[0] for x in ktsql.all()]
+
+    def getKTN(context, flg_id):
+        if not hasattr(context, 'kursteilnehmer'):
+            return True 
+        for x in context.kursteilnehmer:
+            if flg_id == x.fernlehrgang_id:
+                return x
+
     for flg in sql.all():
-        if flg.id not in ids:
+        ktn = getKTN(context, flg.id)
+        if ktn:
+            value = "%s - %s, bereits Registriert" % (flg.titel, flg.jahr)
+            if ktn is True:
+                token = flg.id
+            else:
+                token = "%s,%s" %(ktn.id, flg.id)
+            rc.append(SimpleTerm(token, token, value))
+        else:
             value = "%s - %s" % (flg.titel, flg.jahr)
             rc.append(SimpleTerm(flg.id, flg.id, value))
     return SimpleVocabulary(rc)    
@@ -97,7 +111,7 @@ class IKursteilnehmer(Interface):
         required = True,
         )
 
-    lehrgang = Choice(
+    fernlehrgang_id = Choice(
         title = u"Lehrgang",
         description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
         required = False,

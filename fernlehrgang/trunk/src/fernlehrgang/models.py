@@ -284,7 +284,7 @@ class Antwort(Base, RDBMixin):
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 
-                              backref = backref('antworten', lazy=False, order_by=frage_id, cascade="all,delete"),
+                              backref = backref('antworten', order_by=frage_id, cascade="all,delete"),
                              )
 
     frage = relation(Frage)

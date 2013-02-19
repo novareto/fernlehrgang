@@ -19,6 +19,7 @@ from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang import AddForm
 
 
 grok.templatedir('templates')
@@ -48,7 +49,7 @@ class FrageListing(TablePage):
 
 
 @menuentry(AddMenu)
-class AddFrage(uvc.layout.AddForm):
+class AddFrage(AddForm):
     grok.context(ILehrheft)
     grok.title(u'Frage')
     label = u'Frage anlegen'

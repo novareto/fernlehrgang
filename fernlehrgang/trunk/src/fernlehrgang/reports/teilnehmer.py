@@ -17,13 +17,14 @@ from megrok.traject.components import DefaultModel
 from z3c.saconfig import Session
 from zeam.form.base import action, NO_VALUE, Fields
 from fernlehrgang.interfaces.resultate import ICalculateResults
+from fernlehrgang import Form
 
 
 grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu, order=500)
-class CreateTeilnehmer(uvc.layout.Form):
+class CreateTeilnehmer(Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Teilnehmer registrieren')
     title = label = u"Teilnehmer registrieren"
@@ -51,7 +52,7 @@ class CreateTeilnehmer(uvc.layout.Form):
 
 
 @menuentry(NavigationMenu, order=450)
-class TeilnehmerSuche(uvc.layout.Form):
+class TeilnehmerSuche(Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage KursTeilnehmer')
     grok.require('zope.View')
@@ -106,18 +107,18 @@ class TeilnehmerSuche(uvc.layout.Form):
         session = Session()
         sql = session.query(Kursteilnehmer, Teilnehmer)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
-        if data.get('id') != NO_VALUE:
+        if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
-        if data.get('name') != NO_VALUE:
+        if data.get('name') != "":
             constraint = "%%%s%%" % data.get('name')
             sql = sql.filter(Teilnehmer.name.ilike(constraint))
             v = True
-        if data.get('vorname') != NO_VALUE:
+        if data.get('vorname') != "":
             constraint = "%%%s%%" % data.get('vorname')
             sql = sql.filter(Teilnehmer.vorname.ilike(constraint))
             v = True
-        if data.get('mnr') != NO_VALUE:
+        if data.get('mnr') != "":
             constraint = "%%%s%%" % data.get('mnr')
             sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
             v = True

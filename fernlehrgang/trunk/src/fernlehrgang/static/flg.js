@@ -1,31 +1,10 @@
-/*
-$.tools.dateinput.localize("de", {
-   months: 'Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember',
-   shortMonths:  'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Okt,Nov,Dez',
-   days:         'Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag',
-   shortDays:    'So,Mo,Di,Mi,Do,Fr,Sa'
-});
-
-$.tools.dateinput.conf.lang = 'de';
-*/
-
 $(document).ready(function() { 
 
   $('div.subform table').addClass('table table-striped table-bordered table-condensed');
   $('div.subform form table select').attr('disabled', 'disabled');
 
-
-  $.each($('input.field-date'), function() {
-     $(this).dateinput({ 
-         format: 'dd.mm.yyyy', 
-         selectors: true, 
-         yearRange: [-95, 15],
-         'firstDay': 1 });
-  })
-
-
-  $('#form-form-field-nr').appendFieldTo('#form-form-field-strasse');
-  $('#form-form-field-ort').appendFieldTo('#form-form-field-plz');
+  $('#field-form-field-nr').appendFieldTo('#field-form-field-strasse');
+  $('#field-form-field-ort').appendFieldTo('#field-form-field-plz');
 
   var v1 = $("#form-field-lehrheft_id :selected").val();
   if (v1 == 'Bitte eine Auswahl treffen')
@@ -42,12 +21,23 @@ $(document).ready(function() {
             });
      });
 
-  $("select#select_lehrheft").change(function()
-    {
-        $(location).attr('href', base_url + '?lh_id=' + $(this).val());
-        $(".G-select").attr('checked', 'checked');
+  $("select#select_lehrheft").change(function() {
+      value = $(this).val();
+      if (value == "Bitte Auswahl Treffen") {
+          $('form table').hide();
+      }
+      else {
+          $('form table').show();
+          $(location).attr('href', base_url + '?lh_id=' + $(this).val());
+          $(".G-select").attr('checked', 'checked');
+      }
     }
     );
+  
+  lh_id = $("select#select_lehrheft").val();
+  if (lh_id == "Bitte Auswahl Treffen") {
+     $('form table').hide();
+  }
 
   $(".G-select").attr('checked', 'checked');
 }); 
