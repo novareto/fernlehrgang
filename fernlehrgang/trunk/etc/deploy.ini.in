@@ -23,6 +23,8 @@ qualname = wsgi
 propagate = 0
 
 [handler_console]
+;class = FileHandler
+;args = (os.path.join(r'${zope_conf:logfiles}', 'event.log'), 'a')
 class = StreamHandler
 args = (sys.stderr,)
 level = NOTSET
@@ -68,7 +70,7 @@ recompute_hashes = true
 [server:main]
 use = egg:Paste#http
 host = ${settings:host}
-port = ${settings:port}
+port = ${:port}
 
 [DEFAULT]
 # set the name of the zope.conf file
