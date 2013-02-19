@@ -18,6 +18,8 @@ from dolmen.app.layout import models, IDisplayView
 from zeam.form.base import Fields
 from fernlehrgang.interfaces import IListing
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang import AddForm
+
 
 grok.templatedir('templates')
 
@@ -48,7 +50,7 @@ class LehrheftListing(TablePage):
 
 
 @menuentry(AddMenu)
-class AddLehrheft(uvc.layout.AddForm):
+class AddLehrheft(AddForm):
     grok.context(IFernlehrgang)
     grok.title(u'Lehrheft')
     title = u'Lehrheft'

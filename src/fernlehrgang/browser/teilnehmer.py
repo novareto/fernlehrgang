@@ -20,7 +20,7 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
-from uvc.layout import Form 
+from fernlehrgang import Form, AddForm 
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
@@ -29,6 +29,7 @@ from fernlehrgang.interfaces.teilnehmer import generatePassword
 from zope.interface import Interface
 from zope.component import getMultiAdapter
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang.resources import register_js
 
 
 grok.templatedir('templates')
@@ -63,7 +64,7 @@ class TeilnehmerListing(TablePage):
 
 
 @menuentry(AddMenu)
-class AddTeilnehmer(uvc.layout.AddForm):
+class AddTeilnehmer(AddForm):
     grok.context(IUnternehmen)
     grok.title(u'Teilnehmer')
     label = u'Teilnehmer anlegen für Unternehmen'
@@ -124,18 +125,6 @@ class Edit(models.Edit):
         if errors:
             self.submissionError = errors
             return FAILURE
-
-        #lehrgang = data.pop('lehrgang')
-        #if lehrgang is not NO_VALUE:
-        #    session = Session()
-        #    kursteilnehmer = Kursteilnehmer(
-        #        fernlehrgang_id=lehrgang,
-        #        status="A1", 
-        #        unternehmen_mnr=self.context.unternehmen.mnr)
-        #    kursteilnehmer.teilnehmer = self.context
-        #    fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
-        #    print "ADD Kursteilnehmer to Fernlehrgang"
-        #    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
         for x in ['adresszusatz', 'ort', 'plz', 'nr', 'email', 'strasse', 'telefon']:
             if data[x] == NO_VALUE:
                 data[x] = ""
@@ -143,7 +132,6 @@ class Edit(models.Edit):
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))
 
-    
     @action('Abbrechen')
     def handle_cancel(self):
         self.flash(u'Ihre Aktion wurde abgebrochen.')
@@ -159,7 +147,9 @@ class Register(Form):
     __name__ = "register"
 
     fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
-    fields['lehrgang'].mode = "radio"
+
+    def update(self):
+        register_js.need()
 
     @action('Registrieren')
     def handle_register(self):
@@ -169,7 +159,7 @@ class Register(Form):
         if data.get('lehrgang') is not NO_VALUE:
             session = Session()
             kursteilnehmer = Kursteilnehmer(
-                fernlehrgang_id=data.get('lehrgang'),
+                fernlehrgang_id=data.get('fernlehrgang_id'),
                 status=data.get('status'),
                 un_klasse = data.get('un_klasse'),
                 branche = data.get('branche'),
@@ -182,25 +172,32 @@ class Register(Form):
         self.flash('Es wurde kein Lehrgang spezifiziert.', type="warning")
         self.redirect(self.url(self.context))
 
+    @action(u'Registrierung ändern', identifier='reg-change')
+    def handle_update(self):
+        data, errors = self.extractData()
+        if errors:
+            return FAILURE
+        session = Session()
+        from fernlehrgang.models import Kursteilnehmer
+        ktn_id, flg_id = data.get('fernlehrgang_id').split(',')
+        ktn = session.query(Kursteilnehmer).get(ktn_id)
+        ktn.status = data.get('status')
+        ktn.branche = data.get('branche')
+        ktn.gespraech = data.get('gespraech')
+        ktn.un_klasse = data.get('un_klasse')
+        session.flush()
 
-# More Info Viewlets
 
-#class MoreInfoUnternehmen(grok.Viewlet):
-#    grok.viewletmanager(IExtraInfo)
-#    grok.context(IUnternehmen) 
-#    grok.order(10)
-#
-#    def render(self):
-#        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.mnr, self.context.name)
-#
-#
-#class MoreInfoOnTeilnehmer(grok.Viewlet):
-#    grok.viewletmanager(IExtraInfo)
-#    grok.context(ITeilnehmer)
-#    grok.order(10)
-#
-#    def render(self):
-#        return "<h3>Mitgliedsnummer: %s, Unternehmen: %s </h3>" %(self.context.unternehmen.mnr, self.context.unternehmen.name)
+class TeilnehmerJSONViews(grok.JSON):
+    grok.context(ITeilnehmer)
+
+    def get_kursteilnehmer(self, ktn_id):
+        session = Session()
+        from fernlehrgang.models import Kursteilnehmer
+        ktn_id, flg_id = ktn_id.split(',')
+        ktn = session.query(Kursteilnehmer).get(ktn_id)
+        print {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
+        return {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
 
 
 class OverviewKurse(grok.Viewlet):
@@ -212,18 +209,6 @@ class OverviewKurse(grok.Viewlet):
         session = Session()
         sql = session.query(Kursteilnehmer).filter(Kursteilnehmer.teilnehmer_id == self.context.id)
         self.res = sql.all()
-
-
-#class DisplayTeilnehmer(grok.Viewlet):
-#    grok.viewletmanager(IExtraInfo)
-#    grok.context(ITeilnehmer)
-#    grok.view(Register)
-#    grok.order(20)
-#
-#    def update(self):
-#        self.view = getMultiAdapter((self.context, self.request), Interface, name="index")
-#        self.view.update()
-#        self.view.updateWidgets()
 
 
 class HelperEntry(Entry):

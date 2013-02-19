@@ -1,6 +1,5 @@
 <span tal:replace="structure viewlet.script"/>
 <div class="portlet">
-  <h6> Informationen zum Kursteilnehmer </h6>
   <dl>
     <dt> Fernlehrgang </dt>
     <dd tal:content="string: ${context.fernlehrgang.titel}"> </dd>

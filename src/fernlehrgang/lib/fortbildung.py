@@ -15,6 +15,7 @@ from fernlehrgang.lib.interfaces import IXLSFortbildung
 from openpyxl.workbook import Workbook
 from sqlalchemy import and_
 from z3c.saconfig import Session
+from profilehooks import profile
 
 
 v_un_klasse = un_klasse(None)
@@ -79,9 +80,7 @@ class XLSFortbildung(grok.Adapter):
                 models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
                 models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
         i=1
-        print result.count()
         for teilnehmer, unternehmen, ktn in result.all():
-            print i
             cal_res = ICalculateResults(ktn)
             summary = cal_res.summary()
             liste = []
@@ -140,7 +139,7 @@ class XLSFortbildung(grok.Adapter):
                                             antwort.antwortschema,
                                             frage.gewichtung))
                         liste.append(r)
-            self.rc.append(liste)
+                self.rc.append(liste)
             i+=1
 
     def versandanschrift(self, teilnehmer):

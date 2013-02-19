@@ -16,6 +16,7 @@ from z3c.saconfig import Session
 from zeam.form.base import action, NO_VALUE, Fields
 from zope.interface import Interface
 from zope.schema import TextLine
+from fernlehrgang import Form
 
 
 grok.templatedir('templates')
@@ -37,7 +38,7 @@ class IUnternehmenSearch(Interface):
 
 
 @menuentry(NavigationMenu, order=400)
-class UnternehmenSuche(uvc.layout.Form):
+class UnternehmenSuche(Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage Unternehmen')
     grok.require('zope.View')
@@ -63,11 +64,11 @@ class UnternehmenSuche(uvc.layout.Form):
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
-        if data.get('mnr') != NO_VALUE:
+        if data.get('mnr') != "":
             v = True
             constraint = "%%%s%%" % data.get('mnr')
             sql = sql.filter(Unternehmen.mnr.like(constraint))
-        if data.get('name') != NO_VALUE:
+        if data.get('name') != "":
             v = True
             constraint = "%%%s%%" % data.get('name')
             sql = sql.filter(Unternehmen.name.ilike(constraint))

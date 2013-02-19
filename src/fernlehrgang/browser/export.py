@@ -8,7 +8,7 @@ from dolmen.menu import menuentry, Menu
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.viewlets import NavigationMenu
 from fernlehrgang.lib.interfaces import IXLSExport, IXLSReport, IXLSFortbildung
-from uvc.layout import Form
+from fernlehrgang import Form
 from zeam.form.base import Fields, action
 from megrok.layout import Page
 

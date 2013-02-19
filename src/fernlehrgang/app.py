@@ -25,6 +25,8 @@ from zeam.form.base import NO_VALUE
 from zope.component import getUtility
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from uvc.layout import MenuItem
+from zeam.form.ztk import customize
+from zope.schema.interfaces import IDate
 
 
 grok.templatedir('templates')
@@ -69,7 +71,7 @@ class KontaktMI(MenuItem):
 
     @property
     def action(self):
-        return self.view.application_url() + 'kontakt'
+        return self.view.application_url() + '/kontakt'
 
 
 class Kontakt(Page):
@@ -116,27 +118,7 @@ class RestLayer(grok.IRESTLayer):
     grok.restskin('api')
 
 
-class CustomDateFieldWidget(DateFieldWidget):
-    """ Extractor for German Date Notation
-    """
 
-    def valueToUnicode(self, value):
-        locale = self.request.locale
-        formatter = locale.dates.getFormatter(self.valueType, 'medium')
-        return formatter.format(value)
-
-
-class CustomDateWidgetExtractor(DateWidgetExtractor):
-    """ Extractor for German Date Notation
-    """
-
-    def extract(self):
-        value, error = super(DateWidgetExtractor, self).extract()
-        if value is not NO_VALUE:
-            locale = self.request.locale
-            formatter = locale.dates.getFormatter(self.valueType, 'medium')
-            try:
-                value = formatter.parse(value)
-            except (ValueError, DateTimeParseError), error:
-                return None, u"Bitte überprüfen Sie das Datumsformat. (tt.mm.jjjj)"
-        return value, error
+@customize(origin=IDate)
+def customize_size(field):
+    field.valueLength = 'medium'

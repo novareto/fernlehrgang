@@ -10,12 +10,14 @@ from zope.interface import Interface
 from uvc.layout.interfaces import IHeaders
 
 from uvc.widgets import double, DatePickerCSS
+from js.jquery import jquery
 
 
 library = Library('fernlehrgang', 'static')
 
 css = Resource(library, 'flg.css', depends=[DatePickerCSS])
 js = Resource(library, 'flg.js', depends=[double,])
+register_js = Resource(library, 'register.js', depends=[jquery])
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):

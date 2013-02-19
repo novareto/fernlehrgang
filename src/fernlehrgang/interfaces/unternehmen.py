@@ -34,7 +34,7 @@ class IUnternehmen(Interface):
         title = u'Mitgliedsnummer',
         description = u'Mitgliedsnummer des Unternehmens',
         required = False,
-        readonly = True
+        readonly = False, 
         )
 
     name = TextLine(

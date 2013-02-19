@@ -17,6 +17,7 @@ from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang import AddForm
 
 grok.templatedir('templates')
 
@@ -47,7 +48,7 @@ class FernlehrgangListing(TablePage):
 
 
 @menuentry(AddMenu)
-class AddFernlehrgang(uvc.layout.AddForm):
+class AddFernlehrgang(AddForm):
     grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
     grok.title(u'Fernlehrgang')
