@@ -25,19 +25,21 @@ def worker(app, root):
     setSite(portal)
     session = Session()
     FERNLEHRGANG_ID = 140
-    sql = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer)
+    sql = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer, models.Fernlehrgang)
     sql = sql.options(joinedload(models.Kursteilnehmer.antworten))
     sql = sql.options(joinedload(models.Kursteilnehmer.fernlehrgang))
+    sql = sql.options(joinedload(models.Fernlehrgang.lehrhefte))
     sql = sql.filter(
         and_(
+            models.Fernlehrgang.id == FERNLEHRGANG_ID,
             models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
             models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
             models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
 
-    for tn, unt, ktn in sql.all():
-        print ktn, tn, unt
-        import pdb; pdb.set_trace()
-        summary = ICalculateResults(ktn).summary()
+    for tn, unt, ktn, flg in sql.all():
+        print ktn, tn, unt, flg
+        cr = ICalculateResults(ktn)
+        cr.summary()
 
 
 
