@@ -57,6 +57,18 @@ def fd(v):
     except:
         return v
 
+def page_query(q):
+    offset = 0
+    while True:
+        r = False
+        for a,b,c in q.limit(1000).offset(offset):
+           r = True
+           yield a,b,c 
+        offset += 1000
+        if not r:
+            break
+
+
 class XLSExport(grok.Adapter):
     """ XML Export"""
     grok.implements(IXLSExport)
@@ -95,11 +107,10 @@ class XLSExport(grok.Adapter):
         res = time.time() - start
         print "CREATING SELECT", res
         i=1
-        import pdb; pdb.set_trace() 
-        result = result.all()
+        #result = result.all()
         res = time.time() - start
         print "FETCHING ALL", res
-        for teilnehmer, unternehmen, ktn in result:
+        for teilnehmer, unternehmen, ktn in page_query(result):
             if ktn.status in ('A1', 'A2'):
                 cal_res = ICalculateResults(ktn)
                 summary = cal_res.summary(lehrhefte)
