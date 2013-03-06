@@ -111,11 +111,11 @@ class XLSFortbildung(Form):
             self.flash(u'Fehler beheben')
             return
         xls = IXLSFortbildung(self.context)
-        xls.create(data)
+        self.bin_data = xls.create(data)
 
     def asPDF(self):
         RESPONSE = self.request.response
-        dateiname= "bla.txt"
-        RESPONSE.setHeader('content-type', 'application/txt')
+        dateiname= "Fortbildung-Stichtag.xls"
+        RESPONSE.setHeader('content-type', 'application/ms-excel')
         RESPONSE.setHeader('content-disposition', 'attachment; filename=%s' % dateiname )
         return self.bin_data

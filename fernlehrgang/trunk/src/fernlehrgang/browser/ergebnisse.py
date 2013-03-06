@@ -4,12 +4,15 @@
 
 import grok
 
+from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.config import POSTVERSANDSPERRE
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.layout import Page
+from z3c.saconfig import Session
+from fernlehrgang.models import Lehrheft
 
 
 grok.templatedir('templates')
@@ -51,11 +54,17 @@ class CalculateResults(grok.Adapter):
     grok.implements(ICalculateResults)
     grok.context(IKursteilnehmer)
 
-    def lehrhefte(self):
+    def lehrhefte(self, lehrhefte=None):
         context = self.context
         rc = []
         points = context.fernlehrgang.punktzahl
-        for lehrheft in context.fernlehrgang.lehrhefte:
+        if not lehrhefte:
+            session = Session()
+            sql = session.query(Lehrheft).options(joinedload(Lehrheft.fragen))
+            sql = sql.filter(Lehrheft.fernlehrgang_id == context.fernlehrgang.id)
+            lehrhefte = sql.all()
+        for lehrheft in lehrhefte:
+        #for lehrheft in context.fernlehrgang.lehrhefte:
             res = {}
             res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
             lehrheft_id = lehrheft.id
@@ -94,12 +103,12 @@ class CalculateResults(grok.Adapter):
                 return 0
         return gewichtung
 
-    def summary(self):
+    def summary(self, lehrhefte=None):
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context
         mindest_punktzahl = context.fernlehrgang.punktzahl
-        lehrhefte = self.lehrhefte()
+        lehrhefte = self.lehrhefte(lehrhefte)
         for lehrheft in lehrhefte:
             punkte += lehrheft['punkte']
         if context.status in POSTVERSANDSPERRE:
