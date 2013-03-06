@@ -5,6 +5,7 @@
 import grok
 import uvc.layout
 
+from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
@@ -18,6 +19,7 @@ from z3c.saconfig import Session
 from zeam.form.base import action, NO_VALUE, Fields
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import Form
+from profilehooks import profile
 
 
 grok.templatedir('templates')
@@ -105,7 +107,8 @@ class TeilnehmerSuche(Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Kursteilnehmer, Teilnehmer)
+        #sql = session.query(Kursteilnehmer, Teilnehmer)
+        sql = session.query(Kursteilnehmer, Teilnehmer).options(joinedload(Kursteilnehmer.antworten))
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))

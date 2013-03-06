@@ -5,6 +5,7 @@
 
 import grok
 
+from sqlalchemy.orm import joinedload
 from fernlehrgang import log
 from fernlehrgang import models
 from fernlehrgang.interfaces.flg import IFernlehrgang
@@ -70,21 +71,26 @@ class XLSFortbildung(grok.Adapter):
         return ''
 
     def createRows(self, data):
+        lhs = {}
         session = Session()
         ids = [x for x in data['fortbildungen']]
-        result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).filter(
+        result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).options(joinedload(models.Kursteilnehmer.antworten))
+        result = result.filter(
             and_(
                 models.Kursteilnehmer.fernlehrgang_id.in_(ids),
                 models.Antwort.datum > data['stichtag'],
                 models.Antwort.kursteilnehmer_id == models.Kursteilnehmer.id,
                 models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
                 models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
+        for x in ids:
+            lehrhefte_sql = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen))
+            lhs[x] = lehrhefte_sql.filter(models.Lehrheft.fernlehrgang_id == x).all()
         i=1
         for teilnehmer, unternehmen, ktn in result.all():
+            print str(i) + "  ----------------"
             cal_res = ICalculateResults(ktn)
-            summary = cal_res.summary()
+            summary = cal_res.summary(lhs[ktn.fernlehrgang_id])
             liste = []
-            unternehmen = teilnehmer.unternehmen
             ss = set([x.lehrheft_id for x in ktn.antworten])
             antworten = len(ss)
             if teilnehmer and summary.get('resultpoints') >= 1:

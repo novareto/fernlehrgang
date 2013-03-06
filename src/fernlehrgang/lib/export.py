@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
-
+import time
 import grokcore.component as grok
 
+from sqlalchemy.orm import joinedload
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from xlwt import Workbook
@@ -19,6 +20,13 @@ from fernlehrgang.lib.interfaces import IXLSExport
 from fernlehrgang.lib import nN
 from profilehooks import profile, timecall
 
+from sqlalchemy.orm import class_mapper, defer
+def defer_everything_but(entity, cols):
+    m = class_mapper(entity)
+    return [defer(k) for k in 
+            set(p.key for p 
+                in m.iterate_properties 
+                if hasattr(p, 'columns')).difference(cols)]
 
 
 
@@ -68,23 +76,33 @@ class XLSExport(grok.Adapter):
             return "JA"
         return ""
 
+    @profile
     def createRows(self, form):
         flg = self.context
         lh_id, lh_nr = form['lehrheft'].split('-')
         ii = 0 
         session = Session()
         FERNLEHRGANG_ID = flg.id
-        result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).filter(
+        lehrhefte = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen)).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).all()
+        start = time.time()
+        print "START", start
+        result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).options(joinedload(models.Kursteilnehmer.antworten))
+        result = result.filter(
             and_(
                 models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
                 models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
-                models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id).all()
-        #lehrhefte = session.query(models.Lehrheft).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).all()
+                models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
+        res = time.time() - start
+        print "CREATING SELECT", res
         i=1
+        import pdb; pdb.set_trace() 
+        result = result.all()
+        res = time.time() - start
+        print "FETCHING ALL", res
         for teilnehmer, unternehmen, ktn in result:
             if ktn.status in ('A1', 'A2'):
                 cal_res = ICalculateResults(ktn)
-                summary = cal_res.summary()
+                summary = cal_res.summary(lehrhefte)
                 row = self.adressen.row(ii+1)
                 row.write(0, nN(flg.id))
                 row.write(1, nN(teilnehmer.id))
@@ -132,7 +150,7 @@ class XLSExport(grok.Adapter):
                         row.write(z, r) 
                         z += 1
                 lhid = ""        
-                for lhr in cal_res.lehrhefte():
+                for lhr in cal_res.lehrhefte(lehrhefte):
                     row.write(z, lhr.get('punkte'))
                     z += 1
                     if len(lhr['antworten']):
@@ -142,6 +160,8 @@ class XLSExport(grok.Adapter):
                 ii+=1
             else:
                 log('STATUS', ktn.status)
+        session.flush()
+        import pdb; pdb.set_trace() 
 
 
     def createXLS(self, form):
