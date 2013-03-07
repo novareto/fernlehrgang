@@ -65,6 +65,7 @@ def page_query(q):
            r = True
            yield a,b,c 
         offset += 1000
+        print offset
         if not r:
             break
 
@@ -171,8 +172,6 @@ class XLSExport(grok.Adapter):
                 ii+=1
             else:
                 log('STATUS', ktn.status)
-        session.flush()
-        import pdb; pdb.set_trace() 
 
 
     def createXLS(self, form):
