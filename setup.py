@@ -47,6 +47,8 @@ setup(name='fernlehrgang',
                         'xlwt',
                         'openpyxl',
                         'js.jquery_tablesorter',
+                        'objgraph',
+                        'xdot',
                         # Add extra requirements here
                         ],
       entry_points = { 
