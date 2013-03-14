@@ -106,12 +106,13 @@ class XLSExport(grok.Adapter):
                 models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
                 models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
         res = time.time() - start
-        print "CREATING SELECT", res
+        #print "CREATING SELECT", res
         i=1
         #result = result.all()
-        res = time.time() - start
-        print "FETCHING ALL", res
+        #res = time.time() - start
+        #print "FETCHING ALL", res
         for teilnehmer, unternehmen, ktn in page_query(result):
+        #for teilnehmer, unternehmen, ktn in result:
             if ktn.status in ('A1', 'A2'):
                 cal_res = ICalculateResults(ktn)
                 summary = cal_res.summary(lehrhefte)
@@ -168,10 +169,11 @@ class XLSExport(grok.Adapter):
                     if len(lhr['antworten']):
                        lhid = lhr['titel'].split('-')[0] 
                 row.write(18, lhid) # RSENDUNG --> Anzahl der Rücksendung
-                log('Fernlehrgang Anzahl', ii)
+                #log('Fernlehrgang Anzahl', ii)
                 ii+=1
             else:
-                log('STATUS', ktn.status)
+                pass
+                #log('STATUS', ktn.status)
 
 
     def createXLS(self, form):

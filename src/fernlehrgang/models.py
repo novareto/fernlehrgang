@@ -29,6 +29,18 @@ from plone.memoize import ram, instance
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 
+from sqlalchemy import TypeDecorator
+
+class MyStringType(TypeDecorator):
+    impl = String
+
+    def process_bind_param(self, value, dialect):
+        if value is not None and dialect.name == "oracle":
+            value = value.encode('utf-8')
+        return value
+
+
+
 Base = declarative_base()
 
 
@@ -88,7 +100,7 @@ class Unternehmen(Base, RDBMixin):
     __tablename__ = 'adr'
 
     #id = Column("ID", Numeric, primary_key=True)
-    mnr = Column("MNR", String(12), primary_key=True, index=True)
+    mnr = Column("MNR", MyStringType(12), primary_key=True, index=True)
     name = Column("NAME1", String(32))
     name2 = Column("NAME2", String(32))
     name3 = Column("NAME3", String(32))
@@ -125,7 +137,7 @@ class Teilnehmer(Base, RDBMixin):
     anrede = Column(String(50))
     titel = Column(String(50))
     vorname = Column(String(50))
-    name = Column(String(50))
+    name = Column(MyStringType(50))
     geburtsdatum = Column(Date)
     strasse = Column(String(50))
     nr = Column(String(50))
