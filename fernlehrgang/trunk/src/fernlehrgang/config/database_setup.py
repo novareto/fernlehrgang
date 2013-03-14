@@ -8,7 +8,7 @@ DSN = config['dsn']
 print DSN 
 #DSN = 'oracle://flgprod:prodflg!@10.30.4.80/BGETest'
 
-engine_factory = EngineFactory(DSN, convert_unicode=False, encoding='utf-8', optimize_limits=True, echo=False) 
+engine_factory = EngineFactory(DSN, convert_unicode=True, encoding='utf-8', optimize_limits=True, echo=False) 
 scoped_session = GloballyScopedSession() 
  
 grok.global_utility(engine_factory, direct=True) 
