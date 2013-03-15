@@ -49,6 +49,7 @@ setup(name='fernlehrgang',
                         'js.jquery_tablesorter',
                         'objgraph',
                         'xdot',
+                        'celery',
                         # Add extra requirements here
                         ],
       entry_points = {

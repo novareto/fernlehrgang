@@ -27,8 +27,13 @@ spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
     'BZANZSDG', 'BZANZBD', 'BDANFANG', 'BDENDE',
 )
 
-book = Workbook()
-adressen = book.add_sheet('FLG-XLS Export')
+
+def getXLSBases():
+    book = Workbook()
+    adressen = book.add_sheet('FLG-XLS Export')
+    return book, adressen
+
+
 
 def fd(v):
     if v == None:
@@ -57,12 +62,12 @@ def versandanschrift(teilnehmer):
     return ""
 
 
-def createSpalten():
+def createSpalten(adressen):
     for i, spalte in enumerate(spalten):
         adressen.write(0, i, spalte)
 
 
-def createRows(session, flg_id, lh_id, lh_nr, rdatum, stichtag):
+def createRows(book, adressen, session, flg_id, lh_id, lh_nr, rdatum, stichtag):
     ii = 0 
     FERNLEHRGANG_ID = flg_id
     lehrhefte = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen)).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).all()
@@ -136,8 +141,9 @@ def createRows(session, flg_id, lh_id, lh_nr, rdatum, stichtag):
 def export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname):
     """This should be the "shared" export function.
     """
-    createSpalten()
-    createRows(session, flg_id, lh_id, lh, rdatum, stichtag)
+    book, adressen = getXLSBases()
+    createSpalten(adressen)
+    createRows(book, adressen, session, flg_id, lh_id, lh, rdatum, stichtag)
     fn = "/tmp/%s" % dateiname
     xls_file = open(fn, 'w+')
     book.save(xls_file)
