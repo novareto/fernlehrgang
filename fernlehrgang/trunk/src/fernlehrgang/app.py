@@ -122,3 +122,15 @@ class RestLayer(grok.IRESTLayer):
 @customize(origin=IDate)
 def customize_size(field):
     field.valueLength = 'medium'
+
+
+class CK(grok.View):
+    grok.context(Interface)
+
+    def update(self):
+        from fernlehrgang.tasks import export
+        bb = export.delay(2,2)
+        import pdb; pdb.set_trace() 
+
+    def render(self):
+        return u"Hallo Welt"
