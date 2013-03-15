@@ -51,13 +51,16 @@ setup(name='fernlehrgang',
                         'xdot',
                         # Add extra requirements here
                         ],
-      entry_points = { 
+      entry_points = {
           'paste.app_factory': [
                'main = grokcore.startup:application_factory',
                'debug = grokcore.startup:debug_application_factory'
                ],
           'fanstatic.libraries': [
               'fernlehrgang = fernlehrgang.resources:library',
+              ],
+          'console_scripts': [
+              'export = fernlehrgang.scripts.export:main_export',
               ],
           }
       )
