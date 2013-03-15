@@ -65,7 +65,15 @@ class XMLExport(grok.View):
     grok.name('xml')
 
     def update(self):
-        self.file = IXLSExport(self.context).createXLS(self.request.form)
+        from fernlehrgang.scripts import export
+        from z3c.saconfig import Session
+        session = Session()
+        form = self.request.form
+        lh_id, lh = form['lehrheft'].split('-')
+        fn = export.export(session, self.context.id, lh_id, lh, form['rdatum'], form['stichtag'], form['dateiname']) 
+        self.file = open(fn, 'rb')
+
+        #self.file = IXLSExport(self.context).createXLS(self.request.form)
 
     def render(self):
         dateiname = self.request.form.get('dateiname', 'flg.xls')
