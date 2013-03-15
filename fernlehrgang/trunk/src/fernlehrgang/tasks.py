@@ -17,6 +17,8 @@ Session = sessionmaker(bind=some_engine)
 
                                                                                 
 @celery_app.task                                                                
-def export(a, b):
+def export(flg_id, lh_id, lh, rdatum, stichtag, dateiname):
+    from fernlehrgang.scripts import export
     session = Session()
-    return session.query(models.Fernlehrgang.id).all()
+    export.export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+    return 

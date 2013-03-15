@@ -65,23 +65,14 @@ class XMLExport(grok.View):
     grok.name('xml')
 
     def update(self):
-        from fernlehrgang.scripts import export
-        from z3c.saconfig import Session
-        session = Session()
+        from fernlehrgang.tasks import export
         form = self.request.form
         lh_id, lh = form['lehrheft'].split('-')
-        fn = export.export(session, self.context.id, lh_id, lh, form['rdatum'], form['stichtag'], form['dateiname']) 
-        self.file = open(fn, 'rb')
-
-        #self.file = IXLSExport(self.context).createXLS(self.request.form)
+        fn = export.delay(self.context.id, lh_id, lh, form['rdatum'], form['stichtag'], form['dateiname']) 
 
     def render(self):
-        dateiname = self.request.form.get('dateiname', 'flg.xls')
-        RESPONSE = self.request.response
-        RESPONSE.setHeader('content-type', 'application/ms-excel')
-        RESPONSE.setHeader('content-disposition', 'attachment; filename=%s' % dateiname )
-        self.file.seek(0)
-        return self.file.read()
+        self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
+        self.redirect(self.application_url())
 
 
 import zope.component
