@@ -17,8 +17,23 @@ Session = sessionmaker(bind=some_engine)
 
                                                                                 
 @celery_app.task                                                                
-def export(flg_id, lh_id, lh, rdatum, stichtag, dateiname):
-    from fernlehrgang.scripts import export
+def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname):
+    from fernlehrgang.exports.versandliste_fernlehrgang import export
     session = Session()
-    export.export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+    export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+    return 
+
+@celery_app.task                                                                
+def export_versandliste_fortbildung(flg_ids, stichtag):
+    from fernlehrgang.exports.versandliste_fortbildung import export
+    session = Session()
+    export(session, flg_ids, stichtag) 
+    return 
+
+
+@celery_app.task                                                                
+def export_statusliste(flg_id):
+    from fernlehrgang.exports.statusliste import export
+    session = Session()
+    export(session, flg_id) 
     return 
