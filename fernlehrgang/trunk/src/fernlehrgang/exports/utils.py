@@ -11,5 +11,6 @@ def page_query(q):
            r = True
            yield a,b,c 
         offset += 1000
+        print offset
         if not r:
             break

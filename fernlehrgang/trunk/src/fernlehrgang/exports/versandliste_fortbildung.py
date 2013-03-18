@@ -51,7 +51,7 @@ def createRows(session, rc, flg_ids, stichtag):
     result = result.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id.in_(ids),
-            # models.Antwort.datum > stichtag,
+            models.Antwort.datum > stichtag,
             models.Antwort.kursteilnehmer_id == models.Kursteilnehmer.id,
             models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
             models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
