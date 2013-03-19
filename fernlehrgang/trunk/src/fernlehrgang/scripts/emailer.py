@@ -7,6 +7,7 @@ from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
 from email.Utils import COMMASPACE, formatdate
 from email import Encoders
+from email.header import Header
 
 
 def send_mail(send_from, send_to, subject, text, files=[], server="localhost"):
@@ -38,3 +39,4 @@ def send_mail(send_from, send_to, subject, text, files=[], server="localhost"):
     smtp = smtplib.SMTP(server)
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
+
