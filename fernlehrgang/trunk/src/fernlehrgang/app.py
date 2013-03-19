@@ -124,13 +124,29 @@ def customize_size(field):
     field.valueLength = 'medium'
 
 
-class CK(grok.View):
-    grok.context(Interface)
+class NotFound(Page, grok.components.NotFoundView):
+    """Not Found Error View
+    """
+    pass
 
-    def update(self):
-        from fernlehrgang.tasks import export
-        bb = export.delay(2,2)
-        import pdb; pdb.set_trace() 
+
+class SystemError(Page, grok.components.ExceptionView):
+    """Custom System Error for UVCSITE
+    """
+
+    def __init__(self, context, request):
+        super(SystemError, self).__init__(context, request)
+        self.context = grok.getSite()
+        self.origin_context = context
+
+
+class FaviconIco(grok.View):
+    """ Helper for Favicon.ico Errors Request
+    """
+    grok.context(Interface)
+    grok.name('favicon.ico')
+    grok.require('zope.Public')
 
     def render(self):
-        return u"Hallo Welt"
+        return "BLA"
+

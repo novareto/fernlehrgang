@@ -1,0 +1,12 @@
+<div id="notfound-page" i18n:domain="zope">
+<div>
+   <h1>Entschuldigen Sie bitte...</h1>
+    <br>
+   <p>Der Artikel, den Sie sehen wollten, existiert nicht oder kann nicht übertragen werden.</p>
+   <p>Wenn Sie sicher sind, dass Sie die richtige Webadresse angegeben haben und dieser Fehler trotzdem auftritt, <br> 
+      dann schreiben Sie eine E-Mail an den <a href="" tal:attributes="href string: ${view.application_url()}/kontakt">Website-Verantwortlichen</a>.</p>
+   <p>Vielen Dank</p>
+
+</div>
+</div>
+
