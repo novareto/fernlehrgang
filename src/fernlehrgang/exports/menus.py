@@ -14,10 +14,10 @@ from megrok.layout import Page
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+@menuentry(NavigationMenu, order=200)
 class Exporte(Page):
     grok.context(IFernlehrgang)
-    grok.title('Exporte')
+    grok.title(u'Versandlisten')
     grok.order(200)
 
 

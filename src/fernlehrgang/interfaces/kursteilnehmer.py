@@ -10,6 +10,7 @@ from zope.schema import *
 from zope.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+from fernlehrgang.interfaces.app import IFernlehrgangApp
 
 
 LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
@@ -75,6 +76,8 @@ def fernlehrgang_vocab(context):
     sql = session.query(Fernlehrgang)
 
     def getKTN(context, flg_id):
+        if IFernlehrgangApp.providedBy(context):
+            return 
         if not hasattr(context, 'kursteilnehmer'):
             return True 
         for x in context.kursteilnehmer:

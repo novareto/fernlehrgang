@@ -14,6 +14,12 @@ class IAddUserForm(interface.Interface):
         required = True
         )
 
+    email = schema.BytesLine(
+        title = u'EMail Adresse',
+        description = u"Bitte geben Sie hier die EMail Adresse des Benutzers ein.",  
+        required = True
+        )
+
     password = schema.Password(
         title = u'Passwort', 
         description = u"Bitte tragen Sie hier das Passwort ein.",  

@@ -17,7 +17,7 @@ from fernlehrgang import models
 from fernlehrgang.browser.ergebnisse import CalculateResults
 from fernlehrgang.lib import nN
 from fernlehrgang.exports.versandliste_fernlehrgang import versandanschrift
-from fernlehrgang.exports.utils import page_query
+from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 
 
 spalten = ['FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
@@ -133,6 +133,7 @@ def export(session, flg_ids, stichtag):
         adressen.append([cell for cell in line])
     print "Writing File %s" % fn
     book.save(fn)
+    fn = makeZipFile(fn)
     return fn
 
 
@@ -153,6 +154,7 @@ class XLSFortbildung(Form):
             return
         from fernlehrgang.tasks import export_versandliste_fortbildung
         flg_ids = [x for x in data['fortbildungen']]
-        fn = export_versandliste_fortbildung.delay(flg_ids, data['stichtag'])
+        mail = getUserEmail(self.request.principal.id)
+        fn = export_versandliste_fortbildung.delay(flg_ids, data['stichtag'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

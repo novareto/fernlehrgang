@@ -55,9 +55,9 @@ class UserAuthenticatorPlugin(grok.LocalUtility):
     def getAccount(self, login):
         return login in self.user_folder and self.user_folder[login] or None
     
-    def addUser(self, username, password, real_name, role):
+    def addUser(self, username, email, password, real_name, role):
         if username not in self.user_folder:
-            user = Account(username, password, real_name, role)
+            user = Account(username, email, password, real_name, role)
             self.user_folder[username] = user
             role_manager = IPrincipalRoleManager(grok.getSite())
             print role, username
@@ -72,8 +72,9 @@ class UserFolder(grok.Container):
 
 
 class Account(grok.Model):
-    def __init__(self, name, password, real_name, role):
+    def __init__(self, name, email, password, real_name, role):
         self.login = name
+        self.email = email
         self.real_name = real_name
         self.role = role
         self.password = password
@@ -82,3 +83,8 @@ class Account(grok.Model):
         if password == self.password:
             return True
         return False
+
+    def getEmail(self):
+        if hasattr(self, 'email'):
+            return self.email
+        return ''

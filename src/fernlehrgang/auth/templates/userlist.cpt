@@ -5,6 +5,7 @@
     <tr>
         <th>Benutzername</th>
         <th>Vollstaendiger Name</th>
+        <th>EMail</th>
         <th>Benutzerrolle</th>
     </tr>
     <tr tal:repeat="user view.users">
@@ -14,6 +15,7 @@
           </a>  
         </td>
         <td tal:content="user.real_name">type</td>
+        <td tal:content="user.getEmail()">type</td>
         <td tal:content="user.role">type</td>
     </tr>
 </table>

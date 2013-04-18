@@ -3,6 +3,23 @@
 # cklinger@novareto.de 
 
 
+from os import system
+from zope.component import getUtility
+from zope.pluggableauth.interfaces import IAuthenticatorPlugin
+
+
+def getUserEmail(pid):
+    ut = getUtility(IAuthenticatorPlugin, 'principals')
+    return ut.getAccount(pid).getEmail()
+
+
+def makeZipFile(fn):
+    fnz = "%s.zip" % fn.split('.')[0]
+    befehl = "zip -j -e -P fernlehrgang %s %s" %(fnz, fn)
+    system(befehl)
+    return fnz
+
+
 def page_query(q):
     offset = 0
     while True:

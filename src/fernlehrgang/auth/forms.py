@@ -56,7 +56,7 @@ class AddUser(Form):
             self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
             return
         users = component.getUtility(IAuthenticatorPlugin, 'principals')
-        users.addUser(data['login'], data['password'], data['real_name'], data['role'])
+        users.addUser(data['login'], data['email'], data['password'], data['real_name'], data['role'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
 
 

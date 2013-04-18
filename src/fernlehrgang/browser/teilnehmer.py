@@ -30,6 +30,7 @@ from zope.interface import Interface
 from zope.component import getMultiAdapter
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang.resources import register_js
+from fernlehrgang import fmtDate
 
 
 grok.templatedir('templates')
@@ -258,5 +259,5 @@ class Geburtsdatum(Column):
 
     def renderCell(self, item):
         if item.geburtsdatum != None:
-            return item.geburtsdatum.strftime('%d.%m.%Y')
+            return fmtDate(item.geburtsdatum)
         return ""

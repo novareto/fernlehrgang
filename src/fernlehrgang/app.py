@@ -27,6 +27,7 @@ from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from uvc.layout import MenuItem
 from zeam.form.ztk import customize
 from zope.schema.interfaces import IDate
+from fernlehrgang import fmtDate
 
 
 grok.templatedir('templates')
@@ -122,6 +123,22 @@ class RestLayer(grok.IRESTLayer):
 @customize(origin=IDate)
 def customize_size(field):
     field.valueLength = 'medium'
+
+
+from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
+from zeam.form.base.markers import NO_VALUE
+
+
+class DateFieldWidget(DateFieldWidget):
+
+    def valueToUnicode(self, value):
+        return fmtDate(value)
+
+
+class DateFieldDisplayWidget(DateFieldDisplayWidget):
+
+    def valueToUnicode(self, value):
+        return fmtDate(value)
 
 
 class NotFound(Page, grok.components.NotFoundView):
