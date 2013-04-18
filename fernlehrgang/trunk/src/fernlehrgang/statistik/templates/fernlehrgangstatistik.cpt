@@ -1,6 +1,9 @@
 <h1 tal:content="view.title"> </h1>
 <p class="description" tal:content="view.description"> </p>
 <div>
+  <h3> Statusliste Fernlehrgang </h3>
+  <p> Hier können Sie die Statusliste zum Fernlehrgang generieren </p>
+  <a href="" tal:attributes="href view.url(context, 'xlsreport')"> Downlowad </a>
   <h3> Kursteilnehmer am Fernlehrgang </h3>
   <ul>
     <li> Anzahl aller Teilnehmer <span tal:replace="view.alle_kursteilnehmer"> </span> </li>

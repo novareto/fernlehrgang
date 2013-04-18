@@ -25,24 +25,24 @@ text = """ Im Anhang finden Sie die entsprechende Datei"""
 
                                                                                 
 @celery_app.task                                                                
-def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname):
+def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
     from fernlehrgang.exports.versandliste_fernlehrgang import export
     session = Session()
     fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
-    send_mail('cklinger', ('ck@novareto.de',), "Versandliste Fernlehrgang", text, [fn,]) 
+    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 
 @celery_app.task                                                                
-def export_versandliste_fortbildung(flg_ids, stichtag):
+def export_versandliste_fortbildung(flg_ids, stichtag, mail="cklinger@novareto.de"):
     from fernlehrgang.exports.versandliste_fortbildung import export
     session = Session()
     fn = export(session, flg_ids, stichtag) 
-    send_mail('cklinger', ('ck@novareto.de',), "Versandliste Fortbildung", text, [fn,]) 
+    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,]) 
 
 
 @celery_app.task                                                                
-def export_statusliste(flg_id):
+def export_statusliste(flg_id, mail="cklinger@novareto.de"):
     from fernlehrgang.exports.statusliste import export
     session = Session()
     fn = export(session, flg_id) 
-    send_mail('cklinger', ('ck@novareto.de',), "Statusliste", text, [fn,]) 
+    send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,]) 

@@ -20,6 +20,7 @@ from zeam.form.base import action, NO_VALUE, Fields
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import Form
 from profilehooks import profile
+from fernlehrgang import fmtDate
 
 
 grok.templatedir('templates')
@@ -92,7 +93,7 @@ class TeilnehmerSuche(Form):
             unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
             gebdat = ""
             if item.geburtsdatum:
-                gebdat = item.geburtsdatum.strftime('%d.%m.%Y')
+                gebdat = fmtDate(item.geburtsdatum)
             d = dict(name=name,
                      link_flg = link_flg,
                      gebdat = gebdat,

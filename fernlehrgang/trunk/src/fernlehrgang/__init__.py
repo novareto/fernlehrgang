@@ -28,3 +28,5 @@ logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
 
 
+def fmtDate(d):
+    return "%02d.%02d.%02d" % (d.day, d.month, d.year)

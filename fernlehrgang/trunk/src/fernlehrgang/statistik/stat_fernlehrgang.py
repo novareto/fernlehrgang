@@ -26,7 +26,7 @@ grok.templatedir('templates')
 @menu.menuentry(NavigationMenu, order=300)
 class FernlehrgangStatistik(layout.Page):
     grok.context(IFernlehrgang)
-    grok.title(u"Statstik Fernlehrgang")
+    grok.title(u"Statistik")
 
     title = u"Statistik Fernlehrgang"
     alle_kursteilnehmer = 0

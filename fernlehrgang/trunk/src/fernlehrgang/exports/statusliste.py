@@ -14,7 +14,7 @@ from openpyxl.workbook import Workbook
 from sqlalchemy import and_
 from sqlalchemy.orm import sessionmaker, joinedload
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, gespraech
-from fernlehrgang.exports.utils import page_query
+from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 
 
 v_un_klasse = un_klasse(None)
@@ -118,10 +118,11 @@ def export(session, flg_id):
         adressen.append([cell for cell in line])
     print "Writing File %s" % fn
     book.save(fn) 
+    fn = makeZipFile(fn)
     return fn
 
 
-@menuentry(ExportItems)
+#@menuentry(ExportItems)
 class XLSReport(grok.View):
     grok.context(IFernlehrgang)
     grok.name('xlsreport')
@@ -129,7 +130,9 @@ class XLSReport(grok.View):
 
     def update(self):
         from fernlehrgang.tasks import export_statusliste
-        fn = export_statusliste.delay(flg_id=self.context.id)
+        mail = getUserEmail(self.request.principal.id)
+        fn = export_statusliste.delay(flg_id=self.context.id, mail=mail)
+        print fn
 
     def render(self):
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')

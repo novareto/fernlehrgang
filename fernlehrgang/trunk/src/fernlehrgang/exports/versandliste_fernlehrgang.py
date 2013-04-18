@@ -17,7 +17,7 @@ from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker, joinedload
 from fernlehrgang import models
 from fernlehrgang.browser.ergebnisse import CalculateResults
-from fernlehrgang.exports.utils import page_query
+from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 from fernlehrgang.lib import nN
 
 
@@ -150,13 +150,14 @@ def export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname):
     book.save(xls_file)
     xls_file.close()
     print "Writing File %s" % fn
+    fn = makeZipFile(fn)
     return fn
 
 
 @menuentry(ExportItems)
 class XSLExportForm(Form):
     grok.context(IFernlehrgang)
-    grok.title('XLS-Export')
+    grok.title('Versandliste Fernlehrgang')
 
     fields = Fields(IXLSExport)
 
@@ -167,6 +168,7 @@ class XSLExportForm(Form):
             self.flash(u'Bitte korrigieren Sie die Fehler')
         from fernlehrgang.tasks import export_versandliste_fernlehrgang
         lh_id, lh = data['lehrheft'].split('-')
-        fn = export_versandliste_fernlehrgang.delay(self.context.id, lh_id, lh, data['rdatum'], data['stichtag'], data['dateiname']) 
+        mail = getUserEmail(self.request.principal.id)
+        fn = export_versandliste_fernlehrgang.delay(self.context.id, lh_id, lh, data['rdatum'], data['stichtag'], data['dateiname'], mail) 
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

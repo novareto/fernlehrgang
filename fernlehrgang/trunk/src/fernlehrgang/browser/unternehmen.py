@@ -19,7 +19,7 @@ from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import Form, AddForm
+from fernlehrgang import Form, AddForm, fmtDate
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 
 
@@ -99,7 +99,7 @@ class Index(models.DefaultView):
         for teilnehmer in self.context.teilnehmer:
             gebdat = ""
             if teilnehmer.geburtsdatum:
-                gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
+                gebdat = fmtDate(teilnehmer.geburtsdatum)
             person = dict(name = "%s %s" %(teilnehmer.name, teilnehmer.vorname),
                           gebdat = gebdat,
                           lehrgang = [])
