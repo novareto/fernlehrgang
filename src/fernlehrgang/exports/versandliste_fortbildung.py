@@ -20,7 +20,7 @@ from fernlehrgang.exports.versandliste_fernlehrgang import versandanschrift
 from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 
 
-spalten = ['FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
+spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
     'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM',
     'STRASSE', 'WOHNORT', 'PASSWORT', 'BELIEFART', 'R_DATUM', 'RSENDUNG', 'PUNKTZAHL',
     'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME', 'L1_F_1', 'L1_F_2',
@@ -74,6 +74,7 @@ def createRows(session, rc, flg_ids, stichtag):
                     gebdat = ""
             #unternehmen = teilnehmer.unternehmen
             liste.append(nN(ktn.fernlehrgang_id))
+            liste.append(nN(ktn.fernlehrgang.titel))
             liste.append(nN(teilnehmer.id))
             liste.append(nN(ktn.fernlehrgang.lehrhefte[0].id)) # IST IMMER NUR EINS DA--Fortbilding
             liste.append(nN(versandanschrift(teilnehmer)))
