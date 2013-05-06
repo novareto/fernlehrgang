@@ -15,6 +15,7 @@ celery_app = celery.Celery()
 celery_app.config_from_object('celeryconfig')                                   
 
 DSN = environ.get('DSN')
+print DSN
 if DSN:
     some_engine = create_engine(DSN)
     Session = sessionmaker(bind=some_engine)
@@ -37,6 +38,8 @@ def export_versandliste_fortbildung(flg_ids, stichtag, mail="cklinger@novareto.d
     from fernlehrgang.exports.versandliste_fortbildung import export
     session = Session()
     fn = export(session, flg_ids, stichtag) 
+    print DSN
+    print mail
     send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,]) 
 
 

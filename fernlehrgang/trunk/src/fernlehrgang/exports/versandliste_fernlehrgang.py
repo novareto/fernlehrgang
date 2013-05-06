@@ -21,7 +21,7 @@ from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 from fernlehrgang.lib import nN
 
 
-spalten = ('FLG_ID', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
+spalten = ('FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
     'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM',
     'STRASSE', 'WOHNORT', 'PASSWORT', 'BELIEFART', 'R_DATUM', 'RSENDUNG', 'PUNKTZAHL',
     'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME', 'L1_F_1', 'L1_F_2',
@@ -85,36 +85,37 @@ def createRows(book, adressen, session, flg_id, lh_id, lh_nr, rdatum, stichtag):
             summary = cal_res.summary(lehrhefte)
             row = adressen.row(ii+1)
             row.write(0, nN(flg_id))
-            row.write(1, nN(teilnehmer.id))
-            row.write(2, lh_id)
-            row.write(3, versandanschrift(teilnehmer))
-            row.write(4, nN(teilnehmer.plz or unternehmen.plz))
-            row.write(5, nN(unternehmen.mnr))
-            row.write(6, nN(unternehmen.name))
-            row.write(7, nN(unternehmen.name2))
-            row.write(8, nN(teilnehmer.anrede))
-            row.write(9, nN(teilnehmer.titel))
-            row.write(10, nN(teilnehmer.vorname))
-            row.write(11, nN(teilnehmer.name))
-            row.write(12, fd(teilnehmer.geburtsdatum))
+            row.write(1, nN(ktn.fernlehrgang.titel))
+            row.write(2, nN(teilnehmer.id))
+            row.write(3, lh_id)
+            row.write(4, versandanschrift(teilnehmer))
+            row.write(5, nN(teilnehmer.plz or unternehmen.plz))
+            row.write(6, nN(unternehmen.mnr))
+            row.write(7, nN(unternehmen.name))
+            row.write(8, nN(unternehmen.name2))
+            row.write(9, nN(teilnehmer.anrede))
+            row.write(10, nN(teilnehmer.titel))
+            row.write(11, nN(teilnehmer.vorname))
+            row.write(12, nN(teilnehmer.name))
+            row.write(13, fd(teilnehmer.geburtsdatum))
             strasse = nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr)
             if strasse == " ":
                 strasse = nN(unternehmen.str)
             else:
                 if teilnehmer.adresszusatz:
                     strasse = strasse + ' // ' + teilnehmer.adresszusatz
-            row.write(13, strasse)
-            row.write(14, nN(teilnehmer.ort or unternehmen.ort))
-            row.write(15, nN(teilnehmer.passwort))
-            row.write(16, '') # Beliefart --> Leer laut Frau Esche 
-            row.write(17, rdatum) # Variable
-            row.write(19, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
-            row.write(20, stichtag) # Variable
-            row.write(21, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
-            row.write(22, nN(teilnehmer.titel))
-            row.write(23, nN(teilnehmer.vorname))
-            row.write(24, nN(teilnehmer.name))
-            z = 25 
+            row.write(14, strasse)
+            row.write(15, nN(teilnehmer.ort or unternehmen.ort))
+            row.write(16, nN(teilnehmer.passwort))
+            row.write(17, '') # Beliefart --> Leer laut Frau Esche 
+            row.write(18, rdatum) # Variable
+            row.write(20, summary.get('resultpoints')) # PUNKTZAHL --> Punktzahl der Rücksendungen
+            row.write(21, stichtag) # Variable
+            row.write(22, lh_nr) # LEHRHEFT --> Variable Für Welchen Ausdruck
+            row.write(23, nN(teilnehmer.titel))
+            row.write(24, nN(teilnehmer.vorname))
+            row.write(25, nN(teilnehmer.name))
+            z = 26 
             for lehrheft in lehrhefte:
                 for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
                     r=""
@@ -135,7 +136,7 @@ def createRows(book, adressen, session, flg_id, lh_id, lh_nr, rdatum, stichtag):
                 z += 1
                 if len(lhr['antworten']):
                    lhid = lhr['titel'].split('-')[0] 
-            row.write(18, lhid) # RSENDUNG --> Anzahl der Rücksendung
+            row.write(19, lhid) # RSENDUNG --> Anzahl der Rücksendung
             ii+=1
 
 
