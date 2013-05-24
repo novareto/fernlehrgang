@@ -167,3 +167,13 @@ class FaviconIco(grok.View):
     def render(self):
         return "BLA"
 
+
+from zope.i18n.interfaces import IUserPreferredLanguages                        
+from zope.publisher.interfaces.http import IHTTPRequest
+
+class GermanBrowserLangugage(grok.Adapter):                                     
+    grok.context(IHTTPRequest)                                                  
+    grok.implements(IUserPreferredLanguages)                                    
+                                                                                
+    def getPreferredLanguages(self):                                            
+        return ['de', 'de-de'] 

@@ -63,7 +63,7 @@ class CalculateResults(grok.Adapter):
             sql = session.query(Lehrheft).options(joinedload(Lehrheft.fragen))
             sql = sql.filter(Lehrheft.fernlehrgang_id == context.fernlehrgang.id)
             lehrhefte = sql.all()
-        for lehrheft in lehrhefte:
+        for lehrheft in sorted(lehrhefte, key=lambda lehrheft: lehrheft.nummer):
         #for lehrheft in context.fernlehrgang.lehrhefte:
             res = {}
             res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
