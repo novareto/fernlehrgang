@@ -137,9 +137,7 @@ class KursteilnehmerAPI(grok.REST):
     def PUT(self):
         kursteilnehmer = self.context
         data = json.loads(self.body)
-        print data
         data['datum'] = datetime.datetime.strptime(data['datum'], "%d.%m.%Y")
-        print data
         antwort = Antwort(**data)
         kursteilnehmer.antworten.append(antwort)
         return antwort.id 

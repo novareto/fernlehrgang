@@ -4,7 +4,7 @@
     <dd> 
     <span tal:content="context.name"> </span> 
     <span tal:content="context.vorname"> </span>
-    <span tal:content="context.geburtsdatum.strftime('%d.%m.%Y')"> </span>
+    <span tal:content="context.geburtsdatum"> </span>
     </dd> 
     <dt> Der Teilnehmer ist beschäftigt bei dem Unternehmen: <dt>
     <dd>

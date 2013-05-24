@@ -17,6 +17,7 @@ from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 from dolmen.menu import menuentry
 from zope.securitypolicy.interfaces import IPrincipalRoleManager
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 grok.templatedir('templates')
 
@@ -68,6 +69,13 @@ class EditUser(Form):
 
     fields = Fields(IAddUserForm)
     ignoreContent = False
+
+    def updateForm(self):                                                       
+        super(EditUser, self).updateForm()                                
+        pw = self.fieldWidgets.get('form.field.password')                       
+        confirm = self.fieldWidgets.get('form.field.confirm_password')                   
+        pw.template = ChameleonPageTemplateFile('templates/password.cpt')          
+        confirm.template = ChameleonPageTemplateFile('templates/password.cpt') 
 
     @action(u'Bearbeiten')
     def handle_add(self):
