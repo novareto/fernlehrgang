@@ -26,6 +26,14 @@ text = """ Im Anhang finden Sie die entsprechende Datei"""
 
                                                                                 
 @celery_app.task                                                                
+def export_abschlussliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
+    from fernlehrgang.exports.abschlussliste_fernlehrgang import export
+    session = Session()
+    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
+
+
+@celery_app.task                                                                
 def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
     from fernlehrgang.exports.versandliste_fernlehrgang import export
     session = Session()
