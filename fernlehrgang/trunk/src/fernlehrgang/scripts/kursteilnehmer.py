@@ -92,29 +92,37 @@ def main(argv=None):
     err = []
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
+    z = 0
+    #import pdb; pdb.set_trace() 
     for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=";")):
-        #import pdb; pdb.set_trace() 
-        unternehmen = Session.query(Unternehmen).get(line['MNR'].strip().replace('-', ''))
-        i+=1
-        print '%s, %s %s' %(i, line['MNR'], unternehmen)
-        if unternehmen:
-            teilnehmer = Teilnehmer()
-            teilnehmer.passwort = generatePassword()
-            if 'Name' in line.keys():
-                teilnehmer.name = line['Name'].strip().decode('iso-8859-15')
-            if 'Vorname' in line.keys():
-                teilnehmer.vorname = line['Vorname'].strip().decode('iso-8859-15')
-            if 'Anrede' in line.keys():
-                teilnehmer.anrede = line['Anrede'].strip()
-            unternehmen.teilnehmer.append(teilnehmer)
-            session.flush()
-            kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
-                status = NICHT_REGISTRIERT)
-            tids.append(teilnehmer.id)
-            fernlehrgang.kursteilnehmer.append(kursteilnehmer)
-        else:
-            print "Kein Unternehmen gefunden --> %s" % line['MNR']
-            err.append(line['MNR'])
+        if z < 19820:
+            unternehmen = Session.query(Unternehmen).get(line['MNR'].strip().replace('-', ''))
+            i+=1
+            #print '%s, %s %s' %(i, line['MNR'], unternehmen)
+            if z in range(0, 20000, 1000):
+                print z 
+            if unternehmen:
+                if len(unternehmen.teilnehmer) == 0:
+                    teilnehmer = Teilnehmer()
+                    teilnehmer.passwort = generatePassword()
+                    if 'Name' in line.keys():
+                        teilnehmer.name = line['Name'].strip().decode('iso-8859-15')
+                    if 'Vorname' in line.keys():
+                        teilnehmer.vorname = line['Vorname'].strip().decode('iso-8859-15')
+                    if 'Anrede' in line.keys():
+                        teilnehmer.anrede = line['Anrede'].strip()
+                    unternehmen.teilnehmer.append(teilnehmer)
+                    session.flush()
+                    kursteilnehmer = Kursteilnehmer(teilnehmer_id = teilnehmer.id, 
+                        status = NICHT_REGISTRIERT)
+                    tids.append(teilnehmer.id)
+                    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+                    z += 1
+                else:
+                    print "Schon mehr als 1 Teilnehmer --> %s" % line['MNR']
+            else:
+                #print "Kein Unternehmen gefunden --> %s" % line['MNR']
+                err.append(line['MNR'])
     import transaction; transaction.commit()    
     print len(err)
     print "#" * 50

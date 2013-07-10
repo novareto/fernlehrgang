@@ -71,6 +71,7 @@ class AddTeilnehmer(AddForm):
     label = u'Teilnehmer anlegen für Unternehmen'
 
     fields = Fields(ITeilnehmer).omit('id')
+    fields['kompetenzzentrum'].mode = "radio"
 
     def create(self, data):
         data = no_value(data)
@@ -119,6 +120,7 @@ class Edit(models.Edit):
     label = u"Teilnehmer"
 
     fields = Fields(ITeilnehmer).omit('id')
+    fields['kompetenzzentrum'].mode = "radio"
 
     @action('Speichern')
     def handle_edit(self):
