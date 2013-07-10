@@ -134,4 +134,14 @@ class ITeilnehmer(Interface):
             ('2', 'K2', 'Kategorie 2'),)
         )
 
+    kompetenzzentrum = Choice(
+        title = u"Kompetenzzentrum",
+        description = u'Datenfreigabe erteilt?',
+        required = True,
+        default = 'nein',
+        vocabulary = vocabulary(
+            ('nein', 'nein', 'Nein'),
+            ('ja', 'ja', 'Ja'),
+            )
+        )
 

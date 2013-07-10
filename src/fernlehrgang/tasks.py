@@ -15,6 +15,7 @@ celery_app = celery.Celery()
 celery_app.config_from_object('celeryconfig')                                   
 
 DSN = environ.get('DSN')
+#DSN = "oracle://flgprod:prodflg!@10.30.4.95/BGETest"
 print DSN
 if DSN:
     some_engine = create_engine(DSN)
