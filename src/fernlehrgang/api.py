@@ -99,6 +99,7 @@ class TeilnehmerAPI(grok.REST):
             email = context.email,
             un_klasse = un_klasse,
             branche = branche,
+            kompetenzzentrum = context.kompetenzzentrum,
             )
         print "GET"
         print teilnehmer
