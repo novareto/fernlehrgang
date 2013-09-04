@@ -76,7 +76,6 @@ class AddTeilnehmer(AddForm):
     fields['kompetenzzentrum'].mode = "radio"
 
     def updateForm(self):
-        print "UPDATE FORM"
         super(AddTeilnehmer, self).updateForm()
         self.fields['passwort'].defaultValue = generatePassword()
 
