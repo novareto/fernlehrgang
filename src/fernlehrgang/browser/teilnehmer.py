@@ -10,7 +10,7 @@ from dolmen.forms.base.utils import set_fields_data, apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.interfaces import IListing
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
@@ -53,6 +53,8 @@ class TeilnehmerListing(TablePage):
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Teilnehmer"
+    batchSize = 150
+    startBatchingAt = 150
     cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
 
     @property
@@ -72,6 +74,11 @@ class AddTeilnehmer(AddForm):
 
     fields = Fields(ITeilnehmer).omit('id')
     fields['kompetenzzentrum'].mode = "radio"
+
+    def updateForm(self):
+        print "UPDATE FORM"
+        super(AddTeilnehmer, self).updateForm()
+        self.fields['passwort'].defaultValue = generatePassword()
 
     def create(self, data):
         data = no_value(data)
