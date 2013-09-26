@@ -16,7 +16,8 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
 from fernlehrgang.viewlets import NavigationMenu
 from zope.schema.interfaces import IVocabularyFactory
-
+from zope.component import getUtility
+from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 
 from pygooglechart import PieChart2D, PieChart3D
 
@@ -35,6 +36,15 @@ class FernlehrgangStatistik(layout.Page):
     @property
     def description(self):
         return u"Hier Sie verschiedene Statstiken zum Fernlehrgang '%s' aufrufen" % self.context.titel
+
+    @property
+    def isNotReader(self):
+        ret = True
+        account = getUtility(IAuthenticatorPlugin, "principals").getAccount(self.request.principal.id)
+        if account:
+            if "uvc.reader" == account.role:
+                ret = False
+        return ret
 
     def update(self):
         session = saconfig.Session()
