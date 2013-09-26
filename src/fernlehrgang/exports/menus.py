@@ -19,6 +19,7 @@ class Exporte(Page):
     grok.context(IFernlehrgang)
     grok.title(u'Versandlisten')
     grok.order(200)
+    grok.require('dolmen.content.Add')
 
 
 class ExportItems(Menu):
