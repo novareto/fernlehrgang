@@ -60,6 +60,7 @@ class FernlehrgangStatistik(layout.Page):
         session = saconfig.Session()
         return session.query(models.Lehrheft.nummer, func.count()).filter(
             and_(models.Kursteilnehmer.fernlehrgang_id==self.context.id,
+                 models.Lehrheft.fernlehrgang_id == self.context.id,
                  models.Kursteilnehmer.id==models.Antwort.kursteilnehmer_id,
                  models.Antwort.lehrheft_id == models.Lehrheft.id)).group_by(
                  models.Lehrheft.nummer).order_by(
