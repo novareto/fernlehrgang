@@ -111,7 +111,7 @@ def createRows(rc, session, flg_id):
 def export(session, flg_id):
     """This should be the "shared" export function.
     """
-    fn = "/tmp/statusliste_%s.xls" % flg_id
+    fn = "/tmp/statusliste_%s.xlsx" % flg_id
     book, adressen, rc = getXLSBases()
     createRows(rc, session, flg_id)
     for z, line in enumerate(rc):
@@ -132,6 +132,7 @@ class XLSReport(grok.View):
         from fernlehrgang.tasks import export_statusliste
         mail = getUserEmail(self.request.principal.id)
         fn = export_statusliste.delay(flg_id=self.context.id, mail=mail)
+        #fn = export_statusliste(flg_id=self.context.id, mail=mail)
         print fn
 
     def render(self):
