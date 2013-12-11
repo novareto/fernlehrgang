@@ -128,6 +128,7 @@ class AddAntwortenTable(SubTableForm):
                         lehrheft_id = lehrheft.id,
                         frage_id = frage.id, 
                         antwortschema = u"",
+                        datum = datetime.now(),
                         system = u"FernlehrgangApp", 
                         ))
         return rc
@@ -248,7 +249,7 @@ class OverviewAntworten(Page):
         rc = []
         for lehrheft in context.fernlehrgang.lehrhefte:
             res = dict()
-            res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
+            res['titel'] = "%s - %s -%s" %(lehrheft.nummer, lehrheft.titel, lehrheft.id)
             lehrheft_id = lehrheft.id
             fragen = []
             for antwort in context.antworten:
