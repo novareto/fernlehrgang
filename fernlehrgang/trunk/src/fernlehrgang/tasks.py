@@ -47,8 +47,6 @@ def export_versandliste_fortbildung(flg_ids, stichtag, mail="cklinger@novareto.d
     from fernlehrgang.exports.versandliste_fortbildung import export
     session = Session()
     fn = export(session, flg_ids, stichtag) 
-    print DSN
-    print mail
     send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,]) 
 
 
@@ -58,3 +56,11 @@ def export_statusliste(flg_id, mail="cklinger@novareto.de"):
     session = Session()
     fn = export(session, flg_id) 
     send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,]) 
+
+
+@celery_app.task                                                                
+def export_liste_kompetenzzentrum(flg_id, mail="cklinger@novareto.de"):
+    from fernlehrgang.exports.listekompetenzzentrum import export
+    session = Session()
+    fn = export(session, flg_id) 
+    send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
