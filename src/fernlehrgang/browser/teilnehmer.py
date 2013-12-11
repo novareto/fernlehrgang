@@ -178,7 +178,8 @@ class Register(Form):
             print "ADD Kursteilnehmer to Fernlehrgang"
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
             self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
-        self.flash('Es wurde kein Lehrgang spezifiziert.', type="warning")
+        else:
+            self.flash('Es wurde kein Lehrgang spezifiziert.', type="warning")
         self.redirect(self.url(self.context))
 
     @action(u'Registrierung ändern', identifier='reg-change')
