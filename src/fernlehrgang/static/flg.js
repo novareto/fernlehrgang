@@ -4,7 +4,7 @@ $(document).ready(function() {
   $('div.subform form table select').attr('disabled', 'disabled');
 
   $('#field-form-field-nr').appendFieldTo('#field-form-field-strasse');
-  $('#field-form-field-ort').appendFieldTo('#field-form-field-plz');
+//  $('#field-form-field-ort').appendFieldTo('#field-form-field-plz');
 
   var v1 = $("#form-field-lehrheft_id :selected").val();
   if (v1 == 'Bitte eine Auswahl treffen')
