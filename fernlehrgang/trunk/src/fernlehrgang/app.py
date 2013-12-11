@@ -177,3 +177,19 @@ class GermanBrowserLangugage(grok.Adapter):
                                                                                 
     def getPreferredLanguages(self):                                            
         return ['de', 'de-de'] 
+
+
+from uvc.layout.interfaces import IHeaders
+class TestSystem(grok.Viewlet):
+    grok.viewletmanager(IHeaders)
+    grok.context(Interface)
+
+    def update(self):
+        from zope.app.appsetup.product import getProductConfiguration
+        config = getProductConfiguration('database')
+        DSN = config['dsn']
+        if DSN.startswith('oracle://novareto:retonova@10.30.4.95/BGETest'):
+            self.view.flash(u"Test - System", type="info")
+
+    def render(self):
+        return ""
