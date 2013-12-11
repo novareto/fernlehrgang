@@ -60,66 +60,67 @@ def createRows(session, rc, flg_ids, stichtag):
         lhs[x] = lehrhefte_sql.filter(models.Lehrheft.fernlehrgang_id == x).all()
     i=1
     for teilnehmer, unternehmen, ktn in page_query(result):
-        cal_res = CalculateResults(ktn)
-        summary = cal_res.summary(lhs[ktn.fernlehrgang_id])
-        liste = []
-        ss = set([x.lehrheft_id for x in ktn.antworten])
-        antworten = len(ss)
-        if teilnehmer and summary.get('resultpoints') >= 1:
-            gebdat = ""
-            if teilnehmer.geburtsdatum:
-                try:
-                    gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
-                except:
-                    gebdat = ""
-            #unternehmen = teilnehmer.unternehmen
-            liste.append(nN(ktn.fernlehrgang_id))
-            liste.append(nN(ktn.fernlehrgang.titel))
-            liste.append(nN(teilnehmer.id))
-            liste.append(nN(ktn.fernlehrgang.lehrhefte[0].id)) # IST IMMER NUR EINS DA--Fortbilding
-            liste.append(nN(versandanschrift(teilnehmer)))
-            liste.append(nN(teilnehmer.plz or unternehmen.plz))
-            liste.append(nN(unternehmen.mnr))
-            liste.append(nN(unternehmen.name))
-            liste.append(nN(unternehmen.name2))
-            liste.append(nN(teilnehmer.anrede))
-            liste.append(nN(teilnehmer.titel))
-            liste.append(nN(teilnehmer.vorname))
-            liste.append(nN(teilnehmer.name))
-            liste.append(nN(gebdat))
-            strasse = nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr)
-            if strasse == " ":
-                strasse = nN(unternehmen.str)
-            else:
-                if teilnehmer.adresszusatz:
-                    strasse = strasse + ' // ' + teilnehmer.adresszusatz
-            liste.append(nN(strasse))
-            liste.append(nN(teilnehmer.ort or unternehmen.ort))
-            liste.append(nN(teilnehmer.passwort))
-            liste.append(' ')
-            liste.append(' ') # RDATUM
-            liste.append(' ') # ANZAHL 
-            liste.append(nN(summary.get('resultpoints')))
-            liste.append(nN(' ')) # STICHTAG
-            liste.append(nN(ktn.fernlehrgang.lehrhefte[0].id))
-            liste.append(nN(teilnehmer.titel))
-            liste.append(nN(teilnehmer.vorname))
-            liste.append(nN(teilnehmer.name))
-            for lehrheft in ktn.fernlehrgang.lehrhefte:
-                for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
-                    r=""
-                    for antwort in ktn.antworten:
-                        if frage.id == antwort.frage_id:
-                            r = "%s\r %s\n %s\r" %(
-                                    frage.antwortschema.upper(),
-                                    nN(antwort.antwortschema),
-                                    cal_res.calculateResult(
-                                        frage.antwortschema,
-                                        antwort.antwortschema,
-                                        frage.gewichtung))
-                    liste.append(r)
-            rc.append(liste)
-        i+=1
+        if ktn.status in ('A1', 'A2'):
+            cal_res = CalculateResults(ktn)
+            summary = cal_res.summary(lhs[ktn.fernlehrgang_id])
+            liste = []
+            ss = set([x.lehrheft_id for x in ktn.antworten])
+            antworten = len(ss)
+            if teilnehmer and summary.get('resultpoints') >= 1:
+                gebdat = ""
+                if teilnehmer.geburtsdatum:
+                    try:
+                        gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
+                    except:
+                        gebdat = ""
+                #unternehmen = teilnehmer.unternehmen
+                liste.append(nN(ktn.fernlehrgang_id))
+                liste.append(nN(ktn.fernlehrgang.titel))
+                liste.append(nN(teilnehmer.id))
+                liste.append(nN(ktn.fernlehrgang.lehrhefte[0].id)) # IST IMMER NUR EINS DA--Fortbilding
+                liste.append(nN(versandanschrift(teilnehmer)))
+                liste.append(nN(teilnehmer.plz or unternehmen.plz))
+                liste.append(nN(unternehmen.mnr))
+                liste.append(nN(unternehmen.name))
+                liste.append(nN(unternehmen.name2))
+                liste.append(nN(teilnehmer.anrede))
+                liste.append(nN(teilnehmer.titel))
+                liste.append(nN(teilnehmer.vorname))
+                liste.append(nN(teilnehmer.name))
+                liste.append(nN(gebdat))
+                strasse = nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr)
+                if strasse == " ":
+                    strasse = nN(unternehmen.str)
+                else:
+                    if teilnehmer.adresszusatz:
+                        strasse = strasse + ' // ' + teilnehmer.adresszusatz
+                liste.append(nN(strasse))
+                liste.append(nN(teilnehmer.ort or unternehmen.ort))
+                liste.append(nN(teilnehmer.passwort))
+                liste.append(' ')
+                liste.append(' ') # RDATUM
+                liste.append(' ') # ANZAHL 
+                liste.append(nN(summary.get('resultpoints')))
+                liste.append(nN(' ')) # STICHTAG
+                liste.append(nN(ktn.fernlehrgang.lehrhefte[0].id))
+                liste.append(nN(teilnehmer.titel))
+                liste.append(nN(teilnehmer.vorname))
+                liste.append(nN(teilnehmer.name))
+                for lehrheft in ktn.fernlehrgang.lehrhefte:
+                    for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
+                        r=""
+                        for antwort in ktn.antworten:
+                            if frage.id == antwort.frage_id:
+                                r = "%s\r %s\n %s\r" %(
+                                        frage.antwortschema.upper(),
+                                        nN(antwort.antwortschema),
+                                        cal_res.calculateResult(
+                                            frage.antwortschema,
+                                            antwort.antwortschema,
+                                            frage.gewichtung))
+                        liste.append(r)
+                rc.append(liste)
+            i+=1
 
 
 
@@ -129,7 +130,7 @@ def export(session, flg_ids, stichtag):
     book, adressen, rc = getXLSBases()
     flg_ids = [x for x in flg_ids]
     createRows(session, rc, flg_ids, stichtag)
-    fn = "/tmp/fortbildung_xls_%s.xls" % stichtag.strftime('%Y_%m_%d') 
+    fn = "/tmp/fortbildung_%s.xlsx" % stichtag.strftime('%Y_%m_%d') 
     for z, line in enumerate(rc):
         adressen.append([cell for cell in line])
     print "Writing File %s" % fn
@@ -157,5 +158,6 @@ class XLSFortbildung(Form):
         flg_ids = [x for x in data['fortbildungen']]
         mail = getUserEmail(self.request.principal.id)
         fn = export_versandliste_fortbildung.delay(flg_ids, data['stichtag'], mail)
+        # fn = export_versandliste_fortbildung(flg_ids, data['stichtag'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())
