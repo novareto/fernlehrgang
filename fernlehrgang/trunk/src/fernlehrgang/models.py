@@ -71,6 +71,7 @@ class Fernlehrgang(Base, RDBMixin):
     id = Column(Integer, Sequence('fernlehrgang_seq', start=100, increment=1), primary_key=True)
     jahr = Column(String(50))
     titel = Column(String(256))
+    typ = Column(String(50))
     beschreibung = Column(String(256))
     punktzahl = Column(Integer(4))
     beginn = Column(Date)
@@ -108,6 +109,8 @@ class Unternehmen(Base, RDBMixin):
     plz = Column("PLZ", String(10))
     ort = Column("ORT", String(30))
     betriebsart = Column("BETRIEBSART", String(1))
+    mnr_e = Column("MNR_E", MyStringType(12))
+    mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
 
     @property
     def title(self):
