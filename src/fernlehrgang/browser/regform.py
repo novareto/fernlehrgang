@@ -19,6 +19,7 @@ from zeam.form.base import action
 
 class AutoRegForm(Form):
     grok.context(IFernlehrgangApp)
+    grok.require('zope.Public')
 
     fields = Fields(IUnternehmen).select('mnr')
     fields += Fields(ITeilnehmer).omit('id')
