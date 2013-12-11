@@ -79,3 +79,9 @@ class IUnternehmen(Interface):
         source = voc_betriebsart,
         required = True
         )
+
+    mnr_g_alt = TextLine(
+        title = u'Mitgliedsnummer G Alt',
+        description = u'Alte Mitgliedsnummern der Sparte G',
+        required = False, 
+        )

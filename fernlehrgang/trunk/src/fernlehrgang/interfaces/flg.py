@@ -20,6 +20,15 @@ def jahre(context):
     return SimpleVocabulary(items)
 
 
+@grok.provider(IContextSourceBinder)
+def typ(context):
+    return SimpleVocabulary((
+        SimpleTerm('1', '1', 'Fernlehrgang'),
+        SimpleTerm('2', '2', 'Online Fernlehrgang'),
+        SimpleTerm('3', '3', 'Fortbildung'),
+        ))
+
+
 class IFernlehrgang(Interface):
 
     id = Int(
@@ -45,6 +54,13 @@ class IFernlehrgang(Interface):
     beschreibung = Text(
         title = u'Beschreibung',
         description = u'Beschreibung des Fernlehrgangs',
+        required = True
+        )
+
+    typ = Choice(
+        title = u'Typ des Fernlehrgang',
+        description = u'Bitte wählen Sie den Typ des Fernlehrgangs aus',
+        source = typ,
         required = True
         )
 
