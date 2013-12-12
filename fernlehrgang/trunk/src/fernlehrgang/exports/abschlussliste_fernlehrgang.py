@@ -77,7 +77,7 @@ def getGruppe(punkte, mitarbeiter, branche, gp):
 def createRows(book, adressen, session, flg_id, lh_id, lh_nr, rdatum, stichtag):
     ii = 0 
     FERNLEHRGANG_ID = flg_id
-    lehrhefte = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen)).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).all()
+    lehrhefte = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen)).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).order_by(models.Lehrheft.nummer).all()
     result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).options(joinedload(models.Kursteilnehmer.antworten))
     result = result.filter(
         and_(
