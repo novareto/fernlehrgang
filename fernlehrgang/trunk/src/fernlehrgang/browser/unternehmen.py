@@ -21,6 +21,7 @@ from zeam.form.base import action
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang import Form, AddForm, fmtDate
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from sqlalchemy import func
 
 
 NO_VALUE = ""
@@ -36,7 +37,7 @@ class UnternehmenListing(Form):
     grok.title(u"Unternehmen verwalten")
     grok.order(20)
     
-    fields = Fields(IUnternehmen).select('mnr', 'name', 'str', 'plz', 'ort')
+    fields = Fields(IUnternehmen).select('mnr', 'name', 'str', 'plz', 'ort', 'mnr_g_alt')
 
     label = u"Unternehmen verwalten"
     description = u"Hier können Sie die am Fernlehrgang teilnehmenden Unternehmen verwalten"
@@ -62,6 +63,9 @@ class UnternehmenListing(Form):
         if data.get('mnr') != NO_VALUE: 
             sql = sql.filter(Unternehmen.mnr == data.get('mnr')) 
             v = True 
+        if data.get('mnr_g_alt') != NO_VALUE: 
+            sql = sql.filter(Unternehmen.mnr_g_alt == data.get('mnr_g_alt')) 
+            v = True 
         if data.get('name') != NO_VALUE: 
             constraint = "%%%s%%" % data.get('name') 
             sql = sql.filter(Unternehmen.name.ilike(constraint)) 
@@ -80,6 +84,7 @@ class UnternehmenListing(Form):
         if not v: 
             self.flash(u'Bitte geben Sie die Suchkriterien ein.') 
             return 
+        sql = sql.filter(func.length(Unternehmen.mnr) == 9)
         self.results = sql.all() 
 
 

@@ -26,7 +26,7 @@ from fernlehrgang import fmtDate
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu, order=500)
+#@menuentry(NavigationMenu, order=500)
 class CreateTeilnehmer(Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Teilnehmer registrieren')
@@ -126,6 +126,10 @@ class TeilnehmerSuche(Form):
             constraint = "%%%s%%" % data.get('mnr')
             sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
             v = True
+        #if data.get('mnr_g_alt') != "":
+        #    constraint = "%%%s%%" % data.get('mnr_g_alt')
+        #    sql = sql.filter(Teilnehmer.unternehmen.mnr_g_alt.ilike(constraint))
+        #    v = True
         if data.get('geburtsdatum') != NO_VALUE:
             sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
             v = True

@@ -36,6 +36,12 @@ class IUnternehmenSearch(Interface):
         required = False,
         )
 
+    mnr_g_alt = TextLine(
+        title = u"Mitgliedsnummer G Alt",
+        description = u"Alte Mitgliedsnummer der Sparte G",
+        required = False,
+        )
+
 
 @menuentry(NavigationMenu, order=400)
 class UnternehmenSuche(Form):
@@ -68,6 +74,10 @@ class UnternehmenSuche(Form):
             v = True
             constraint = "%%%s%%" % data.get('mnr')
             sql = sql.filter(Unternehmen.mnr.like(constraint))
+        if data.get('mnr_g_alt') != "":
+            v = True
+            constraint = "%%%s%%" % data.get('mnr_g_alt')
+            sql = sql.filter(Unternehmen.mnr_g_alt.like(constraint))
         if data.get('name') != "":
             v = True
             constraint = "%%%s%%" % data.get('name')
