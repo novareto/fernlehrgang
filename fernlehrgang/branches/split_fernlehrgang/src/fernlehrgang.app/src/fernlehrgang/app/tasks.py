@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fernlehrgang import models
 from zope.app.appsetup.product import getProductConfiguration
-from fernlehrgang.lib.emailer import send_mail
+from .lib.emailer import send_mail
 
 
 celery_app = celery.Celery()                                                    

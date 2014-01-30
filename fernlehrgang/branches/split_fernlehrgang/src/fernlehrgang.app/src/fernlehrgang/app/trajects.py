@@ -18,8 +18,8 @@ from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.context import push_store_context
 
 from .interfaces import IFernlehrgangApp
-from uvc.fernlehrgang.models import models
-from uvc.fernlehrgang.models import interfaces
+from fernlehrgang.models import models
+from fernlehrgang.models import interfaces
 
 from z3c.saconfig import Session
 from z3c.saconfig.interfaces import IEngineCreatedEvent
