@@ -7,6 +7,7 @@
   <includeDependencies package="." />
 
   <include package="zope.i18n" />
+  <include package="zope.error" />
   <include package="zope.session" />
   <include package="zope.dublincore" />
   <include package="zope.authentication" />

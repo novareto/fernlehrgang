@@ -23,4 +23,9 @@ setup(name='fernlehrgang.tools',
       install_requires=[
           'setuptools',
           ],
+      entry_points = {
+        'console_scripts': [
+            'export = fernlehrgang.tools.scripts.export:main_export',
+            ],
+        }
       )

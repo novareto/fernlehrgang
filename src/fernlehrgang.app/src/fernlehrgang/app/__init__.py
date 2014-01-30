@@ -8,6 +8,7 @@ from zope.authentication.interfaces import IAuthentication
 from zope.interface import Interface, implementer
 from zope.pluggableauth import PluggableAuthentication
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
+from zope.component import getUtility, provideUtility
 
 from .auth.handler import UserAuthenticatorPlugin
 from .interfaces import IFernlehrgangApp
