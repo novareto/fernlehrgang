@@ -2,13 +2,11 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
-
-from z3c.saconfig import Session
 from dolmen.app.layout import Delete
-from dolmen.forms.crud.actions import DeleteAction
-from zeam.form.base import Actions
 from dolmen.forms.crud import actions as formactions, i18n as _
+from dolmen.forms.crud.actions import DeleteAction
+from z3c.saconfig import Session
+from zeam.form.base import Actions
 from zeam.form.base.markers import SUCCESS, FAILURE
 
 

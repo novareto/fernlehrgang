@@ -22,8 +22,5 @@ setup(name='fernlehrgang.tools',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'SQLAlchemy',
-          'zope.interface',
-          'cromlech.file',
           ],
       )

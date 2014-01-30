@@ -1,7 +1,7 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            i18n_domain="fernlehrgang">
 
-  <include package="fernlehrgang" />
+  <include package="fernlehrgang.app" />
 
     <configure i18n_domain="fernlehrgang">
 

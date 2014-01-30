@@ -3,7 +3,7 @@
 # cklinger@novareto.de 
 
 from zope import component, interface, schema
-from fernlehrgang.auth.securitypolicy import roles
+from .securitypolicy import roles
 
 
 class IAddUserForm(interface.Interface):

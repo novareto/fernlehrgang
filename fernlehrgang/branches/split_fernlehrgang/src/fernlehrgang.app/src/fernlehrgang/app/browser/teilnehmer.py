@@ -3,34 +3,26 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
-from dolmen.forms.base.utils import set_fields_data, apply_data_event
+from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
-from fernlehrgang.interfaces import IListing
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
-from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
-from profilestats import profile
-from uvc.layout.interfaces import IExtraInfo
-from fernlehrgang import Form, AddForm 
-from z3c.saconfig import Session
-from zeam.form.base import Fields, NO_VALUE, action
-from zeam.form.base import NO_VALUE, DictDataManager
-from zeam.form.base.markers import SUCCESS, FAILURE
-from fernlehrgang.interfaces.teilnehmer import generatePassword
-from zope.interface import Interface
-from zope.component import getMultiAdapter
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang.resources import register_js
-from fernlehrgang import fmtDate
+from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
+from uvc.layout.interfaces import IExtraInfo
+from z3c.saconfig import Session
+from zeam.form.base import Fields, action, NO_VALUE
+from zeam.form.base.markers import FAILURE
+
+from . import Form, AddForm 
+from .widgets import fmtDate
+from .resources import register_js
+from .skin import IFernlehrgangSkin
+from .viewlets import AddMenu, NavigationMenu
+from ..interfaces import (
+    IListing, IKursteilnehmer, ITeilnehmer, generatePassword, IUnternehmen)
 
 
 grok.templatedir('templates')
@@ -49,7 +41,8 @@ class TeilnehmerListing(TablePage):
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
-
+    grok.layer(IFernlehrgangSkin)
+    
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Teilnehmer"
@@ -59,7 +52,8 @@ class TeilnehmerListing(TablePage):
 
     @property
     def description(self):
-        return u"Hier können Sie die Teilnehmer zum Unternehmen '%s %s' verwalten." % (self.context.mnr, self.context.name)
+        return (u"Hier können Sie die Teilnehmer zum Unternehmen "
+                u"'%s %s' verwalten." % (self.context.mnr, self.context.name))
 
     @property
     def values(self):
@@ -70,8 +64,9 @@ class TeilnehmerListing(TablePage):
 class AddTeilnehmer(AddForm):
     grok.context(IUnternehmen)
     grok.title(u'Teilnehmer')
+    grok.layer(IFernlehrgangSkin)
+    
     label = u'Teilnehmer anlegen für Unternehmen'
-
     fields = Fields(ITeilnehmer).omit('id')
     fields['kompetenzzentrum'].mode = "radio"
 
@@ -113,6 +108,8 @@ class AddTeilnehmer(AddForm):
 
 class Index(models.DefaultView):
     grok.context(ITeilnehmer)
+    grok.layer(IFernlehrgangSkin)
+    
     title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
     __name__ = "index"
@@ -122,6 +119,8 @@ class Index(models.DefaultView):
 
 class Edit(models.Edit):
     grok.context(ITeilnehmer)
+    grok.layer(IFernlehrgangSkin)
+    
     grok.name('edit')
     label = u"Teilnehmer"
 
@@ -134,7 +133,8 @@ class Edit(models.Edit):
         if errors:
             self.submissionError = errors
             return FAILURE
-        for x in ['adresszusatz', 'ort', 'plz', 'nr', 'email', 'strasse', 'telefon']:
+        for x in ['adresszusatz', 'ort', 'plz', 'nr',
+                  'email', 'strasse', 'telefon']:
             if data[x] == NO_VALUE:
                 data[x] = ""
         apply_data_event(self.fields, self.getContentData(), data)
@@ -151,7 +151,9 @@ class Edit(models.Edit):
 class Register(Form):
     grok.context(ITeilnehmer)
     grok.name('register')
+    grok.layer(IFernlehrgangSkin)
     grok.title('Registrierung')
+
     label = u"Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
 
@@ -213,6 +215,7 @@ class TeilnehmerJSONViews(grok.JSON):
 class OverviewKurse(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(ITeilnehmer)
+    grok.layer(IFernlehrgangSkin)
     grok.order(30)
 
     def update(self):

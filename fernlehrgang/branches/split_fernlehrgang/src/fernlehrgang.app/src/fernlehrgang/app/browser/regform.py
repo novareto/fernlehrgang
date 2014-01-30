@@ -6,24 +6,25 @@
 import grok
 
 from z3c.saconfig import Session
-from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang import Form
+from fernlehrgang.models import Fernlehrgang, Unternehmen
+from fernlehrgang.models import Teilnehmer, Kursteilnehmer
+from zeam.form.base import Fields, action
 
-from zeam.form.base import Fields
-from zeam.form.base import action
+from . import Form
+from .skin import IFernlehrgangSkin
+from ..interfaces import (
+    ITeilnehmer, IKursteilnehmer, IFernlehrgangApp, IUnternehmen)
 
 
 class AutoRegForm(Form):
     grok.context(IFernlehrgangApp)
     grok.require('zope.Public')
-
-    fields = Fields(IUnternehmen).select('mnr')
-    fields += Fields(ITeilnehmer).omit('id')
-    fields += Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'gespraech')
+    grok.layer(IFernlehrgangSkin)
+    
+    fields = (
+        Fields(IUnternehmen).select('mnr') +
+        Fields(ITeilnehmer).omit('id') +
+        Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'gespraech'))
 
     ignoreRequest = False
 
@@ -36,7 +37,8 @@ class AutoRegForm(Form):
         print data
         unternehmen = session.query(Unternehmen).get(data.get('mnr'))
         if not unternehmen:
-            self.flash(u'Das Unternehmen mit der Mitgliedsnummer %s existiert nicht' % data.get('mnr'))
+            self.flash(u'Das Unternehmen mit der Mitgliedsnummer ' +
+                       u'%s existiert nicht' % data.get('mnr'))
         tn = Teilnehmer(
             name = data['name'],
             vorname = data['vorname'],
@@ -62,4 +64,5 @@ class AutoRegForm(Form):
         kursteilnehmer.teilnehmer = tn
         flg.kursteilnehmer.append(kursteilnehmer)
         session.flush()
-        self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
+        self.flash(u'Der Teilnehmer wurde als Kursteilnehmer mit der ' +
+                   u'ID %s angelegt.' % kursteilnehmer.id)

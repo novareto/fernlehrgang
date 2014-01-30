@@ -3,21 +3,22 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from z3c.saconfig import Session
 from zeam.form.base import Fields
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm
+
+from . import AddForm
+from ..interfaces import IFernlehrgang, IFernlehrgangApp
+from .skin import IFernlehrgangSkin
+from .viewlets import AddMenu, NavigationMenu
+
 
 grok.templatedir('templates')
 
@@ -29,6 +30,7 @@ class FernlehrgangListing(TablePage):
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
     grok.order(10)
+    grok.layer(IFernlehrgangSkin)
 
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
@@ -52,6 +54,8 @@ class AddFernlehrgang(AddForm):
     grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
     grok.title(u'Fernlehrgang')
+    grok.layer(IFernlehrgangSkin)
+    
     title = u'Fernlehrgang'
     label = u'Fernlehrgang anlegen'
     description = u""
@@ -73,6 +77,8 @@ class AddFernlehrgang(AddForm):
 
 class Index(models.DefaultView):
     grok.context(IFernlehrgang)
+    grok.layer(IFernlehrgangSkin)
+    
     fields = Fields(IFernlehrgang).omit('id')
 
     @property
@@ -96,6 +102,7 @@ class ID(GetAttrColumn):
     weight = 5 
     header = u"Id"
     attrName = u"id"
+
 
 class Title(LinkColumn):
     grok.name('titel')
