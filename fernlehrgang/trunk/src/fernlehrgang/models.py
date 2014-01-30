@@ -4,6 +4,7 @@
 
 
 import grok
+import datetime
 
 from megrok import traject
 
@@ -261,6 +262,7 @@ class Kursteilnehmer(Base, RDBMixin):
     un_klasse = Column(String(3))
     branche = Column(String(5))
     gespraech = Column(String(20))
+    erstell_datum = Column(DateTime, default=datetime.datetime.now)
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))

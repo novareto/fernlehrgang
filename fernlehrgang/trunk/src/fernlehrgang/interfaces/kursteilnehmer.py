@@ -129,6 +129,13 @@ class IKursteilnehmer(Interface):
         source = lieferstopps,
         )
 
+    erstell_datum = Date(
+        title = u"Erstelldatum",
+        description = u"Datum der Erstellung des Kursteilnehmers",
+        required = False,
+        readonly = True,
+        )
+
     un_klasse = Choice(
         title = u"Mitarbeiteranzahl",
         description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
