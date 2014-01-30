@@ -1,0 +1,59 @@
+<div class="frage outlined-block">
+  <h2 tal:content="context.titel" />
+  <div class="row-fluid">
+    <div class="span2" tal:condition="view.thumb">
+	<img tal:attributes="href '#' + view.id; src view.thumb"
+             class="img-polaroid" data-toggle="modal" />
+
+	<div tal:condition="view.image"
+	     tal:attributes="id view.id" class="modal hide fade" tabindex="-1">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"
+		    aria-hidden="true">×</button>
+	    <h3>Image</h3>
+	  </div>
+	  <div class="modal-body">
+	    <img tal:attributes="src view.image" />
+	  </div>
+	  <div class="modal-footer">
+	    <p tal:content="structure context.beschreibung" />
+	    <button class="btn" data-dismiss="modal"
+		    aria-hidden="true">Close</button>
+	  </div>
+	</div>
+    </div>
+    <div class="span6">
+      <p tal:content="structure context.beschreibung" />
+      <ol type="A">
+	<li class="frage-option" tal:content="context.option1" />
+	<li class="frage-option" tal:content="context.option2" />
+	<li class="frage-option" tal:content="context.option3" />
+	<li class="frage-option" tal:content="context.option4" />
+      </ol>
+      <div>
+	<p>
+	  <strong>Antwortschema</strong> : 
+	  <span tal:content="context.antwortschema.upper()" />
+	  <br />
+	  <strong>Gewichtung</strong> :
+	  <span tal:content="context.gewichtung" />
+	</p>
+      </div>
+    </div>
+  </div>
+  <div class="outlined-block-title">
+    <a tal:attributes="href view.link">
+       Frage <span tal:replace="context.frage">
+       (<span tal:replace="context.id" />)
+     </a>
+     <tal:editable condition="view.editable">
+       &mdash;
+       <span>
+	 <i class="icon-edit"></i>
+	 <a tal:attributes="href '%s/edit' % view.link">
+	   Edit
+	 </a>
+       </span>
+     </tal:editable>
+  </div>
+</div>
