@@ -59,13 +59,16 @@ setup(name='fernlehrgang.app',
       entry_points = {
           'paste.app_factory': [
                'main = grokcore.startup:application_factory',
-               'debug = grokcore.startup:debug_application_factory'
+               'debug = grokcore.startup:debug_application_factory',
                ],
           'fanstatic.libraries': [
               'fernlehrgang.app.browser = fernlehrgang.app.browser.resources:library',
               ],
-          'console_scripts': [
-              'export = fernlehrgang.app.scripts.export:main_export',
+          'zeam.form.components': [
+              'file = fernlehrgang.app.browser.widgets:register',
               ],
+          'paste.filter_app_factory': [
+               'image = fernlehrgang.app:image_middleware',
+               ],
           }
       )

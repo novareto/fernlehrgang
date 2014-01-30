@@ -48,8 +48,14 @@ use = egg:Paste#translogger
 setup_console_handler = False
 logger_name = wsgi
 
+[filter:image]
+use = egg:fernlehrgang.app#image
+root = ${settings:image_storage}
+prefix = /images
+
 [app:grok]
 use = egg:grokcore.startup
+filter-with = image
 
 [pipeline:main]
 pipeline =  gzip fanstatic grok
