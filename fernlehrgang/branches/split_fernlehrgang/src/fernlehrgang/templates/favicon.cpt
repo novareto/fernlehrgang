@@ -1,0 +1,6 @@
+<link
+    type="image/x-ico; charset=binary"
+    href="http://www.bgrci.de/fileadmin/img/favicon.ico"
+    rel="shortcut icon"
+    tal:attributes="href static['favicon.ico']"
+    >

@@ -1,0 +1,11 @@
+<div id="displayteilnehmer" class="portlet">
+  <h6> Informationen zum Teilnehmer </h6>
+  <dt> Teilnehmer Id: </dt>
+  <dd tal:content="context/id"> </dd>
+  <dt> Name: </dt>
+  <dd tal:content="context/name"> </dd>
+  <dt> Vorname: </dt> 
+  <dd tal:content="context/vorname"> </dd>
+  <dt> Geburtsdatum: </dt>
+  <dd tal:content="context/geburtsdatum"> </dd>
+</div>

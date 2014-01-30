@@ -1,0 +1,7 @@
+<div>
+  <h1 tal:content="view.label"></h1>
+  <p class="description" tal:content="view.description"/>
+  <fieldset>
+    <span tal:replace="structure view.renderTable()"> </span>
+  </fieldset>
+</div>

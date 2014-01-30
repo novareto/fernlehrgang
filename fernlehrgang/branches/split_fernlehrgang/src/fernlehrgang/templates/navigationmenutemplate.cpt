@@ -1,0 +1,7 @@
+<ul tal:define="viewlets viewletmanager.viewlets" 
+    tal:condition="viewlets" 
+    tal:attributes="id viewletmanager.id; class viewletmanager.menu_class;">
+  <li tal:attributes="class action.selected and 'active' or ''" tal:repeat="action viewletmanager.viewlets">
+  <tal:entry content="structure action.render()" />
+  </li>
+</ul>
