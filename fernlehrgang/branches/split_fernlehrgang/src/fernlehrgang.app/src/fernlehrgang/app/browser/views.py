@@ -7,6 +7,7 @@ from zope.interface import Interface
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from ..interfaces import IFernlehrgangApp
 
+
 grok.templatedir('templates')
 
 

@@ -1,0 +1,7 @@
+<tal:frage>
+  <h1>
+    Question from
+    <a tal:content="view.parent.titel" tal:attributes="href view.link" />
+  </h1>
+  <div tal:replace="structure view.frage" />
+</tal:frage>

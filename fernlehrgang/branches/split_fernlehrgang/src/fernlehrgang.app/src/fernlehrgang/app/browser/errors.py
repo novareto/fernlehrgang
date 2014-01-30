@@ -4,6 +4,9 @@ import grok
 from megrok.layout import Page
 
 
+grok.templatedir('templates')
+
+
 class NotFound(Page, grok.components.NotFoundView):
     """Not Found Error View
     """

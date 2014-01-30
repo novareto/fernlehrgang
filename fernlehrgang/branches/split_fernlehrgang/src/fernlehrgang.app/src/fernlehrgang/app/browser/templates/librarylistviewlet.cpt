@@ -1,0 +1,10 @@
+<div class="files-overview outlined-block" tal:condition="viewlet.files">
+  <dl>
+    <dd tal:repeat="file viewlet.files">
+      <a href="" tal:attributes="href file['url'];
+				 title file['name'];"
+         tal:content="'%s (%s)' % (file['name'], file['size'])" />
+    </dd>
+  </dl>
+  <div class="outlined-block-title">Attached file(s)</div>
+</div>
