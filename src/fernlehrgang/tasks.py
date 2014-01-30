@@ -64,3 +64,11 @@ def export_liste_kompetenzzentrum(flg_id, mail="cklinger@novareto.de"):
     session = Session()
     fn = export(session, flg_id) 
     send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
+
+
+@celery_app.task
+def notifications_for_ofg():
+    from fernlehrgang.exports.oflg import report
+    session = Session()
+    report(session)
+
