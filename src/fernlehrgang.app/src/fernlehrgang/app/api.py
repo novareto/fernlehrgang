@@ -9,11 +9,8 @@ import datetime
 from sqlalchemy import *
 from z3c.saconfig import Session
 from fernlehrgang.models import Frage, Teilnehmer, Antwort, Kursteilnehmer
-from fernlehrgang.app import RestLayer
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.interfaces.resultate import ICalculateResults
+from .interfaces import (
+    ICalculateResults, ITeilnehmer, IKursteilnehmer, IFernlehrgangApp)
 
 
 #
@@ -70,7 +67,6 @@ class HelperAPI(grok.XMLRPC):
 #
 
 class TeilnehmerAPI(grok.REST):
-    grok.layer(RestLayer)
     grok.context(ITeilnehmer)
 
     def GET(self):
@@ -126,7 +122,6 @@ class TeilnehmerAPI(grok.REST):
 
 
 class KursteilnehmerAPI(grok.REST):
-    grok.layer(RestLayer)
     grok.context(IKursteilnehmer)
 
     def GET(self):

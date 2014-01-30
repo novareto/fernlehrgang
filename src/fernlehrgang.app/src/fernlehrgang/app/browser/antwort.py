@@ -3,26 +3,30 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
-from fernlehrgang.interfaces import IListing
+from datetime import datetime
 from dolmen.app.layout import IDisplayView
 from dolmen.app.layout import models
 from dolmen.menu import menuentry
-from fernlehrgang.interfaces.antwort import IAntwort
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
+
 from fernlehrgang.models import Antwort, Frage
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from grokcore.chameleon.components import ChameleonPageTemplateFile
+from megrok.layout import Page
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable.components import TablePage, GetAttrColumn, LinkColumn, Column
+from megrok.z3ctable.components import TablePage, GetAttrColumn
+from megrok.z3ctable.components import LinkColumn, Column
 from sqlalchemy import not_, and_
-from z3c.saconfig import Session
-from zeam.form.base import Fields, action
 from uvc.layout.interfaces import IExtraInfo
-from megrok.layout import Page
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm, Form
+from z3c.saconfig import Session
+from zeam.form.base import Action, Fields
+from zeam.form.composed import ComposedForm
+from zeam.form.table import SubTableForm, TableActions
+
+from . import AddForm, Form
+from .skin import IFernlehrgangSkin
+from .viewlets import AddMenu, NavigationMenu
+from ..interfaces import IListing, IAntwort, IKursteilnehmer
 
 grok.templatedir('templates')
 
@@ -34,6 +38,7 @@ class AntwortListing(TablePage):
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
     grok.baseclass()
+    grok.layer(IFernlehrgangSkin)
 
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
@@ -54,8 +59,9 @@ class AntwortListing(TablePage):
 class AddAntwort(AddForm):
     grok.context(IKursteilnehmer)
     grok.title(u'Antwort')
+    grok.layer(IFernlehrgangSkin)
+    
     label = u'Antwort anlegen'
-
     fields = Fields(IAntwort).omit('id')
 
     def create(self, data):
@@ -69,16 +75,12 @@ class AddAntwort(AddForm):
         return self.url(self.context, 'antwort_listing')
 
 
-from zeam.form.table import SubTableForm, TableActions
-from zeam.form.composed import ComposedForm
-from zeam.form.base import Action, SUCCESS, Actions
-from datetime import datetime
-
-
 class SaveTableAction(Action):
 
        def __call__(self, form, content, line):
-           setattr(content, 'antwortschema', line.extractData(form.tableFields)[0].get('antwortschema', ''))
+           setattr(content, 'antwortschema',
+                   line.extractData(
+                       form.tableFields)[0].get('antwortschema', ''))
            form.context.antworten.append(content)
            form.redirect(form.url() + '/addantworten')
 
@@ -86,6 +88,7 @@ class SaveTableAction(Action):
 @menuentry(AddMenu)
 class AddAntworten(ComposedForm, Form):
     grok.context(IKursteilnehmer)
+    grok.layer(IFernlehrgangSkin)
     grok.title(u'Alle Antworten eingeben')
     label = u"Alle Antworten eingeben"
 
@@ -100,6 +103,8 @@ class AddAntwortenTable(SubTableForm):
     grok.title(u'Table Form')
     grok.context(IKursteilnehmer)
     grok.view(AddAntworten)
+    grok.layer(IFernlehrgangSkin)
+    
     prefix = "G"
     template = ChameleonPageTemplateFile('templates/alleantworten.cpt')
 
@@ -145,9 +150,10 @@ class AddAntwortenTable(SubTableForm):
 class Index(models.DefaultView):
     grok.context(IAntwort)
     grok.title(u'Index')
+    grok.layer(IFernlehrgangSkin)
+    
     title = label = u"Antwort"
     description = u"" #Hier können Sie Deteils zu Ihren Antworten ansehen."
-
     fields = Fields(IAntwort).omit('id')
 
 
@@ -155,6 +161,8 @@ class Edit(models.Edit):
     grok.context(IAntwort)
     grok.title(u'Edit')
     grok.name('edit')
+    grok.layer(IFernlehrgangSkin)
+
     title = u"Antworten"
     description = u"Hier können Sie die Antwort bearbeiten."
 
@@ -171,6 +179,8 @@ class Edit(models.Edit):
 class MoireInfoOnKursteilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IAntwort)
+    grok.layer(IFernlehrgangSkin)
+
     script = ""
 
     def update(self):
@@ -184,7 +194,7 @@ class MoireInfoOnKursteilnehmer(grok.Viewlet):
 class JSON_Views(grok.JSON):
     """ Ajax basiertes Wechseln der Jahre"""
     grok.context(IKursteilnehmer)
- 
+
     def context_fragen(self, lehrheft_id=None):
         rc = []
         li = []
@@ -233,14 +243,14 @@ class Antworten(GetAttrColumn):
     attrName = "antwortschema"
 
 
-
 @menuentry(NavigationMenu)
 class OverviewAntworten(Page):
     grok.implements(IDisplayView, IListing)
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
-
+    grok.layer(IFernlehrgangSkin)
+    
     label = title = u"Antworten"
     description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
 

@@ -3,26 +3,25 @@
 # cklinger@novareto.de 
 
 import grok
-import uvc.layout
 
-from z3c.saconfig import Session
-from megrok.traject import locate
-from dolmen.menu import menuentry
-from fernlehrgang.models import Frage 
-from uvc.layout.interfaces import ISidebar
-from fernlehrgang.interfaces.frage import IFrage
-from megrok.traject.components import DefaultModel
-from fernlehrgang.interfaces.lehrheft import ILehrheft
-from megrok.z3ctable import TablePage, GetAttrColumn, CheckBoxColumn, LinkColumn
-from dolmen.app.layout import models, IDisplayView 
+from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry, Entry, menu
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from zeam.form.base import Fields
+from fernlehrgang.models import Frage
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm
+from megrok.layout import Page
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
+from zeam.form.base import Fields
 
+from . import AddForm
+from ..interfaces import IFrage, ILehrheft
+from .lehrheft import EmbeddedFrage
+from .skin import IFernlehrgangSkin
+from .viewlets import AddMenu, NavigationMenu
 
 grok.templatedir('templates')
+
 
 @menuentry(NavigationMenu)
 class FrageListing(TablePage):
@@ -30,7 +29,8 @@ class FrageListing(TablePage):
     grok.context(ILehrheft)
     grok.name('frage_listing')
     grok.title(u'Fragen verwalten')
-
+    grok.layer(IFernlehrgangSkin)
+    
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Fragen"
@@ -38,22 +38,24 @@ class FrageListing(TablePage):
 
     @property
     def description(self):
-        return u"Hier können Sie die Fragen zu Ihrem Lehrheft '%s' verwalten." % self.context.titel
+        return (u"Hier können Sie die Fragen zu Ihrem Lehrheft " +
+                u"'%s' verwalten." % self.context.titel)
 
     @property
     def values(self):
         root = grok.getSite()
-        for x in self.context.fragen:
-            locate(root, x, DefaultModel)
-        return self.context.fragen
+        for frage in self.context.fragen:
+            locate(root, frage, DefaultModel)
+            yield frage
 
 
 @menuentry(AddMenu)
 class AddFrage(AddForm):
     grok.context(ILehrheft)
     grok.title(u'Frage')
+    grok.layer(IFernlehrgangSkin)
+    
     label = u'Frage anlegen'
-
     fields = Fields(IFrage).omit('id')
 
     def create(self, data):
@@ -67,28 +69,27 @@ class AddFrage(AddForm):
         return self.url(self.context, 'frage_listing')
 
 
-class HelperEntry(Entry):
-    grok.context(IFrage)
+@menuentry(NavigationMenu, order=1)
+class FrageIndex(Page):
     grok.name('index')
-    grok.title('Frage')
-    grok.order(1)
-    menu(NavigationMenu)
-
-
-
-class Index(models.DefaultView):
     grok.context(IFrage)
-    grok.title(u'Ansicht')
-    title = label = u"Frage"
-    description = u"Hier können Sie Deteils zu Ihren Fragen ansehen."
-
-    fields = Fields(IFrage).omit('id')
+    grok.title(u'Frage')
+    grok.layer(IFernlehrgangSkin)
+    
+    def update(self):
+        view = EmbeddedFrage(self.context, self.request)
+        self.frage = view()
+        self.parent = view.context.lehrheft
+        root = grok.getSite()
+        locate(root, self.parent, DefaultModel)
+        self.link = self.url(self.parent)
 
 
 class Edit(models.Edit):
     grok.context(IFrage)
+    grok.layer(IFernlehrgangSkin)
     grok.title(u'Bearbeiten')
-    grok.name('edit')
+
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."
 

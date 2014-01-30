@@ -3,25 +3,35 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
-from megrok.traject import locate
+from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
 from fernlehrgang.models import Lehrheft
-from megrok.traject.components import DefaultModel
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.interfaces.lehrheft import ILehrheft
-from megrok.z3ctable import (TablePage,
-    CheckBoxColumn, LinkColumn, GetAttrColumn)
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from dolmen.app.layout import models, IDisplayView
-from zeam.form.base import Fields
-from fernlehrgang.interfaces import IListing
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm
+from grokcore.view import View
+from megrok.layout import Page
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from megrok.z3ctable import LinkColumn, GetAttrColumn, TablePage
+from zeam.form.base import Fields
+from zope.component import getUtility
+from zope.interface import Interface, implementer
+from zope.security import checkPermission
+from zope.security.checker import CheckerPublic
+
+from . import AddForm
+from ..interfaces import IListing, IFernlehrgang, IFrage, ILehrheft
+from .skin import IFernlehrgangSkin
+from .viewlets import AddMenu, NavigationMenu
 
 
 grok.templatedir('templates')
+
+
+def check_object_permission(obj, permission):
+    if permission == 'zope.Public':
+        permission = CheckerPublic
+    return checkPermission(permission, obj)
 
 
 @menuentry(NavigationMenu)
@@ -30,16 +40,20 @@ class LehrheftListing(TablePage):
     grok.context(IFernlehrgang)
     grok.name('lehrheft_listing')
     grok.title(u'Lehrhefte verwalten')
-
+    grok.layer(IFernlehrgangSkin)
+    
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
     label = u"Lehrhefte"
 
     @property
     def description(self):
-        return u"Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." % (self.context.titel, self.context.jahr)
+        return (u"Hier können Sie die Lehrhefte zum Fernlehrgang " +
+                u"'%s %s' bearbeiten." %
+                (self.context.titel, self.context.jahr))
 
-    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
+    cssClasses = {
+        'table': 'table table-striped table-bordered table-condensed'}
 
     @property
     def values(self):
@@ -53,10 +67,11 @@ class LehrheftListing(TablePage):
 class AddLehrheft(AddForm):
     grok.context(IFernlehrgang)
     grok.title(u'Lehrheft')
+    grok.layer(IFernlehrgangSkin)
+    
     title = u'Lehrheft'
     label = u'Lehrhefte'
     description = u'Hier können Sie die Lehrhefte für den Fernlehrgang anlegen.'
-
     fields = Fields(ILehrheft).omit('id')
 
     def create(self, data):
@@ -71,27 +86,54 @@ class AddLehrheft(AddForm):
         return self.url(self.context, 'lehrheft_listing')
 
 
-class Index(models.DefaultView):
+class EmbeddedFrage(View):
+    grok.context(IFrage)
+    grok.name('embedded')
+    grok.layer(IFernlehrgangSkin)
+
+    image = None
+    thumb = None
+
+    def __init__(self, context, request):
+        root = grok.getSite()
+        locate(root, context, DefaultModel)
+        View.__init__(self, context, request)
+
+    def update(self):
+        self.id = str(self.context.id)
+        self.link = self.url(self.context)
+        self.editable = check_object_permission(
+            self.context, 'dolmen.content.Edit')
+        if self.context.bilder.count():
+            store = getUtility(Interface, name='ImageStore')
+            self.image = self.context.bild.locate(store=store)
+            self.thumb = self.context.thumbnail.locate(store=store)
+
+
+@implementer(IDisplayView)
+class LehrheftIndex(Page):
     grok.context(ILehrheft)
     grok.name('index')
-    title = label = u"Lehrheft"
-    description = u"Details zu Ihrem Lehrheft"
-    fields = Fields(ILehrheft).omit(id)
+    grok.layer(IFernlehrgangSkin)
 
+    def update(self):
+        self.fragen = (EmbeddedFrage(frage, self.request)
+                       for frage in self.context.fragen)
+    
 
 class Edit(models.Edit):
     grok.context(ILehrheft)
     grok.title(u'Edit')
     grok.name('edit')
+    grok.layer(IFernlehrgangSkin)
 
     label = u"Bearbeiten"
-
+    fields = Fields(ILehrheft).omit('id')
+    
     @property
     def description(self):
-        return u"Hier können Sie das '%s' vom Fernlehrgang '%s' bearbeiten." % (
-                self.context.titel, 'MUSS')
-
-    fields = Fields(ILehrheft).omit('id')
+        return (u"Hier können Sie das '%s' vom Fernlehrgang "
+                u"'%s' bearbeiten." % (self.context.titel, 'MUSS'))
 
 
 ## Spalten

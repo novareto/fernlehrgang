@@ -5,29 +5,40 @@
 
 import grok
 
-from time import time
-from plone.memoize import ram
 from dolmen import menu
+from dolmen.app.layout import viewlets, IDisplayView
+from fernlehrgang.interfaces import IListing
+from uvc.fernlehrgang.models import Fernlehrgang
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok import pagetemplate
+from plone.memoize import ram
+from time import time
+from uvc.layout import IPersonalPreferences, MenuItem 
+from uvc.layout.interfaces import IAboveContent, IPageTop
+from uvc.layout.slots import managers
 from z3c.saconfig import Session
 from zope.interface import Interface
-from fernlehrgang.interfaces import IListing
-from fernlehrgang.models import Fernlehrgang
-from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
-from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
-from uvc.layout import IPersonalPreferences, MenuItem 
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from uvc.layout.slots import managers
+
+from .skin import IFernlehrgangSkin
 
 
 grok.templatedir('templates')
 
+
+class InfoManager(grok.ViewletManager):
+    grok.name('fernlehrgang.contextualinfo')
+    grok.context(Interface)
+    
+
 class UserName(MenuItem):
-    """ User Viewlet"""
+    """ User Viewlet
+    """
     grok.name('myname')
     grok.context(Interface)
     grok.viewletmanager(IPersonalPreferences)
     grok.order(300)
+    grok.layer(IFernlehrgangSkin)
+
     action =""
 
     @property
@@ -39,10 +50,11 @@ class UserName(MenuItem):
 ## Global Menu
 #
 
-
 class GlobalMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(IPageTop)
+    grok.layer(IFernlehrgangSkin)
+
     template = ChameleonPageTemplateFile('templates/globalmenu.cpt')
     grok.order(11)
     flgs = []
@@ -73,6 +85,7 @@ class ObjectActionMenu(viewlets.ContextualActions):
     grok.name('contextualactions')
     grok.title('Actions')
     grok.viewletmanager(IAboveContent)
+    grok.layer(IFernlehrgangSkin)
     grok.order(119)
 
     menu_template = ChameleonPageTemplateFile('templates/objectmenu.cpt')
@@ -95,11 +108,14 @@ class AddMenu(menu.Menu):
     grok.context(Interface)
     grok.view(IDisplayView)
     grok.title(u'Hinzufügen')
+    grok.layer(IFernlehrgangSkin)
+
     menu_class = u'nav nav-pills'
 
 
 class AddMenuTemplate(pagetemplate.PageTemplate):
     grok.view(AddMenu)
+    grok.layer(IFernlehrgangSkin)
 
 
 class AddMenuViewlet(grok.Viewlet):
@@ -107,6 +123,7 @@ class AddMenuViewlet(grok.Viewlet):
     grok.view(IDisplayView)
     grok.viewletmanager(IAboveContent)
     grok.order(120)
+    grok.layer(IFernlehrgangSkin)
 
     def render(self):
         menu = AddMenu(self.context, self.request, self.view)
@@ -121,16 +138,20 @@ class NavigationMenu(menu.Menu):
     grok.name('navigation')
     grok.title('Navigation')
     grok.context(Interface)
+    grok.layer(IFernlehrgangSkin)
+
     menu_class = u'nav nav-tabs'
 
 
 class NavigationMenuTemplate(pagetemplate.PageTemplate):
     grok.view(NavigationMenu)
+    grok.layer(IFernlehrgangSkin)
 
 
 class NavigationMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(IAboveContent)
+    grok.layer(IFernlehrgangSkin)
     grok.order(100)
     
     def render(self):
@@ -146,3 +167,4 @@ class NavigationMenuViewlet(grok.Viewlet):
 class FavIcon(grok.Viewlet):
     grok.viewletmanager(managers.Headers)
     grok.context(Interface)
+    grok.layer(IFernlehrgangSkin)

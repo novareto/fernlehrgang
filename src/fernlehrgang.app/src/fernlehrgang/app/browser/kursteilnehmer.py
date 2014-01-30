@@ -3,15 +3,10 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer, lieferstopps
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.models import Teilnehmer, Kursteilnehmer
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
+
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from sqlalchemy import and_
@@ -20,9 +15,14 @@ from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
-from zeam.form.base.errors import Error
 from zope.i18nmessageid import MessageFactory
-from fernlehrgang import Form, AddForm
+
+from . import Form
+from .viewlets import AddMenu, NavigationMenu
+from ..interfaces import IFernlehrgang, ITeilnehmer, IKursteilnehmer
+from fernlehrgang.models import Teilnehmer, Kursteilnehmer
+from fernlehrgang.models.interfaces import lieferstopps
+
 
 
 _ = MessageFactory('zeam.form.base')
