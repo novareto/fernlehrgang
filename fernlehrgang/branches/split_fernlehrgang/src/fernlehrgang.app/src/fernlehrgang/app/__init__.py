@@ -10,7 +10,7 @@ from zope.pluggableauth import PluggableAuthentication
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 from zope.component import getUtility, provideUtility
 
-from .auth.handler import UserAuthenticatorPlugin
+from .auth.handler import Benutzer
 from .interfaces import IFernlehrgangApp
 
 
@@ -42,11 +42,6 @@ class FernlehrgangApp(grok.Application, grok.Container):
     grok.traversable(attr='benutzer')
 
     grok.local_utility(
-        UserAuthenticatorPlugin, provides=IAuthenticatorPlugin,
-        name='principals',
-        )
-
-    grok.local_utility(
         PluggableAuthentication, 
         provides=IAuthentication,
         public=True,
@@ -54,4 +49,4 @@ class FernlehrgangApp(grok.Application, grok.Container):
         )
 
     def benutzer(self):
-        return getUtility(IAuthenticatorPlugin, 'principals').user_folder
+        return Benutzer

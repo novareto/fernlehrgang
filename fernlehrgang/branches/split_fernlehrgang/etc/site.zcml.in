@@ -1,5 +1,12 @@
 <configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="fernlehrgang">
+
+  <include package="zope.publisher" file="meta.zcml" />
+  <browser:defaultView
+      for="zope.interface.Interface"
+      name="index"
+      />
 
   <include package="fernlehrgang.app" />
 

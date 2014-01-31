@@ -4,12 +4,14 @@
 
 import grok
 
+from z3c.saconfig import Session
+from fernlehrgang.models.user import User
 from zope import component, interface, schema
 from zope.password.interfaces import IPasswordManager
 from zope.securitypolicy.interfaces import IPrincipalRoleManager
 from zope.securitypolicy.interfaces import IPrincipalPermissionManager
 from zope.pluggableauth.interfaces import IPrincipalInfo, IAuthenticatorPlugin
-
+from zope.location import LocationProxy, locate
 
 
 class PrincipalInfo(object):
@@ -23,13 +25,9 @@ class PrincipalInfo(object):
         self.authenticatorPlugin = None
 
 
-class UserAuthenticatorPlugin(grok.LocalUtility):
+class UserAuthenticatorPlugin(object):
     grok.implements(IAuthenticatorPlugin)
-    grok.name('principals')
 
-    def __init__(self):
-        self.user_folder = UserFolder()
-        
     def authenticateCredentials(self, credentials):
         if not isinstance(credentials, dict):
             return None
@@ -52,39 +50,42 @@ class UserAuthenticatorPlugin(grok.LocalUtility):
                              title=account.real_name,
                              description=account.real_name)
 
-    def getAccount(self, login):
-        return login in self.user_folder and self.user_folder[login] or None
-    
-    def addUser(self, username, email, password, real_name, role):
-        if username not in self.user_folder:
-            user = Account(username, email, password, real_name, role)
-            self.user_folder[username] = user
-            role_manager = IPrincipalRoleManager(grok.getSite())
-            print role, username
-            role_manager.assignRoleToPrincipal(role, username)
-            
-    def listUsers(self):
-        return self.user_folder.values()
+    def __iter__(self):
+        session = Session()
+        return iter(session.query(User).all())
+
+    def __contains__(self, login):
+        try:
+            session = Session()
+            c = session.query(User).filter(User.login == int(login)).count()
+            return bool(c > 0)
+        except ValueError:
+            return False
+
+    def get(self, login):
+        try:
+            session = Session()
+            query = session.query(User).filter(User.login == int(login))
+            assert query.count() == 1
+            user = LocationProxy(query.one())
+            locate(user, self, str(login))
+            return user
+        except AssertionError, ValueError:
+            pass
+        return None
+
+    def add(self, username, email, password, real_name, role):
+        if not account in self:
+            session = Session()
+            user = User(
+                login=username, email=email, password=password,
+                real_name=real_name, role=role)
+            session.add(user)
+
+    def delete(self, user):
+        session = Session()
+        session.delete(user)
 
 
-class UserFolder(grok.Container):
-    pass
-
-
-class Account(grok.Model):
-    def __init__(self, name, email, password, real_name, role):
-        self.login = name
-        self.email = email
-        self.real_name = real_name
-        self.role = role
-        self.password = password
-
-    def checkPassword(self, password):
-        if password == self.password:
-            return True
-        return False
-
-    def getEmail(self):
-        if hasattr(self, 'email'):
-            return self.email
-        return ''
+Benutzer = UserAuthenticatorPlugin()
+grok.global_utility(Benutzer, name=u'Benutzer', direct=True)
