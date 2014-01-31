@@ -75,12 +75,12 @@ class AddFernlehrgang(AddForm):
         return url
 
 
-class Index(models.DefaultView):
+class FernlehrgangIndex(models.DefaultView):
     grok.context(IFernlehrgang)
     grok.layer(IFernlehrgangSkin)
     
     fields = Fields(IFernlehrgang).omit('id')
-
+   
     @property
     def label(self):
         return u"Fernlehrgang: %s (%s)" % (

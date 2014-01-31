@@ -4,20 +4,22 @@
 
 import grok
 
-
 from dolmen.forms.base import apply_data_event
-from handler import Account, UserFolder
-from interfaces import IAddUserForm
+from dolmen.menu import menuentry
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.layout import Page
 from uvc.layout import MenuItem
-from uvc.layout.interfaces import IFooter
 from uvc.layout.forms.components import Form
+from uvc.layout.interfaces import IFooter
 from zeam.form.base import Fields, action
 from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
-from dolmen.menu import menuentry
 from zope.securitypolicy.interfaces import IPrincipalRoleManager
-from grokcore.chameleon.components import ChameleonPageTemplateFile
+
+from .interfaces import IAddUserForm
+from .handler import UserAuthenticatorPlugin
+from fernlehrgang.models.user import User
+
 
 grok.templatedir('templates')
 
@@ -35,16 +37,15 @@ class BenutzerMI(MenuItem):
 
 class UserList(Page):
     grok.name('index')
-    grok.context(UserFolder)
+    grok.context(UserAuthenticatorPlugin)
     grok.require('zope.ManageApplication')
     
     def update(self):
-        users = component.getUtility(IAuthenticatorPlugin, 'principals')
-        self.users = users.listUsers()
+        self.users = list(self.context)
    
 
 class AddUser(Form): 
-    grok.context(UserFolder)
+    grok.context(UserAuthenticatorPlugin)
     grok.require('zope.ManageApplication')
     label = u"Benutzer anlegen"
 
@@ -57,13 +58,14 @@ class AddUser(Form):
             self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
             return
         users = component.getUtility(IAuthenticatorPlugin, 'principals')
-        users.addUser(data['login'], data['email'], data['password'], data['real_name'], data['role'])
+        users.add(data['login'], data['email'],
+                  data['password'], data['real_name'], data['role'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
 
 
 class EditUser(Form): 
     grok.name('edit')
-    grok.context(Account)
+    grok.context(User)
     grok.require('zope.ManageApplication')
     label = u"Benutzer bearbeiten"
 
@@ -73,8 +75,8 @@ class EditUser(Form):
     def updateForm(self):                                                       
         super(EditUser, self).updateForm()                                
         pw = self.fieldWidgets.get('form.field.password')                       
-        confirm = self.fieldWidgets.get('form.field.confirm_password')                   
-        pw.template = ChameleonPageTemplateFile('templates/password.cpt')          
+        confirm = self.fieldWidgets.get('form.field.confirm_password')
+        pw.template = ChameleonPageTemplateFile('templates/password.cpt')
         confirm.template = ChameleonPageTemplateFile('templates/password.cpt') 
 
     @action(u'Bearbeiten')
@@ -84,18 +86,10 @@ class EditUser(Form):
             self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
             return
         changes = apply_data_event(self.fields, self.context, data)
-        role_manager = IPrincipalRoleManager(grok.getSite())
-        for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
-            role_manager.removeRoleFromPrincipal(role_id, data['login'])
-        role_manager.assignRoleToPrincipal(data['role'], data['login'])
-        print role_manager.getRolesForPrincipal(data['login'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
 
     @action(u'Entfernen')
     def handle_delete(self):
         data, errors = self.extractData()
-        del self.context.__parent__[self.context.__name__]
-        role_manager = IPrincipalRoleManager(grok.getSite())
-        for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
-            role_manager.removeRoleFromPrincipal(role_id, data['login'])
+        self.context.__parent__.delete(self.context)
         self.redirect(self.url(grok.getSite(), '/benutzer'))

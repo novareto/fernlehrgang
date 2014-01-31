@@ -5,12 +5,12 @@
 
 from sqlalchemy import *
 from sqlalchemy.orm import relation, backref, relationship
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
 from sqlalchemy import TypeDecorator
 from sqlalchemy_imageattach.context import get_current_store
 
+from . import Base
 from .interfaces.lehrheft import ILehrheft
 from .interfaces.flg import IFernlehrgang
 from .interfaces.frage import IFrage
@@ -20,9 +20,6 @@ from .interfaces.teilnehmer import ITeilnehmer
 from .interfaces.antwort import IAntwort
 
 from zope.interface import implementer
-
-
-Base = declarative_base()
 
 
 class MyStringType(TypeDecorator):
@@ -117,7 +114,7 @@ class Teilnehmer(Base):
         return "%s %s" % (self.name, self.vorname)
 
     def __repr__(self):
-        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
+        return "<Teilnehmer(id='%s', name='%s')>" % (self.id, self.name)
 
 
 @implementer(ILehrheft)
