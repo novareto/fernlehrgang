@@ -4,17 +4,23 @@
 
 import string
 from random import choice
-from zope.schema import *
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.orm import relation, backref, relationship
+from sqlalchemy_imageattach.context import get_current_store
+from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy_imageattach.entity import store_context
 from zope.interface import Interface
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.interface import implementer
+from zope.schema import *
 from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 
 # VOCABULARIES
-
-
 def vocabulary(*terms):
-    return SimpleVocabulary([SimpleTerm(value, token, title) for value, token, title in terms])
+    return SimpleVocabulary(
+        [SimpleTerm(value, token, title) for value, token, title in terms])
 
 
 # DEFAULTS
@@ -142,3 +148,39 @@ class ITeilnehmer(Interface):
             )
         )
 
+
+@implementer(ITeilnehmer)
+class Teilnehmer(Base):
+    __tablename__ = 'teilnehmer'
+
+    id = Column(Integer,
+                Sequence('teilnehmer_seq', start=100000, increment=1),
+                primary_key=True)
+
+    anrede = Column(String(50))
+    titel = Column(String(50))
+    vorname = Column(String(50))
+    name = Column(MyStringType(50))
+    geburtsdatum = Column(Date)
+    strasse = Column(String(50))
+    nr = Column(String(50))
+    plz = Column(String(50))
+    ort = Column(String(50))
+    adresszusatz = Column(String(50))
+    email = Column(String(50))
+    telefon = Column(String(50))
+    passwort = Column(String(8))
+    kategorie = Column(String(1))
+    kompetenzzentrum = Column(String(5))
+
+    unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR'))
+
+    unternehmen = relation(Unternehmen,
+                           backref = backref('teilnehmer', order_by=id))
+
+    @property
+    def title(self):
+        return "%s %s" % (self.name, self.vorname)
+
+    def __repr__(self):
+        return "<Teilnehmer(id='%s', name='%s')>" % (self.id, self.name)

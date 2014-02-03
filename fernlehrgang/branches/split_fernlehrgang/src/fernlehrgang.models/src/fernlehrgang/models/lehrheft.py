@@ -2,10 +2,18 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-from zope.schema import *
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.orm import relation, backref, relationship
+from sqlalchemy_imageattach.context import get_current_store
+from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy_imageattach.entity import store_context
 from zope.interface import Interface, provider
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.interface import implementer
+from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
 from .frage import IFrage
 
 
@@ -60,3 +68,33 @@ class ILehrheft(Interface):
         required=False,
         value_type=Object(schema=IFrage),
         )
+
+
+@implementer(ILehrheft)
+class Lehrheft(Base):
+    __tablename__ = 'lehrheft'
+
+    id = Column(Integer, Sequence('lehrheft_seq', start=1000, increment=1),
+                primary_key=True)
+    nummer = Column(String(5))
+    titel = Column(String(256))
+    vdatum = Column(Date())
+    fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
+
+    fernlehrgang = relation(
+        Fernlehrgang, 
+        backref=backref(
+            'lehrhefte', order_by=nummer.asc(), cascade="all,delete"),
+        )
+
+    @property
+    def storageid(self):
+        return u"%s.%s" % (self.__tablename__, self.id)
+
+    @property
+    def title(self):
+        return self.titel
+
+    def __repr__(self):
+        return "<Lehrgang(id='%s', nummer='%s', fernlehrgangid='%s')>" % (
+            self.id, self.nummer, self.fernlehrgang_id)
