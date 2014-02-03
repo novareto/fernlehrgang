@@ -11,8 +11,8 @@ from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 import grokcore.component as grok
 
-from fernlehrgang.models.interfaces import register_vocabulary
-from fernlehrgang.models.interfaces import (
+from fernlehrgang.models.vocabularies import register_vocabulary
+from fernlehrgang.models import (
     IAntwort,
     IFernlehrgang,
     ILehrheft,

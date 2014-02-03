@@ -18,8 +18,7 @@ from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.context import push_store_context
 
 from .interfaces import IFernlehrgangApp
-from fernlehrgang.models import models
-from fernlehrgang.models import interfaces
+from fernlehrgang import models
 
 from z3c.saconfig import Session
 from z3c.saconfig.interfaces import IEngineCreatedEvent
@@ -151,7 +150,7 @@ def frag_builder(**kwargs):
 
 
 provideUtility(frag_builder, IFactory,
-               name='fernlehrgang.interfaces.frage.IFrage')
+               name='fernlehrgang.models.frage.IFrage')
 
 
 class Kursteilnehmer(traject.Traject):

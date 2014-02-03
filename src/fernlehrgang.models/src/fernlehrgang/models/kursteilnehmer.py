@@ -8,13 +8,18 @@ from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
+
+import zope.schema
 from zope.interface import Interface, provider
 from zope.interface import implementer
-from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from . import named_vocabulary
+from . import Base
+from .fernlehrgang import Fernlehrgang
+from .teilnehmer import Teilnehmer
+from .unternehmen import Unternehmen
+from .vocabularies import named_vocabulary
 
 
 LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
@@ -74,7 +79,7 @@ def gespraech(context):
 
 class IKursteilnehmer(Interface):
 
-    id = Int(
+    id = zope.schema.Int(
         title = u'Id (Kursteilnehmer Id)',
         description = (u'Eindeutige Kennzeichnung des Teilnehmers '
                        u'für den Fernlehrgang'),
@@ -82,13 +87,13 @@ class IKursteilnehmer(Interface):
         readonly = True
         )
 
-    teilnehmer_id = TextLine(
+    teilnehmer_id = zope.schema.TextLine(
         title = u'Id des Teilnehmers',
         description = u'Die Eindeutige Nummer des Teilnehmers',
         required = True,
         )
 
-    fernlehrgang_id = Choice(
+    fernlehrgang_id = zope.schema.Choice(
         title = u"Lehrgang",
         description = (u'Hier können Sie diesen Teilnehmer für '
                        u'einen Lehrgang registrieren.'),
@@ -96,7 +101,7 @@ class IKursteilnehmer(Interface):
         source = named_vocabulary("fernlehrgang"),
         )
 
-    status = Choice(
+    status = zope.schema.Choice(
         title = u"Status",
         description = (u"Bitte geben Sie in diesen Feld den Status "
                        u"des Teilnehmers ein"),
@@ -105,7 +110,7 @@ class IKursteilnehmer(Interface):
         source = lieferstopps,
         )
 
-    un_klasse = Choice(
+    un_klasse = zope.schema.Choice(
         title = u"Mitarbeiteranzahl",
         description = (u"Hier können Sie die Gruppe des Unternehmens "
                        u"festlegen."),
@@ -113,7 +118,7 @@ class IKursteilnehmer(Interface):
         source = un_klasse,
         )
 
-    branche = Choice(
+    branche = zope.schema.Choice(
         title = u"Branche",
         description = (u'Betrieb ist ein Recyclingunternehmen, ein '
                        u'Motorradhandel oder ein Speditions- oder '
@@ -123,7 +128,7 @@ class IKursteilnehmer(Interface):
         default = 'nein',
         )
 
-    gespraech = Choice(
+    gespraech = zope.schema.Choice(
         title = u"Abschlussgesräch / Abschlusseminar",
         description = (u'Wie hat der Teilnehmer, falls nötig, das '
                        u'Abschlussgespräch / Abschussseminar absolviert ?'),

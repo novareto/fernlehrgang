@@ -8,9 +8,11 @@ from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
 from zope.interface import Interface, provider
 from zope.interface import implementer
-from zope.schema import *
+import zope.schema
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from . import Base
 
 
 @provider(IContextSourceBinder)
@@ -33,52 +35,52 @@ def typ(context):
 
 class IFernlehrgang(Interface):
 
-    id = Int(
+    id = zope.schema.Int(
         title = u'Id',
         description = u'Eindeutige Kennzeichnung des Fernlehrgangs',
         required = False,
         readonly = True
         )
 
-    jahr = Choice(
+    jahr = zope.schema.Choice(
         title = u'Jahr',
         description = u'Das Jahr in dem der Fernlehrgang stattfindent',
         required = True,
         source = jahre,
         )
 
-    titel = TextLine(
+    titel = zope.schema.TextLine(
         title = u'Titel',
         description = u'Titel des Fernlehrgangs',
         required = True
         )
 
-    beschreibung = Text(
+    beschreibung = zope.schema.Text(
         title = u'Beschreibung',
         description = u'Beschreibung des Fernlehrgangs',
         required = True
         )
 
-    typ = Choice(
+    typ = zope.schema.Choice(
         title = u'Typ des Fernlehrgang',
         description = u'Bitte wählen Sie den Typ des Fernlehrgangs aus',
         source = typ,
         required = True
         )
 
-    punktzahl = Int(
+    punktzahl = zope.schema.Int(
         title = u'Punkteanzahl',
         description = u'Bitte geben Sie hier die Punkteanzahl an, die '
                        'erreicht werden muss, um den Fernlehrgang zu bestehen',
         required = True
         )
 
-    beginn = Date(title = u'Start',
+    beginn = zope.schema.Date(title = u'Start',
         description = u'Zu welchem Datum soll der Fernlehrgang beginnen?',
         required = True
         )
 
-    ende = Date(title = u'Ende',
+    ende = zope.schema.Date(title = u'Ende',
         description = u'Zu welchem Datum soll der Fernlehrgang enden?',
         required = True
         )

@@ -4,17 +4,22 @@
 
 import string
 from random import choice
+
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
+
+import zope.schema
 from zope.interface import Interface
 from zope.interface import implementer
-from zope.schema import *
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from . import Base, MyStringType
+from .unternehmen import Unternehmen
 
 
 # VOCABULARIES
@@ -33,14 +38,14 @@ def generatePassword():
 
 class ITeilnehmer(Interface):
 
-    id = TextLine(
+    id = zope.schema.TextLine(
         title = u'Id',
         description = u'Eindeutige Id für den Teilnehmer',
         required = False,
         readonly = True
         )
 
-    anrede = Choice(
+    anrede = zope.schema.Choice(
         title = u"Anrede",
         description = u'Bitte wählen Sie eine Anrede.',
         required = True,
@@ -49,7 +54,7 @@ class ITeilnehmer(Interface):
             ('2', 'Frau', 'Frau'),)
         )
 
-    titel = Choice(
+    titel = zope.schema.Choice(
         title = u"Titel",
         description = u'Bitte wählen Sie einen Titel.',
         required = True,
@@ -59,74 +64,74 @@ class ITeilnehmer(Interface):
             ('2', 'Prof.', 'Prof.'),)
         )
 
-    vorname = TextLine(
+    vorname = zope.schema.TextLine(
         title = u'Vorname',
         description = u'Vorname des Teilnehmers',
         required = True
         )
 
-    name = TextLine(
+    name = zope.schema.TextLine(
         title = u'Name',
         description = u'Name des Teilnehmers',
         required = True
         )
 
-    geburtsdatum = Date(
+    geburtsdatum = zope.schema.Date(
         title = u'Geburtsdatum',
         description = u'Geburtsdatum des Teilnehmers',
         required = True
         )
 
-    strasse = TextLine(
+    strasse = zope.schema.TextLine(
         title = u'Lieferanschrift (Str. ',
         description = u'Straße des Teilnehmers',
         required = False, 
         )
     
-    nr = TextLine(
+    nr = zope.schema.TextLine(
         title = u'Hnr.)',
         description = u'Hausnummer des Teilnehmers',
         required = False, 
         )
 
-    plz = TextLine(
+    plz = zope.schema.TextLine(
         title = u'Lieferanschrift (Plz. ',
         description = u'Postleitzahl des Teilnehmers',
         required = False, 
         )
 
-    ort = TextLine(
+    ort = zope.schema.TextLine(
         title = u'Ort)',
         description = u'Ort des Teilnehmers',
         required = False, 
         )
 
-    adresszusatz = TextLine(
+    adresszusatz = zope.schema.TextLine(
         title = u'Adresszusatz',
         description = u'Adresszusatz des Teilnehmers',
         required = False 
         )
 
-    email = TextLine(
+    email = zope.schema.TextLine(
         title = u'E-Mail',
         description = u'E-Mail des Teilnehmers',
         required = False 
         )
 
-    telefon = TextLine(
+    telefon = zope.schema.TextLine(
         title = u'Telefon',
         description = u'Telefon des Teilnehmers',
         required = False 
         )
 
-    passwort = TextLine(
+    passwort = zope.schema.TextLine(
         title = u'Passwort',
         description = u'Passwort des Teilnehmers',
         required = True,
         defaultFactory = generatePassword,
         )
 
-    kategorie = Choice(
+    kategorie = zope.schema.Choice(
         title = u"Kategorie",
         description = u'Bitte wählen Sie eine Kategorie.',
         required = True,
@@ -137,7 +142,7 @@ class ITeilnehmer(Interface):
             ('2', 'K2', 'Kategorie 2'),)
         )
 
-    kompetenzzentrum = Choice(
+    kompetenzzentrum = zope.schema.Choice(
         title = u"Kompetenzzentrum",
         description = u'Datenfreigabe erteilt?',
         required = True,

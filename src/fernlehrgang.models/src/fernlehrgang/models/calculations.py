@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from .models import Lehrheft
-from .interfaces import IKursteilnehmer, ICalculateResults
 from zope.interface import implementer
+
+from .lehrheft import Lehrheft
+from .resultate import ICalculateResults
+from .kursteilnehmer import IKursteilnehmer
 
 
 POSTVERSANDSPERRE = ['L3', '94', '95']

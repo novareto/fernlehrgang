@@ -8,11 +8,14 @@ from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
+
+import zope.schema
 from zope.interface import Interface, provider
 from zope.interface import implementer
-from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from . import Base, MyStringType
 
 
 BETRIEBSARTEN = (
@@ -35,57 +38,57 @@ def voc_betriebsart(context):
 
 class IUnternehmen(Interface):
 
-    mnr = TextLine(
+    mnr = zope.schema.TextLine(
         title = u'Mitgliedsnummer',
         description = u'Mitgliedsnummer des Unternehmens',
         required = False,
         readonly = False, 
         )
 
-    name = TextLine(
+    name = zope.schema.TextLine(
         title = u'Name',
         description = u'Name des Unternehmens',
         required = True
         )
 
-    name2 = TextLine(
+    name2 = zope.schema.TextLine(
         title = u'Name2',
         description = u'Name des Unternehmens',
         required = True
         )
 
-    name3 = TextLine(
+    name3 = zope.schema.TextLine(
         title = u'Name3',
         description = u'Name des Unternehmens',
         required = True
         )
 
-    str = TextLine(
+    str = zope.schema.TextLine(
         title = u'Strasse',
         description = u'Strasse des Unternehmens',
         required = True
         )
 
-    plz = TextLine(
+    plz = zope.schema.TextLine(
         title = u'Postleitzahl',
         description = u'Postleitzahl des Unternehmens',
         required = True
         )
 
-    ort = TextLine(
+    ort = zope.schema.TextLine(
         title = u'Ort',
         description = u'Ort des Unternehmens',
         required = True
         )
 
-    betriebsart = Choice(
+    betriebsart = zope.schema.Choice(
         title = u'Betriebsart',
         description = u'Betriebsart des Unternehmens',
         source = voc_betriebsart,
         required = True
         )
 
-    mnr_g_alt = TextLine(
+    mnr_g_alt = zope.schema.TextLine(
         title = u'Mitgliedsnummer G Alt',
         description = u'Alte Mitgliedsnummern der Sparte G',
         required = False, 

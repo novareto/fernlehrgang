@@ -7,11 +7,14 @@ from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
+
+import zope.schema
 from zope.interface import Interface, provider
 from zope.interface import implementer
-from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+from . import Base
 
 
 def vocabulary(*terms):
@@ -38,27 +41,27 @@ def reduce_fragen(context):
 
 class IFrage(Interface):
 
-    id = Int(
+    id = zope.schema.Int(
         title=u'Id',
         description=u'Eindeutige Kennzeichnung des ResultatSets',
         required=False,
         readonly=True
         )
 
-    frage = Choice(
+    frage = zope.schema.Choice(
         title=u'Frage',
         description=u'Für welche Frage soll das Antwortschema sein.',
         required=True,
         source=reduce_fragen,
         )
 
-    titel = TextLine(
+    titel = zope.schema.TextLine(
         title=u'Titel',
         description=u'Titel der Frage.',
         required=True,
         )
 
-    beschreibung = Text(
+    beschreibung = zope.schema.Text(
         title=u'Beschreibung',
         required=False,
         )
@@ -69,37 +72,37 @@ class IFrage(Interface):
         required=False,
         )
     
-    option1 = TextLine(
+    option1 = zope.schema.TextLine(
         title=u'Antwortoption 1',
         description=u'Bitte geben Sie 1. Antwortoption ein.',
         required=True,
         )
 
-    option2 = TextLine(
+    option2 = zope.schema.TextLine(
         title=u'Antwortoption 2',
         description=u'Bitte geben Sie 2. Antwortoption ein.',
         required=True,
         )
 
-    option3 = TextLine(
+    option3 = zope.schema.TextLine(
         title=u'Antwortoption 3',
         description=u'Bitte geben Sie 3. Antwortoption ein.',
         required=True,
         )
 
-    option4 = TextLine(
+    option4 = zope.schema.TextLine(
         title=u'Antwortoption 4',
         description=u'Bitte geben Sie 4. Antwortoption ein.',
         required=True,
         )
 
-    antwortschema = TextLine(
+    antwortschema = zope.schema.TextLine(
         title=u'Antwortschema',
         description=u'Bitte geben Sie Antwortmöglichkeiten ein.',
         required=True,
         )
 
-    gewichtung = Choice(
+    gewichtung = zope.schema.Choice(
         title=u'Gewichtung',
         description=u'Bitte geben Sie die Gewichtung für diese Frage ein.',
         required=True,
@@ -124,11 +127,6 @@ class Frage(Base):
     option2 = Column(String(500))
     option3 = Column(String(500))
     option4 = Column(String(500))
-
-    lehrheft = relation(
-        Lehrheft, 
-        backref=backref('fragen', order_by=frage, cascade="all,delete"),
-        )
 
     @property
     def title(self):
