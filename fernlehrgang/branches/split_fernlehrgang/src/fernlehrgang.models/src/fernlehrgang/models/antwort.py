@@ -15,9 +15,10 @@ from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from . import named_vocabulary
-from .kursteilnehmer import IKursteilnehmer
-from .frage import IFrage
+from . import Base
+from .vocabularies import named_vocabulary
+from .kursteilnehmer import IKursteilnehmer, Kursteilnehmer
+from .frage import IFrage, Frage
 
 
 def vocabulary(*terms):

@@ -20,9 +20,7 @@ from zope.i18nmessageid import MessageFactory
 from . import Form
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import IFernlehrgang, ITeilnehmer, IKursteilnehmer
-from fernlehrgang.models import Teilnehmer, Kursteilnehmer
-from fernlehrgang.models.interfaces import lieferstopps
-
+from fernlehrgang.models import lieferstopps, Teilnehmer, Kursteilnehmer
 
 
 _ = MessageFactory('zeam.form.base')
@@ -41,7 +39,8 @@ class KursteilnehmerListing(Form):
     fields = Fields(ITeilnehmer).select('id', 'name', 'geburtsdatum')
 
     label = u"Kursteilnehmer"
-    description = u"Hier können Sie die Kursteilnehmer für Ihren Fernlehrgang suchen und bearbeiten."
+    description = (u"Hier können Sie die Kursteilnehmer für "
+                   u"Ihren Fernlehrgang suchen und bearbeiten.")
 
     results = []
 
@@ -51,8 +50,11 @@ class KursteilnehmerListing(Form):
         for teilnehmer, kursteilnehmer in self.results:
             locate(root, kursteilnehmer, DefaultModel)
             locate(root, teilnehmer.unternehmen, DefaultModel)
-            name = '<a href="%s"> %s %s </a>' %(self.url(kursteilnehmer), teilnehmer.name, teilnehmer.vorname)
-            unternehmen = '<a href="%s"> %s %s </a>' %(self.url(teilnehmer.unternehmen), teilnehmer.unternehmen.mnr, teilnehmer.unternehmen.name)
+            name = '<a href="%s"> %s %s </a>' % (
+                self.url(kursteilnehmer), teilnehmer.name, teilnehmer.vorname)
+            unternehmen = '<a href="%s"> %s %s </a>' % (
+                self.url(teilnehmer.unternehmen), teilnehmer.unternehmen.mnr,
+                teilnehmer.unternehmen.name)
             r = dict(name=name,
                      id = teilnehmer.id,
                      status=lf_vocab.getTerm(kursteilnehmer.status).title,
@@ -71,7 +73,9 @@ class KursteilnehmerListing(Form):
         session = Session()
         flg_id = self.context.id
         sql = session.query(Teilnehmer, Kursteilnehmer)
-        sql = sql.filter(and_(Kursteilnehmer.fernlehrgang_id == flg_id, Kursteilnehmer.teilnehmer_id == Teilnehmer.id))
+        sql = sql.filter(and_(Kursteilnehmer.fernlehrgang_id ==
+                              flg_id, Kursteilnehmer.teilnehmer_id ==
+                              Teilnehmer.id))
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
@@ -80,7 +84,8 @@ class KursteilnehmerListing(Form):
             sql = sql.filter(Teilnehmer.name.ilike(qu))
             v = True
         if data.get('geburtsdatum') != NO_VALUE:
-            sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
+            sql = sql.filter(Teilnehmer.geburtsdatum ==
+                             data.get('geburtsdatum'))
             v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
@@ -104,9 +109,11 @@ class AddKursteilnehmer(Form):
         if errors:
             return
         session = Session()
-        sql = session.query(Teilnehmer).filter(Teilnehmer.id == data.get('teilnehmer_id'))
+        sql = session.query(Teilnehmer).filter(
+            Teilnehmer.id == data.get('teilnehmer_id'))
         if sql.count() == 0:
-            self.flash('Es wurde kein Teilnehmer mit der ID %s gefunden' %data.get('teilnehmer_id'))
+            self.flash('Es wurde kein Teilnehmer mit der ID %s gefunden' %
+                       data.get('teilnehmer_id'))
         teilnehmer = sql.one()
         locate(grok.getSite(), teilnehmer, DefaultModel)
         self.redirect(self.url(teilnehmer, 'register'))
@@ -131,10 +138,6 @@ class Edit(models.Edit):
     fields['fernlehrgang_id'].mode = 'hiddendisplay'
     fields['branche'].mode = "radio"
 
-#    def update(self):
-#        super(Edit, self).update()
-#        import pdb; pdb.set_trace()                                              
-
 
 class MoreInfoOnKursteilnehmer(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
@@ -145,4 +148,5 @@ class MoreInfoOnKursteilnehmer(grok.Viewlet):
         self.script = "<script> var base_url = '%s'; </script>" % url
         locate(grok.getSite(), self.context.teilnehmer, DefaultModel)
         self.turl = '<a href="%s/edit"> %s %s </a>' %(
-                self.view.url(self.context.teilnehmer), self.context.teilnehmer.name, self.context.teilnehmer.vorname)
+                self.view.url(self.context.teilnehmer),
+                self.context.teilnehmer.name, self.context.teilnehmer.vorname)

@@ -20,13 +20,3 @@ def register_vocabulary(vocabulary, name):
     if name in VOCABULARIES:
         raise KeyError(name)
     VOCABULARIES[name] = vocabulary
-
-
-from .antwort import IAntwort
-from .flg import IFernlehrgang
-from .lehrheft import ILehrheft
-from .unternehmen import IUnternehmen
-from .kursteilnehmer import IKursteilnehmer, lieferstopps
-from .teilnehmer import ITeilnehmer, generatePassword
-from .frage import IFrage
-from .resultate import ICalculateResults

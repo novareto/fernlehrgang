@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import TypeDecorator, String
 
 Base = declarative_base()
 
@@ -14,7 +15,11 @@ class MyStringType(TypeDecorator):
         return value
 
 
-    
-from .models import (
-    Fernlehrgang, Unternehmen, Teilnehmer,
-    Lehrheft, Frage, FrageBild, Kursteilnehmer, Antwort)
+from .fernlehrgang import IFernlehrgang, Fernlehrgang
+from .unternehmen import IUnternehmen, Unternehmen
+from .teilnehmer import ITeilnehmer, Teilnehmer, generatePassword
+from .lehrheft import ILehrheft, Lehrheft
+from .frage import IFrage, Frage, FrageBild
+from .kursteilnehmer import IKursteilnehmer, Kursteilnehmer, lieferstopps
+from .antwort import IAntwort, Antwort
+from .resultate import ICalculateResults
