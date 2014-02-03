@@ -2,10 +2,17 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-from zope.schema import *
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.orm import relation, backref, relationship
+from sqlalchemy_imageattach.context import get_current_store
+from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy_imageattach.entity import store_context
 from zope.interface import Interface, provider
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.interface import implementer
+from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 
 BETRIEBSARTEN = (
@@ -83,3 +90,27 @@ class IUnternehmen(Interface):
         description = u'Alte Mitgliedsnummern der Sparte G',
         required = False, 
         )
+
+
+@implementer(IUnternehmen)
+class Unternehmen(Base):
+    __tablename__ = 'adr'
+
+    #id = Column("ID", Numeric, primary_key=True)
+    mnr = Column("MNR", MyStringType(12), primary_key=True, index=True)
+    name = Column("NAME1", String(32))
+    name2 = Column("NAME2", String(32))
+    name3 = Column("NAME3", String(32))
+    str = Column("STR", String(70))
+    plz = Column("PLZ", String(10))
+    ort = Column("ORT", String(30))
+    betriebsart = Column("BETRIEBSART", String(1))
+    mnr_e = Column("MNR_E", MyStringType(12))
+    mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
+
+    @property
+    def title(self):
+        return self.mnr
+
+    def __repr__(self):
+        return "<Unternehmen(mnr='%s')>" %(self.mnr)

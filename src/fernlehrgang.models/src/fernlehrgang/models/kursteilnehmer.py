@@ -2,10 +2,18 @@
 # Copyright (c) 2007-2008 NovaReto GmbH
 # cklinger@novareto.de 
 
-from zope.schema import *
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.orm import relation, backref, relationship
+from sqlalchemy_imageattach.context import get_current_store
+from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy_imageattach.entity import store_context
 from zope.interface import Interface, provider
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.interface import implementer
+from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
 from . import named_vocabulary
 
 
@@ -68,7 +76,8 @@ class IKursteilnehmer(Interface):
 
     id = Int(
         title = u'Id (Kursteilnehmer Id)',
-        description = u'Eindeutige Kennzeichnung des Teilnehmers für den Fernlehrgang',
+        description = (u'Eindeutige Kennzeichnung des Teilnehmers '
+                       u'für den Fernlehrgang'),
         required = False,
         readonly = True
         )
@@ -81,14 +90,16 @@ class IKursteilnehmer(Interface):
 
     fernlehrgang_id = Choice(
         title = u"Lehrgang",
-        description = u'Hier können Sie diesen Teilnehmer für einen Lehrgang registrieren.',
+        description = (u'Hier können Sie diesen Teilnehmer für '
+                       u'einen Lehrgang registrieren.'),
         required = False,
         source = named_vocabulary("fernlehrgang"),
         )
 
     status = Choice(
         title = u"Status",
-        description = u"Bitte geben Sie in diesen Feld den Status des Teilnehmers ein",
+        description = (u"Bitte geben Sie in diesen Feld den Status "
+                       u"des Teilnehmers ein"),
         required = True,
         default = 'A1',
         source = lieferstopps,
@@ -96,14 +107,17 @@ class IKursteilnehmer(Interface):
 
     un_klasse = Choice(
         title = u"Mitarbeiteranzahl",
-        description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
+        description = (u"Hier können Sie die Gruppe des Unternehmens "
+                       u"festlegen."),
         required = False,
         source = un_klasse,
         )
 
     branche = Choice(
         title = u"Branche",
-        description = u'Betrieb ist ein Recyclingunternehmen, ein Motorradhandel oder ein Speditions- oder Umschalgunternehmen.',
+        description = (u'Betrieb ist ein Recyclingunternehmen, ein '
+                       u'Motorradhandel oder ein Speditions- oder '
+                       u'Umschalgunternehmen.'),
         required = True,
         source = janein,
         default = 'nein',
@@ -111,7 +125,46 @@ class IKursteilnehmer(Interface):
 
     gespraech = Choice(
         title = u"Abschlussgesräch / Abschlusseminar",
-        description = u'Wie hat der Teilnehmer, falls nötig, das Abschlussgespräch / Abschussseminar absolviert?',
+        description = (u'Wie hat der Teilnehmer, falls nötig, das '
+                       u'Abschlussgespräch / Abschussseminar absolviert ?'),
         required = True,
         source = gespraech,
         )
+
+
+@implementer(IKursteilnehmer)
+class Kursteilnehmer(Base):
+    __tablename__ = 'kursteilnehmer'
+
+    id = Column(
+        Integer,
+        Sequence('kursteilnehmer_seq', start=900000, increment=1),
+        primary_key=True)
+
+    status = Column(String(50))
+    fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
+    teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
+    unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR',))
+    un_klasse = Column(String(3))
+    branche = Column(String(5))
+    gespraech = Column(String(20))
+
+    fernlehrgang = relation(
+        Fernlehrgang,
+        backref=backref('kursteilnehmer', order_by=id))
+
+    teilnehmer = relation(
+        Teilnehmer,
+        backref=backref('kursteilnehmer', order_by=id))
+    
+    unternehmen = relation(
+        Unternehmen,
+        backref=backref('kursteilnehmer', order_by=id))
+
+    @property
+    def title(self):
+        return "%s %s" % (self.teilnehmer.name, self.teilnehmer.vorname)
+
+    def __repr__(self):
+        return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" % (
+            self.id, self.fernlehrgang_id)

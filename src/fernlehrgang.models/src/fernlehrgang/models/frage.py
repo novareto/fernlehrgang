@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from zope.schema import *
 from cromlech.file import FileField
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.orm import relation, backref, relationship
+from sqlalchemy_imageattach.context import get_current_store
+from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy_imageattach.entity import store_context
 from zope.interface import Interface, provider
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.interface import implementer
+from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 
 def vocabulary(*terms):
@@ -98,3 +105,70 @@ class IFrage(Interface):
         required=True,
         vocabulary=vocabulary((2,2,2),(3,3,3),),
         )
+
+
+@implementer(IFrage)
+class Frage(Base):
+    __tablename__ = 'frage'
+
+    id = Column(Integer, Sequence('frage_seq', start=10000, increment=1),
+                primary_key=True)
+    frage = Column(String(5))
+    titel = Column(String(256))
+    beschreibung = Column(String(500))
+    bilder = image_attachment('FrageBild')
+    antwortschema = Column(String(50))
+    gewichtung = Column(Integer)
+    lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
+    option1 = Column(String(500))
+    option2 = Column(String(500))
+    option3 = Column(String(500))
+    option4 = Column(String(500))
+
+    lehrheft = relation(
+        Lehrheft, 
+        backref=backref('fragen', order_by=frage, cascade="all,delete"),
+        )
+
+    @property
+    def title(self):
+        return self.titel
+    
+    def __repr__(self):
+        return "<Frage(id='%s', frage='%s', antwort='%s')>" % (
+            self.id, self.frage, self.antwortschema)
+
+    @apply
+    def bild():
+        """This relies on an implict use of the store.
+        read https://sqlalchemy-imageattach.readthedocs.org/en/0.8.1/guide/context.html#implicit-contexts
+        """
+        def fget(self):
+            if self.bilder.count():
+                return self.bilder.original
+        def fset(self, img):
+            if not isinstance(img, Marker):
+                if img is None and self.bilder.count():
+                    store = get_current_store()
+                    for elm in self.bilder:
+                        store.delete(elm)
+                elif img is not None:
+                    self.bilder.from_file(img)
+                    self.bilder.generate_thumbnail(height=150)
+        return property(fget, fset)
+
+    @property
+    def thumbnail(self):
+        if self.bilder.count():
+            return self.bilder.find_thumbnail(height=150)
+        else:
+            return None
+
+    
+
+class FrageBild(Base, Image):
+    """Question picture model.
+    """
+    user_id = Column(Integer, ForeignKey(Frage.id), primary_key=True)
+    user = relationship('Frage')
+    __tablename__ = 'frage_bilder'
