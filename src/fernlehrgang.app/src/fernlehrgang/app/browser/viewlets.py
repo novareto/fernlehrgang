@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import grok
-from uvc.layout.interfaces import IHeaders
-from zope.app.appsetup.product import getProductConfiguration
-from zope.interface import Interface
+
 from dolmen import menu
 from dolmen.app.layout import viewlets, IDisplayView
-from ..interfaces import IListing
 from fernlehrgang.models import Fernlehrgang
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok import pagetemplate
@@ -14,11 +11,15 @@ from plone.memoize import ram
 from time import time
 from uvc.layout import IPersonalPreferences, MenuItem 
 from uvc.layout.interfaces import IAboveContent, IPageTop
+from uvc.layout.interfaces import IHeaders
 from uvc.layout.slots import managers
 from z3c.saconfig import Session
+from zope.app.appsetup.product import getProductConfiguration
+from zope.interface import Interface
 from zope.interface import Interface
 
 from .skin import IFernlehrgangSkin
+from ..interfaces import IListing
 
 
 grok.templatedir('templates')
@@ -37,11 +38,6 @@ class TestSystem(grok.Viewlet):
     def render(self):
         return ""
 
-
-class InfoManager(grok.ViewletManager):
-    grok.name('fernlehrgang.contextualinfo')
-    grok.context(Interface)
-    
 
 class UserName(MenuItem):
     """ User Viewlet

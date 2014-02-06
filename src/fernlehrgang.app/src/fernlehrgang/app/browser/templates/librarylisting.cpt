@@ -1,6 +1,6 @@
-<div class="files-overview outlined-block" tal:condition="viewlet.files">
+<div class="files-overview outlined-block" tal:condition="view.files">
   <dl>
-    <dd tal:repeat="file viewlet.files">
+    <dd tal:repeat="file view.files">
       <a href="" tal:attributes="href file['url'];
 				 title file['name'];"
          tal:content="'%s (%s)' % (file['name'], file['size'])" />

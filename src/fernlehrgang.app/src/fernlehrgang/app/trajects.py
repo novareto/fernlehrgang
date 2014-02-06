@@ -17,6 +17,7 @@ from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.context import push_store_context
 
+from .upload import IFileStore
 from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
 
@@ -25,9 +26,10 @@ from z3c.saconfig.interfaces import IEngineCreatedEvent
 from zeam.form.base.markers import Marker
 from zope.component import IFactory, provideUtility, getUtility
 from zope.container.contained import Contained
-from zope.location import LocationProxy, ILocation
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 from zope.interface import Interface, implementer, provider
+from zope.interface import alsoProvides
+from zope.location import LocationProxy, ILocation
 from zope.publisher.interfaces import IStartRequestEvent
 
 
@@ -61,8 +63,11 @@ class Fernlehrgang(traject.Traject):
     @located
     def factory(fernlehrgang_id):
         session = Session()
-        return session.query(models.Fernlehrgang).filter(
+        dd = session.query(models.Fernlehrgang).filter(
             models.Fernlehrgang.id == int(fernlehrgang_id)).one()
+        dd.storageid = 'fernlehrgang.%s' % fernlehrgang_id
+        alsoProvides(dd, IFileStore)
+        return dd
 
     def arguments(fernlehrgang):
         return dict(fernlehrgang_id = fernlehrgang.id)

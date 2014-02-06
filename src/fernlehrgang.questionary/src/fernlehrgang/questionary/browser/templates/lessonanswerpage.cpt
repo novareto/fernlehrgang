@@ -1,15 +1,19 @@
-<h1 tal:content="context.titel" />
+<h1 tal:content="context.titel"> </h1>
 <form class="form-horizontal"
       tal:attributes="action view.action"
       method="POST">
   <div id="fragen">
-    <div class="frage" tal:repeat="question view.questions">
+    <div class="frage outlined-block" tal:repeat="question view.questions">
       <div class="alert error-field alert-danger"
 	   tal:omit-tag="not question['id'] in view.errors">
-	<h3 tal:content="question['title']" />
+	<h2 tal:content="question['title']" />
 	<p class="text-error" tal:condition="question['id'] in view.errors"
 	   tal:content="view.errors[question['id']]" />
 	<div tal:replace="structure question['render']" />
+      </div>
+      <div class="outlined-block-title">
+	Frage
+	<span tal:replace="'%i/%i' % (question['idx'], question['max'])" />
       </div>
     </div>
   </div>
