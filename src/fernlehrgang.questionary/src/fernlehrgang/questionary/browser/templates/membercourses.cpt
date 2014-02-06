@@ -1,0 +1,17 @@
+<ul id="member-courses-menu" class="nav pull-right"
+    tal:condition="viewlet.courses">
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+      <i class="icon-book"></i>
+      <span>Courses</span>
+      <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+      <li tal:repeat="course viewlet.courses">
+	<a href="" tal:attributes="href course['url']"> 
+	  <span tal:content="course['title']" />
+	</a>
+      </li>
+    </ul>
+  </li>
+</ul>

@@ -1,0 +1,20 @@
+<label class="radio">
+  <input type="radio" tal:content="context.option1" value="A" 
+	 tal:attributes="name 'frage-%s' % context.id;
+			 checked data.get(context.frage) == 'A'" />
+</label>
+<label class="radio">
+  <input type="radio" tal:content="context.option2" value="B"
+	 tal:attributes="name 'frage-%s' % context.id;
+			 checked data.get(context.frage) == 'B'" />
+</label>
+<label class="radio">
+  <input type="radio" tal:content="context.option3" value="C"
+	 tal:attributes="name 'frage-%s' % context.id;
+			 checked data.get(context.frage) == 'C'" />
+</label>
+<label class="radio">
+  <input type="radio" tal:content="context.option4" value="D"
+	 tal:attributes="name 'frage-%s' % context.id;
+			 checked data.get(context.frage) == 'D'" />
+</label>
