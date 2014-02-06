@@ -55,6 +55,7 @@ setup(name='fernlehrgang.app',
         'z3c.testsetup',
         'zeam.form.table',
         'zope.pluggableauth',
+        'psycopg2',
         ],
       entry_points = {
           'paste.app_factory': [

@@ -1,0 +1,6 @@
+<ol>
+  <li tal:content="context.option1" />
+  <li tal:content="context.option2" />
+  <li tal:content="context.option3" />
+  <li tal:content="context.option4" />
+</ol>
