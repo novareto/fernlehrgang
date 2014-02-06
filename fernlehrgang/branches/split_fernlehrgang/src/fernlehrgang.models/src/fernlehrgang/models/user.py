@@ -8,7 +8,7 @@ from zope.schema import Int, TextLine, Password
 
 class IUser(Interface):
     
-    login = Int(
+    login = TextLine(
         title=u"Login",
         required=True,
         )
@@ -41,9 +41,9 @@ class IUser(Interface):
 @implementer(IUser)
 class User(Base):
 
-    __tablename__ = 'user'
+    __tablename__ = 'flg_user'
     
-    login = Column(Integer, primary_key=True)
+    login = Column(String(50), primary_key=True)
     email = Column(String(255))
     real_name = Column(String(150))
     role = Column(String(50))
