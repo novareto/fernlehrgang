@@ -9,6 +9,7 @@
       />
 
   <include package="fernlehrgang.app" />
+  <include package="fernlehrgang.questionary" />
 
     <configure i18n_domain="fernlehrgang">
 
