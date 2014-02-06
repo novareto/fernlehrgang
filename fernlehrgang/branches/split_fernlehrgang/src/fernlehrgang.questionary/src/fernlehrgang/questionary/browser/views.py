@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 
+
 import grok
 
-from dolmen.app.layout import models
-from z3c.saconfig import Session
-from zope.component import getMultiAdapter
-from zope.interface import Interface
 from datetime import datetime
-
-from fernlehrgang.models import Kursteilnehmer, Antwort, Lehrheft
-from fernlehrgang.models import IFernlehrgang, ILehrheft, IFrage, ITeilnehmer, ICalculateResults
-from zeam.form.base import Fields
+from dolmen.app.layout import models
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from sqlalchemy import and_
+from z3c.saconfig import Session
+from zeam.form.base import Fields
+from zope.component import getMultiAdapter, getUtility
+from zope.interface import Interface
+
+from fernlehrgang.models import Kursteilnehmer, Antwort, Lehrheft
+from fernlehrgang.models import IFernlehrgang, ILehrheft, IFrage
+from fernlehrgang.models import ITeilnehmer, ICalculateResults
 
 from .skin import IQuestionary
 from ..app import Questionaries
 from ..interfaces import IMembership
-from datetime import datetime
 
 
 VALUES = frozenset(('A', 'B', 'C', 'D'))
@@ -84,7 +85,7 @@ class QuestionRenderer(object):
     modes = {
         "display": ChameleonPageTemplateFile(
             'templates/questiondisplayview.cpt'),
-        "editradio": ChameleonPageTemplateFile(
+        "edit": ChameleonPageTemplateFile(
             'templates/questioneditview.cpt'),
         "editchoice": ChameleonPageTemplateFile(
             'templates/questioneditchoiceview.cpt'),
@@ -94,16 +95,29 @@ class QuestionRenderer(object):
         self.context = context
         self.request = request
         self.data = data
+        self.id = str(self.context.id)
 
     def namespace(self):
         return {}
         
     def default_namespace(self):
-        return {"view": self,
-                "context": self.context,
-                "request": self.request,
-                "data": self.data}
-    
+        if self.context.bilder.count():
+            store = getUtility(Interface, name='ImageStore')
+            image = self.context.bild.locate(store=store)
+            thumb = self.context.thumbnail.locate(store=store)
+        else:
+            image = None
+            thumb = None
+
+        return {
+            "view": self,
+            "context": self.context,
+            "request": self.request,
+            "data": self.data,
+            "image": image,
+            "thumb": thumb,
+            }
+
     def render(self, mode):
         template = self.modes.get(mode)
         if template is None:
@@ -112,15 +126,19 @@ class QuestionRenderer(object):
 
     @classmethod
     def batch(cls, lesson, request, name, **data):
-        for question in lesson.fragen:
+        size = len(lesson.fragen)
+        for idx, question in enumerate(lesson.fragen, 1):
             view = cls(question, request, **data)
-            name = "editradio"
-            if len(question.antwortschema) > 1:
+            if name == "edit" and len(question.antwortschema) > 1:
                 name = "editchoice"
             html = view.render(name)
-            yield {'id': question.frage,
-                   'title': question.titel,
-                   'render': html}
+            yield {
+                'id': question.frage,
+                'title': question.titel,
+                'render': html,
+                'idx': idx,
+                'max': size,
+                }
 
 
 class LessonPage(models.Index):

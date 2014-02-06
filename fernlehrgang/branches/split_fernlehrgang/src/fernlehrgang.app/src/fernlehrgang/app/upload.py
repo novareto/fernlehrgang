@@ -77,8 +77,8 @@ class Storage(Location):
         storage = create_directory(os.path.join(root, id))
 
         if storage is None:
-            raise RuntimeError
-
+            raise RuntimeError(os.path.join(root, id))
+    
         self.storage = storage
         self.refresh()
 

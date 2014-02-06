@@ -64,6 +64,7 @@ setup(name='fernlehrgang.app',
                ],
           'fanstatic.libraries': [
               'fernlehrgang.app.browser = fernlehrgang.app.browser.resources:library',
+              'bs_calendar = fernlehrgang.app.browser.resources:cal_library',
               ],
           'zeam.form.components': [
               'file = fernlehrgang.app.browser.widgets:register',

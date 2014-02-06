@@ -7,9 +7,12 @@ from math import log
 
 from dolmen.app.layout import IDisplayView
 from dolmen.forms import crud
+from dolmen.menu import menuentry
 from dolmen.uploader.service import create_directory
 from grokcore.traverser import Traverser
+from megrok.layout import Page
 from uvc.layout.slots.managers import BelowContent
+
 from zope.interface import implementer, Interface, Attribute
 from zope.interface.common import mapping
 from zope.location import locate
@@ -19,8 +22,9 @@ from zope.security.interfaces import Unauthorized
 from zope.security.management import checkPermission
 from zope.traversing.interfaces import ITraversable, TraversalError
 
+from .skin import IFernlehrgangSkin
 from .resources import upload
-from .viewlets import InfoManager
+from .viewlets import NavigationMenu
 from ..upload import IFileStore, IStorage, Storage, FileRepresentation
 
 try:
@@ -175,13 +179,25 @@ class FileManager(object):
 
     def render(self):
         pass
-    
 
+
+@menuentry(NavigationMenu, order=10)
+class LibraryListing(Page):
+    grok.name('files')
+    grok.title('File library')
+    grok.context(IFileStore)
+
+    def update(self):
+        storage = Storage(self.context.storageid)
+        locate(storage, self.context, '++storage++')
+        storage_url = self.url(storage)
+        self.files = [format_file(storage_url, f) for f in storage.values()]
 
 
 class LibraryUploadViewlet(grok.Viewlet):
     grok.name('files')
-    grok.view(Interface)
+    grok.view(LibraryListing)
+    grok.layer(IFernlehrgangSkin)
     grok.viewletmanager(BelowContent)
     grok.context(IFileStore)
     
@@ -195,17 +211,4 @@ class LibraryUploadViewlet(grok.Viewlet):
         self.files = [format_file(storage_url, f) for f in storage.values()]
         self.upload_title = u"Attach files"
 
-        
 
-class LibraryListViewlet(grok.Viewlet):
-    grok.name('files')
-    grok.viewletmanager(InfoManager)
-    grok.view(IDisplayView)
-    grok.context(IFileStore)
-
-    def update(self):
-        grok.Viewlet.update(self)
-        storage = Storage(self.context.storageid)
-        locate(storage, self.context, '++storage++')
-        storage_url = self.view.url(storage)
-        self.files = [format_file(storage_url, f) for f in storage.values()]

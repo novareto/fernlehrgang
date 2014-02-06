@@ -2,13 +2,18 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
+import time
+import json
+from datetime import date, datetime, timedelta
 import grok
 
 from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
 from fernlehrgang.models import Fernlehrgang
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from megrok.layout import Page
 from megrok.traject import locate
+from zope.location import LocationProxy
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from z3c.saconfig import Session
@@ -17,13 +22,14 @@ from zeam.form.base import Fields
 from . import AddForm
 from ..interfaces import IFernlehrgang, IFernlehrgangApp
 from .skin import IFernlehrgangSkin
+from .resources import bs_calendar
 from .viewlets import AddMenu, NavigationMenu
 
 
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+@menuentry(NavigationMenu, order=-1)
 class FernlehrgangListing(TablePage):
     grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
@@ -75,12 +81,60 @@ class AddFernlehrgang(AddForm):
         return url
 
 
+class SessionsFeeder(grok.View):
+    grok.context(IFernlehrgang)
+    grok.layer(IFernlehrgangSkin)
+
+    @staticmethod
+    def timestamp(d):
+        return time.mktime(d.timetuple())*1e3 + d.microsecond/1e3
+
+    @property
+    def sessions(self):
+        for lesson in self.context.lehrhefte:
+            lesson = LocationProxy(lesson)
+            locate(lesson, self.context, lesson.id)
+            session = datetime.combine(lesson.vdatum, datetime.min.time())
+            date_start = datetime.combine(session, datetime.min.time())
+            date_end = date_start + timedelta(hours=23, minutes=59)
+            ts_start = self.timestamp(date_start)
+            ts_end = self.timestamp(date_end)
+            yield {
+                "id": lesson.id,
+                "title": lesson.titel,
+                "url": 'lehrheft/%s' % lesson.id,
+                "class": "event-important",
+                "start": ts_start,
+                "end": ts_end,
+                }
+            
+        
+    def render(self):
+        result = {
+            "success": 1,
+            "result": list(self.sessions),
+            }
+        self.response.setHeader('Content-Type', 'application/json; charset=utf-8')
+        return json.dumps(result)
+
+
+@menuentry(NavigationMenu)
+class Sessions(Page):
+    grok.context(IFernlehrgang)
+    grok.layer(IFernlehrgangSkin)
+
+    def update(self):
+        bs_calendar.need()
+
+    
+@menuentry(NavigationMenu, order=-2)
 class FernlehrgangIndex(models.DefaultView):
     grok.context(IFernlehrgang)
     grok.layer(IFernlehrgangSkin)
-    
+    grok.title('Index')
+
     fields = Fields(IFernlehrgang).omit('id')
-   
+
     @property
     def label(self):
         return u"Fernlehrgang: %s (%s)" % (
@@ -95,7 +149,6 @@ class Edit(models.Edit):
 
 
 ### Spalten
-
 class ID(GetAttrColumn):
     grok.name('Id')
     grok.context(IFernlehrgangApp)
