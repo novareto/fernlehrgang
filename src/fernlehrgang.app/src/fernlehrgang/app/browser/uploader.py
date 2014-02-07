@@ -184,7 +184,7 @@ class FileManager(object):
 @menuentry(NavigationMenu, order=10)
 class LibraryListing(Page):
     grok.name('files')
-    grok.title('File library')
+    grok.title('Download Center')
     grok.context(IFileStore)
 
     def update(self):

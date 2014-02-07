@@ -118,8 +118,9 @@ class SessionsFeeder(grok.View):
         return json.dumps(result)
 
 
-@menuentry(NavigationMenu)
+@menuentry(NavigationMenu, order=60)
 class Sessions(Page):
+    grok.title('Terminliste')
     grok.context(IFernlehrgang)
     grok.layer(IFernlehrgangSkin)
 

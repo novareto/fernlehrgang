@@ -105,6 +105,7 @@ class ObjectActionMenu(viewlets.ContextualActions):
 
     def available(self):
         if IListing.providedBy(self.view):
+            return True
             return False 
         return True
 

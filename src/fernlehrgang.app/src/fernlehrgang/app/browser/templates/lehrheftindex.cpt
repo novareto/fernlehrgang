@@ -3,14 +3,11 @@
     <span tal:replace="context.titel" />
   </h1>
   <div class="row-fluid">
-    <div class="fragen span8">
+    <div class="fragen span12">
       <div tal:repeat="frage view.fragen"
 	   tal:replace="structure frage()">
 	Question rendering
       </div>
-    </div>
-    <div class="info span4">
-      <div tal:replace="structure provider:fernlehrgang.contextualinfo" />
     </div>
   </div>
   <div class="outlined-block-title">
