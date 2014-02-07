@@ -5,16 +5,22 @@ import grok
 
 from datetime import datetime
 from dolmen.app.layout import models
+from uvc.composedview.components import ComposedPage, ITab
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from megrok.layout import Page
 from sqlalchemy import and_
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zope.component import getMultiAdapter, getUtility
-from zope.interface import Interface
+from zope.interface import Interface, implementer
+from zope.location import locate
+from zope.dublincore.interfaces import IDCDescriptiveProperties
 
 from fernlehrgang.models import Kursteilnehmer, Antwort, Lehrheft
 from fernlehrgang.models import IFernlehrgang, ILehrheft, IFrage
 from fernlehrgang.models import ITeilnehmer, ICalculateResults
+from fernlehrgang.app.upload import Storage
+from fernlehrgang.app.browser.uploader import format_file
 
 from .skin import IQuestionary
 from ..app import Questionaries
@@ -43,7 +49,8 @@ class Index(models.Index):
         return []
 
 
-class CoursePage(models.Index):
+@implementer(IDCDescriptiveProperties)
+class CoursePage(ComposedPage):
     grok.context(IFernlehrgang)
     grok.name('index')
     grok.layer(IQuestionary)
@@ -51,8 +58,10 @@ class CoursePage(models.Index):
 
     results = None
     title = u"Fernlehrgag"
+    description = u''
     
     def update(self):
+        ComposedPage.update(self)
         membership = IMembership(self.request.principal, None)
         if membership is not None:
             self.results = membership.get_course_result(self.context.id)
@@ -64,20 +73,65 @@ class CoursePage(models.Index):
             ktn = membership.get_course_member(self.context.id)
             session = Session()
             q = session.query(Antwort, Lehrheft).filter(
-                and_(
-                    Antwort.kursteilnehmer_id == ktn.id,
-                    Antwort.lehrheft_id == lession_id,
-                    Lehrheft.id == lession_id,
-                    Lehrheft.vdatum <= datetime.now(),
-                )
-            )
+                    and_(Antwort.kursteilnehmer_id == ktn.id,
+                        Antwort.lehrheft_id == lession_id,
+                        Lehrheft.id == lession_id,
+                        Lehrheft.vdatum <= datetime.now()))
             res = int(q.count())
             if res > 0:
                 ret = "erledigt"
             elif res == 0:
                 ret = "offen"
-        print ret
-        return ret 
+        return ret
+
+
+@implementer(ITab)
+class MyRegData(Page):
+    grok.order(3)
+    grok.context(CoursePage)
+    grok.title(u'Meine Registrierdaten')
+    grok.require('zope.View')
+
+
+@implementer(ITab)
+class MyResults(Page):
+    grok.order(2)
+    grok.context(CoursePage)
+    grok.title(u'Meine Ergebnisse')
+    grok.require('zope.View')
+
+
+@implementer(ITab)
+class Manage(Page):  # only to test the rights
+    grok.order(0)
+    grok.context(CoursePage)
+    grok.title(u'Manage')
+    grok.require('zope.ManageApplication')
+
+    def render(self):
+        return "Manage me !"
+
+
+@implementer(ITab)
+class MyLessons(Page):
+    grok.order(1)
+    grok.context(CoursePage)
+    grok.title(u'Meine Lehrhefte')
+    grok.require('zope.View')
+
+
+@implementer(ITab)
+class MyDownloads(Page):
+    grok.order(4)
+    grok.context(CoursePage)
+    grok.title(u'Meine Downloads')
+    grok.require('zope.View')
+
+    def update(self):
+        storage = Storage(self.context.context.storageid)
+        locate(storage, self.context.context, '++storage++')
+        storage_url = self.url(storage)
+        self.files = [format_file(storage_url, f) for f in storage.values()]
 
 
 class QuestionRenderer(object):

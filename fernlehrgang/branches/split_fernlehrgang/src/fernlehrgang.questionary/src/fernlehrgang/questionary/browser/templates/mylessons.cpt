@@ -1,0 +1,29 @@
+<fieldset>
+  <legend> Meine Lehrhefte </legend>
+  <table class="table">
+    <tr>
+      <th> Heft Nr. </th>
+      <th> Titel </th>
+      <th> Datum </th>
+      <th> Status </th>
+    </tr>
+    <tr tal:repeat="lh context.context.lehrhefte">
+      <div tal:condition="context.getStatus(lh.id) == 'erledigt'">
+        <td tal:content="lh.nummer"> </td>
+        <td tal:content="lh.vdatum"> </td>
+        <td> <span tal:content="lh.title"> </span> </td>
+        <td> erledigt </td>
+      </div>
+      <div tal:condition="context.getStatus(lh.id) == 'offen'">
+        <td tal:content="lh.nummer"> </td>
+        <td tal:content="lh.vdatum"> </td>
+        <td>
+	  <a tal:attributes="href string:${context.context.id}/lehrheft/${lh.id}/answer">
+	    <span tal:content="lh.title" />
+	  </a>
+	</td>
+        <td> offen </td>
+      </div>
+    </tr>
+  </table>
+</fieldset>

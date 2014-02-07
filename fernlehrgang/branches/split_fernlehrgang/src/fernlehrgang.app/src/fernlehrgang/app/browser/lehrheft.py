@@ -109,7 +109,9 @@ class EmbeddedFrage(View):
             self.image = self.context.bild.locate(store=store)
             self.thumb = self.context.thumbnail.locate(store=store)
 
+from dolmen.app.layout import ContextualMenu    
 
+@menuentry(ContextualMenu, order=10)
 @implementer(IDisplayView)
 class LehrheftIndex(Page):
     grok.context(ILehrheft)
@@ -119,8 +121,9 @@ class LehrheftIndex(Page):
     def update(self):
         self.fragen = (EmbeddedFrage(frage, self.request)
                        for frage in self.context.fragen)
-    
 
+
+@menuentry(ContextualMenu, order=20)
 class Edit(models.Edit):
     grok.context(ILehrheft)
     grok.title(u'Edit')
