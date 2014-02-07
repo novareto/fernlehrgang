@@ -21,6 +21,7 @@ from fernlehrgang.models import IFernlehrgang, ILehrheft, IFrage
 from fernlehrgang.models import ITeilnehmer, ICalculateResults
 from fernlehrgang.app.upload import Storage
 from fernlehrgang.app.browser.uploader import format_file
+from fernlehrgang.app.browser.resources import bs_calendar
 
 from .skin import IQuestionary
 from ..app import Questionaries
@@ -118,6 +119,17 @@ class MyLessons(Page):
     grok.context(CoursePage)
     grok.title(u'Meine Lehrhefte')
     grok.require('zope.View')
+
+
+@implementer(ITab)
+class Sessions(Page):
+    grok.order(5)
+    grok.title('Terminliste')
+    grok.context(CoursePage)
+    grok.require('zope.View')
+
+    def update(self):
+        bs_calendar.need()
 
 
 @implementer(ITab)
