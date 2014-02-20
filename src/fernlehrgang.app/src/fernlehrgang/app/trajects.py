@@ -8,7 +8,8 @@ import grok
 from .upload import IFileStore
 
 from dolmen.content import IContent, schema
-from megrok import traject
+from uvclight.backends import traject
+from cromlech.sqlalchemy import get_session
 
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
@@ -32,18 +33,6 @@ from zope.interface import alsoProvides
 from zope.location import LocationProxy, ILocation
 from zope.publisher.interfaces import IStartRequestEvent
 
-
-@grok.subscribe(IEngineCreatedEvent)
-def setUpDatabase(event):
-    metadata = models.Base.metadata
-    metadata.create_all(event.engine, checkfirst=True)
-
-
-@grok.subscribe(IStartRequestEvent)
-def ImageStoreContext(event):
-    store = getUtility(Interface, name='ImageStore')
-    push_store_context(store)
-
     
 def located(func):
     def proxify(*args, **kws):
@@ -54,15 +43,16 @@ def located(func):
     return proxify
 
 
-class Fernlehrgang(traject.Traject):
+class Fernlehrgang(traject.Model):
     grok.context(IFernlehrgangApp)
 
     model = models.Fernlehrgang
     pattern = "fernlehrgang/:fernlehrgang_id"
 
     @located
+    @staticmethod
     def factory(fernlehrgang_id):
-        session = Session()
+        session = get_session('fernlehrgang')
         dd = session.query(models.Fernlehrgang).filter(
             models.Fernlehrgang.id == int(fernlehrgang_id)).one()
         dd.storageid = 'fernlehrgang.%s' % fernlehrgang_id
@@ -73,15 +63,16 @@ class Fernlehrgang(traject.Traject):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
-class Unternehmen(traject.Traject):
+class Unternehmen(traject.Model):
     grok.context(IFernlehrgangApp)
 
     model = models.Unternehmen
     pattern = "unternehmen/:unternehmen_mnr"
 
     @located
+    @staticmethod
     def factory(unternehmen_mnr):
-        session = Session()
+        session = get_session('fernlehrgang')
         return session.query(models.Unternehmen).filter(
             models.Unternehmen.mnr == unternehmen_mnr).one()
 
@@ -89,15 +80,16 @@ class Unternehmen(traject.Traject):
         return dict(unternehmen_mnr = unternehmen.mnr)
 
 
-class Teilnehmer(traject.Traject):
+class Teilnehmer(traject.Model):
     grok.context(IFernlehrgangApp)
 
     model = models.Teilnehmer
     pattern = "unternehmen/:unternehmen_mnr/teilnehmer/:id"
 
     @located
+    @staticmethod
     def factory(id, unternehmen_mnr):
-        session = Session()
+        session = get_session('fernlehrgang')
         return session.query(models.Teilnehmer).filter(
             and_(models.Teilnehmer.id == id,
                  models.Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
@@ -107,15 +99,16 @@ class Teilnehmer(traject.Traject):
                     unternehmen_mnr=teilnehmer.unternehmen_mnr)
 
 
-class Lehrheft(traject.Traject):
+class Lehrheft(traject.Model):
     grok.context(IFernlehrgangApp)
 
     pattern = "fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id"
     model = models.Lehrheft
 
     @located
+    @staticmethod
     def factory(fernlehrgang_id, lehrheft_id):
-        session = Session()
+        session = get_session('fernlehrgang')
         return  session.query(models.Lehrheft).filter(
             and_(models.Lehrheft.fernlehrgang_id == int(fernlehrgang_id),
                  models.Lehrheft.id == int(lehrheft_id))).one()
@@ -125,15 +118,16 @@ class Lehrheft(traject.Traject):
                     lehrheft_id = lehrheft.id)
 
 
-class Frage(traject.Traject):
+class Frage(traject.Model):
     grok.context(IFernlehrgangApp)
 
     model = models.Frage
     pattern = "fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/frage/:frage_id"
 
     @located
+    @staticmethod
     def factory(fernlehrgang_id, lehrheft_id, frage_id):
-        session = Session()
+        session = get_session('fernlehrgang')
         return  session.query(models.Frage).filter(
             and_(models.Frage.id == int(frage_id),
                  models.Frage.lehrheft_id == int(lehrheft_id))).one()
@@ -146,7 +140,7 @@ class Frage(traject.Traject):
 
 def frag_builder(**kwargs):
     if 'id' in kwargs:
-        session = Session()
+        session = get_session('fernlehrgang')
         id = kwargs.pop('id')
         frage = session.query(models.Frage).filter(models.Frage.id == id).one()
     else:
@@ -158,15 +152,17 @@ provideUtility(frag_builder, IFactory,
                name='fernlehrgang.models.frage.IFrage')
 
 
-class Kursteilnehmer(traject.Traject):
+class Kursteilnehmer(traject.Model):
     grok.context(IFernlehrgangApp)
 
     model = models.Kursteilnehmer
     pattern = ("fernlehrgang/:fernlehrgang_id/kursteilnehmer" +
                "/:kursteilnehmer_id")
 
+    @located
+    @staticmethod
     def factory(fernlehrgang_id, kursteilnehmer_id):
-        session = Session()
+        session = get_session('fernlehrgang')
         return  session.query(models.Kursteilnehmer).filter(
             and_(models.Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
                  models.Kursteilnehmer.id == int(kursteilnehmer_id))).one()
@@ -176,7 +172,7 @@ class Kursteilnehmer(traject.Traject):
                     kursteilnehmer_id = kursteilnehmer.id)
 
 
-class Antwort(traject.Traject):
+class Antwort(traject.Model):
     grok.context(IFernlehrgangApp)
 
     model = models.Antwort
@@ -185,14 +181,21 @@ class Antwort(traject.Traject):
         "/antwort/:antwort_id")
 
     @located
+    @staticmethod
     def factory(fernlehrgang_id, kursteilnehmer_id, antwort_id):
-        session = Session()
+        session = get_session('fernlehrgang')
         return  session.query(models.Antwort).filter(
             and_(models.Antwort.id == int(antwort_id),
-                 models.Antwort.kursteilnehmer_id == int(kursteilnehmer_id))).one()
+                 models.Antwort.kursteilnehmer_id == int(kursteilnehmer_id))
+                 ).one()
 
     def arguments(antwort):
         return dict(antwort_id = antwort.id,
                     kursteilnehmer_id = antwort.kursteilnehmer_id,
                     fernlehrgang_id = antwort.kursteilnehmer.fernlehrgang.id)
 
+
+def register_all():
+    models = frozenset((Fernlehrgang, Unternehmen, Teilnehmer, Lehrheft,
+                        Frage,  Kursteilnehmer, Antwort))
+    traject.register_pattern(PATTERNS, *models)
