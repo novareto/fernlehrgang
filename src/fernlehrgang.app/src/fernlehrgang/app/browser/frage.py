@@ -85,6 +85,7 @@ class FrageIndex(Page):
         self.link = self.url(self.parent)
 
 
+@menuentry(NavigationMenu, order=2)
 class Edit(models.Edit):
     grok.context(IFrage)
     grok.layer(IFernlehrgangSkin)

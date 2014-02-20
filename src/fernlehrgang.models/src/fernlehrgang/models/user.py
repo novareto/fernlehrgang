@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import Base
+from dolmen.content import IContent
 from sqlalchemy import *
 from zope.interface import Interface, implementer
 from zope.schema import Int, TextLine, Password
@@ -38,7 +39,7 @@ class IUser(Interface):
         """
 
         
-@implementer(IUser)
+@implementer(IUser, IContent)
 class User(Base):
 
     __tablename__ = 'flg_user'
@@ -53,3 +54,7 @@ class User(Base):
         if password == self.password:
             return True
         return False
+
+    @property
+    def __content_type__(self):
+        return self.__tablename__

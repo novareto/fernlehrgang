@@ -3,13 +3,14 @@
 import grok
 import logging
 
+from uvc.publication import WSGIApplication, LocalSite
+from grokcore.site.interfaces import IApplication
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 from zope.authentication.interfaces import IAuthentication
+from zope.component import provideUtility
+from zope.component.interfaces import ISite
 from zope.interface import Interface, implementer
 from zope.pluggableauth import PluggableAuthentication
-from zope.pluggableauth.interfaces import IAuthenticatorPlugin
-from zope.component import getUtility, provideUtility
-
 from .auth.handler import Benutzer
 from .interfaces import IFernlehrgangApp
 
@@ -26,9 +27,11 @@ logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
 
 
-def setup_pau(PAU):
-    PAU.authenticatorPlugins = ('principals', )
+def setup_pau(registry):
+    PAU = PluggableAuthentication()
+    PAU.authenticatorPlugins = ('Benutzer', )
     PAU.credentialsPlugins = ("cookies", "No Challenge if Authenticated")
+    registry.registerUtility(PAU, IAuthentication, name=u'')
 
 
 def image_middleware(app, config, root, prefix):
@@ -38,15 +41,15 @@ def image_middleware(app, config, root, prefix):
 
 
 @implementer(IFernlehrgangApp) 
-class FernlehrgangApp(grok.Application, grok.Container):
+class FernlehrgangApp(LocalSite, WSGIApplication):
     grok.traversable(attr='benutzer')
-
-    grok.local_utility(
-        PluggableAuthentication, 
-        provides=IAuthentication,
-        public=True,
-        setup=setup_pau,
-        )
 
     def benutzer(self):
         return Benutzer
+
+
+def application(global_conf, **local_conf):
+    app = FernlehrgangApp(need_registry=True)
+    registry = app.getSiteManager()
+    setup_pau(registry)
+    return app

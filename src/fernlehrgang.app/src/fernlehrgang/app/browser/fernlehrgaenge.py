@@ -83,7 +83,6 @@ class AddFernlehrgang(AddForm):
 
 class SessionsFeeder(grok.View):
     grok.context(IFernlehrgang)
-    grok.layer(IFernlehrgangSkin)
 
     @staticmethod
     def timestamp(d):

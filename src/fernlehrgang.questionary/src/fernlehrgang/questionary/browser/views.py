@@ -103,17 +103,6 @@ class MyResults(Page):
 
 
 @implementer(ITab)
-class Manage(Page):  # only to test the rights
-    grok.order(0)
-    grok.context(CoursePage)
-    grok.title(u'Manage')
-    grok.require('zope.ManageApplication')
-
-    def render(self):
-        return "Manage me !"
-
-
-@implementer(ITab)
 class MyLessons(Page):
     grok.order(1)
     grok.context(CoursePage)

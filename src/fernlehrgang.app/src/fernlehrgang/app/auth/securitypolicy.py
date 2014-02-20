@@ -23,6 +23,7 @@ def roles(context):
 class ManageFernlehrgang(grok.Permission):
     grok.name('uvc.managefernlehrgang')
 
+
 class ManageTeilnehmer(grok.Permission):
     grok.name('uvc.manageteilnehmer')
 

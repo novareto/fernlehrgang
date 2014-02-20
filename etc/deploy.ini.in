@@ -48,19 +48,6 @@ use = egg:Paste#translogger
 setup_console_handler = False
 logger_name = wsgi
 
-[filter:image]
-use = egg:fernlehrgang.app#image
-root = ${settings:image_storage}
-prefix = /images
-
-[app:grok]
-use = egg:grokcore.startup
-filter-with = image
-
-[pipeline:main]
-pipeline =  gzip fanstatic grok
-
-
 [filter:gzip]
 use = egg:Paste#gzip
 
@@ -72,12 +59,30 @@ minified = true
 rollup = true
 recompute_hashes = true
 
+[filter:image]
+use = egg:fernlehrgang.app#image
+root = ${settings:image_storage}
+prefix = /images
+
+[filter:zconf]
+use = egg:uvc.publication#zconfig
+zope_conf = %(here)s/zope.conf
+
+[app:fernlehrgang]
+paste.app_factory = fernlehrgang.app:application
+
+[app:quizz]
+paste.app_factory = fernlehrgang.questionary.app:application
+
+[app:router]
+use = egg:Paste#urlmap
+/ = fernlehrgang
+/quizz = quizz
+
+[pipeline:main]
+pipeline =  gzip fanstatic image zconf router
 
 [server:main]
 use = egg:Paste#http
 host = ${settings:host}
 port = ${:port}
-
-[DEFAULT]
-# set the name of the zope.conf file
-zope_conf = %(here)s/zope.conf

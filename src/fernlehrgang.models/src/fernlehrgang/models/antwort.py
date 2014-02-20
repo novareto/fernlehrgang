@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 from datetime import datetime
+from dolmen.content import IContent
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
@@ -77,7 +78,7 @@ class IAntwort(Interface):
         )
 
 
-@implementer(IAntwort)
+@implementer(IAntwort, IContent)
 class Antwort(Base):
     __tablename__ = 'antwort'
     __table_args__ = (
@@ -105,6 +106,10 @@ class Antwort(Base):
     def title(self):
         return self.frage.titel
 
+    @property
+    def __content_type__(self):
+        return self.__tablename__
+    
     def __repr__(self):
         return "<Antwort(id='%s', frage='%s', antwort='%s')>" % (
             self.id, self.frage_id, self.antwortschema)

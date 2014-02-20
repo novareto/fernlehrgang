@@ -12,6 +12,8 @@ from zope.securitypolicy.interfaces import IPrincipalRoleManager
 from zope.securitypolicy.interfaces import IPrincipalPermissionManager
 from zope.pluggableauth.interfaces import IPrincipalInfo, IAuthenticatorPlugin
 from zope.location import LocationProxy, locate
+from dolmen.authentication import UserLoginEvent
+from zope.securitypolicy.principalrole import principalRoleManager
 
 
 class PrincipalInfo(object):
@@ -33,17 +35,23 @@ class UserAuthenticatorPlugin(object):
             return None
         if not ('login' in credentials and 'password' in credentials):
             return None
-        account = self.getAccount(credentials['login'])
+        account = self.get(credentials['login'])
         if account is None:
             return None
         if not account.checkPassword(credentials['password']):
             return None
+
+        roles = principalRoleManager.getRolesForPrincipal(account.login)
+        if account.role not in roles:
+            principalRoleManager.assignRoleToPrincipal(
+                account.role, account.login)
+        
         return PrincipalInfo(id=account.login,
                              title=account.real_name,
                              description=account.real_name)
 
     def principalInfo(self, id):
-        account = self.getAccount(id)
+        account = self.get(id)
         if account is None:
             return None
         return PrincipalInfo(id=account.login,
@@ -57,7 +65,7 @@ class UserAuthenticatorPlugin(object):
     def __contains__(self, login):
         try:
             session = Session()
-            c = session.query(User).filter(User.login == int(login)).count()
+            c = session.query(User).filter(User.login == login).count()
             return bool(c > 0)
         except ValueError:
             return False
@@ -65,7 +73,7 @@ class UserAuthenticatorPlugin(object):
     def get(self, login):
         try:
             session = Session()
-            query = session.query(User).filter(User.login == int(login))
+            query = session.query(User).filter(User.login == login)
             assert query.count() == 1
             user = LocationProxy(query.one())
             locate(user, self, str(login))

@@ -34,6 +34,7 @@ class TestSystem(grok.Viewlet):
         DSN = config['dsn']
         if DSN.startswith('oracle://novareto:retonova@10.30.4.95/BGETest'):
             self.view.flash(u"Test - System", type="info")
+        self.view.flash(u"Test - System", type="info")
 
     def render(self):
         return ""
