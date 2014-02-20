@@ -26,7 +26,7 @@ grok.templatedir('templates')
 
 class BenutzerMI(MenuItem):
     grok.context(interface.Interface)
-    grok.require('zope.ManageApplication')
+    grok.require('uvc.managefernlehrgang')
     grok.title(u'Benutzerverwaltung')
     grok.viewletmanager(IFooter)
 
@@ -38,7 +38,7 @@ class BenutzerMI(MenuItem):
 class UserList(Page):
     grok.name('index')
     grok.context(UserAuthenticatorPlugin)
-    grok.require('zope.ManageApplication')
+    grok.require('uvc.managefernlehrgang')
     
     def update(self):
         self.users = list(self.context)
@@ -46,7 +46,7 @@ class UserList(Page):
 
 class AddUser(Form): 
     grok.context(UserAuthenticatorPlugin)
-    grok.require('zope.ManageApplication')
+    grok.require('uvc.managefernlehrgang')
     label = u"Benutzer anlegen"
 
     fields = Fields(IAddUserForm)
@@ -66,7 +66,7 @@ class AddUser(Form):
 class EditUser(Form): 
     grok.name('edit')
     grok.context(User)
-    grok.require('zope.ManageApplication')
+    grok.require('uvc.managefernlehrgang')
     label = u"Benutzer bearbeiten"
 
     fields = Fields(IAddUserForm)

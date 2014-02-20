@@ -25,11 +25,12 @@ setup(name='fernlehrgang.questionary',
           'uvc.composedview',
           'dolmen.security.policies',
           'grok',
-          'grokcore.startup',
-          'grokui.admin',
           'setuptools',
           'z3c.testsetup',
       ],
       entry_points = {
+          'paste.app_factory': [
+               'quizz = fernlehrgang.questionary.app:main',
+               ],
           }
       )

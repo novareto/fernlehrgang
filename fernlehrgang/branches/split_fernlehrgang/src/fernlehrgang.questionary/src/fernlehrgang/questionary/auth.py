@@ -14,6 +14,7 @@ from zope.publisher.interfaces import IRequest
 from .interfaces import IMember, IMemberInfo
 from zope.pluggableauth.factories import Principal
 from zope.event import notify
+from zope.securitypolicy.principalrole import principalRoleManager
 
 
 @implementer(IMemberInfo)
@@ -55,13 +56,21 @@ class FoundMemberFactory(grok.Adapter):
     grok.implements(IFoundPrincipalFactory)
     grok.provides(IFoundPrincipalFactory)
 
+    def __init__(self, info):
+        self.info = info
+
     def __call__(self, authentication):
         principal = Member(authentication.prefix + self.info.id,
                               self.info.title,
                               self.info.description, self.info.model)
         notify(AuthenticatedPrincipalCreated(
-            authentication, principal, self.info, self.request))
+            authentication, principal, self.info, None))
         return principal
+
+
+class QuizzMember(grok.Role):
+    grok.name('QuizzMember')
+    grok.permissions('zope.View')
 
 
 class RDBUsersAuthenticatorPlugin(grok.GlobalUtility):
@@ -88,6 +97,11 @@ class RDBUsersAuthenticatorPlugin(grok.GlobalUtility):
             if results.count() == 1:
                 user = results.one()
                 if user and user.passwort == passwd:
+                    roles = principalRoleManager.getRolesForPrincipal(str(user.id))
+                    if 'QuizzMember' not in roles:
+                        principalRoleManager.assignRoleToPrincipal(
+                            'QuizzMember', str(user.id))
+
                     fullname = u"%s %s" % (user.name, user.vorname)
                     info = MemberInfo(
                         id=str(userid), title=fullname, description=fullname)

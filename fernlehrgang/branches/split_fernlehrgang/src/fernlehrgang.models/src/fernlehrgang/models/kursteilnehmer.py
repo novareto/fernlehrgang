@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2008 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
+from dolmen.content import IContent
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
@@ -137,7 +138,7 @@ class IKursteilnehmer(Interface):
         )
 
 
-@implementer(IKursteilnehmer)
+@implementer(IKursteilnehmer, IContent)
 class Kursteilnehmer(Base):
     __tablename__ = 'kursteilnehmer'
 
@@ -169,6 +170,10 @@ class Kursteilnehmer(Base):
     @property
     def title(self):
         return "%s %s" % (self.teilnehmer.name, self.teilnehmer.vorname)
+
+    @property
+    def __content_type__(self):
+        return self.__tablename__
 
     def __repr__(self):
         return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" % (

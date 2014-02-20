@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2008 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
+from dolmen.content import IContent
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
-
 
 import zope.schema
 from zope.interface import Interface, provider
@@ -74,7 +74,7 @@ class ILehrheft(Interface):
         )
 
 
-@implementer(ILehrheft)
+@implementer(ILehrheft, IContent)
 class Lehrheft(Base):
     __tablename__ = 'lehrheft'
 
@@ -103,6 +103,10 @@ class Lehrheft(Base):
         return "<Lehrgang(id='%s', nummer='%s', fernlehrgangid='%s')>" % (
             self.id, self.nummer, self.fernlehrgang_id)
 
+    @property
+    def __content_type__(self):
+        return self.__tablename__
+    
     fragen = relation(
         Frage,
         order_by=Frage.id,

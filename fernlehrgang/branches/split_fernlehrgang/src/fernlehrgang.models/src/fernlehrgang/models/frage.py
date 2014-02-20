@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from cromlech.file import FileField
+from dolmen.content import IContent
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
+from zeam.form.base.markers import Marker
 
 import zope.schema
 from zope.interface import Interface, provider
@@ -110,7 +112,7 @@ class IFrage(Interface):
         )
 
 
-@implementer(IFrage)
+@implementer(IFrage, IContent)
 class Frage(Base):
     __tablename__ = 'frage'
 
@@ -136,6 +138,10 @@ class Frage(Base):
         return "<Frage(id='%s', frage='%s', antwort='%s')>" % (
             self.id, self.frage, self.antwortschema)
 
+    @property
+    def __content_type__(self):
+        return self.__tablename__
+
     @apply
     def bild():
         """This relies on an implict use of the store.
@@ -144,6 +150,7 @@ class Frage(Base):
         def fget(self):
             if self.bilder.count():
                 return self.bilder.original
+
         def fset(self, img):
             if not isinstance(img, Marker):
                 if img is None and self.bilder.count():
@@ -153,6 +160,7 @@ class Frage(Base):
                 elif img is not None:
                     self.bilder.from_file(img)
                     self.bilder.generate_thumbnail(height=150)
+
         return property(fget, fset)
 
     @property

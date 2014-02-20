@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2008 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
+from dolmen.content import IContent
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
@@ -95,7 +96,7 @@ class IUnternehmen(Interface):
         )
 
 
-@implementer(IUnternehmen)
+@implementer(IUnternehmen, IContent)
 class Unternehmen(Base):
     __tablename__ = 'adr'
 
@@ -117,3 +118,7 @@ class Unternehmen(Base):
 
     def __repr__(self):
         return "<Unternehmen(mnr='%s')>" %(self.mnr)
+
+    @property
+    def __content_type__(self):
+        return self.__tablename__

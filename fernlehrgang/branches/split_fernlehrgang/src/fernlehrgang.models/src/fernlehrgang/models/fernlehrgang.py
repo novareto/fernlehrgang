@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from dolmen.content import IContent
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
@@ -86,7 +87,7 @@ class IFernlehrgang(Interface):
         )
 
 
-@implementer(IFernlehrgang)
+@implementer(IFernlehrgang, IContent)
 class Fernlehrgang(Base):
 
     __tablename__ = 'fernlehrgang'
@@ -104,7 +105,11 @@ class Fernlehrgang(Base):
 
     @property
     def title(self):
-        return self.jahr 
+        return self.jahr
+
+    @property
+    def __content_type__(self):
+        return self.__tablename__
 
     def __repr__(self):
         return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" % (
