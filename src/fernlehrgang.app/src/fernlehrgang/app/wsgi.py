@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import grok
-import logging
 import transaction
 from webob.dec import wsgify
 from cromlech.dawnlight import DawnlightPublisher
@@ -18,21 +17,9 @@ from .auth.handler import Benutzer
 from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
 
-logger = logging.getLogger('fernlehrgang')
-
-
-def log(message, summary='', severity=logging.INFO):
-    logger.log(severity, '%s %s', summary, message)
-
-
-# SQLAlchemy LOGGING --> INFO for echo=True
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
-
-
 
 @implementer(IPublicationRoot, IFernlehrgangApp)
-class FernlehrgangApp(object):
+class Root(object):
     grok.traversable(attr='benutzer')
 
     def benutzer(self):
@@ -46,7 +33,7 @@ class Application(object):
 
     def __init__(self, root, engine):
         self.engine = engine
-        self.site = FernlehrgangApp()
+        self.site = Root()
         self.publisher = DawnlightPublisher(view_lookup=view_lookup)
         self.fs_store = HttpExposedFileSystemStore(root, prefix)
         
@@ -67,20 +54,20 @@ class Application(object):
                     setSite()
                     store.pop_store_context()
 
-                    return removeSecurityProxy(result)
+        return removeSecurityProxy(result)
 
 
 def application_factory(global_conf, root, dsn, **kwargs):
 
     # We register our SQLengine under a given name
     engine = create_and_register_engine(dsn, 'fernlehrgang')
+    engine.bind(models.Base)
+
+    # We create it all
     metadata = models.Base.metadata
     metadata.create_all(engine, checkfirst=True)
 
-    # We bind out SQLAlchemy definition to the engine
-    engine.bind(Library)
-
-    # We now instanciate the TrajectApplication
+    # We now instanciate the Application
     # The name and engine are passed, to be used for the querying.
     app = Application(root, engine)
 
