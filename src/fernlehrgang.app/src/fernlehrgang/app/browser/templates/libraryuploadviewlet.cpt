@@ -1,0 +1,6 @@
+<div class="uploader">
+  <div id="mulitplefileuploader"
+       tal:attributes="rel viewlet.action">Upload</div>
+  <div id="status"></div>
+</div>
+

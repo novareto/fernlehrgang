@@ -1,0 +1,17 @@
+<div class="lehrheft outlined-block">
+  <h1>
+    <span tal:replace="context.titel" />
+  </h1>
+  <div class="row-fluid">
+    <div class="fragen span12">
+      <div tal:repeat="frage view.fragen"
+	   tal:replace="structure frage()">
+	Question rendering
+      </div>
+    </div>
+  </div>
+  <div class="outlined-block-title">
+    Lesson <span tal:replace="context.nummer" />
+    (<span tal:replace="context.id" />)
+  </div>
+</div>
