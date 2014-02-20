@@ -3,7 +3,6 @@
 # cklinger@novareto.de 
 
 import grok
-from uvc.publication import WSGIApplication, LocalSite
 from grokcore.site.interfaces import IApplication
 from zope.authentication.interfaces import IAuthentication
 from zope.component import getGlobalSiteManager
@@ -21,12 +20,9 @@ def setup_pau(registry):
     registry.registerUtility(PAU, IAuthentication, name=u'')
     
 
-class Questionaries(LocalSite, WSGIApplication):
+class Questionaries(object):
     pass
 
 
 def application(global_conf, **local_conf):
-    app = Questionaries(need_registry=True)
-    registry = app.getSiteManager()
-    setup_pau(registry)
-    return app
+    return None

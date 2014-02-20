@@ -17,7 +17,7 @@ from zope.location import ILocation
 from zope.schema.interfaces import IDate
 
 from ..interfaces import IFrage
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 
 
 def register():

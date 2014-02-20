@@ -7,7 +7,7 @@ from dolmen.uploader.resources.hayageek import uploader as hayageek
 from fanstatic import Library, Resource, Group
 from js.bootstrap_wysihtml5 import bootstrap_wysihtml5
 from js.jquery import jquery
-from uvc.layout.interfaces import IHeaders
+from uvclight import interfaces, viewletmanager
 from uvc.widgets import double, DatePickerCSS
 from zope.interface import Interface
 
@@ -22,13 +22,14 @@ upload = Resource(library, 'upload.js', depends=[hayageek], bottom=True)
 
 
 class FernlehrgangResourceViewlet(grok.Viewlet):
-    grok.viewletmanager(IHeaders)
+    viewletmanager(interfaces. IHeaders)
     grok.context(Interface)
 
     def render(self):
         css.need()
         js.need()
         return u''
+
 
 cal_library = Library('Calendar', '3rdparty')
 jstimezone = Resource(cal_library, 'jstz.js')

@@ -5,9 +5,8 @@
 import time
 import json
 from datetime import date, datetime, timedelta
-import grok
+import uvclight
 
-from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
 from fernlehrgang.models import Fernlehrgang
 from grokcore.chameleon.components import ChameleonPageTemplateFile
@@ -19,24 +18,20 @@ from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 
-from . import AddForm
+from . import AddForm, DefaultView, Edit
 from ..interfaces import IFernlehrgang, IFernlehrgangApp
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 from .resources import bs_calendar
 from .viewlets import AddMenu, NavigationMenu
 
 
-grok.templatedir('templates')
-
-
 @menuentry(NavigationMenu, order=-1)
 class FernlehrgangListing(TablePage):
-    grok.implements(IDisplayView)
-    grok.context(IFernlehrgangApp)
-    grok.name('fernlehrgang_listing')
-    grok.title(u"Fernlehrgänge")
-    grok.order(10)
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IFernlehrgangApp)
+    uvclight.name('fernlehrgang_listing')
+    uvclight.title(u"Fernlehrgänge")
+    uvclight.order(10)
+    uvclight.layer(IFernlehrgangSkin)
 
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
@@ -48,7 +43,7 @@ class FernlehrgangListing(TablePage):
 
     @property
     def values(self):
-        root = grok.getSite()
+        root = uvclight.getSite()
         session = Session()
         for fernlehrgang in session.query(Fernlehrgang).all():
             locate(root, fernlehrgang, DefaultModel)
@@ -57,10 +52,9 @@ class FernlehrgangListing(TablePage):
 
 @menuentry(AddMenu)
 class AddFernlehrgang(AddForm):
-    grok.implements(IDisplayView)
-    grok.context(IFernlehrgangApp)
-    grok.title(u'Fernlehrgang')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IFernlehrgangApp)
+    uvclight.title(u'Fernlehrgang')
+    uvclight.layer(IFernlehrgangSkin)
     
     title = u'Fernlehrgang'
     label = u'Fernlehrgang anlegen'
@@ -81,8 +75,8 @@ class AddFernlehrgang(AddForm):
         return url
 
 
-class SessionsFeeder(grok.View):
-    grok.context(IFernlehrgang)
+class SessionsFeeder(uvclight.View):
+    uvclight.context(IFernlehrgang)
 
     @staticmethod
     def timestamp(d):
@@ -119,19 +113,19 @@ class SessionsFeeder(grok.View):
 
 @menuentry(NavigationMenu, order=60)
 class Sessions(Page):
-    grok.title('Terminliste')
-    grok.context(IFernlehrgang)
-    grok.layer(IFernlehrgangSkin)
+    uvclight.title('Terminliste')
+    uvclight.context(IFernlehrgang)
+    uvclight.layer(IFernlehrgangSkin)
 
     def update(self):
         bs_calendar.need()
 
     
 @menuentry(NavigationMenu, order=-2)
-class FernlehrgangIndex(models.DefaultView):
-    grok.context(IFernlehrgang)
-    grok.layer(IFernlehrgangSkin)
-    grok.title('Index')
+class FernlehrgangIndex(DefaultView):
+    uvclight.context(IFernlehrgang)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.title('Index')
 
     fields = Fields(IFernlehrgang).omit('id')
 
@@ -141,8 +135,8 @@ class FernlehrgangIndex(models.DefaultView):
             self.context.titel, self.context.id)
 
 
-class Edit(models.Edit):
-    grok.context(IFernlehrgang)
+class Edit(Edit):
+    uvclight.context(IFernlehrgang)
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
     fields = Fields(IFernlehrgang).omit('id')
@@ -150,16 +144,16 @@ class Edit(models.Edit):
 
 ### Spalten
 class ID(GetAttrColumn):
-    grok.name('Id')
-    grok.context(IFernlehrgangApp)
+    uvclight.name('Id')
+    uvclight.context(IFernlehrgangApp)
     weight = 5 
     header = u"Id"
     attrName = u"id"
 
 
 class Title(LinkColumn):
-    grok.name('titel')
-    grok.context(IFernlehrgangApp)
+    uvclight.name('titel')
+    uvclight.context(IFernlehrgangApp)
     weight = 10
     header = u"Titel"
     attrName = u"titel"
@@ -169,8 +163,8 @@ class Title(LinkColumn):
 
 
 class Jahr(GetAttrColumn):
-    grok.name('Jahr')
-    grok.context(IFernlehrgangApp)
+    uvclight.name('Jahr')
+    uvclight.context(IFernlehrgangApp)
     weight = 20
     header = u"Jahr"
     attrName = u"jahr"

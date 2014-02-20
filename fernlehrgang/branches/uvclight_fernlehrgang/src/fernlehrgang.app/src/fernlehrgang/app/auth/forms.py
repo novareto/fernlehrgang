@@ -2,15 +2,13 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import uvclight
 
 from dolmen.forms.base import apply_data_event
 from dolmen.menu import menuentry
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok.layout import Page
-from uvc.layout import MenuItem
-from uvc.layout.forms.components import Form
-from uvc.layout.interfaces import IFooter
+from uvclight import menu, Page, MenuItem, Form
+from uvclight.interfaces import IGlobalMenu
 from zeam.form.base import Fields, action
 from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
@@ -21,14 +19,11 @@ from .handler import UserAuthenticatorPlugin
 from fernlehrgang.models.user import User
 
 
-grok.templatedir('templates')
-
-
 class BenutzerMI(MenuItem):
-    grok.context(interface.Interface)
-    grok.require('uvc.managefernlehrgang')
-    grok.title(u'Benutzerverwaltung')
-    grok.viewletmanager(IFooter)
+    uvclight.context(interface.Interface)
+    uvclight.require('uvc.managefernlehrgang')
+    uvclight.title(u'Benutzerverwaltung')
+    uvclight.menu(IGlobalMenu)
 
     @property
     def action(self):
@@ -36,17 +31,17 @@ class BenutzerMI(MenuItem):
 
 
 class UserList(Page):
-    grok.name('index')
-    grok.context(UserAuthenticatorPlugin)
-    grok.require('uvc.managefernlehrgang')
+    uvclight.name('index')
+    uvclight.context(UserAuthenticatorPlugin)
+    uvclight.require('uvc.managefernlehrgang')
     
     def update(self):
         self.users = list(self.context)
    
 
 class AddUser(Form): 
-    grok.context(UserAuthenticatorPlugin)
-    grok.require('uvc.managefernlehrgang')
+    uvclight.context(UserAuthenticatorPlugin)
+    uvclight.require('uvc.managefernlehrgang')
     label = u"Benutzer anlegen"
 
     fields = Fields(IAddUserForm)
@@ -64,9 +59,9 @@ class AddUser(Form):
 
 
 class EditUser(Form): 
-    grok.name('edit')
-    grok.context(User)
-    grok.require('uvc.managefernlehrgang')
+    uvclight.name('edit')
+    uvclight.context(User)
+    uvclight.require('uvc.managefernlehrgang')
     label = u"Benutzer bearbeiten"
 
     fields = Fields(IAddUserForm)

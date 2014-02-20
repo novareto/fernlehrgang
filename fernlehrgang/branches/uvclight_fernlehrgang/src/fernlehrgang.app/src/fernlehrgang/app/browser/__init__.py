@@ -1,17 +1,14 @@
 # package
 
 import grok
-from uvc.layout.forms.components import AddForm, Form
+
+from uvclight import Form
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.i18n.interfaces import IUserPreferredLanguages
+from dolmen.forms.crud import Add as AddForm, Display as DefaultView, Edit
 
 
 class Form(Form):
-    grok.require('dolmen.content.Add')
-    grok.baseclass()
-
-
-class AddForm(AddForm):
     grok.require('dolmen.content.Add')
     grok.baseclass()
 

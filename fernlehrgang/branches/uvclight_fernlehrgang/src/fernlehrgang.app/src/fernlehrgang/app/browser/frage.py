@@ -2,9 +2,8 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import uvclight
 
-from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.models import Frage
 from grokcore.chameleon.components import ChameleonPageTemplateFile
@@ -25,11 +24,10 @@ grok.templatedir('templates')
 
 @menuentry(NavigationMenu)
 class FrageListing(TablePage):
-    grok.implements(IDisplayView)
-    grok.context(ILehrheft)
-    grok.name('frage_listing')
-    grok.title(u'Fragen verwalten')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(ILehrheft)
+    uvclight.name('frage_listing')
+    uvclight.title(u'Fragen verwalten')
+    uvclight.layer(IFernlehrgangSkin)
     
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
@@ -43,7 +41,7 @@ class FrageListing(TablePage):
 
     @property
     def values(self):
-        root = grok.getSite()
+        root = uvclight.getSite()
         for frage in self.context.fragen:
             locate(root, frage, DefaultModel)
             yield frage
@@ -51,9 +49,9 @@ class FrageListing(TablePage):
 
 @menuentry(AddMenu)
 class AddFrage(AddForm):
-    grok.context(ILehrheft)
-    grok.title(u'Frage')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(ILehrheft)
+    uvclight.title(u'Frage')
+    uvclight.layer(IFernlehrgangSkin)
     
     label = u'Frage anlegen'
     fields = Fields(IFrage).omit('id')
@@ -71,25 +69,25 @@ class AddFrage(AddForm):
 
 @menuentry(NavigationMenu, order=1)
 class FrageIndex(Page):
-    grok.name('index')
-    grok.context(IFrage)
-    grok.title(u'Frage')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.name('index')
+    uvclight.context(IFrage)
+    uvclight.title(u'Frage')
+    uvclight.layer(IFernlehrgangSkin)
     
     def update(self):
         view = EmbeddedFrage(self.context, self.request)
         self.frage = view()
         self.parent = view.context.lehrheft
-        root = grok.getSite()
+        root = uvclight.getSite()
         locate(root, self.parent, DefaultModel)
         self.link = self.url(self.parent)
 
 
 @menuentry(NavigationMenu, order=2)
-class Edit(models.Edit):
-    grok.context(IFrage)
-    grok.layer(IFernlehrgangSkin)
-    grok.title(u'Bearbeiten')
+class Edit(Edit):
+    uvclight.context(IFrage)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.title(u'Bearbeiten')
 
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."
@@ -101,24 +99,24 @@ class Edit(models.Edit):
 ### Spalten
 
 class Id(GetAttrColumn):
-    grok.name('id')
-    grok.context(ILehrheft)
+    uvclight.name('id')
+    uvclight.context(ILehrheft)
     weight = 5 
     header = "Id"
     attrName = "id"
 
 
 class Nummer(GetAttrColumn):
-    grok.name('Nummer')
-    grok.context(ILehrheft)
+    uvclight.name('Nummer')
+    uvclight.context(ILehrheft)
     weight =  10 
     header = "Nummer"
     attrName = "frage"
 
 
 class Link(LinkColumn):
-    grok.name('Titel')
-    grok.context(ILehrheft)
+    uvclight.name('Titel')
+    uvclight.context(ILehrheft)
     weight = 20 
     linkContent = "edit"
     header = "Titel"
@@ -128,16 +126,16 @@ class Link(LinkColumn):
 
 
 class Antwortschema(GetAttrColumn):
-    grok.name('Antwortschema')
-    grok.context(ILehrheft)
+    uvclight.name('Antwortschema')
+    uvclight.context(ILehrheft)
     weight = 10
     attrName = 'antwortschema'
     header = u"Antwortschema"
 
 
 class Gewichtung(GetAttrColumn):
-    grok.name('Gewichtung')
-    grok.context(ILehrheft)
+    uvclight.name('Gewichtung')
+    uvclight.context(ILehrheft)
     weight = 20
     attrName = 'gewichtung'
     header = u"Gewichtung"

@@ -5,26 +5,24 @@
 import grok
 
 from datetime import datetime
-from dolmen.app.layout import IDisplayView
-from dolmen.app.layout import models
 from dolmen.menu import menuentry
 
 from fernlehrgang.models import Antwort, Frage
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok.layout import Page
-from megrok.traject import locate
+from uvclight import Page
+from uvclight.interfaces import IExtraInfo
+from zope.location import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.components import TablePage, GetAttrColumn
 from megrok.z3ctable.components import LinkColumn, Column
 from sqlalchemy import not_, and_
-from uvc.layout.interfaces import IExtraInfo
 from z3c.saconfig import Session
 from zeam.form.base import Action, Fields
 from zeam.form.composed import ComposedForm
 from zeam.form.table import SubTableForm, TableActions
 
-from . import AddForm, Form
-from .skin import IFernlehrgangSkin
+from .import Form, AddForm, DefaultView, Edit
+from ..wsgi import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import IListing, IAntwort, IKursteilnehmer
 
@@ -33,7 +31,7 @@ grok.templatedir('templates')
 
 #@menuentry(NavigationMenu)
 class AntwortListing(TablePage):
-    grok.implements(IDisplayView, IListing)
+    grok.implements(IListing)
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
@@ -147,7 +145,7 @@ class AddAntwortenTable(SubTableForm):
         return "<script> var base_url = '%s/addantworten'; </script>" % self.url()
 
 
-class Index(models.DefaultView):
+class Index(DefaultView):
     grok.context(IAntwort)
     grok.title(u'Index')
     grok.layer(IFernlehrgangSkin)
@@ -157,7 +155,7 @@ class Index(models.DefaultView):
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(models.Edit):
+class Edit(Edit):
     grok.context(IAntwort)
     grok.title(u'Edit')
     grok.name('edit')
@@ -245,7 +243,7 @@ class Antworten(GetAttrColumn):
 
 @menuentry(NavigationMenu)
 class OverviewAntworten(Page):
-    grok.implements(IDisplayView, IListing)
+    grok.implements(IListing)
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')

@@ -99,7 +99,7 @@ class Fernlehrgang(Base):
     titel = Column(String(256))
     typ = Column(String(50))
     beschreibung = Column(String(256))
-    punktzahl = Column(Integer(4))
+    punktzahl = Column(Integer)
     beginn = Column(Date)
     ende = Column(Date)
 
