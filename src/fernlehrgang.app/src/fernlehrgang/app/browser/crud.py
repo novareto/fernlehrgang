@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
-from dolmen.app.layout import Delete
+
+from uvclight import Action, Actions, SUCCESS, FAILURE
+from dolmen.forms.crud import Delete
 from dolmen.forms.crud import actions as formactions, i18n as _
-from dolmen.forms.crud.actions import DeleteAction
 from z3c.saconfig import Session
-from zeam.form.base import Actions
-from zeam.form.base.markers import SUCCESS, FAILURE
 
 
-class RDBDeleteAction(DeleteAction):
+class RDBDeleteAction(Action):
 
     def __call__(self, form):
         context = form.context

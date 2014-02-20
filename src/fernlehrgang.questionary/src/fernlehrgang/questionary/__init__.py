@@ -3,7 +3,8 @@
 # cklinger@novareto.de 
 
 import grok
-from uvc.layout.forms.components import AddForm, Form
+from dolmen.forms.crud import Add
+from uvclight import Form
 
 
 class Form(Form):
@@ -11,6 +12,6 @@ class Form(Form):
     grok.baseclass()
 
 
-class AddForm(AddForm):
+class AddForm(Form):
     grok.require('dolmen.content.Add')
     grok.baseclass()

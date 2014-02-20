@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import grok
-from dolmen.app.layout import models
-from megrok.layout import Page
+from uvclight import Page, Index
 from zope.interface import Interface
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from ..interfaces import IFernlehrgangApp
@@ -22,7 +21,7 @@ class FaviconIco(grok.View):
         return "BLA"
 
 
-class Index(models.Index):
+class Index(Index):
     grok.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
     description = u"Testplattform Fernlehrgang"

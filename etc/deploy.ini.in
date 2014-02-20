@@ -59,17 +59,11 @@ minified = true
 rollup = true
 recompute_hashes = true
 
-[filter:image]
-use = egg:fernlehrgang.app#image
-root = ${settings:image_storage}
-prefix = /images
-
-[filter:zconf]
-use = egg:uvc.publication#zconfig
-zope_conf = %(here)s/zope.conf
-
 [app:fernlehrgang]
-paste.app_factory = fernlehrgang.app:application
+use = egg:fernlehrgang.app#main
+store_root = ${settings:image_storage}
+store_prefix = /images
+dsn = ${settings:DSN}
 
 [app:quizz]
 paste.app_factory = fernlehrgang.questionary.app:application
@@ -80,7 +74,7 @@ use = egg:Paste#urlmap
 /quizz = quizz
 
 [pipeline:main]
-pipeline =  gzip fanstatic image zconf router
+pipeline =  gzip fanstatic router
 
 [server:main]
 use = egg:Paste#http

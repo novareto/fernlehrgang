@@ -1,33 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import grok
+import uvclight
 
 from dolmen import menu
-from dolmen.app.layout import viewlets, IDisplayView
 from fernlehrgang.models import Fernlehrgang
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok import pagetemplate
 from plone.memoize import ram
 from time import time
-from uvc.layout import IPersonalPreferences, MenuItem 
-from uvc.layout.interfaces import IAboveContent, IPageTop
-from uvc.layout.interfaces import IHeaders
-from uvc.layout.slots import managers
-from z3c.saconfig import Session
-from zope.app.appsetup.product import getProductConfiguration
-from zope.interface import Interface
+from uvclight import MenuItem
+from uvc.tb_layout.menuviewlets import ContextualActionsMenuViewlet
+from uvclight.interfaces import IPersonalPreferences
+from uvclight.interfaces import IAboveContent, IPageTop, IHeaders
 from zope.interface import Interface
 
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 from ..interfaces import IListing
 
 
-grok.templatedir('templates')
-
-
-class TestSystem(grok.Viewlet):
-    grok.viewletmanager(IHeaders)
-    grok.context(Interface)
+class TestSystem(uvclight.Viewlet):
+    uvclight.viewletmanager(IHeaders)
+    uvclight.context(Interface)
 
     def update(self):
         config = getProductConfiguration('database')
@@ -43,11 +34,11 @@ class TestSystem(grok.Viewlet):
 class UserName(MenuItem):
     """ User Viewlet
     """
-    grok.name('myname')
-    grok.context(Interface)
-    grok.viewletmanager(IPersonalPreferences)
-    grok.order(300)
-    grok.layer(IFernlehrgangSkin)
+    uvclight.name('myname')
+    uvclight.context(Interface)
+    uvclight.viewletmanager(IPersonalPreferences)
+    uvclight.order(300)
+    uvclight.layer(IFernlehrgangSkin)
 
     action =""
 
@@ -60,13 +51,13 @@ class UserName(MenuItem):
 ## Global Menu
 #
 
-class GlobalMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.viewletmanager(IPageTop)
-    grok.layer(IFernlehrgangSkin)
+class GlobalMenuViewlet(uvclight.Viewlet):
+    uvclight.context(Interface)
+    uvclight.viewletmanager(IPageTop)
+    uvclight.layer(IFernlehrgangSkin)
 
-    template = ChameleonPageTemplateFile('templates/globalmenu.cpt')
-    grok.order(11)
+    template = 'templates/globalmenu.cpt'
+    uvclight.order(11)
     flgs = []
 
     @ram.cache(lambda *args: time() // (60 * 60))
@@ -91,14 +82,14 @@ class GlobalMenuViewlet(grok.Viewlet):
 #
 
 
-class ObjectActionMenu(viewlets.ContextualActions):
-    grok.name('contextualactions')
-    grok.title('Actions')
-    grok.viewletmanager(IAboveContent)
-    grok.layer(IFernlehrgangSkin)
-    grok.order(119)
+class ObjectActionMenu(ContextualActionsMenuViewlet):
+    uvclight.name('contextualactions')
+    uvclight.title('Actions')
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.order(119)
 
-    menu_template = ChameleonPageTemplateFile('templates/objectmenu.cpt')
+    menu_template = 'templates/objectmenu.cpt'
 
     id = "uvcobjectmenu"
     menu_class = u"foldable menu"
@@ -115,27 +106,22 @@ class ObjectActionMenu(viewlets.ContextualActions):
 #
 
 class AddMenu(menu.Menu):
-    grok.name('uvcsite-addmenu')
-    grok.context(Interface)
-    grok.view(IDisplayView)
-    grok.title(u'Hinzufügen')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.name('uvcsite-addmenu')
+    uvclight.context(Interface)
+    uvclight.title(u'Hinzufügen')
+    uvclight.layer(IFernlehrgangSkin)
 
     menu_class = u'nav nav-pills'
 
 
-class AddMenuTemplate(pagetemplate.PageTemplate):
-    grok.view(AddMenu)
-    grok.layer(IFernlehrgangSkin)
+class AddMenuViewlet(uvclight.Viewlet):
+    uvclight.context(Interface)
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.order(120)
+    uvclight.layer(IFernlehrgangSkin)
 
-
-class AddMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.view(IDisplayView)
-    grok.viewletmanager(IAboveContent)
-    grok.order(120)
-    grok.layer(IFernlehrgangSkin)
-
+    template = ''
+    
     def render(self):
         menu = AddMenu(self.context, self.request, self.view)
         menu.update()
@@ -146,24 +132,21 @@ class AddMenuViewlet(grok.Viewlet):
 #
 
 class NavigationMenu(menu.Menu):
-    grok.name('navigation')
-    grok.title('Navigation')
-    grok.context(Interface)
-    grok.layer(IFernlehrgangSkin)
+    uvclight.name('navigation')
+    uvclight.title('Navigation')
+    uvclight.context(Interface)
+    uvclight.layer(IFernlehrgangSkin)
 
     menu_class = u'nav nav-tabs'
 
 
-class NavigationMenuTemplate(pagetemplate.PageTemplate):
-    grok.view(NavigationMenu)
-    grok.layer(IFernlehrgangSkin)
+class NavigationMenuViewlet(uvclight.Viewlet):
+    uvclight.context(Interface)
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.order(100)
 
-
-class NavigationMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.viewletmanager(IAboveContent)
-    grok.layer(IFernlehrgangSkin)
-    grok.order(100)
+    template = ''
     
     def render(self):
         menu = NavigationMenu(self.context, self.request, self.view)
@@ -175,7 +158,7 @@ class NavigationMenuViewlet(grok.Viewlet):
 ## FavIcon
 #
 
-class FavIcon(grok.Viewlet):
-    grok.viewletmanager(managers.Headers)
-    grok.context(Interface)
-    grok.layer(IFernlehrgangSkin)
+class FavIcon(uvclight.Viewlet):
+    uvclight.viewletmanager(IHeaders)
+    uvclight.context(Interface)
+    uvclight.layer(IFernlehrgangSkin)
