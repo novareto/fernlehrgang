@@ -1,0 +1,5 @@
+<div id="exporte">
+  <h1> Versandlisten </h1>
+  <p> Hier können Sie Versandlisten für den Fernlehrgang <span tal:content="context.title"> </span> generieren. </p>
+    <span tal:content="structure provider:exportitems"> </span>
+</div>

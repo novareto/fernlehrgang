@@ -1,0 +1,20 @@
+<h1> Onlineportal Fernlehrgang </h1>
+<p>
+Herzlich willkommen im Onlineportal des Fernlehrgangs. Hier können Sie
+<p>
+
+<ul>
+  <li>Ihre Registrierungsdaten ansehen und überarbeiten. </li>
+  <li>den aktuellen Fernlehrgang oder Fortbildung bearbeiten. </li>
+  <li>Ihre Antworten zu den Lehrheften online eingeben. </li>
+  <li>Ihre bisherigen Ergebnisse einsehen. </li>
+</ul>
+
+<fieldset>
+  <legend> Ihre Kurseangebote </legend>
+  <ul>
+    <li tal:repeat="flg view.getCourses()">
+    <a href="#" tal:attributes="href string: course/${flg.id}"> <span tal:content="string: ${flg.titel} ${flg.jahr}"> </span> </a>
+    </li>
+  </ul>
+</fieldset>

@@ -1,0 +1,7 @@
+<h1 tal:content="context.titel" />
+<div id="fragen">
+  <div class="frage" tal:repeat="question view.questions">
+    <h2 tal:content="question['title']" />
+    <div tal:replace="structure question['render']" />
+  </div>
+</div>

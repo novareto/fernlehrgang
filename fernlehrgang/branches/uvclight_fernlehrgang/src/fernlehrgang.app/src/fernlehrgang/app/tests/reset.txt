@@ -1,0 +1,36 @@
+======
+Ablauf
+======
+
+:Test-Layer: functional
+
+Dieser Doctest soll mal zeigen wie ein Ablauf eines Fernlehrgangs aussehen könnte...
+
+
+Setup
+-----
+
+Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
+uma alle Utilities zur Verfügung zu haben.
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> from z3c.saconfig import Session
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+   
+Resetting
+---------
+
+   >>> session = Session()
+   >>> session.execute('drop table antwort cascade constraints')
+   >>> session.execute('drop table kursteilnehmer cascade constraints')
+   >>> session.execute('drop table frage cascade constraints')
+   >>> session.execute('drop table lehrheft cascade constraints')
+   >>> session.execute('drop table fernlehrgang cascade constraints')
+   >>> session.execute('drop table teilnehmer cascade constraints')
+   >>> session.execute('drop sequence frage_seq')
+   >>> session.execute('drop sequence kursteilnehmer_seq')
+   >>> session.execute('drop sequence lehrheft_seq')
+   >>> session.execute('drop sequence teilnehmer_seq ')
+   >>> session.execute('drop sequence fernlehrgang_seq')
+   >>> session.execute('drop sequence antwort_seq')

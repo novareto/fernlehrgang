@@ -1,0 +1,23 @@
+<ul id="membercontact" class="nav">
+  <li>
+  <a href="#myModal" data-toggle="modal"> Ansprechpartner </a>
+  </li>
+</ul>
+
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <h3 id="myModalLabel">Mein Ansprechpartner</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+    BG Handel und Warendistribution
+    - Fernlehrgangsbetreuung -
+    Telefon: +49 (0) 228 54065857
+    E-Mail: fernlehrgang@bghw.de
+    </p>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>

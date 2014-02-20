@@ -1,0 +1,37 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:i18n="http://namespaces.zope.org/i18n"
+           xmlns:z3c="http://namespaces.zope.org/z3c"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:grok="http://namespaces.zope.org/grok">
+  <include package="grok" />
+  <includeDependencies package="." />
+
+  <include package="zope.i18n" />
+  <include package="zope.error" />
+  <!-- <include package="zope.session" /> -->
+  <include package="zope.dublincore" />
+  <include package="zope.authentication" />
+
+  <include package="megrok.layout" />
+  <include package="megrok.z3ctable" />
+  <include package="megrok.z3ctable" file="meta.zcml" />
+
+  <include package="zope.fanstatic" />
+  <include package="grokcore.view" />
+  <include package="grokcore.view" file="meta.zcml" />
+
+  <include package="uvc.layout" />
+  <include package="uvc.tbskin" />
+
+  <include package="dolmen.menu" />
+  <include package="dolmen.beaker" />
+  <include package="dolmen.app.authentication" />
+  <include package="dolmen.app.security" />
+  <include package="dolmen.app.breadcrumbs" />
+
+  <include package="grokcore.chameleon" />
+
+  <browser:defaultSkin name="tbskin" />
+
+  <grok:grok package="." />
+</configure>

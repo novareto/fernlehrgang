@@ -1,0 +1,44 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   i18n_domain="fernlehrgang"
+   package="fernlehrgang"
+   >
+
+  <include package="fernlehrgang" />
+
+  <!-- Typical functional testing security setup -->
+  <securityPolicy
+      component="zope.securitypolicy.zopepolicy.ZopeSecurityPolicy"
+      />
+
+  <unauthenticatedPrincipal
+      id="zope.anybody"
+      title="Unauthenticated User"
+      />
+  <grant
+      permission="zope.View"
+      principal="zope.anybody"
+      />
+
+  <principal
+      id="zope.mgr"
+      title="Manager"
+      login="mgr"
+      password="mgrpw"
+      />
+
+  <principal
+      id="uvc.user"
+      title="user"
+      login="user"
+      password="user"
+      />
+
+
+  <role id="zope.Manager" title="Site Manager" />
+  <grantAll role="zope.Manager" />
+
+  <grant role="zope.Manager" principal="zope.mgr" />
+  <grant role="uvc.bgeadministrator" principal="uvc.user" />
+
+</configure>

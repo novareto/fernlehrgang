@@ -1,0 +1,30 @@
+<h1 tal:content="view.title"> </h1>
+<p class="description" tal:content="view.description"> </p>
+<div>
+  <div tal:condition="view.isNotReader">
+    <h3> Statusliste Fernlehrgang </h3>
+    <p> Hier können Sie die Statusliste zum Fernlehrgang generieren </p>
+    <a href="" tal:attributes="href view.url(context, 'xlsreport')"> Downlowad </a>
+  </div>
+  <h3> Kursteilnehmer am Fernlehrgang </h3>
+  <ul>
+    <li> Anzahl aller Teilnehmer <span tal:replace="view.alle_kursteilnehmer"> </span> </li>
+    <li tal:repeat="ktn view.kursteilnehmer_detail">
+    <span tal:content="ktn[0]"> </span>
+    <span tal:content="ktn[1]"> </span>
+    </li>
+  </ul>
+</div>
+<div tal:define="ant view.getAntworten()">
+  <h3> Eingegangene Antworten </h3>
+  <table class="table table-striped table-bordered table-condensed">
+    <tr>
+      <th> Lehrheft Nummer </th>
+      <th> Anzahl Antworten </th>
+    </tr>
+    <tr tal:repeat="a ant">
+      <td> <span tal:content="a[0]"> </span> </td>
+      <td> <span tal:content="a[1]"> </span> </td>
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,118 @@
+Do a functional doctest test on the app.
+========================================
+
+:Test-Layer: functional
+
+Let's first create an instance of Fernlehrgang at the top level:
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+
+   >>> from fernlehrgang.interfaces.app import IFernlehrgangApp
+   >>> IFernlehrgangApp.providedBy(app)
+   True
+
+Run tests in the testbrowser
+----------------------------
+
+Create a browser and visit the instance you just created:
+
+   >>> from zope.testbrowser.testing import Browser
+   >>> browser = Browser()
+   >>> browser.handleErrors = False
+   >>> browser.open('http://localhost/app')
+
+Bekommen wir den richtigen Status?
+
+   >>> browser.url
+   'http://localhost/app'
+   >>> browser.headers.get('Status').upper()
+   '200 OK'
+
+Ist der Link für das anlegen eines Fernlehrgangs vorhanden?
+
+   >>> 'Fernlehrgang anlegen' in browser.contents
+   True
+
+Klicken wir auf den Link Fernlehrgang!
+
+   >>> anlegen = browser.getLink('Fernlehrgang anlegen')
+   >>> anlegen.url
+   'http://localhost/app/add'
+
+   >>> anlegen.click()
+
+Nun befinden wir uns auf der Add-Form für den Fernlehrgang!
+   
+   >>> browser.url
+   'http://localhost/app/add'
+   
+Wir können jetzt die Eingabeform für den Fernlehrgang ausfüllen.
+
+   >>> form = browser.getForm()
+   >>> form.getControl(name='form.widgets.jahr').value = "2010"
+   >>> form.getControl(name='form.widgets.titel').value = "Fernlehrgang 2010"
+   >>> form.getControl(name='form.widgets.beschreibung').value = "Handel mit Schwerpunkt Tiere."
+   >>> form.getControl(name='form.widgets.beginn').value = "10/01/01"
+   >>> form.getControl(name='form.widgets.ende').value = "10/12/31"
+   >>> form.submit(u'Add')
+
+   >>> browser.url
+   'http://localhost/app'
+
+   >>> print browser.contents
+   <!DOCTYPE
+   ...
+         <ul>
+           <li>
+             <a href="http://localhost/app/fernlehrgang/1">
+                   Fernlehrgang 2010 2010
+             </a>
+           </li>
+         </ul>
+   ...
+   </html>
+
+Nun können wir auf die Display Seite unseres Fernlehrgangs wechseln!
+Zunächst holen wir den Link. Anschließend klicken wir auf diesen Link.
+
+   >>> display = browser.getLink('Fernlehrgang 2010 2010')
+   >>> display.url
+   'http://localhost/app/fernlehrgang/1'
+   >>> display.click()
+
+Wir sollten den 200'er Status bekommen.
+
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+
+Im Kontext des Fernlehrgangs haben wir nun die Möglichkeit Lehrhefte für unseren 
+Fernlehrgang anzulegen.
+
+   >>> lehrhefte = browser.getLink('Lehrhefte verwalten')
+   >>> lehrhefte.url
+   'http://localhost/app/fernlehrgang/1/lehrhefte'
+   >>> lehrhefte.click()
+
+Ok auf dieser Seite sollten wir eine Übersicht über die Lehrgänge unseres Fernlehrgangs
+erhlaten, da wir noch keine Lehrhefte angelegt haben ist diese Seite noch ziemlich 
+uninteressant... Und wir legen zunächst eine Lehrheft an.
+
+   >>> button = browser.getControl(name='deleteFormTable.buttons.4c6568726865667420616e6c6567656e')
+   >>> button.click()
+
+Nun sollten wir eine Eingabeform für das Lehrheft erhalten.
+
+   >>> form = browser.getForm()
+   >>> form.getControl(name='form.widgets.nummer').value = "1"
+   >>> form.submit(u'Add')
+
+Nachdem wir das Lehrheft erfolgreich angelegt haben werden wir wieder auf die Übersichts-
+seite geleitet. Nun sollten wir das Lehrheft in einer Tabelle sehen.
+
+   >>> edit_lehrheft = browser.getLink('edit')
+   >>> edit_lehrheft.url
+   'http://localhost/app/fernlehrgang/1/lehrheft/1'
+
+   >>> edit_lehrheft.click()

@@ -1,0 +1,10 @@
+<fieldset>
+  <legend> Downloads </legend>
+  <dl>
+    <dd tal:repeat="file view.files">
+      <a href="" tal:attributes="href file['url'];
+				 title file['name'];"
+         tal:content="'%s (%s)' % (file['name'], file['size'])" />
+    </dd>
+  </dl>
+</fieldset>

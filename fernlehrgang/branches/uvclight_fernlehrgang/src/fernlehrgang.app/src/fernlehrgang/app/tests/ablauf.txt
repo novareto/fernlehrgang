@@ -1,0 +1,301 @@
+======
+Ablauf
+======
+
+:Test-Layer: functional
+
+Dieser Doctest soll mal zeigen wie ein Ablauf eines Fernlehrgangs aussehen könnte...
+
+
+Setup
+-----
+
+Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
+uma alle Utilities zur Verfügung zu haben.
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> from z3c.saconfig import Session
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+   
+
+Einrichten des Fernlehrgangs
+----------------------------
+
+   >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
+
+   >>> import datetime
+   >>> beginn = datetime.date(2010,01,01)
+   >>> ende = datetime.date(2010,12,31)
+
+   >>> flg09 = Fernlehrgang(jahr="2009", titel="Fernlehrgang",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+
+   >>> lheft1 = Lehrheft(nummer=1)
+   >>> lheft2 = Lehrheft(nummer=2)
+
+   >>> frage1 = Frage(frage=1, antwortschema="ab")
+   >>> frage2 = Frage(frage=2, antwortschema="bc")
+   >>> frage3 = Frage(frage=3, antwortschema="cd")
+
+   >>> lheft1.fragen.append(frage1) 
+   >>> lheft1.fragen.append(frage2)
+   >>> lheft2.fragen.append(frage3)
+
+   >>> flg09.lehrhefte.append(lheft1)
+   >>> flg09.lehrhefte.append(lheft2)
+
+   >>> session = Session()
+   >>> session.add(flg09)
+   >>> import transaction; transaction.commit()
+
+    
+
+Einrichten der Benutzer
+-----------------------
+
+   >>> from fernlehrgang.models import Unternehmen, Teilnehmer
+
+   >>> session = Session()
+   >>> unt1 = Unternehmen(mnr="0000-00025", name="Novareto")
+   >>> unt2 = Unternehmen(mnr="0000-00026", name="Econtec")
+
+   >>> teil1 = Teilnehmer(name="Lars Walther")
+   >>> teil2 = Teilnehmer(name="Bernd Probst")
+
+   >>> unt1.teilnehmer.append(teil1)
+   >>> unt2.teilnehmer.append(teil2)
+
+
+Einrichten von Kursteilnehmern und von Antwortbögen
+---------------------------------------------------
+
+   >>> from fernlehrgang.models import Kursteilnehmer, Antwort
+   >>> kt1 = Kursteilnehmer()
+   >>> kt2 = Kursteilnehmer()
+
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg.kursteilnehmer.append(kt1)
+   >>> flg.kursteilnehmer.append(kt2)
+
+   >>> import transaction; transaction.commit()
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> kut1, kut2 = flg.kursteilnehmer
+
+   >>> kut1.teilnehmer = teil1
+   >>> kut2.teilnehmer = teil2
+
+   >>> import transaction; transaction.commit()
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg
+   <Fernlehrgang(id='1', jahr='2009', titel='Fernlehrgang')>
+
+   >>> antwort1 = Antwort(antwortschema = "AB", frage_id=1)
+   >>> kt1, kt2 = flg.kursteilnehmer
+   >>> kt1.antworten.append(antwort1)
+
+   >>> import transaction; transaction.commit()
+
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+
+   >>> kt1, kt2 = flg.kursteilnehmer
+   >>> ant1, = kt1.antworten
+   >>> ant1
+   <Antwort(id='1', frage='1', antwort='AB')>
+
+   >>> ant1.frage
+   <Frage(id='1', frage='1', antwort='ab')>
+
+   >>> import transaction; transaction.commit()
+
+
+Trajects
+--------
+
+Ok nun haben wir alle unsere Objekte angelegt wir können jetzt prüfen ob wir diese über
+das traject System aufrufen können.
+
+   >>> from zope.testbrowser.testing import Browser
+   >>> browser = Browser()
+   >>> browser.addHeader('Authorization', 'Basic user:user')
+   >>> browser.handleErrors = False
+
+Applikation
+
+   >>> browser.open('http://localhost/app')
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+
+Fernlehrgang
+
+   >>> browser.open('http://localhost/app/fernlehrgang/1')
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+
+Lehrhefte
+
+   >>> browser.open('http://localhost/app/fernlehrgang/1/lehrheft/1')
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+
+Fragen
+
+   >>> browser.open('http://localhost/app/fernlehrgang/1/lehrheft/1/frage/1')
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+  
+Unternehmen
+
+   >>> browser.open('http://localhost/app/unternehmen/0000-00025')
+   >>> browser.headers['Status'].upper()
+   '200 OK'
+
+
+XML-Export
+----------
+
+   >>> session = Session()
+   >>> fernlehrgang = session.query(Fernlehrgang).one()
+   >>> fernlehrgang
+   <Fernlehrgang(id='...', jahr='2009', titel='Fernlehrgang')>
+
+   >>> from fernlehrgang.export import IXMLExport
+   >>> exporter = IXMLExport(fernlehrgang)
+   >>> print exporter.createXML()
+   <?xml version="1.0" ?>
+   <xml>
+     <lehrgaenge>
+       <fernlehrgang flgid="1" titel="Fernlehrgang">
+         <jahr>
+           2009
+         </jahr>
+         <lehrheft lehrheft_id="1">
+           <frage frageid="1">
+             <loesung>
+               ab
+             </loesung>
+             <maxpunkte>
+               None
+             </maxpunkte>
+           </frage>
+           <frage frageid="2">
+             <loesung>
+               bc
+             </loesung>
+             <maxpunkte>
+               None
+             </maxpunkte>
+           </frage>
+         </lehrheft>
+         <lehrheft lehrheft_id="2">
+           <frage frageid="3">
+             <loesung>
+               cd
+             </loesung>
+             <maxpunkte>
+               None
+             </maxpunkte>
+           </frage>
+         </lehrheft>
+         <kursteilnehmer ktlnid="1">
+           <teilnehmer tlnid="1">
+             <anrede/>
+             <titel/>
+             <name>
+               Lars Walther
+             </name>
+             <vorname/>
+             <gebdat/>
+             <email/>
+             <telpriv/>
+             <teldienst/>
+             <telmobil/>
+             <telefax/>
+             <unternehmen unternehmensid="0000-00025">
+               <name1>
+                 Novareto
+               </name1>
+               <name2/>
+               <name3/>
+               <strhnr/>
+               <plz/>
+               <ort/>
+             </unternehmen>
+             <versandanschrift>
+               <name1>
+               </name1>
+               <name2>
+                 Lars Walther 
+               </name2>
+               <strhnr>
+               </strhnr>
+               <plz/>
+               <ort/>
+             </versandanschrift>
+             <antworten>
+               <antwort antwortid="1" frageid="1" lehrheftid="None">
+                 <loesung>
+                   AB
+                 </loesung>
+                 <maxpunkte/>
+               </antwort>
+             </antworten>
+           </teilnehmer>
+         </kursteilnehmer>
+         <kursteilnehmer ktlnid="2">
+           <teilnehmer tlnid="2">
+             <anrede/>
+             <titel/>
+             <name>
+               Bernd Probst 
+             </name>
+             <vorname/>
+             <gebdat/>
+             <email/>
+             <telpriv/>
+             <teldienst/>
+             <telmobil/>
+             <telefax/>
+             <unternehmen unternehmensid="0000-00026">
+               <name1>
+                 Econtec
+               </name1>
+               <name2/>
+               <name3/>
+               <strhnr/>
+               <plz/>
+               <ort/>
+             </unternehmen>
+             <versandanschrift>
+               <name1>
+               </name1>
+               <name2>
+                 Bernd Probst
+               </name2>
+               <strhnr>
+               </strhnr>
+               <plz/>
+               <ort/>
+             </versandanschrift>
+             <antworten/>
+           </teilnehmer>
+         </kursteilnehmer>
+       </fernlehrgang>
+     </lehrgaenge>
+   </xml>
+
+
+Cleaning
+--------
+
+   >>> session = Session()
+   >>> from fernlehrgang.models import Base
+   >>> mt = Base.metadata
+   >>> mt.bind = session.connection().engine
+   >>> mt.drop_all()
