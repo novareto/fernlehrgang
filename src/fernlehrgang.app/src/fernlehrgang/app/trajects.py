@@ -2,13 +2,11 @@
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
 
-
-import grok
-
+import uvclight
 from .upload import IFileStore
 
 from dolmen.content import IContent, schema
-from uvclight.backends import traject
+from uvclight.backends import patterns
 from cromlech.sqlalchemy import get_session
 
 from sqlalchemy import *
@@ -43,14 +41,13 @@ def located(func):
     return proxify
 
 
-class Fernlehrgang(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Fernlehrgang(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     model = models.Fernlehrgang
     pattern = "fernlehrgang/:fernlehrgang_id"
 
     @located
-    @staticmethod
     def factory(fernlehrgang_id):
         session = get_session('fernlehrgang')
         dd = session.query(models.Fernlehrgang).filter(
@@ -63,14 +60,13 @@ class Fernlehrgang(traject.Model):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
-class Unternehmen(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Unternehmen(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     model = models.Unternehmen
     pattern = "unternehmen/:unternehmen_mnr"
 
     @located
-    @staticmethod
     def factory(unternehmen_mnr):
         session = get_session('fernlehrgang')
         return session.query(models.Unternehmen).filter(
@@ -80,14 +76,13 @@ class Unternehmen(traject.Model):
         return dict(unternehmen_mnr = unternehmen.mnr)
 
 
-class Teilnehmer(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Teilnehmer(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     model = models.Teilnehmer
     pattern = "unternehmen/:unternehmen_mnr/teilnehmer/:id"
 
     @located
-    @staticmethod
     def factory(id, unternehmen_mnr):
         session = get_session('fernlehrgang')
         return session.query(models.Teilnehmer).filter(
@@ -99,14 +94,13 @@ class Teilnehmer(traject.Model):
                     unternehmen_mnr=teilnehmer.unternehmen_mnr)
 
 
-class Lehrheft(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Lehrheft(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     pattern = "fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id"
     model = models.Lehrheft
 
     @located
-    @staticmethod
     def factory(fernlehrgang_id, lehrheft_id):
         session = get_session('fernlehrgang')
         return  session.query(models.Lehrheft).filter(
@@ -118,14 +112,13 @@ class Lehrheft(traject.Model):
                     lehrheft_id = lehrheft.id)
 
 
-class Frage(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Frage(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     model = models.Frage
     pattern = "fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/frage/:frage_id"
 
     @located
-    @staticmethod
     def factory(fernlehrgang_id, lehrheft_id, frage_id):
         session = get_session('fernlehrgang')
         return  session.query(models.Frage).filter(
@@ -152,15 +145,14 @@ provideUtility(frag_builder, IFactory,
                name='fernlehrgang.models.frage.IFrage')
 
 
-class Kursteilnehmer(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Kursteilnehmer(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     model = models.Kursteilnehmer
     pattern = ("fernlehrgang/:fernlehrgang_id/kursteilnehmer" +
                "/:kursteilnehmer_id")
 
     @located
-    @staticmethod
     def factory(fernlehrgang_id, kursteilnehmer_id):
         session = get_session('fernlehrgang')
         return  session.query(models.Kursteilnehmer).filter(
@@ -172,8 +164,8 @@ class Kursteilnehmer(traject.Model):
                     kursteilnehmer_id = kursteilnehmer.id)
 
 
-class Antwort(traject.Model):
-    grok.context(IFernlehrgangApp)
+class Antwort(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
 
     model = models.Antwort
     pattern = (
@@ -181,7 +173,6 @@ class Antwort(traject.Model):
         "/antwort/:antwort_id")
 
     @located
-    @staticmethod
     def factory(fernlehrgang_id, kursteilnehmer_id, antwort_id):
         session = get_session('fernlehrgang')
         return  session.query(models.Antwort).filter(
@@ -195,7 +186,7 @@ class Antwort(traject.Model):
                     fernlehrgang_id = antwort.kursteilnehmer.fernlehrgang.id)
 
 
-def register_all():
+def register_all(registry):
     models = frozenset((Fernlehrgang, Unternehmen, Teilnehmer, Lehrheft,
                         Frage,  Kursteilnehmer, Antwort))
-    traject.register_pattern(PATTERNS, *models)
+    patterns.register_models(registry, *models)

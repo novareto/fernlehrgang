@@ -2,39 +2,35 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-import grok
+import uvclight
 
-from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
 
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
+from zope.location import locate
+from uvclight.backends.patterns import DefaultModel
 from sqlalchemy import and_
-from uvc.layout.interfaces import IExtraInfo
-from z3c.saconfig import Session
-from zeam.form.base import Fields
-from zeam.form.base import NO_VALUE
-from zeam.form.base import action
+from uvclight.interfaces import IExtraInfo
+
+from dolmen.forms.base import Fields
+from dolmen.forms.base import NO_VALUE
+from dolmen.forms.base import action
 from zope.i18nmessageid import MessageFactory
 
-from . import Form
+from . import Form, DefaultView, EditForm
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import IFernlehrgang, ITeilnehmer, IKursteilnehmer
 from fernlehrgang.models import lieferstopps, Teilnehmer, Kursteilnehmer
 
 
-_ = MessageFactory('zeam.form.base')
-
-grok.templatedir('templates')
+_ = MessageFactory('dolmen.forms.base')
 
 
 @menuentry(NavigationMenu)
 class KursteilnehmerListing(Form):
-    grok.context(IFernlehrgang)
-    grok.implements(IDisplayView)
-    grok.name('kursteilnehmer_listing')
-    grok.title("Kursteilnehmer verwalten")
-    grok.order(10)
+    uvclight.context(IFernlehrgang)
+    uvclight.name('kursteilnehmer_listing')
+    uvclight.title("Kursteilnehmer verwalten")
+    uvclight.order(10)
 
     fields = Fields(ITeilnehmer).select('id', 'name', 'geburtsdatum')
 
@@ -45,7 +41,7 @@ class KursteilnehmerListing(Form):
     results = []
 
     def getResults(self):
-        root = grok.getSite()
+        root = uvclight.getSite()
         lf_vocab = lieferstopps(None)
         for teilnehmer, kursteilnehmer in self.results:
             locate(root, kursteilnehmer, DefaultModel)
@@ -96,8 +92,8 @@ class KursteilnehmerListing(Form):
 
 @menuentry(AddMenu)
 class AddKursteilnehmer(Form):
-    grok.context(IFernlehrgang)
-    grok.title(u'Kursteilnehmer')
+    uvclight.context(IFernlehrgang)
+    uvclight.title(u'Kursteilnehmer')
     label = u'Kursteilnehmer anlegen'
     description = u'Kursteilnehmer anlegen'
 
@@ -115,23 +111,23 @@ class AddKursteilnehmer(Form):
             self.flash('Es wurde kein Teilnehmer mit der ID %s gefunden' %
                        data.get('teilnehmer_id'))
         teilnehmer = sql.one()
-        locate(grok.getSite(), teilnehmer, DefaultModel)
+        locate(uvclight.getSite(), teilnehmer, DefaultModel)
         self.redirect(self.url(teilnehmer, 'register'))
 
 
-class Index(models.DefaultView):
-    grok.context(IKursteilnehmer)
-    grok.title(u'View')
+class Index(DefaultView):
+    uvclight.context(IKursteilnehmer)
+    uvclight.title(u'View')
     title = label = u"Kursteilnehmer"
     description = u"Details zum Kursteilnehmer"
 
     fields = Fields(IKursteilnehmer).omit(id)
 
 
-class Edit(models.Edit):
-    grok.context(IKursteilnehmer)
-    grok.name('edit')
-    grok.title(u'Edit')
+class Edit(EditForm):
+    uvclight.context(IKursteilnehmer)
+    uvclight.name('edit')
+    uvclight.title(u'Edit')
 
     fields = Fields(IKursteilnehmer).omit('id')
     fields['teilnehmer_id'].mode = 'hiddendisplay'
@@ -139,14 +135,14 @@ class Edit(models.Edit):
     fields['branche'].mode = "radio"
 
 
-class MoreInfoOnKursteilnehmer(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(IKursteilnehmer)
+class MoreInfoOnKursteilnehmer(uvclight.Viewlet):
+    uvclight.viewletmanager(IExtraInfo)
+    uvclight.context(IKursteilnehmer)
 
     def update(self):
-        url = grok.url(self.request, self.context)
+        url = uvclight.url(self.request, self.context)
         self.script = "<script> var base_url = '%s'; </script>" % url
-        locate(grok.getSite(), self.context.teilnehmer, DefaultModel)
+        locate(uvclight.getSite(), self.context.teilnehmer, DefaultModel)
         self.turl = '<a href="%s/edit"> %s %s </a>' %(
                 self.view.url(self.context.teilnehmer),
                 self.context.teilnehmer.name, self.context.teilnehmer.vorname)

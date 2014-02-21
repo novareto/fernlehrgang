@@ -10,15 +10,12 @@ import uvclight
 from dolmen.menu import menuentry
 from fernlehrgang.models import Fernlehrgang
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok.layout import Page
-from megrok.traject import locate
-from zope.location import LocationProxy
-from megrok.traject.components import DefaultModel
+from uvclight import Page
+from zope.location import LocationProxy, locate
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
-from z3c.saconfig import Session
-from zeam.form.base import Fields
+from dolmen.forms.base import Fields
 
-from . import AddForm, DefaultView, Edit
+from . import AddForm, DefaultView, EditForm, pagetemplate
 from ..interfaces import IFernlehrgang, IFernlehrgangApp
 from ..wsgi import IFernlehrgangSkin
 from .resources import bs_calendar
@@ -52,6 +49,7 @@ class FernlehrgangListing(TablePage):
 
 @menuentry(AddMenu)
 class AddFernlehrgang(AddForm):
+    uvclight.name('add-Fernlehrgang')
     uvclight.context(IFernlehrgangApp)
     uvclight.title(u'Fernlehrgang')
     uvclight.layer(IFernlehrgangSkin)
@@ -126,16 +124,17 @@ class FernlehrgangIndex(DefaultView):
     uvclight.context(IFernlehrgang)
     uvclight.layer(IFernlehrgangSkin)
     uvclight.title('Index')
-
+    uvclight.name('index')
+    
     fields = Fields(IFernlehrgang).omit('id')
-
+    
     @property
     def label(self):
         return u"Fernlehrgang: %s (%s)" % (
             self.context.titel, self.context.id)
 
 
-class Edit(Edit):
+class Edit(EditForm):
     uvclight.context(IFernlehrgang)
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"

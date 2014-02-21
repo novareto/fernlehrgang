@@ -5,13 +5,13 @@
 
 import grok
 
-from z3c.saconfig import Session
+from cromlech.sqlalchemy import get_session
 from fernlehrgang.models import Fernlehrgang, Unternehmen
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
-from zeam.form.base import Fields, action
+from dolmen.forms.base import Fields, action
 
 from . import Form
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 from ..interfaces import (
     ITeilnehmer, IKursteilnehmer, IFernlehrgangApp, IUnternehmen)
 
@@ -33,8 +33,7 @@ class AutoRegForm(Form):
         data, errors = self.extractData()
         if errors:
             return errors
-        session = Session()
-        print data
+        session = get_session('fernlehrgang')
         unternehmen = session.query(Unternehmen).get(data.get('mnr'))
         if not unternehmen:
             self.flash(u'Das Unternehmen mit der Mitgliedsnummer ' +

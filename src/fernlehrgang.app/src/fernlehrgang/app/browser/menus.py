@@ -1,26 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import grok
-
-from uvc.layout import MenuItem
-from uvc.layout.interfaces import IFooter, IPersonalPreferences
+import uvclight
+from uvclight.interfaces import IFooterMenu, IPersonalPreferences
 from zope.interface import Interface
 
 
-class KontaktMI(MenuItem):
-    grok.context(Interface)
-    grok.title(u"Kontakt")
-    grok.viewletmanager(IFooter)
+class KontaktMI(uvclight.MenuItem):
+    uvclight.context(Interface)
+    uvclight.title(u"Kontakt")
+    uvclight.menu(IFooterMenu)
 
     @property
     def action(self):
         return self.view.application_url() + '/kontakt'
 
 
-class LogoutMI(MenuItem):
-    grok.context(Interface)
-    grok.title(u"Abmelden")
-    grok.viewletmanager(IPersonalPreferences)
+class LogoutMI(uvclight.MenuItem):
+    uvclight.context(Interface)
+    uvclight.title(u"Abmelden")
+    uvclight.menu(IPersonalPreferences)
 
     @property
     def action(self):
