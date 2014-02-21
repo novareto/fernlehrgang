@@ -10,7 +10,7 @@ from megrok.layout import Page
 from sqlalchemy.orm import joinedload
 from z3c.saconfig import Session
 
-from ..config import POSTVERSANDSPERRE
+from fernlehrgang.models.calculations import POSTVERSANDSPERRE
 from ..interfaces import IKursteilnehmer, ICalculateResults
 from .viewlets import NavigationMenu
 

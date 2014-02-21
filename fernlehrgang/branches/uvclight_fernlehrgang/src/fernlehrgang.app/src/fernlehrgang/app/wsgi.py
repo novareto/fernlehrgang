@@ -84,13 +84,13 @@ def application_factory(global_conf, store_root, store_prefix, dsn):
     zcml_path = os.path.join(os.path.dirname(__file__), 'configure.zcml')
     load_zcml(zcml_path)
 
-    # we register our Traject patterns for our lookup
-    register_all(model_lookup.patterns)
-    
     # We register our SQLengine under a given name
     engine = create_and_register_engine(dsn, 'fernlehrgang')
     engine.bind(models.Base)
 
+    # we register our Traject patterns for our lookup
+    register_all(model_lookup)
+    
     # We create it all
     metadata = models.Base.metadata
     metadata.create_all(engine.engine, checkfirst=True)

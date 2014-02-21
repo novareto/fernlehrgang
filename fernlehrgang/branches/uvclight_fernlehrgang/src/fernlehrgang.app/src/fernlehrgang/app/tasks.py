@@ -21,7 +21,7 @@ if DSN:
     some_engine = create_engine(DSN)
     Session = sessionmaker(bind=some_engine)
 else:
-    raise "NO ENVIRONMENT FOR DSN SET"
+    raise RuntimeError("NO ENVIRONMENT FOR DSN SET")
 
 text = """ Im Anhang finden Sie die entsprechende Datei"""
 
