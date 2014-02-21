@@ -7,19 +7,18 @@ import uvclight
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.models import Frage
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok.layout import Page
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
+from uvclight import Page
+from zope.location import locate
+from uvclight.backends.patterns import DefaultModel
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from zeam.form.base import Fields
 
-from . import AddForm
+from . import AddForm, EditForm
 from ..interfaces import IFrage, ILehrheft
+from ..wsgi import IFernlehrgangSkin
 from .lehrheft import EmbeddedFrage
-from .skin import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
 
-grok.templatedir('templates')
 
 
 @menuentry(NavigationMenu)
@@ -84,7 +83,7 @@ class FrageIndex(Page):
 
 
 @menuentry(NavigationMenu, order=2)
-class Edit(Edit):
+class Edit(EditForm):
     uvclight.context(IFrage)
     uvclight.layer(IFernlehrgangSkin)
     uvclight.title(u'Bearbeiten')

@@ -7,18 +7,18 @@ import uvclight
 from dolmen.menu import menuentry
 from fernlehrgang.models import Lehrheft
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from grokcore.view import View
-from megrok.layout import Page
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
+from uvclight import View, Page
+from zope.location import locate
+from uvclight.backends.patterns import DefaultModel
 from megrok.z3ctable import LinkColumn, GetAttrColumn, TablePage
 from zeam.form.base import Fields
 from zope.component import getUtility
 from zope.interface import Interface, implementer
 from zope.security import checkPermission
 from zope.security.checker import CheckerPublic
+from uvc.tb_layout.menus import ContextualActionsMenu
 
-from . import AddForm
+from . import AddForm, EditForm
 from ..interfaces import IListing, IFernlehrgang, IFrage, ILehrheft
 from ..wsgi import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
@@ -106,7 +106,7 @@ class EmbeddedFrage(View):
             self.thumb = self.context.thumbnail.locate(store=store)
   
 
-@menuentry(ContextualMenu, order=10)
+@menuentry(ContextualActionsMenu, order=10)
 class LehrheftIndex(Page):
     uvclight.context(ILehrheft)
     uvclight.name('index')
@@ -117,8 +117,8 @@ class LehrheftIndex(Page):
                        for frage in self.context.fragen)
 
 
-@menuentry(ContextualMenu, order=20)
-class Edit(models.Edit):
+@menuentry(ContextualActionsMenu, order=20)
+class Edit(EditForm):
     uvclight.context(ILehrheft)
     uvclight.title(u'Edit')
     uvclight.name('edit')

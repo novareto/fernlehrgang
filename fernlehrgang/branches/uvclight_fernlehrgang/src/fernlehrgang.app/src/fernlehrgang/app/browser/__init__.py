@@ -1,21 +1,20 @@
 # package
 
-import grok
+import uvclight
 
-from uvclight import Form
+from uvclight import Form, AddForm, EditForm, DeleteForm, DefaultView
+from grokcore.component import Adapter
 from zope.publisher.interfaces.http import IHTTPRequest
 from zope.i18n.interfaces import IUserPreferredLanguages
-from dolmen.forms.crud import Add as AddForm, Display as DefaultView, Edit
 
 
-class Form(Form):
-    grok.require('dolmen.content.Add')
-    grok.baseclass()
-
-
-class GermanBrowserLangugage(grok.Adapter):                                     
-    grok.context(IHTTPRequest)
-    grok.implements(IUserPreferredLanguages)
+class GermanBrowserLangugage(Adapter):
+    uvclight.context(IHTTPRequest)
+    uvclight.implements(IUserPreferredLanguages)
 
     def getPreferredLanguages(self):
         return ['de', 'de-de']
+
+
+def pagetemplate(path):
+    return uvclight.get_template(path, __file__)

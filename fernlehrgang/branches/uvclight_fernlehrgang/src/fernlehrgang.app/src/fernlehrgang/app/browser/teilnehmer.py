@@ -2,30 +2,26 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-import grok
+import uvclight
 
-from dolmen.app.layout import models, IDisplayView
 from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
-from uvc.layout.interfaces import IExtraInfo
+from uvclight.interfaces import IExtraInfo
 from z3c.saconfig import Session
 from zeam.form.base import Fields, action, NO_VALUE
 from zeam.form.base.markers import FAILURE
 
-from . import Form, AddForm 
+from . import Form, AddForm, DefaultView, EditForm
 from .widgets import fmtDate
 from .resources import register_js
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import (
     IListing, IKursteilnehmer, ITeilnehmer, generatePassword, IUnternehmen)
-
-
-grok.templatedir('templates')
 
 
 def no_value(d):
@@ -37,11 +33,11 @@ def no_value(d):
 
 @menuentry(NavigationMenu)
 class TeilnehmerListing(TablePage):
-    grok.implements(IDisplayView, IListing)
-    grok.context(IUnternehmen)
-    grok.name('teilnehmer_listing')
-    grok.title(u'Teilnehmer verwalten')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.implements(IListing)
+    uvclight.context(IUnternehmen)
+    uvclight.name('teilnehmer_listing')
+    uvclight.title(u'Teilnehmer verwalten')
+    uvclight.layer(IFernlehrgangSkin)
     
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
@@ -62,9 +58,9 @@ class TeilnehmerListing(TablePage):
 
 @menuentry(AddMenu)
 class AddTeilnehmer(AddForm):
-    grok.context(IUnternehmen)
-    grok.title(u'Teilnehmer')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IUnternehmen)
+    uvclight.title(u'Teilnehmer')
+    uvclight.layer(IFernlehrgangSkin)
     
     label = u'Teilnehmer anlegen für Unternehmen'
     fields = Fields(ITeilnehmer).omit('id')
@@ -106,9 +102,9 @@ class AddTeilnehmer(AddForm):
         return "%s/teilnehmer/%s" %(self.url(), self.tn.id)
 
 
-class Index(models.DefaultView):
-    grok.context(ITeilnehmer)
-    grok.layer(IFernlehrgangSkin)
+class Index(DefaultView):
+    uvclight.context(ITeilnehmer)
+    uvclight.layer(IFernlehrgangSkin)
     
     title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
@@ -117,11 +113,11 @@ class Index(models.DefaultView):
     fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
 
 
-class Edit(models.Edit):
-    grok.context(ITeilnehmer)
-    grok.layer(IFernlehrgangSkin)
+class Edit(EditForm):
+    uvclight.context(ITeilnehmer)
+    uvclight.layer(IFernlehrgangSkin)
     
-    grok.name('edit')
+    uvclight.name('edit')
     label = u"Teilnehmer"
 
     fields = Fields(ITeilnehmer).omit('id')
@@ -149,10 +145,10 @@ class Edit(models.Edit):
 
 @menuentry(NavigationMenu, order=200)
 class Register(Form):
-    grok.context(ITeilnehmer)
-    grok.name('register')
-    grok.layer(IFernlehrgangSkin)
-    grok.title('Registrierung')
+    uvclight.context(ITeilnehmer)
+    uvclight.name('register')
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.title('Registrierung')
 
     label = u"Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
@@ -200,8 +196,8 @@ class Register(Form):
         session.flush()
 
 
-class TeilnehmerJSONViews(grok.JSON):
-    grok.context(ITeilnehmer)
+class TeilnehmerJSONViews(uvclight.JSON):
+    uvclight.context(ITeilnehmer)
 
     def get_kursteilnehmer(self, ktn_id):
         session = Session()
@@ -212,11 +208,11 @@ class TeilnehmerJSONViews(grok.JSON):
         return {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
 
 
-class OverviewKurse(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(ITeilnehmer)
-    grok.layer(IFernlehrgangSkin)
-    grok.order(30)
+class OverviewKurse(uvclight.Viewlet):
+    uvclight.viewletmanager(IExtraInfo)
+    uvclight.context(ITeilnehmer)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.order(30)
 
     def update(self):
         session = Session()
@@ -225,26 +221,26 @@ class OverviewKurse(grok.Viewlet):
 
 
 class HelperEntry(Entry):
-    grok.name('index')
-    grok.context(ITeilnehmer)
-    grok.order(1)
-    grok.title('Teilnehmer')
+    uvclight.name('index')
+    uvclight.context(ITeilnehmer)
+    uvclight.order(1)
+    uvclight.title('Teilnehmer')
     menu(NavigationMenu)
 
 
 ## Spalten
 
 class ID(GetAttrColumn):
-    grok.name('Id')
-    grok.context(IUnternehmen)
+    uvclight.name('Id')
+    uvclight.context(IUnternehmen)
     weight = 5 
     header = u"Id"
     attrName = "id"
 
 
 class Name(LinkColumn):
-    grok.name('Name')
-    grok.context(IUnternehmen)
+    uvclight.name('Name')
+    uvclight.context(IUnternehmen)
     weight = 10 
     linkContent = "edit"
 
@@ -256,16 +252,16 @@ class Name(LinkColumn):
 
 
 class VorName(GetAttrColumn):
-    grok.name('VorName')
-    grok.context(IUnternehmen)
+    uvclight.name('VorName')
+    uvclight.context(IUnternehmen)
     weight = 20
     header = u"Vorname"
     attrName = "vorname"
 
 
 class Geburtsdatum(Column):
-    grok.name('Geburtsdatum')
-    grok.context(IUnternehmen)
+    uvclight.name('Geburtsdatum')
+    uvclight.context(IUnternehmen)
     weight = 30
     header = u"Geburtsdatum"
 

@@ -11,24 +11,11 @@ from uvc.tb_layout.menuviewlets import ContextualActionsMenuViewlet
 from uvclight.interfaces import IPersonalPreferences
 from uvclight.interfaces import IAboveContent, IPageTop, IHeaders
 from zope.interface import Interface
+from cromlech.sqlalchemy import get_session
 
+from . import pagetemplate
 from ..wsgi import IFernlehrgangSkin
 from ..interfaces import IListing
-
-
-class TestSystem(uvclight.Viewlet):
-    uvclight.viewletmanager(IHeaders)
-    uvclight.context(Interface)
-
-    def update(self):
-        config = getProductConfiguration('database')
-        DSN = config['dsn']
-        if DSN.startswith('oracle://novareto:retonova@10.30.4.95/BGETest'):
-            self.view.flash(u"Test - System", type="info")
-        self.view.flash(u"Test - System", type="info")
-
-    def render(self):
-        return ""
 
 
 class UserName(MenuItem):
@@ -36,15 +23,16 @@ class UserName(MenuItem):
     """
     uvclight.name('myname')
     uvclight.context(Interface)
-    uvclight.viewletmanager(IPersonalPreferences)
+    uvclight.menu(IPersonalPreferences)
     uvclight.order(300)
     uvclight.layer(IFernlehrgangSkin)
 
-    action =""
+    action = ""
 
     @property
     def title(self):
-        return self.request.principal.description or self.request.principal.id
+        principal = uvclight.current_principal()
+        return principal.description or principal.id
 
 
 #
@@ -56,13 +44,13 @@ class GlobalMenuViewlet(uvclight.Viewlet):
     uvclight.viewletmanager(IPageTop)
     uvclight.layer(IFernlehrgangSkin)
 
-    template = 'templates/globalmenu.cpt'
+    template = pagetemplate('globalmenu.cpt')
     uvclight.order(11)
     flgs = []
 
     @ram.cache(lambda *args: time() // (60 * 60))
     def getContent(self):
-        session = Session()
+        session = get_session('fernlehrgang')
         d = {}
         for fernlehrgang in session.query(Fernlehrgang).all():
             url = "%s/fernlehrgang/%s" % (
@@ -89,7 +77,7 @@ class ObjectActionMenu(ContextualActionsMenuViewlet):
     uvclight.layer(IFernlehrgangSkin)
     uvclight.order(119)
 
-    menu_template = 'templates/objectmenu.cpt'
+    menu_template = pagetemplate('objectmenu.cpt')
 
     id = "uvcobjectmenu"
     menu_class = u"foldable menu"
@@ -152,13 +140,3 @@ class NavigationMenuViewlet(uvclight.Viewlet):
         menu = NavigationMenu(self.context, self.request, self.view)
         menu.update()
         return menu.render()
-
-
-#
-## FavIcon
-#
-
-class FavIcon(uvclight.Viewlet):
-    uvclight.viewletmanager(IHeaders)
-    uvclight.context(Interface)
-    uvclight.layer(IFernlehrgangSkin)

@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-import grok
+import uvclight
 import base64
 import shutil
 
-from dolmen.app.layout import IDisplayView
 from dolmen.forms import crud
 from dolmen.uploader.service import create_directory
-from uvc.layout.slots.managers import BelowContent
 from zope.interface import implementer, Interface, Attribute
-from zope.publisher.interfaces.http import IHTTPRequest
 from zope.security.interfaces import Unauthorized
 from zope.security.management import checkPermission
 from zope.interface.common import mapping
@@ -29,7 +26,7 @@ class IStorage(mapping.IReadMapping, mapping.IWriteMapping):
     id = Attribute('ID of the storage')
 
 
-class FileRepresentation(grok.Model, Location):
+class FileRepresentation(Location):
 
     def __init__(self, path, id, filename, size):
         self.id = id

@@ -3,22 +3,26 @@
 import os
 import transaction
 
+from uvclight.backends.patterns import TrajectLookup
 from cromlech.browser import IPublicationRoot
-from cromlech.webob import request
-from cromlech.dawnlight import view_locator, query_view
-from cromlech.dawnlight import DawnlightPublisher, ViewLookup
-from cromlech.security import Interaction
-from cromlech.sqlalchemy import SQLAlchemySession, create_and_register_engine
+from cromlech.browser import IRequest
 from cromlech.configuration.utils import load_zcml
+from cromlech.dawnlight import DawnlightPublisher, ViewLookup
+from cromlech.dawnlight import view_locator, query_view
+from cromlech.security import Interaction
+from cromlech.security import unauthenticated_principal
+from cromlech.sqlalchemy import create_and_register_engine, SQLAlchemySession
+from cromlech.webob import request
 from sqlalchemy_imageattach import context as store
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 from webob.dec import wsgify
-from zope.component.hooks import setSite
 from zope.component import getGlobalSiteManager
+from zope.component.hooks import setSite
 from zope.interface import Interface, implementer, alsoProvides
+from zope.location import Location
 from zope.security.proxy import removeSecurityProxy
-from cromlech.browser import IRequest
 
+from .trajects import register_all
 from .auth.handler import Benutzer
 from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
@@ -29,10 +33,11 @@ class IFernlehrgangSkin(IRequest):
 
 
 view_lookup = ViewLookup(view_locator(query_view))
+model_lookup = TrajectLookup()
 
 
 @implementer(IPublicationRoot, IFernlehrgangApp)
-class Root(object):
+class Root(Location):
 
     def benutzer(self):
         return Benutzer
@@ -47,13 +52,14 @@ class Application(object):
         self.store = store
         self.engine = engine
         self.site = Root()
-        self.publisher = DawnlightPublisher(view_lookup=view_lookup)
+        self.publisher = DawnlightPublisher(
+            model_lookup=model_lookup, view_lookup=view_lookup)
 
     @wsgify(RequestClass=request.Request)
     def __call__(self, request):
-        with SQLAlchemySession(self.engine):
-            with transaction.manager:
-                with Interaction():
+        with transaction.manager as tm:
+            with SQLAlchemySession(self.engine, transaction_manager=tm):
+                with Interaction(unauthenticated_principal):
                     # We apply the skin layer
                     alsoProvides(request, IFernlehrgangSkin)
                     
@@ -78,6 +84,9 @@ def application_factory(global_conf, store_root, store_prefix, dsn):
     zcml_path = os.path.join(os.path.dirname(__file__), 'configure.zcml')
     load_zcml(zcml_path)
 
+    # we register our Traject patterns for our lookup
+    register_all(model_lookup.patterns)
+    
     # We register our SQLengine under a given name
     engine = create_and_register_engine(dsn, 'fernlehrgang')
     engine.bind(models.Base)
@@ -89,6 +98,6 @@ def application_factory(global_conf, store_root, store_prefix, dsn):
     # We now instanciate the Application
     # The name and engine are passed, to be used for the querying.
     fs_store = HttpExposedFileSystemStore(store_root, store_prefix)
-    app = Application(fs_store, engine.engine)
+    app = Application(fs_store, engine)
 
     return app

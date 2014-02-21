@@ -2,35 +2,30 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import uvclight
+from uvclight.backends.patterns import DefaultModel
 
-from dolmen.app.layout import models
+from dolmen.forms.base import Fields, NO_VALUE, action
 from dolmen.menu import menuentry
 from fernlehrgang.models import Unternehmen 
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
 from sqlalchemy import func
-from z3c.saconfig import Session
-from zeam.form.base import Fields, NO_VALUE, action
+from cromlech.sqlalchemy import get_session
+from zope.location import locate
 
-from . import Form, AddForm
+from . import Form, AddForm, EditForm, DefaultView
 from ..interfaces import IListing, IFernlehrgangApp, IUnternehmen
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
 from .widgets import fmtDate
 
 
-grok.templatedir('templates')
-
-
 @menuentry(NavigationMenu)
 class UnternehmenListing(Form):
-    grok.context(IFernlehrgangApp)
-    grok.name('unternehmen_listing')
-    grok.title(u"Unternehmen verwalten")
-    grok.layer(IFernlehrgangSkin)
-    grok.order(20)
+    uvclight.context(IFernlehrgangApp)
+    uvclight.name('unternehmen_listing')
+    uvclight.title(u"Unternehmen verwalten")
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.order(20)
     
     fields = Fields(IUnternehmen).select(
         'mnr', 'name', 'str', 'plz', 'ort', 'mnr_g_alt')
@@ -48,14 +43,14 @@ class UnternehmenListing(Form):
 
     def getResults(self):
         for item in self.results:
-            locate(grok.getSite(), item, DefaultModel)
+            locate(uvclight.getSite(), item, DefaultModel)
             yield item
 
     @action(u"Suchen")
     def handle_search(self): 
         v = False
         data, errors = self.extractData()
-        session = Session()
+        session = get_session('fernlehrgang')
         sql = session.query(Unternehmen)
         if data.get('mnr') != NO_VALUE:
             sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
@@ -85,12 +80,12 @@ class UnternehmenListing(Form):
         self.results = sql.all()
 
 
-class Index(models.DefaultView):
-    grok.context(IUnternehmen)
-    grok.name('index')
-    grok.layer(IFernlehrgangSkin)
+class Index(DefaultView):
+    uvclight.context(IUnternehmen)
+    uvclight.name('index')
+    uvclight.layer(IFernlehrgangSkin)
 
-    template = ChameleonPageTemplateFile('templates/unternehmen_view.cpt')
+    template = 'templates/unternehmen_view.cpt'
 
     title = u"Unternehmen"
     label = u"Unternehmen"
@@ -121,9 +116,9 @@ class Index(models.DefaultView):
 
 @menuentry(AddMenu) 		
 class AddUnternehmen(AddForm): 		
-    grok.context(IFernlehrgangApp) 		
-    grok.title(u'Unternehmen')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IFernlehrgangApp) 		
+    uvclight.title(u'Unternehmen')
+    uvclight.layer(IFernlehrgangSkin)
 
     title = u'Unternehmen' 		
     label = u'Unternehmen anlegen' 		
@@ -135,16 +130,16 @@ class AddUnternehmen(AddForm):
         return Unternehmen(**data) 		
 
     def add(self, object): 		
-        session = Session() 		
-        session.add(object) 		
+        session = get_session('fernlehrgang') 		
+        session.add(object)
 
     def nextURL(self): 		
         return self.url(self.context, 'unternehmen_listing')
 
 
-class Edit(models.Edit):
-    grok.context(IUnternehmen)
-    grok.implements(IListing)
-    grok.layer(IFernlehrgangSkin)
+class Edit(EditForm):
+    uvclight.context(IUnternehmen)
+    uvclight.implements(IListing)
+    uvclight.layer(IFernlehrgangSkin)
 
-    template = grok.PageTemplateFile('templates/unternehmen_edit.cpt')
+    template = 'templates/unternehmen_edit.cpt'

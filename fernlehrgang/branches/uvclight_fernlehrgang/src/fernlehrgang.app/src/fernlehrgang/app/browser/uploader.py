@@ -1,28 +1,25 @@
 # -*- coding: utf-8 -*-
 
 import os
-import grok
 import shutil
+import uvclight
 from math import log
 
-from dolmen.app.layout import IDisplayView
 from dolmen.forms import crud
 from dolmen.menu import menuentry
 from dolmen.uploader.service import create_directory
 from grokcore.traverser import Traverser
-from megrok.layout import Page
-from uvc.layout.slots.managers import BelowContent
+from uvclight import Page
+from uvclight.interfaces import IBelowContent
 
 from zope.interface import implementer, Interface, Attribute
 from zope.interface.common import mapping
 from zope.location import locate
-from zope.publisher.interfaces.http import IHTTPRequest
-from zope.publisher.interfaces.http import IResult
 from zope.security.interfaces import Unauthorized
 from zope.security.management import checkPermission
 from zope.traversing.interfaces import ITraversable, TraversalError
 
-from .skin import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin
 from .resources import upload
 from .viewlets import NavigationMenu
 from ..upload import IFileStore, IStorage, Storage, FileRepresentation
@@ -33,9 +30,6 @@ try:
 except ImportError:
     import json
     simple_jsonification = json.dumps
-
-
-grok.templatedir('templates')
 
     
 SUFFIXES = u'b', u'Kb', u'Mb', u'Gb', u'Tb', u'Pb', u'Eb', u'Zb', u'Yb'
@@ -63,7 +57,6 @@ def format_file(url, file):
         )
 
 
-@implementer(IResult)
 class ReadWrapper(object):
 
     def __init__(self, f):
@@ -79,25 +72,10 @@ class ReadWrapper(object):
             else:
                 break
 
-
-class StorageTraverser(grok.MultiAdapter):
-    grok.name('storage')
-    grok.provides(ITraversable)
-    grok.adapts(IFileStore, IHTTPRequest)
-    
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def traverse(self, name, ignore=None):
-        storage = Storage(self.context.storageid)
-        locate(storage, self.context, '++storage++')
-        return storage
-
-
-class FilePublisher(grok.View):
-    grok.name('index')
-    grok.context(FileRepresentation)
+            
+class FilePublisher(uvclight.View):
+    uvclight.name('index')
+    uvclight.context(FileRepresentation)
 
     def update(self):
         """Sets the response headers, according to the data infos.
@@ -112,9 +90,9 @@ class FilePublisher(grok.View):
         return ReadWrapper(f)
 
     
-class Upload(grok.View):
-    grok.name('upload')
-    grok.context(IStorage)
+class Upload(uvclight.View):
+    uvclight.name('upload')
+    uvclight.context(IStorage)
 
     def render(self):
         upload = self.request.form.get('file', None)
@@ -183,9 +161,9 @@ class FileManager(object):
 
 @menuentry(NavigationMenu, order=10)
 class LibraryListing(Page):
-    grok.name('files')
-    grok.title('Download Center')
-    grok.context(IFileStore)
+    uvclight.name('files')
+    uvclight.title('Download Center')
+    uvclight.context(IFileStore)
 
     def update(self):
         storage = Storage(self.context.storageid)
@@ -194,16 +172,16 @@ class LibraryListing(Page):
         self.files = [format_file(storage_url, f) for f in storage.values()]
 
 
-class LibraryUploadViewlet(grok.Viewlet):
-    grok.name('files')
-    grok.view(LibraryListing)
-    grok.layer(IFernlehrgangSkin)
-    grok.viewletmanager(BelowContent)
-    grok.context(IFileStore)
+class LibraryUploadViewlet(uvclight.Viewlet):
+    uvclight.name('files')
+    uvclight.view(LibraryListing)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.viewletmanager(IBelowContent)
+    uvclight.context(IFileStore)
     
     def update(self, *args, **kwargs):
         upload.need()
-        grok.Viewlet.update(self)
+        uvclight.Viewlet.update(self)
         storage = Storage(self.context.storageid)
         locate(storage, self.context, '++storage++')
         storage_url = self.view.url(storage)

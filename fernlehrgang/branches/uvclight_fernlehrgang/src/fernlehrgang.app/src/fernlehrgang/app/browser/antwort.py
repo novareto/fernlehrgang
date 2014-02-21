@@ -21,7 +21,7 @@ from zeam.form.base import Action, Fields
 from zeam.form.composed import ComposedForm
 from zeam.form.table import SubTableForm, TableActions
 
-from .import Form, AddForm, DefaultView, Edit
+from .import Form, AddForm, DefaultView, EditForm
 from ..wsgi import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import IListing, IAntwort, IKursteilnehmer
@@ -155,7 +155,7 @@ class Index(DefaultView):
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(Edit):
+class Edit(EditForm):
     grok.context(IAntwort)
     grok.title(u'Edit')
     grok.name('edit')

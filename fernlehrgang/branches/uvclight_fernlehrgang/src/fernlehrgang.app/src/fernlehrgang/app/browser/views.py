@@ -1,46 +1,44 @@
 # -*- coding: utf-8 -*-
 
-import grok
+import uvclight
 from uvclight import Page, Index
 from zope.interface import Interface
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from ..interfaces import IFernlehrgangApp
 
 
-grok.templatedir('templates')
-
-
-class FaviconIco(grok.View):
+class FaviconIco(uvclight.View):
     """ Helper for Favicon.ico Errors Request
     """
-    grok.context(Interface)
-    grok.name('favicon.ico')
-    grok.require('zope.Public')
+    uvclight.context(Interface)
+    uvclight.name('favicon.ico')
+    uvclight.require('zope.Public')
 
     def render(self):
         return "BLA"
 
 
 class Index(Index):
-    grok.context(IFernlehrgangApp)
+    uvclight.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
     description = u"Testplattform Fernlehrgang"
-    grok.require('zope.View')
-
+    uvclight.require('zope.View')
+    template = uvclight.get_template('index.cpt', __file__)
+    
 
 class Kontakt(Page):
-    grok.context(Interface)
-    grok.title(u"Kontakt")
+    uvclight.context(Interface)
+    uvclight.title(u"Kontakt")
 
     def render(self):
         return "KONTAKT"
 
 
 class Logout(Page):
-    grok.title('Abmelden')
-    grok.context(Interface)
-    grok.require('zope.Public')
-    grok.order(200)
+    uvclight.title('Abmelden')
+    uvclight.context(Interface)
+    uvclight.require('zope.Public')
+    uvclight.order(200)
 
     KEYS = ("beaker.session.id", "dolmen.authcookie", "auth_pubtkt")
 
