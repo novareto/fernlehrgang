@@ -23,6 +23,8 @@ setup(name='fernlehrgang.models',
       install_requires=[
           'setuptools',
           'SQLAlchemy',
+          'sqlalchemy_imageattach',
+          'dolmen.content',
           'zope.interface',
           'cromlech.file',
           ],

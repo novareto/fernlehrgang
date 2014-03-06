@@ -9,28 +9,30 @@ import uvclight
 
 from dolmen.menu import menuentry
 from fernlehrgang.models import Fernlehrgang
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from uvclight import Page
-from zope.location import LocationProxy, locate
+from zope.location import LocationProxy 
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from dolmen.forms.base import Fields
 
 from . import AddForm, DefaultView, EditForm, pagetemplate
 from ..interfaces import IFernlehrgang, IFernlehrgangApp
-from ..wsgi import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin, model_lookup
 from .resources import bs_calendar
-from .viewlets import AddMenu, NavigationMenu
+from .viewlets import AddMenu, NavigationMenu, ObjectActionMenu
+from cromlech.sqlalchemy import get_session
+from uvclight.backends.patterns import DefaultModel
+from uvc.tb_layout.menus import ContextualActionsMenu
 
 
 @menuentry(NavigationMenu, order=-1)
-class FernlehrgangListing(TablePage):
+class FernlehrgangListing(uvclight.TablePage):
     uvclight.context(IFernlehrgangApp)
     uvclight.name('fernlehrgang_listing')
     uvclight.title(u"Fernlehrgänge")
     uvclight.order(10)
     uvclight.layer(IFernlehrgangSkin)
 
-    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
+    template = uvclight.get_template('base_listing.cpt', __file__)
 
     label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
@@ -41,9 +43,9 @@ class FernlehrgangListing(TablePage):
     @property
     def values(self):
         root = uvclight.getSite()
-        session = Session()
+        session = get_session('fernlehrgang')
         for fernlehrgang in session.query(Fernlehrgang).all():
-            locate(root, fernlehrgang, DefaultModel)
+            model_lookup.patterns.locate(root, fernlehrgang, DefaultModel)
             yield fernlehrgang
 
 
@@ -64,7 +66,7 @@ class AddFernlehrgang(AddForm):
         return Fernlehrgang(**data)
 
     def add(self, object):
-        session = Session()
+        session = get_session('fernlehrgang')
         session.add(object)
 
     def nextURL(self):
@@ -84,7 +86,7 @@ class SessionsFeeder(uvclight.View):
     def sessions(self):
         for lesson in self.context.lehrhefte:
             lesson = LocationProxy(lesson)
-            locate(lesson, self.context, lesson.id)
+            model_lookup.patterns.locate(lesson, self.context, lesson.id)
             session = datetime.combine(lesson.vdatum, datetime.min.time())
             date_start = datetime.combine(session, datetime.min.time())
             date_end = date_start + timedelta(hours=23, minutes=59)
@@ -110,15 +112,17 @@ class SessionsFeeder(uvclight.View):
 
 
 @menuentry(NavigationMenu, order=60)
-class Sessions(Page):
+class Sessions(uvclight.Page):
     uvclight.title('Terminliste')
     uvclight.context(IFernlehrgang)
     uvclight.layer(IFernlehrgangSkin)
+    template = uvclight.get_template('sessions.cpt', __file__)
 
     def update(self):
         bs_calendar.need()
 
     
+#@menuentry(ContextualActionsMenu)
 @menuentry(NavigationMenu, order=-2)
 class FernlehrgangIndex(DefaultView):
     uvclight.context(IFernlehrgang)
@@ -134,7 +138,9 @@ class FernlehrgangIndex(DefaultView):
             self.context.titel, self.context.id)
 
 
+#@menuentry(ContextualActionsMenu)
 class Edit(EditForm):
+    uvclight.title(u'Bearbeiten')
     uvclight.context(IFernlehrgang)
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
@@ -142,7 +148,7 @@ class Edit(EditForm):
 
 
 ### Spalten
-class ID(GetAttrColumn):
+class ID(uvclight.GetAttrColumn):
     uvclight.name('Id')
     uvclight.context(IFernlehrgangApp)
     weight = 5 
@@ -150,7 +156,7 @@ class ID(GetAttrColumn):
     attrName = u"id"
 
 
-class Title(LinkColumn):
+class Title(uvclight.LinkColumn):
     uvclight.name('titel')
     uvclight.context(IFernlehrgangApp)
     weight = 10
@@ -161,40 +167,10 @@ class Title(LinkColumn):
         return item.titel
 
 
-class Jahr(GetAttrColumn):
+class Jahr(uvclight.GetAttrColumn):
     uvclight.name('Jahr')
     uvclight.context(IFernlehrgangApp)
     weight = 20
     header = u"Jahr"
     attrName = u"jahr"
 
-
-#import elementtree.ElementTree as ET
-#from elementtree.ElementTree import Element
-#class CreateXML(grok.View):
-#    grok.context(IFernlehrgang)
-#    xml = ""
-#
-#    def update(self):
-#        from elementtree.SimpleXMLWriter import XMLWriter
-#        import sys
-#        fernlehrgang = self.context
-
-#        w = XMLWriter('/Users/cklinger/Desktop/t.xml')
-#        html = w.start("xml")
-#        w.start("fernlehrgang")
-#        w.element("id", str(fernlehrgang.id))
-#        w.element("titel", fernlehrgang.titel)
-#        w.element("jahr", str(fernlehrgang.jahr))
-#        w.end()
-#
-#        w.start("kursteilnehmer")
-#        for kursteilnehmer in fernlehrgang.kursteilnehmer:
-#            w.start("teilnehmer")
-#            w.element('id', str(kursteilnehmer.id))
-#            w.end()
-#        w.end()
-#        w.close(html)
-#
-#    def render(self):
-#        return self.xml

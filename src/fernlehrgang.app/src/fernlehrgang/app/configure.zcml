@@ -28,7 +28,9 @@
   <include package="cromlech.dawnlight" file="consumers.zcml" />
   <include package="cromlech.i18n" file="default.zcml" />
 
+  
   <grok:grok package="fernlehrgang.app" />
+  <include package="fernlehrgang.tools" />
   <grok:grok package="dolmen.location" />
 
 </configure>

@@ -2,43 +2,40 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-import grok
+import uvclight
 
 from datetime import datetime
 from dolmen.menu import menuentry
 
 from fernlehrgang.models import Antwort, Frage
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from uvclight import Page
 from uvclight.interfaces import IExtraInfo
 from zope.location import locate
-from megrok.traject.components import DefaultModel
+from uvclight.backends.patterns import DefaultModel
 from megrok.z3ctable.components import TablePage, GetAttrColumn
 from megrok.z3ctable.components import LinkColumn, Column
 from sqlalchemy import not_, and_
-from z3c.saconfig import Session
-from zeam.form.base import Action, Fields
-from zeam.form.composed import ComposedForm
-from zeam.form.table import SubTableForm, TableActions
+from cromlech.sqlalchemy import get_session
+from dolmen.forms.base import Action, Fields
+from dolmen.forms.composed import ComposedForm
+from dolmen.forms.table import SubTableForm, TableActions
 
 from .import Form, AddForm, DefaultView, EditForm
 from ..wsgi import IFernlehrgangSkin
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import IListing, IAntwort, IKursteilnehmer
 
-grok.templatedir('templates')
-
 
 #@menuentry(NavigationMenu)
 class AntwortListing(TablePage):
-    grok.implements(IListing)
-    grok.context(IKursteilnehmer)
-    grok.name('antwort_listing')
-    grok.title(u'Antworten verwalten')
-    grok.baseclass()
-    grok.layer(IFernlehrgangSkin)
+    uvclight.implements(IListing)
+    uvclight.context(IKursteilnehmer)
+    uvclight.name('antwort_listing')
+    uvclight.title(u'Antworten verwalten')
+    uvclight.baseclass()
+    uvclight.layer(IFernlehrgangSkin)
 
-    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
+    template = uvclight.get_template('base_listing.cpt', __file__)
 
     label = u"Antworten"
     description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
@@ -46,7 +43,7 @@ class AntwortListing(TablePage):
     @property
     def values(self):
         rc = []
-        root = grok.getSite()
+        root = uvclight.getSite()
         for x in self.context.antworten:
             locate(root, x, DefaultModel)
             rc.append(x)
@@ -55,9 +52,9 @@ class AntwortListing(TablePage):
 
 @menuentry(AddMenu)
 class AddAntwort(AddForm):
-    grok.context(IKursteilnehmer)
-    grok.title(u'Antwort')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IKursteilnehmer)
+    uvclight.title(u'Antwort')
+    uvclight.layer(IFernlehrgangSkin)
     
     label = u'Antwort anlegen'
     fields = Fields(IAntwort).omit('id')
@@ -85,9 +82,9 @@ class SaveTableAction(Action):
 
 @menuentry(AddMenu)
 class AddAntworten(ComposedForm, Form):
-    grok.context(IKursteilnehmer)
-    grok.layer(IFernlehrgangSkin)
-    grok.title(u'Alle Antworten eingeben')
+    uvclight.context(IKursteilnehmer)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.title(u'Alle Antworten eingeben')
     label = u"Alle Antworten eingeben"
 
 
@@ -98,13 +95,13 @@ class LHDummy(object):
 
 
 class AddAntwortenTable(SubTableForm):
-    grok.title(u'Table Form')
-    grok.context(IKursteilnehmer)
-    grok.view(AddAntworten)
-    grok.layer(IFernlehrgangSkin)
+    uvclight.title(u'Table Form')
+    uvclight.context(IKursteilnehmer)
+    uvclight.view(AddAntworten)
+    uvclight.layer(IFernlehrgangSkin)
     
     prefix = "G"
-    template = ChameleonPageTemplateFile('templates/alleantworten.cpt')
+    template = uvclight.get_template('alleantworten.cpt', __file__)
 
     ignoreContent = False
     tableFields = Fields(IAntwort).omit('id', 'datum', 'system')
@@ -146,9 +143,9 @@ class AddAntwortenTable(SubTableForm):
 
 
 class Index(DefaultView):
-    grok.context(IAntwort)
-    grok.title(u'Index')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IAntwort)
+    uvclight.title(u'Index')
+    uvclight.layer(IFernlehrgangSkin)
     
     title = label = u"Antwort"
     description = u"" #Hier können Sie Deteils zu Ihren Antworten ansehen."
@@ -156,10 +153,10 @@ class Index(DefaultView):
 
 
 class Edit(EditForm):
-    grok.context(IAntwort)
-    grok.title(u'Edit')
-    grok.name('edit')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IAntwort)
+    uvclight.title(u'Edit')
+    uvclight.name('edit')
+    uvclight.layer(IFernlehrgangSkin)
 
     title = u"Antworten"
     description = u"Hier können Sie die Antwort bearbeiten."
@@ -174,35 +171,36 @@ class Edit(EditForm):
 
 ### ExtraInfo
 
-class MoireInfoOnKursteilnehmer(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(IAntwort)
-    grok.layer(IFernlehrgangSkin)
+class MoireInfoOnKursteilnehmer(uvclight.Viewlet):
+    uvclight.viewletmanager(IExtraInfo)
+    uvclight.context(IAntwort)
+    uvclight.layer(IFernlehrgangSkin)
 
     script = ""
 
     def update(self):
-        url = grok.url(self.request, self.context.kursteilnehmer)
+        url = self.view.url(self.context.kursteilnehmer)
         self.script = "<script> var base_url = '%s'; </script>" % url
 
     def render(self):
         return self.script
 
 
-class JSON_Views(grok.JSON):
+class JSON_Views(uvclight.JSON):
     """ Ajax basiertes Wechseln der Jahre"""
-    grok.context(IKursteilnehmer)
+    uvclight.context(IKursteilnehmer)
 
     def context_fragen(self, lehrheft_id=None):
         rc = []
         li = []
-        session = Session()
+        session = get_session('fernlehrgang')
         i=0
         for antwort in [x for x in self.context.antworten]:
             li.append(antwort.frage.id)
-        for id, nr, titel in session.query(Frage.id, Frage.frage, Frage.titel).filter(
-                                           and_(Frage.lehrheft_id == int(lehrheft_id),
-                                                not_(Frage.id.in_(li)))).all():
+        for id, nr, titel in session.query(
+                Frage.id, Frage.frage, Frage.titel).filter(
+                    and_(Frage.lehrheft_id == int(lehrheft_id),
+                    not_(Frage.id.in_(li)))).all():
             rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s - %s </option>' %(i, id, nr, titel))
             i+=1
         return {'fragen': ''.join(rc)}
@@ -211,21 +209,21 @@ class JSON_Views(grok.JSON):
 ### Spalten
 
 class Link(LinkColumn):
-    grok.name('Nummer')
-    grok.context(IKursteilnehmer)
+    uvclight.name('Nummer')
+    uvclight.context(IKursteilnehmer)
     weight = 5
     linkContent = "edit"
 
     def getSortKey(self, item):
-        return int(item.frage.lehrheft.nummer+item.frage.frage.zfill(2))
+        return int(item.frage.lehrheft.nummer + item.frage.frage.zfill(2))
 
     def getLinkContent(self, item):
         return u"Antwort auf Frage '%s'; %s" %(item.frage.frage, item.frage.titel)
 
 
 class Lehrheft(Column):
-    grok.name('Lehrheft')
-    grok.context(IKursteilnehmer)
+    uvclight.name('Lehrheft')
+    uvclight.context(IKursteilnehmer)
     weight = 9
     header = "Lehrheft"
 
@@ -234,8 +232,8 @@ class Lehrheft(Column):
 
 
 class Antworten(GetAttrColumn):
-    grok.name('Antworten')
-    grok.context(IKursteilnehmer)
+    uvclight.name('Antworten')
+    uvclight.context(IKursteilnehmer)
     weight = 10
     header = "Antworten"
     attrName = "antwortschema"
@@ -243,11 +241,11 @@ class Antworten(GetAttrColumn):
 
 @menuentry(NavigationMenu)
 class OverviewAntworten(Page):
-    grok.implements(IListing)
-    grok.context(IKursteilnehmer)
-    grok.name('antwort_listing')
-    grok.title(u'Antworten verwalten')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.implements(IListing)
+    uvclight.context(IKursteilnehmer)
+    uvclight.name('antwort_listing')
+    uvclight.title(u'Antworten verwalten')
+    uvclight.layer(IFernlehrgangSkin)
     
     label = title = u"Antworten"
     description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."

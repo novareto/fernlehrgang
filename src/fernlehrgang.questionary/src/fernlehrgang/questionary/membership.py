@@ -1,31 +1,32 @@
 # -*- coding: utf-8 -*-
 
-import grok
-from zope.interface import implementer
-from z3c.saconfig import Session
+import uvclight
+from cromlech.sqlalchemy import get_session
 from fernlehrgang.models import Kursteilnehmer, ICalculateResults
-from .interfaces import IMembership, IMember
+from zope.interface import implementer
+from .interfaces import IMembership
+from uvclight.auth import Principal
 
 
-class Membership(grok.Adapter):
-    grok.context(IMember)
-    grok.provides(IMembership)
+class Membership(uvclight.Adapter):
+    uvclight.context(Principal)
+    uvclight.provides(IMembership)
 
     @property
     def courses(self):
         userid = int(self.context.id)
-        session = Session()
+        session = get_session('fernlehrgang')
         ktns = session.query(Kursteilnehmer).filter(
                 Kursteilnehmer.teilnehmer_id == userid).all()
         return [ktn.fernlehrgang for ktn in ktns]
 
     def get_course_result(self, courseid):
         userid = int(self.context.id)
-        session = Session()
+        session = get_session('fernlehrgang')
         ktns = session.query(Kursteilnehmer).filter(
             Kursteilnehmer.teilnehmer_id == userid
             ).filter(Kursteilnehmer.fernlehrgang_id == courseid)
-        
+
         if ktns.count() == 1:
             ktn = ktns.one()
             return ICalculateResults(ktn)
@@ -33,7 +34,7 @@ class Membership(grok.Adapter):
 
     def get_course_member(self, courseid):
         userid = int(self.context.id)
-        session = Session()
+        session = get_session('fernlehrgang')
         ktn = session.query(Kursteilnehmer).filter(
             Kursteilnehmer.teilnehmer_id == userid
             ).filter(Kursteilnehmer.fernlehrgang_id == courseid)
@@ -41,4 +42,3 @@ class Membership(grok.Adapter):
             ktn = ktn.one()
             return ktn
         return None
-

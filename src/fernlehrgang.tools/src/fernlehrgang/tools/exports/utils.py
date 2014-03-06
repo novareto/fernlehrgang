@@ -4,13 +4,12 @@
 
 
 from os import system
-from zope.component import getUtility
-from zope.pluggableauth.interfaces import IAuthenticatorPlugin
+from fernlehrgang.app.auth.handler import Benutzer
 
 
 def getUserEmail(pid):
-    ut = getUtility(IAuthenticatorPlugin, 'principals')
-    return ut.getAccount(pid).getEmail()
+    return 'ck@novareto.de'
+    return Benutzer.get(pid).email
 
 
 def makeZipFile(fn):

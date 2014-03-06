@@ -7,7 +7,6 @@ from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fernlehrgang import models
-from zope.app.appsetup.product import getProductConfiguration
 from .lib.emailer import send_mail
 
 
@@ -25,50 +24,53 @@ else:
 
 text = """ Im Anhang finden Sie die entsprechende Datei"""
 
+SENDER ="flgapp@bghw.de"
+SENDER = "cklinger@karl.novareto.de"
+
                                                                                 
 @celery_app.task                                                                
 def export_abschlussliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.abschlussliste_fernlehrgang import export
+    from fernlehrgang.tools.exports.abschlussliste_fernlehrgang import export
     session = Session()
     fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
+    send_mail(SENDER, (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 
 @celery_app.task                                                                
 def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.versandliste_fernlehrgang import export
+    from fernlehrgang.tools.exports.versandliste_fernlehrgang import export
     session = Session()
     fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
+    send_mail(SENDER, (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 
 @celery_app.task                                                                
 def export_versandliste_fortbildung(flg_ids, stichtag, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.versandliste_fortbildung import export
+    from fernlehrgang.tools.exports.versandliste_fortbildung import export
     session = Session()
     fn = export(session, flg_ids, stichtag) 
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,]) 
+    send_mail(SENDER, (mail,), "Versandliste Fortbildung", text, [fn,]) 
 
 
 @celery_app.task                                                                
 def export_statusliste(flg_id, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.statusliste import export
+    from fernlehrgang.tools.exports.statusliste import export
     session = Session()
     fn = export(session, flg_id) 
-    send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,]) 
+    send_mail(SENDER, (mail,), "Statusliste", text, [fn,]) 
 
 
 @celery_app.task                                                                
 def export_liste_kompetenzzentrum(flg_id, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.listekompetenzzentrum import export
+    from fernlehrgang.tools.exports.listekompetenzzentrum import export
     session = Session()
     fn = export(session, flg_id) 
-    send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
+    send_mail(SENDER, (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
 
 
 @celery_app.task
 def notifications_for_ofg():
-    from fernlehrgang.exports.oflg import report
+    from fernlehrgang.tools.exports.oflg import report
     session = Session()
     report(session)
 

@@ -4,7 +4,7 @@
 
 from datetime import datetime
 from sqlalchemy.sql import and_
-from z3c.saconfig import Session
+from cromlech.sqlalchemy import get_session
 from zope.interface import Interface, Attribute
 from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
@@ -51,7 +51,7 @@ def lehrheft_vocab(context):
 
 @grok.provider(IContextSourceBinder)
 def fragen_vocab(context):
-    session = Session()
+    session = get_session('fernlehrgang')
     rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen',
                      'Bitte eine Auswahl treffen')]
     if antwort.IAntwort.providedBy(context):
@@ -68,7 +68,7 @@ def fragen_vocab(context):
 @grok.provider(IContextSourceBinder)
 def fernlehrgang_vocab(context):
     rc = [SimpleTerm('', '', u'Fernlehrgang auswählen')]
-    session = Session()
+    session = get_session('fernlehrgang')
     from fernlehrgang.models import Fernlehrgang
     sql = session.query(Fernlehrgang)
 

@@ -2,8 +2,8 @@
 import sys
 from sqlalchemy import create_engine 
 from sqlalchemy.orm import sessionmaker
-from fernlehrgang.exports.statusliste import export
-from fernlehrgang.exports.oflg import report
+from fernlehrgang.tools.exports.statusliste import export
+from fernlehrgang.tools.exports.oflg import report
 
 
 def main(dsn, flg_id):

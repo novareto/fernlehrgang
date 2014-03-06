@@ -3,7 +3,7 @@
 # cklinger@novareto.de 
 
 
-import grok
+import uvclight
 
 from cromlech.sqlalchemy import get_session
 from fernlehrgang.models import Fernlehrgang, Unternehmen
@@ -17,9 +17,9 @@ from ..interfaces import (
 
 
 class AutoRegForm(Form):
-    grok.context(IFernlehrgangApp)
-    grok.require('zope.Public')
-    grok.layer(IFernlehrgangSkin)
+    uvclight.context(IFernlehrgangApp)
+    uvclight.require('zope.Public')
+    uvclight.layer(IFernlehrgangSkin)
     
     fields = (
         Fields(IUnternehmen).select('mnr') +

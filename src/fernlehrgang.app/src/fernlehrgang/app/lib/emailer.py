@@ -10,7 +10,7 @@ from email import Encoders
 from email.header import Header
 
 
-def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"):
+def send_mail(send_from, send_to, subject, text, files=[], server="localhost"):
     assert isinstance(send_to, (list, tuple, set))
     assert isinstance(files, (list, tuple, set))
 
@@ -37,7 +37,8 @@ def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"
         msg.attach(part)
 
     smtp = smtplib.SMTP(server)
+    smtp.set_debuglevel(9)
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
 
-#send_mail('fernlehrgang@bghw.de', ('ck@novareto.de',), 'bb', 'bb', server="mail.bghw.de")
+#send_mail('cklinger@karl.novareto.de', ('ck@novareto.de',), 'bb', 'bb')

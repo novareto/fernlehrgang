@@ -2,23 +2,20 @@
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
 import sys
+import uvclight
 
-from fernlehrgang import Form
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.exports.menus import ExportItems
-from fernlehrgang.lib.interfaces import IXLSExport
-from zeam.form.base import Fields, action
+from fernlehrgang.models.fernlehrgang import IFernlehrgang
+from fernlehrgang.tools.exports.menus import ExportItems
+from fernlehrgang.app.lib.interfaces import IXLSExport
 
 from xlwt import Workbook
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker, joinedload
 from fernlehrgang import models
-from fernlehrgang.browser.ergebnisse import CalculateResults
-from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
-from fernlehrgang.lib import nN
+from fernlehrgang.app.browser.ergebnisse import CalculateResults
+from fernlehrgang.tools.exports.utils import page_query, makeZipFile, getUserEmail
+from fernlehrgang.app.lib import nN
 
 
 spalten = ('FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
@@ -155,19 +152,19 @@ def export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname):
     return fn
 
 
-@menuentry(ExportItems)
-class XSLExportForm(Form):
-    grok.context(IFernlehrgang)
-    grok.title('Versandliste Fernlehrgang')
+@uvclight.menuentry(ExportItems)
+class XSLExportForm(uvclight.Form):
+    uvclight.context(IFernlehrgang)
+    uvclight.title('Versandliste Fernlehrgang')
 
-    fields = Fields(IXLSExport)
+    fields = uvclight.Fields(IXLSExport)
 
-    @action(u"Export Starten")
+    @uvclight.action(u"Export Starten")
     def handle_export(self):
         data, errors = self.extractData()
         if errors:
             self.flash(u'Bitte korrigieren Sie die Fehler')
-        from fernlehrgang.tasks import export_versandliste_fernlehrgang
+        from fernlehrgang.app.tasks import export_versandliste_fernlehrgang
         lh_id, lh = data['lehrheft'].split('-')
         mail = getUserEmail(self.request.principal.id)
         fn = export_versandliste_fernlehrgang.delay(self.context.id, lh_id, lh, data['rdatum'], data['stichtag'], data['dateiname'], mail) 

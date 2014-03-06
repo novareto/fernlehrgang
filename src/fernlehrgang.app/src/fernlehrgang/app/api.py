@@ -2,72 +2,19 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-import grok
+
 import json
 import datetime
+import uvclight
 
 from sqlalchemy import *
-from z3c.saconfig import Session
 from fernlehrgang.models import Frage, Teilnehmer, Antwort, Kursteilnehmer
 from .interfaces import (
     ICalculateResults, ITeilnehmer, IKursteilnehmer, IFernlehrgangApp)
 
 
-#
-### XMLRPC
-#
-
-class HelperAPI(grok.XMLRPC):
-    grok.context(IFernlehrgangApp)
-
-    def getFlgIds(self, teilnehmer_id):
-        session = Session()
-        ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
-                Kursteilnehmer.teilnehmer_id == teilnehmer_id)
-        return ret.all()
-
-    def getFrageIds(self, lehrheft_id):
-        session = Session()
-        d = dict()
-        ret = session.query(Frage).filter(Frage.lehrheft_id==lehrheft_id)
-        for frage in ret.all():
-            d[frage.frage] = frage.id
-        return d
-
-    def getMNRFromTeilnehmerID(self, teilnehmer_id):
-        session = Session()
-        ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
-        if ret.count() != 1:
-            return False
-        return str(ret.one().unternehmen_mnr)
-
-    def getKursteilnehmerID(self, teilnehmer_id, lehrgang_id):
-        session = Session()
-        ret = session.query(Kursteilnehmer).filter(
-            and_(Kursteilnehmer.teilnehmer_id == teilnehmer_id,
-                 Kursteilnehmer.fernlehrgang_id == lehrgang_id))
-        if ret.count() != 1:
-            return False
-        return str(ret.one().id)
-
-    def canLogin(self, teilnehmer_id, passwort):
-        session = Session()
-        if teilnehmer_id == "admin":
-            return False
-        ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
-        if ret.count() != 1:
-            return False
-        ret = ret.one()
-        if ret and ret.passwort == passwort:
-            return True
-        return False
-
-#
-### REST
-#
-
-class TeilnehmerAPI(grok.REST):
-    grok.context(ITeilnehmer)
+class TeilnehmerAPI(uvclight.REST):
+    uvclight.context(ITeilnehmer)
 
     def GET(self):
         context = self.context
@@ -121,8 +68,8 @@ class TeilnehmerAPI(grok.REST):
         return "1"
 
 
-class KursteilnehmerAPI(grok.REST):
-    grok.context(IKursteilnehmer)
+class KursteilnehmerAPI(uvclight.REST):
+    uvclight.context(IKursteilnehmer)
 
     def GET(self):
         adapter = ICalculateResults(self.context)

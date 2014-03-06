@@ -8,7 +8,6 @@ from math import log
 from dolmen.forms import crud
 from dolmen.menu import menuentry
 from dolmen.uploader.service import create_directory
-from grokcore.traverser import Traverser
 from uvclight import Page
 from uvclight.interfaces import IBelowContent
 
@@ -17,7 +16,6 @@ from zope.interface.common import mapping
 from zope.location import locate
 from zope.security.interfaces import Unauthorized
 from zope.security.management import checkPermission
-from zope.traversing.interfaces import ITraversable, TraversalError
 
 from ..wsgi import IFernlehrgangSkin
 from .resources import upload
@@ -160,10 +158,11 @@ class FileManager(object):
 
 
 @menuentry(NavigationMenu, order=10)
-class LibraryListing(Page):
+class LibraryListing(uvclight.Page):
     uvclight.name('files')
     uvclight.title('Download Center')
     uvclight.context(IFileStore)
+    template = uvclight.get_template('librarylisting.cpt', __file__) 
 
     def update(self):
         storage = Storage(self.context.storageid)
@@ -178,6 +177,7 @@ class LibraryUploadViewlet(uvclight.Viewlet):
     uvclight.layer(IFernlehrgangSkin)
     uvclight.viewletmanager(IBelowContent)
     uvclight.context(IFileStore)
+    template = uvclight.get_template('libraryuploadviewlet.cpt', __file__)
     
     def update(self, *args, **kwargs):
         upload.need()

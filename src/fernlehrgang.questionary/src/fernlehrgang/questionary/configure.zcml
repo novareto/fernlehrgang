@@ -3,31 +3,34 @@
            xmlns:z3c="http://namespaces.zope.org/z3c"
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:grok="http://namespaces.zope.org/grok">
-  <include package="grok" />
-  <includeDependencies package="." />
+ 
+  <include package="zope.security" file="meta.zcml" />
+  <include package="zope.component" file="meta.zcml" />
+  <include package="grokcore.component" file="meta.zcml" />
+  <include package="dolmen.layout" file="meta.zcml" />
 
-  <include package="grokcore.traverser" file="meta.zcml" />
-  <include package="megrok.z3ctable" file="meta.zcml" />
+  <include package="uvclight" />
+  <include package="uvc.tb_layout" />
+  <include package="dolmen.menu" />
+  <include package="dolmen.request" />
+  <include package="dolmen.content" />
+  <include package="dolmen.forms.ztk" />
+  <include package="dolmen.forms.crud" />
+  <include package="zope.security" />
+
+  <include package="dolmen.view" file="meta.zcml" />
+  <include package="dolmen.view" file="security.zcml" />
+
+  <include package="dolmen.viewlet" file="meta.zcml" />
+  <include package="dolmen.viewlet" file="security.zcml" />
 
   <include package="zope.i18n" />
-  <include package="zope.session" />
-  <include package="zope.dublincore" />
-  <include package="zope.authentication" />
+  <include package="cromlech.webob" />
+  <include package="cromlech.dawnlight" />
+  <include package="cromlech.dawnlight" file="consumers.zcml" />
+  <include package="cromlech.i18n" file="default.zcml" />
 
-  <include package="megrok.layout" />
-  <include package="megrok.z3ctable" />
+  <grok:grok package="fernlehrgang.questionary" />
+  <grok:grok package="dolmen.location" />
 
-  <include package="uvc.layout" />
-  <include package="uvc.tbskin" />
-
-  <include package="dolmen.menu" />
-  <include package="dolmen.app.authentication" />
-  <include package="dolmen.app.security" />
-  <include package="dolmen.app.container" />
-  <include package="dolmen.app.breadcrumbs" />
-
-  <include package="grokcore.chameleon" />
-
-
-  <grok:grok package="." />
 </configure>

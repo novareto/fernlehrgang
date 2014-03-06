@@ -2,22 +2,19 @@
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import uvclight
 
-from fernlehrgang import Form
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.exports.menus import ExportItems
-from fernlehrgang.lib.interfaces import IXLSFortbildung
-from zeam.form.base import Fields, action
+from fernlehrgang.models.fernlehrgang import IFernlehrgang
+from fernlehrgang.tools.exports.menus import ExportItems
+from fernlehrgang.app.lib.interfaces import IXLSFortbildung
 from openpyxl.workbook import Workbook
 from sqlalchemy.orm import joinedload
 from sqlalchemy import and_
 from fernlehrgang import models
-from fernlehrgang.browser.ergebnisse import CalculateResults
-from fernlehrgang.lib import nN
-from fernlehrgang.exports.versandliste_fernlehrgang import versandanschrift
-from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
+from fernlehrgang.app.browser.ergebnisse import CalculateResults
+from fernlehrgang.app.lib import nN
+from fernlehrgang.tools.exports.versandliste_fernlehrgang import versandanschrift
+from fernlehrgang.tools.exports.utils import page_query, makeZipFile, getUserEmail
 
 
 spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
@@ -139,22 +136,21 @@ def export(session, flg_ids, stichtag):
     return fn
 
 
-@menuentry(ExportItems)
-class XLSFortbildung(Form):
-    grok.context(IFernlehrgang)
-    grok.name('xlsfortbildung')
-    grok.title(u'Versandliste Fortbildung')
-    
+@uvclight.menuentry(ExportItems)
+class XLSFortbildung(uvclight.Form):
+    uvclight.context(IFernlehrgang)
+    uvclight.name('xlsfortbildung')
+    uvclight.title(u'Versandliste Fortbildung')
 
-    fields = Fields(IXLSFortbildung)
+    fields = uvclight.Fields(IXLSFortbildung)
 
-    @action(u"Export Starten")
+    @uvclight.action(u"Export Starten")
     def handle_export(self):
         data, errors = self.extractData()
         if errors:
             self.flash(u'Fehler beheben')
             return
-        from fernlehrgang.tasks import export_versandliste_fortbildung
+        from fernlehrgang.tools.tasks import export_versandliste_fortbildung
         flg_ids = [x for x in data['fortbildungen']]
         mail = getUserEmail(self.request.principal.id)
         fn = export_versandliste_fortbildung.delay(flg_ids, data['stichtag'], mail)

@@ -2,24 +2,17 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-import grok
-import uvc.layout
+import uvclight
 
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.resultate import ICalculateResults
+from fernlehrgang.app.interfaces import IFernlehrgangApp
+from fernlehrgang.models import ICalculateResults
 from fernlehrgang.models import Unternehmen, Kursteilnehmer, Teilnehmer
-from fernlehrgang.viewlets import NavigationMenu
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
-from z3c.saconfig import Session
-from zeam.form.base import action, NO_VALUE, Fields
+from fernlehrgang.app.browser.viewlets import NavigationMenu
 from zope.interface import Interface
 from zope.schema import TextLine
-from fernlehrgang import Form
-
-
-grok.templatedir('templates')
+from cromlech.sqlalchemy import get_session
+from uvclight.backends.patterns import DefaultModel
+from fernlehrgang.app.wsgi import model_lookup
 
 
 class IUnternehmenSearch(Interface):
@@ -43,30 +36,30 @@ class IUnternehmenSearch(Interface):
         )
 
 
-@menuentry(NavigationMenu, order=400)
-class UnternehmenSuche(Form):
-    grok.context(IFernlehrgangApp)
-    grok.title(u'Statusabfrage Unternehmen')
-    grok.require('zope.View')
-    grok.order(20)
+@uvclight.menuentry(NavigationMenu, order=400)
+class UnternehmenSuche(uvclight.Form):
+    uvclight.context(IFernlehrgangApp)
+    uvclight.title(u'Statusabfrage Unternehmen')
+    uvclight.require('zope.View')
+    uvclight.order(20)
 
     label = u"Statusabfrage Unternehmen"
     description = u"Bitte geben Sie Mitgliedsnummer für das Unternehmen ein, dass Sie suchen möchten"
 
     results = []
 
-    fields = Fields(IUnternehmenSearch)
+    fields = uvclight.Fields(IUnternehmenSearch)
 
     def locateit(self, obj):
         site = grok.getSite()
-        locate(site, obj, DefaultModel)
+        model_lookup.patterns.locate(site, obj, DefaultModel)
 
-    @action(u'Suchen')
+    @uvclight.action(u'Suchen')
     def handle_search(self):
         rc = []
         v = False
         data, errors = self.extractData()
-        session = Session()
+        session = get_session('fernlehrgang') 
         sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)

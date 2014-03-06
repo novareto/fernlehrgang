@@ -1,28 +1,31 @@
 # -*- coding: utf-8 -*-
 
-import grok
-import uvc.layout
+import uvclight
+from dolmen import menu
+from uvclight.interfaces import IPageTop, IAboveContent, IPersonalPreferences
 from zope.interface import Interface 
-from dolmen.app.container import AddMenu
-from .skin import IQuestionary
 from ..interfaces import IMembership
+from ..app import IQuizzSkin
 
 
-grok.templatedir('templates')
+class ContainerMenu(menu.Menu):
+    uvclight.name('uvcsite-addmenu')
+    uvclight.context(Interface)
+    uvclight.title(u'Hinzufügen')
+    uvclight.layer(IQuizzSkin)
+
+    template = None
+
+    menu_class = u'nav nav-pills'
+    css = "addmenu"
 
 
-class ContainerMenu(AddMenu):
-    grok.viewletmanager(uvc.layout.interfaces.IAboveContent)
-    grok.view(Interface)
-    grok.layer(IQuestionary)
-
-
-class MemberData(uvc.layout.MenuItem):
-    grok.context(Interface)
-    grok.title(u"Registrierdaten")
-    grok.viewletmanager(uvc.layout.IPersonalPreferences)
-    grok.require('zope.View')
-    grok.layer(IQuestionary)
+class MemberData(uvclight.MenuItem):
+    uvclight.context(Interface)
+    uvclight.title(u"Registrierdaten")
+    uvclight.menu(IPersonalPreferences)
+    uvclight.require('zope.View')
+    uvclight.layer(IQuizzSkin)
 
     @property
     def action(self):
@@ -30,15 +33,18 @@ class MemberData(uvc.layout.MenuItem):
             self.view.application_url(), self.view.request.principal.id)
 
 
-class MemberCourses(grok.Viewlet):
-    grok.viewletmanager(uvc.layout.IPageTop)
-    grok.context(Interface)
-    grok.order(30)
-    grok.require('zope.View')
-    grok.layer(IQuestionary)
+class MemberCourses(uvclight.Viewlet):
+    uvclight.viewletmanager(IPageTop)
+    uvclight.context(Interface)
+    uvclight.order(30)
+    uvclight.require('zope.View')
+    uvclight.layer(IQuizzSkin)
 
+    template = uvclight.get_template('membercourses.cpt', __file__)
+    
     def update(self):
-        membership = IMembership(self.request.principal, None)
+        #membership = IMembership(self.request.principal, None)
+        membership = None
         if membership is None:
             self.courses = None
         else:
@@ -47,9 +53,11 @@ class MemberCourses(grok.Viewlet):
                              "title": c.titel} for c in membership.courses]
 
 
-class MemberContact(grok.Viewlet):
-    grok.viewletmanager(uvc.layout.IPageTop)
-    grok.context(Interface)
-    grok.order(40)
-    grok.require('zope.View')
-    grok.layer(IQuestionary)
+class MemberContact(uvclight.Viewlet):
+    uvclight.viewletmanager(IPageTop)
+    uvclight.context(Interface)
+    uvclight.order(40)
+    uvclight.require('zope.View')
+    uvclight.layer(IQuizzSkin)
+
+    template = uvclight.get_template('membercontact.cpt', __file__)

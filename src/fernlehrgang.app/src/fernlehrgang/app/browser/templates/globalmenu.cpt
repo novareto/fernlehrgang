@@ -1,10 +1,19 @@
-<div id="uvc-global-menu" class="" tal:define="flgs viewlet.flgs" tal:condition="flgs">
-  <ul tal:repeat="flg sorted(flgs.keys())" class="nav">
-    <li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown"> <span tal:content="flg"> </span> <b class="caret"></b></a>
-    <ul class="dropdown-menu">
-      <li tal:repeat="item flgs[flg]"> <a href="" tal:attributes="href item.url"> <span tal:content="item.title"> </span> </a> </li>
-    </ul>
-    </li>
-  </ul>
-</div>
+<ul class="nav navbar-nav">
+<tal:globalmenu define="flgs viewlet.flgs" condition="flgs">
+<tal:entries repeat="flg sorted(flgs.keys())">
+<li class="dropdown">
+<a class="dropdown-toggle" data-toggle="dropdown">
+  <span tal:replace="flg"> </span> 
+  <b class="caret"> </b>
+</a>
+<ul class="dropdown-menu">
+  <li tal:repeat="item flgs[flg]">
+  <a href="" tal:attributes="href item.url">
+    <span tal:content="item.title" > </span>
+  </a>
+  </li>
+</ul>
+</li>
+</tal:entries>
+</tal:globalmenu>
+</ul>

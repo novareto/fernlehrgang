@@ -14,18 +14,22 @@ from zope.location import locate
 
 from . import Form, AddForm, EditForm, DefaultView
 from ..interfaces import IListing, IFernlehrgangApp, IUnternehmen
-from ..wsgi import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin, model_lookup
 from .viewlets import AddMenu, NavigationMenu
 from .widgets import fmtDate
 
+NO_VALUE = ''
+
 
 @menuentry(NavigationMenu)
-class UnternehmenListing(Form):
+class UnternehmenListing(uvclight.Form):
     uvclight.context(IFernlehrgangApp)
     uvclight.name('unternehmen_listing')
     uvclight.title(u"Unternehmen verwalten")
     uvclight.layer(IFernlehrgangSkin)
     uvclight.order(20)
+
+    template = uvclight.get_template('unternehmenlisting.cpt', __file__)
     
     fields = Fields(IUnternehmen).select(
         'mnr', 'name', 'str', 'plz', 'ort', 'mnr_g_alt')
@@ -43,7 +47,7 @@ class UnternehmenListing(Form):
 
     def getResults(self):
         for item in self.results:
-            locate(uvclight.getSite(), item, DefaultModel)
+            model_lookup.patterns.locate(uvclight.getSite(), item, DefaultModel)
             yield item
 
     @action(u"Suchen")
@@ -85,7 +89,7 @@ class Index(DefaultView):
     uvclight.name('index')
     uvclight.layer(IFernlehrgangSkin)
 
-    template = 'templates/unternehmen_view.cpt'
+    template = uvclight.get_template('unternehmen_view.cpt', __file__)
 
     title = u"Unternehmen"
     label = u"Unternehmen"
@@ -114,6 +118,8 @@ class Index(DefaultView):
         return rc
 
 
+from dolmen.location import get_absolute_url
+
 @menuentry(AddMenu) 		
 class AddUnternehmen(AddForm): 		
     uvclight.context(IFernlehrgangApp) 		
@@ -134,6 +140,7 @@ class AddUnternehmen(AddForm):
         session.add(object)
 
     def nextURL(self): 		
+        return get_absolute_url(self.context, self.request) + 'unternehmen_listing'
         return self.url(self.context, 'unternehmen_listing')
 
 

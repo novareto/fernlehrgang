@@ -13,3 +13,10 @@ def log(message, summary='', severity=logging.INFO):
 # SQLAlchemy LOGGING --> INFO for echo=True
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
+
+
+import uvclight.auth
+from zope.security.management import setSecurityPolicy
+
+setSecurityPolicy(uvclight.auth.SimpleSecurityPolicy)
+

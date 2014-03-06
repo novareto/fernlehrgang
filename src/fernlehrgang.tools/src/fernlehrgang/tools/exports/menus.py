@@ -2,26 +2,22 @@
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import uvclight
 
 from zope.interface import Interface
-from dolmen.menu import menuentry, Menu
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.viewlets import NavigationMenu
-from megrok.layout import Page
+from fernlehrgang.models.fernlehrgang import IFernlehrgang
+from fernlehrgang.app.browser.viewlets import NavigationMenu
 
 
-grok.templatedir('templates')
+@uvclight.menuentry(NavigationMenu, order=200)
+class Exporte(uvclight.Page):
+    uvclight.context(IFernlehrgang)
+    uvclight.title(u'Versandlisten')
+    uvclight.order(200)
+    #uvclight.require('dolmen.content.Add')
+    template = uvclight.get_template('exporte.cpt', __file__)
 
 
-@menuentry(NavigationMenu, order=200)
-class Exporte(Page):
-    grok.context(IFernlehrgang)
-    grok.title(u'Versandlisten')
-    grok.order(200)
-    grok.require('dolmen.content.Add')
-
-
-class ExportItems(Menu):
-    grok.context(Interface)
-    grok.title('ExportItems')
+class ExportItems(uvclight.Menu):
+    uvclight.context(Interface)
+    uvclight.title('ExportItems')

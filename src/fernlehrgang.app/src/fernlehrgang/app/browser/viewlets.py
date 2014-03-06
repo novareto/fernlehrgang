@@ -12,6 +12,8 @@ from uvclight.interfaces import IPersonalPreferences
 from uvclight.interfaces import IAboveContent, IPageTop, IHeaders
 from zope.interface import Interface
 from cromlech.sqlalchemy import get_session
+from dolmen.message.utils import receive as receive_messages
+from zope.i18n import translate
 
 from . import pagetemplate
 from ..wsgi import IFernlehrgangSkin
@@ -44,7 +46,7 @@ class GlobalMenuViewlet(uvclight.Viewlet):
     uvclight.viewletmanager(IPageTop)
     uvclight.layer(IFernlehrgangSkin)
 
-    template = pagetemplate('globalmenu.cpt')
+    template = uvclight.get_template('globalmenu.cpt', __file__)
     uvclight.order(11)
     flgs = []
 
@@ -76,8 +78,9 @@ class ObjectActionMenu(ContextualActionsMenuViewlet):
     uvclight.viewletmanager(IAboveContent)
     uvclight.layer(IFernlehrgangSkin)
     uvclight.order(119)
+    uvclight.baseclass()
 
-    menu_template = pagetemplate('objectmenu.cpt')
+    template = uvclight.get_template('objcetmenu.cpt', __file__)
 
     id = "uvcobjectmenu"
     menu_class = u"foldable menu"
@@ -85,7 +88,6 @@ class ObjectActionMenu(ContextualActionsMenuViewlet):
 
     def available(self):
         if IListing.providedBy(self.view):
-            return True
             return False 
         return True
 
@@ -99,7 +101,10 @@ class AddMenu(menu.Menu):
     uvclight.title(u'Hinzufügen')
     uvclight.layer(IFernlehrgangSkin)
 
+    template = uvclight.get_template('addmenutemplate.cpt', __file__)
+
     menu_class = u'nav nav-pills'
+    css = "addmenu"
 
 
 class AddMenuViewlet(uvclight.Viewlet):
@@ -124,8 +129,10 @@ class NavigationMenu(menu.Menu):
     uvclight.title('Navigation')
     uvclight.context(Interface)
     uvclight.layer(IFernlehrgangSkin)
+    template = uvclight.get_template('navigationmenutemplate.cpt', __file__) 
 
     menu_class = u'nav nav-tabs'
+    css = "navigation"
 
 
 class NavigationMenuViewlet(uvclight.Viewlet):
@@ -134,9 +141,25 @@ class NavigationMenuViewlet(uvclight.Viewlet):
     uvclight.layer(IFernlehrgangSkin)
     uvclight.order(100)
 
-    template = ''
-    
     def render(self):
         menu = NavigationMenu(self.context, self.request, self.view)
         menu.update()
         return menu.render()
+
+
+class FlashMessages(uvclight.Viewlet):
+    uvclight.context(Interface)
+    uvclight.viewletmanager(IPageTop)
+    uvclight.layer(IFernlehrgangSkin)
+    uvclight.order(200)
+
+    def render(self):
+        messages = receive_messages(type=None)
+        if messages:
+            return ('<div class="messages">' +
+                    "\n".join('<div class="%s">%s</div>' %
+                              (m.type, translate(
+                                  m.message, context=self.request))
+                              for m in messages) +
+                    '</div>')
+        return ''

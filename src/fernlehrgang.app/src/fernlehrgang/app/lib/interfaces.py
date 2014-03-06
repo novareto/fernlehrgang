@@ -4,18 +4,17 @@
 
 import grokcore.component as grok
 
-
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.schema import TextLine, Choice, List, Date, Set
 from zope.interface import Interface
 from fernlehrgang import models
-from z3c.saconfig import Session
+from cromlech.sqlalchemy import get_session
 
 
 @grok.provider(IContextSourceBinder)
 def flgs(context):
-    session = Session()
+    session = get_session('fernlehrgang')
     rc = []
     for flg in session.query(models.Fernlehrgang):
         if len(flg.lehrhefte) == 1:

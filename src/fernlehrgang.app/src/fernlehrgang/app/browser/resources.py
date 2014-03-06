@@ -2,12 +2,13 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
+import uvclight
+from uvclight import interfaces
+
 from dolmen.uploader.resources.hayageek import uploader as hayageek
 from fanstatic import Library, Resource, Group
 from js.bootstrap_wysihtml5 import bootstrap_wysihtml5
 from js.jquery import jquery
-from uvclight import interfaces, viewletmanager
 from uvc.widgets import double, DatePickerCSS
 from zope.interface import Interface
 
@@ -21,9 +22,9 @@ register_js = Resource(library, 'register.js', depends=[jquery])
 upload = Resource(library, 'upload.js', depends=[hayageek], bottom=True)
 
 
-class FernlehrgangResourceViewlet(grok.Viewlet):
-    viewletmanager(interfaces. IHeaders)
-    grok.context(Interface)
+class FernlehrgangResourceViewlet(uvclight.Viewlet):
+    uvclight.viewletmanager(interfaces. IHeaders)
+    uvclight.context(Interface)
 
     def render(self):
         css.need()
