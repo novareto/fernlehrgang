@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import uvclight
 from cromlech.file import IFileField
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from grokcore.component import adapts, name
-from zeam.form.base import interfaces
-from zeam.form.base.interfaces import IFieldWidget
-from zeam.form.base.widgets import DisplayFieldWidget
-from zeam.form.ztk import customize
-from zeam.form.ztk.fields import SchemaField, SchemaFieldWidget
-from zeam.form.ztk.fields import registerSchemaField
-from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
-from zeam.form.ztk.widgets.text import TextSchemaField
+from dolmen.forms.base import interfaces
+from dolmen.forms.base.interfaces import IFieldWidget
+from dolmen.forms.base.widgets import DisplayFieldWidget
+from dolmen.forms.ztk.fields import SchemaField, SchemaFieldWidget
+from dolmen.forms.ztk.fields import registerSchemaField
+from dolmen.forms.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
+from dolmen.forms.ztk.widgets.text import TextSchemaField
 from zope.component import getUtility
 from zope.interface import Interface, implements
 from zope.location import ILocation
@@ -43,7 +42,7 @@ class DisplaySQLImageWidget(DisplayFieldWidget):
     url = None
     text = u''
     thumb = None
-    template = ChameleonPageTemplateFile('templates/sqlimage.cpt')
+    template = uvclight.get_template('sqlimage.cpt', __file__)
 
     def update(self):
         DisplayFieldWidget.update(self)
@@ -68,7 +67,7 @@ class SQLImageWidget(SchemaFieldWidget):
     thumb = None
     allow_action = False
 
-    template = ChameleonPageTemplateFile('templates/sqlimage_edit.cpt')
+    template = uvclight.get_template('sqlimage_edit.cpt', __file__)
 
     def update(self):
         SchemaFieldWidget.update(self)
@@ -94,11 +93,6 @@ class DisplayRichTextWidget(DisplayFieldWidget):
     def render(self):
         DisplayFieldWidget.update(self)
         return self.value.get(self.identifier, u'')
-
-
-@customize(origin=IDate)
-def customize_size(field):
-    field.valueLength = 'medium'
 
 
 def fmtDate(d):

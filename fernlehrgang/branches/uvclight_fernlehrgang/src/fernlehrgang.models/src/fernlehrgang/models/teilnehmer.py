@@ -20,6 +20,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from . import Base, MyStringType
 from .unternehmen import Unternehmen
+from zope.location.interfaces import ILocation
 
 
 # VOCABULARIES
@@ -154,7 +155,7 @@ class ITeilnehmer(Interface):
         )
 
 
-@implementer(ITeilnehmer)
+@implementer(ITeilnehmer, ILocation)
 class Teilnehmer(Base):
     __tablename__ = 'teilnehmer'
 

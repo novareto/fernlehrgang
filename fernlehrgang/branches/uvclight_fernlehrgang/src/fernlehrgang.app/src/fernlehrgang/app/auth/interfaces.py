@@ -3,7 +3,6 @@
 # cklinger@novareto.de 
 
 from zope import component, interface, schema
-from .securitypolicy import roles
 
 
 class IAddUserForm(interface.Interface):
@@ -41,6 +40,6 @@ class IAddUserForm(interface.Interface):
     role = schema.Choice(
         title=u'Rolle',
         description = u"Bitte wählen Sie eine Rolle für den Benuzter aus.",
-        source=roles,
+        values=('FIXME',),
         required=True
         )

@@ -8,7 +8,7 @@ from sqlalchemy.orm import relation, backref, relationship
 from sqlalchemy_imageattach.context import get_current_store
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy_imageattach.entity import store_context
-from zeam.form.base.markers import Marker
+from dolmen.forms.base.markers import Marker
 
 import zope.schema
 from zope.interface import Interface, provider

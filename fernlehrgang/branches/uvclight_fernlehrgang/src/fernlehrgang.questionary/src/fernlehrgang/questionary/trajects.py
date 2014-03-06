@@ -1,15 +1,29 @@
 # -*- coding: utf-8 -*-
 
-import grok
-from .app import Questionaries 
-from fernlehrgang.app.upload import IFileStore
-from fernlehrgang.models import IFernlehrgang
-from fernlehrgang.models import Teilnehmer, Fernlehrgang, Lehrheft
-from megrok import traject
-from sqlalchemy import and_
-from z3c.saconfig import Session
-from zope.location import ILocation, LocationProxy
+import uvclight
+
+from dolmen.content import IContent, schema
+from uvclight.backends import patterns
+from cromlech.sqlalchemy import get_session
+
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relation, backref, relationship
+from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy_imageattach.context import push_store_context
+
+from .interfaces import IQuizz
+from fernlehrgang import models
+
+from dolmen.forms.base.markers import Marker
+from zope.component import IFactory, provideUtility, getUtility
+from zope.container.contained import Contained
+from zope.dublincore.interfaces import IDCDescriptiveProperties
+from zope.interface import Interface, implementer, provider
 from zope.interface import alsoProvides
+from zope.location import LocationProxy, ILocation
+from zope.publisher.interfaces import IStartRequestEvent
 
 
 def located(func):
@@ -21,55 +35,59 @@ def located(func):
     return proxify
 
 
-class MemberTraject(traject.Traject):
-   grok.context(Questionaries)
+class Member(patterns.Model):
+   uvclight.context(IQuizz)
 
    pattern = 'member/:member_id'
-   model = Teilnehmer
+   model = models.Teilnehmer
 
    @located
    def factory(member_id):
-       session = Session()
-       dd = session.query(Teilnehmer).filter(
-            Teilnehmer.id == int(member_id)).one()
+       session = get_session('fernlehrgang')()
+       dd = session.query(models.Teilnehmer).filter(
+            models.Teilnehmer.id == int(member_id)).one()
        return dd
 
    def arguments(teilnehmer):
        return dict(member_id = teilnehmer.id)
 
 
-class CourseTraject(traject.Traject):
-   grok.context(Questionaries)
+class Course(patterns.Model):
+   uvclight.context(IQuizz)
 
    pattern = 'course/:fernlehrgang_id'
-   model = Fernlehrgang
+   model = models.Fernlehrgang
 
    @located
    def factory(fernlehrgang_id):
-       session = Session()
-       dd = session.query(Fernlehrgang).filter(
-            Fernlehrgang.id == int(fernlehrgang_id)).one()
+       session = get_session('fernlehrgang')
+       dd = session.query(models.Fernlehrgang).filter(
+            models.Fernlehrgang.id == int(fernlehrgang_id)).one()
        dd.storageid = 'fernlehrgang.%s' % fernlehrgang_id
-       alsoProvides(dd, IFileStore)
        return dd
 
    def arguments(fernlehrgang):
        return dict(fernlehrgang_id = fernlehrgang.id)
 
 
-class LessonTraject(traject.Traject):
-    grok.context(Questionaries)
+class Lesson(patterns.Model):
+    uvclight.context(IQuizz)
 
     pattern = "course/:fernlehrgang_id/lehrheft/:lehrheft_id"
-    model = Lehrheft
+    model = models.Lehrheft
 
     @located
     def factory(fernlehrgang_id, lehrheft_id):
-        session = Session()
-        return  session.query(Lehrheft).filter(
-            and_( Lehrheft.fernlehrgang_id == int(fernlehrgang_id),
-                  Lehrheft.id == int(lehrheft_id))).one()
+        session = get_session('fernlehrgang')
+        return  session.query(models.Lehrheft).filter(
+            and_(models.Lehrheft.fernlehrgang_id == int(fernlehrgang_id),
+                models.Lehrheft.id == int(lehrheft_id))).one()
 
     def arguments(lehrheft):
         return dict(fernlehrgang_id = lehrheft.fernlehrgang_id,
                     lehrheft_id = lehrheft.id)
+
+
+def register_all(registry):
+    models = frozenset((Member, Course, Lesson))
+    patterns.register_models(registry, *models)

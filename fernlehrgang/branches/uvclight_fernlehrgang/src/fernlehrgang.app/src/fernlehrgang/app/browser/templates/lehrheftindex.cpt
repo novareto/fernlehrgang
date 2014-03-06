@@ -5,7 +5,7 @@
   <div class="row-fluid">
     <div class="fragen span12">
       <div tal:repeat="frage view.fragen"
-	   tal:replace="structure frage()">
+	   tal:replace="structure frage">
 	Question rendering
       </div>
     </div>

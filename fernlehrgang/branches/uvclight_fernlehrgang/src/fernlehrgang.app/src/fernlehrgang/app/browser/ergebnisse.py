@@ -2,27 +2,23 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-import grok
+import uvclight
 
 from dolmen.menu import menuentry
 from fernlehrgang.models import Lehrheft, calculations
-from megrok.layout import Page
 from sqlalchemy.orm import joinedload
-from z3c.saconfig import Session
+from cromlech.sqlalchemy import get_session
 
 from fernlehrgang.models.calculations import POSTVERSANDSPERRE
 from ..interfaces import IKursteilnehmer, ICalculateResults
 from .viewlets import NavigationMenu
 
 
-grok.templatedir('templates')
-
-
 @menuentry(NavigationMenu)
-class Resultate(Page):
-    grok.context(IKursteilnehmer)
-    grok.title('Ergebnisse')
-    grok.name('resultate')
+class Resultate(uvclight.Page):
+    uvclight.context(IKursteilnehmer)
+    uvclight.title('Ergebnisse')
+    uvclight.name('resultate')
 
     title = u"Resultate"
 
@@ -50,12 +46,12 @@ def checkDate(date):
         return ""
 
 
-class CalculateResults(grok.Adapter, calculations.KursteilnehmerResults):
-    grok.context(IKursteilnehmer)
+class CalculateResults(uvclight.Adapter, calculations.KursteilnehmerResults):
+    uvclight.context(IKursteilnehmer)
 
     @staticmethod
     def _lehrhefte(context):
-        session = Session()
+        session = get_session('fernlehrgang')
         sql = session.query(Lehrheft).options(joinedload(Lehrheft.fragen))
         sql = sql.filter(Lehrheft.fernlehrgang_id == context.fernlehrgang.id)
         return sql.all()

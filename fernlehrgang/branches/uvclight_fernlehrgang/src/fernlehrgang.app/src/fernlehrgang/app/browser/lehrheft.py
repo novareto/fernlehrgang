@@ -6,22 +6,22 @@ import uvclight
 
 from dolmen.menu import menuentry
 from fernlehrgang.models import Lehrheft
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from uvclight import View, Page
-from zope.location import locate
 from uvclight.backends.patterns import DefaultModel
 from megrok.z3ctable import LinkColumn, GetAttrColumn, TablePage
-from zeam.form.base import Fields
+from dolmen.forms.base import Fields
+from sqlalchemy_imageattach import context as store
 from zope.component import getUtility
 from zope.interface import Interface, implementer
 from zope.security import checkPermission
 from zope.security.checker import CheckerPublic
 from uvc.tb_layout.menus import ContextualActionsMenu
 
-from . import AddForm, EditForm
+from . import AddForm, EditForm, pagetemplate
 from ..interfaces import IListing, IFernlehrgang, IFrage, ILehrheft
-from ..wsgi import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin, model_lookup
 from .viewlets import AddMenu, NavigationMenu
+
 
 
 def check_object_permission(obj, permission):
@@ -31,14 +31,14 @@ def check_object_permission(obj, permission):
 
 
 @menuentry(NavigationMenu)
-class LehrheftListing(TablePage):
+class LehrheftListing(uvclight.TablePage):
     uvclight.implements(IListing)
     uvclight.context(IFernlehrgang)
     uvclight.name('lehrheft_listing')
     uvclight.title(u'Lehrhefte verwalten')
     uvclight.layer(IFernlehrgangSkin)
     
-    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
+    template = uvclight.get_template('base_listing.cpt', __file__)
 
     label = u"Lehrhefte"
 
@@ -55,12 +55,12 @@ class LehrheftListing(TablePage):
     def values(self):
         root = uvclight.getSite()
         for x in self.context.lehrhefte:
-            locate(root, x, DefaultModel)
-        return self.context.lehrhefte
+            model_lookup.patterns.locate(root, x, DefaultModel)
+            yield x
 
 
 @menuentry(AddMenu)
-class AddLehrheft(AddForm):
+class AddLehrheft(uvclight.AddForm):
     uvclight.context(IFernlehrgang)
     uvclight.title(u'Lehrheft')
     uvclight.layer(IFernlehrgangSkin)
@@ -68,7 +68,7 @@ class AddLehrheft(AddForm):
     title = u'Lehrheft'
     label = u'Lehrhefte'
     description = u'Hier können Sie die Lehrhefte für den Fernlehrgang anlegen.'
-    fields = Fields(ILehrheft).omit('id')
+    fields = uvclight.Fields(ILehrheft).omit('id')
 
     def create(self, data):
         return Lehrheft(**data)
@@ -82,7 +82,7 @@ class AddLehrheft(AddForm):
         return self.url(self.context, 'lehrheft_listing')
 
 
-class EmbeddedFrage(View):
+class EmbeddedFrage(uvclight.View):
     uvclight.context(IFrage)
     uvclight.name('embedded')
     uvclight.layer(IFernlehrgangSkin)
@@ -90,9 +90,11 @@ class EmbeddedFrage(View):
     image = None
     thumb = None
 
+    template = uvclight.get_template("embeddedfrage.cpt", __file__)
+    
     def __init__(self, context, request):
         root = uvclight.getSite()
-        locate(root, context, DefaultModel)
+        model_lookup.patterns.locate(root, context, DefaultModel)
         View.__init__(self, context, request)
 
     def update(self):
@@ -101,31 +103,38 @@ class EmbeddedFrage(View):
         self.editable = check_object_permission(
             self.context, 'dolmen.content.Edit')
         if self.context.bilder.count():
-            store = getUtility(Interface, name='ImageStore')
-            self.image = self.context.bild.locate(store=store)
-            self.thumb = self.context.thumbnail.locate(store=store)
+            self.image = self.context.bild.locate()
+            self.thumb = self.context.thumbnail.locate()
   
 
-@menuentry(ContextualActionsMenu, order=10)
-class LehrheftIndex(Page):
+#@menuentry(ContextualActionsMenu, order=10)
+class LehrheftIndex(uvclight.Page):
     uvclight.context(ILehrheft)
     uvclight.name('index')
     uvclight.layer(IFernlehrgangSkin)
 
+    template = uvclight.get_template('lehrheftindex.cpt', __file__)
+    
     def update(self):
-        self.fragen = (EmbeddedFrage(frage, self.request)
-                       for frage in self.context.fragen)
+        self._fragen = (EmbeddedFrage(frage, self.request)
+                        for frage in self.context.fragen)
+
+    @property
+    def fragen(self):
+        for frage in self._fragen:
+            frage.update()
+            yield frage.render()
 
 
-@menuentry(ContextualActionsMenu, order=20)
-class Edit(EditForm):
+#@menuentry(ContextualActionsMenu, order=20)
+class Edit(uvclight.EditForm):
     uvclight.context(ILehrheft)
     uvclight.title(u'Edit')
     uvclight.name('edit')
     uvclight.layer(IFernlehrgangSkin)
 
     label = u"Bearbeiten"
-    fields = Fields(ILehrheft).omit('id')
+    fields = uvclight.Fields(ILehrheft).omit('id')
     
     @property
     def description(self):
@@ -135,7 +144,7 @@ class Edit(EditForm):
 
 ## Spalten
 
-class Id(GetAttrColumn):
+class Id(uvclight.GetAttrColumn):
     uvclight.name('id')
     uvclight.context(IFernlehrgang)
     weight = 5 
@@ -143,7 +152,7 @@ class Id(GetAttrColumn):
     header = "Id"
 
 
-class Nummer(GetAttrColumn):
+class Nummer(uvclight.GetAttrColumn):
     uvclight.name('nummer')
     uvclight.context(IFernlehrgang)
     weight = 10
@@ -151,7 +160,7 @@ class Nummer(GetAttrColumn):
     header = "Nummer"
 
 
-class Name(LinkColumn):
+class Name(uvclight.LinkColumn):
     uvclight.name('Nummer')
     uvclight.context(IFernlehrgang)
     weight = 99

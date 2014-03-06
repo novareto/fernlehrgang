@@ -1,10 +1,10 @@
-<ul tal:condition="viewletmanager.viewlets" tal:attributes="id viewletmanager.id; class viewletmanager.menu_class;">
+<ul tal:condition="manager.viewlets" tal:attributes="id manager.id; class manager.menu_class;">
   <li class="dropdown">
   <a class="dropdown-toggle" data-toggle="dropdown">
-    <span tal:content="viewletmanager.title" tal:condition="viewletmanager.title"> </span> <b class="caret"></b>
+    <span tal:content="manager.title" tal:condition="manager.title"> </span> <b class="caret"></b>
   </a>
   <ul class="dropdown-menu">
-    <li tal:attributes="class viewletmanager.entry_class" tal:repeat="action viewletmanager.viewlets">
+    <li tal:attributes="class manager.entry_class" tal:repeat="action manager.viewlets">
     <tal:entry content="structure action.render()" />
     </li>
   </ul>

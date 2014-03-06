@@ -15,6 +15,7 @@ from zope.interface import Interface, provider
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.location import ILocation
 
 from . import Base, MyStringType
 
@@ -96,7 +97,7 @@ class IUnternehmen(Interface):
         )
 
 
-@implementer(IUnternehmen, IContent)
+@implementer(IUnternehmen, IContent, ILocation)
 class Unternehmen(Base):
     __tablename__ = 'adr'
 

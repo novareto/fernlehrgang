@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from dolmen.content import IContent
+from zope.location.interfaces import ILocation
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.orm import relation, backref, relationship
@@ -87,7 +88,7 @@ class IFernlehrgang(Interface):
         )
 
 
-@implementer(IFernlehrgang, IContent)
+@implementer(IFernlehrgang, IContent, ILocation)
 class Fernlehrgang(Base):
 
     __tablename__ = 'fernlehrgang'

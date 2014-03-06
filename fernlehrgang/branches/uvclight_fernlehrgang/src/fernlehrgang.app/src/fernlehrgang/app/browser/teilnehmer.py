@@ -8,20 +8,20 @@ from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from uvclight.interfaces import IExtraInfo
-from z3c.saconfig import Session
-from zeam.form.base import Fields, action, NO_VALUE
-from zeam.form.base.markers import FAILURE
+from dolmen.forms.base import Fields, action, NO_VALUE
+from dolmen.forms.base.markers import FAILURE
+from uvclight.backends.patterns import DefaultModel
 
 from . import Form, AddForm, DefaultView, EditForm
 from .widgets import fmtDate
 from .resources import register_js
-from ..wsgi import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin, model_lookup
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import (
     IListing, IKursteilnehmer, ITeilnehmer, generatePassword, IUnternehmen)
+from cromlech.sqlalchemy import get_session
 
 
 def no_value(d):
@@ -32,14 +32,14 @@ def no_value(d):
 
 
 @menuentry(NavigationMenu)
-class TeilnehmerListing(TablePage):
+class TeilnehmerListing(uvclight.TablePage):
     uvclight.implements(IListing)
     uvclight.context(IUnternehmen)
     uvclight.name('teilnehmer_listing')
     uvclight.title(u'Teilnehmer verwalten')
     uvclight.layer(IFernlehrgangSkin)
     
-    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
+    template = uvclight.get_template('base_listing.cpt', __file__)
 
     label = u"Teilnehmer"
     batchSize = 150
@@ -53,17 +53,19 @@ class TeilnehmerListing(TablePage):
 
     @property
     def values(self):
-        return self.context.teilnehmer
+        for item in self.context.teilnehmer:
+            model_lookup.patterns.locate(uvclight.getSite(), item, DefaultModel)
+            yield item
 
 
 @menuentry(AddMenu)
-class AddTeilnehmer(AddForm):
+class AddTeilnehmer(uvclight.AddForm):
     uvclight.context(IUnternehmen)
     uvclight.title(u'Teilnehmer')
     uvclight.layer(IFernlehrgangSkin)
     
     label = u'Teilnehmer anlegen für Unternehmen'
-    fields = Fields(ITeilnehmer).omit('id')
+    fields = uvclight.Fields(ITeilnehmer).omit('id')
     fields['kompetenzzentrum'].mode = "radio"
 
     def updateForm(self):
@@ -85,7 +87,7 @@ class AddTeilnehmer(AddForm):
 
     def add(self, object):
         kursteilnehmer, teilnehmer = object
-        session = Session()
+        session = get_session('fernlehrgang')
         self.context.teilnehmer.append(teilnehmer)
         self.tn = teilnehmer
         session.flush()
@@ -102,28 +104,26 @@ class AddTeilnehmer(AddForm):
         return "%s/teilnehmer/%s" %(self.url(), self.tn.id)
 
 
-class Index(DefaultView):
+class Index(uvclight.DefaultView):
     uvclight.context(ITeilnehmer)
     uvclight.layer(IFernlehrgangSkin)
     
     title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
-    __name__ = "index"
-
-    fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
+    fields = uvclight.Fields(ITeilnehmer).omit('id', 'lehrgang')
 
 
-class Edit(EditForm):
+class Edit(uvclight.EditForm):
     uvclight.context(ITeilnehmer)
     uvclight.layer(IFernlehrgangSkin)
     
     uvclight.name('edit')
     label = u"Teilnehmer"
 
-    fields = Fields(ITeilnehmer).omit('id')
+    fields = uvclight.Fields(ITeilnehmer).omit('id')
     fields['kompetenzzentrum'].mode = "radio"
 
-    @action('Speichern')
+    @uvclight.action('Speichern')
     def handle_edit(self):
         data, errors = self.extractData()
         if errors:
@@ -137,14 +137,14 @@ class Edit(EditForm):
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))
 
-    @action('Abbrechen')
+    @uvclight.action('Abbrechen')
     def handle_cancel(self):
         self.flash(u'Ihre Aktion wurde abgebrochen.')
         self.redirect(self.url(self.context))
 
 
 @menuentry(NavigationMenu, order=200)
-class Register(Form):
+class Register(uvclight.Form):
     uvclight.context(ITeilnehmer)
     uvclight.name('register')
     uvclight.layer(IFernlehrgangSkin)
@@ -153,18 +153,18 @@ class Register(Form):
     label = u"Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
 
-    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
+    fields = uvclight.Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
 
     def update(self):
         register_js.need()
 
-    @action('Registrieren')
+    @uvclight.action('Registrieren')
     def handle_register(self):
         data, errors = self.extractData()
         if errors:
             return FAILURE
         if data.get('lehrgang') is not NO_VALUE:
-            session = Session()
+            session = get_session('fernlehrgang')
             kursteilnehmer = Kursteilnehmer(
                 fernlehrgang_id=data.get('fernlehrgang_id'),
                 status=data.get('status'),
@@ -180,12 +180,12 @@ class Register(Form):
             self.flash('Es wurde kein Lehrgang spezifiziert.', type="warning")
         self.redirect(self.url(self.context))
 
-    @action(u'Registrierung ändern', identifier='reg-change')
+    @uvclight.action(u'Registrierung ändern', identifier='reg-change')
     def handle_update(self):
         data, errors = self.extractData()
         if errors:
             return FAILURE
-        session = Session()
+        session = get_session('fernlehrgang')
         from fernlehrgang.models import Kursteilnehmer
         ktn_id, flg_id = data.get('fernlehrgang_id').split(',')
         ktn = session.query(Kursteilnehmer).get(ktn_id)
@@ -200,7 +200,7 @@ class TeilnehmerJSONViews(uvclight.JSON):
     uvclight.context(ITeilnehmer)
 
     def get_kursteilnehmer(self, ktn_id):
-        session = Session()
+        session = get_session('fernlehrgang')
         from fernlehrgang.models import Kursteilnehmer
         ktn_id, flg_id = ktn_id.split(',')
         ktn = session.query(Kursteilnehmer).get(ktn_id)
@@ -213,9 +213,10 @@ class OverviewKurse(uvclight.Viewlet):
     uvclight.context(ITeilnehmer)
     uvclight.layer(IFernlehrgangSkin)
     uvclight.order(30)
+    template = uvclight.get_template('overviewkurse.cpt', __file__)
 
     def update(self):
-        session = Session()
+        session = get_session('fernlehrgang')
         sql = session.query(Kursteilnehmer).filter(Kursteilnehmer.teilnehmer_id == self.context.id)
         self.res = sql.all()
 
@@ -230,7 +231,7 @@ class HelperEntry(Entry):
 
 ## Spalten
 
-class ID(GetAttrColumn):
+class ID(uvclight.GetAttrColumn):
     uvclight.name('Id')
     uvclight.context(IUnternehmen)
     weight = 5 
@@ -238,20 +239,21 @@ class ID(GetAttrColumn):
     attrName = "id"
 
 
-class Name(LinkColumn):
+class Name(uvclight.LinkColumn):
     uvclight.name('Name')
     uvclight.context(IUnternehmen)
     weight = 10 
     linkContent = "edit"
 
     def getLinkURL(self, item):
-        return self.table.url().replace('_listing', '/'+str(item.id))
+        return self.table.url(item).replace('_listing', '/'+str(item.id))
 
     def getLinkContent(self, item):
+        print "KLAUS"
         return item.name
 
 
-class VorName(GetAttrColumn):
+class VorName(uvclight.GetAttrColumn):
     uvclight.name('VorName')
     uvclight.context(IUnternehmen)
     weight = 20
@@ -259,7 +261,7 @@ class VorName(GetAttrColumn):
     attrName = "vorname"
 
 
-class Geburtsdatum(Column):
+class Geburtsdatum(uvclight.Column):
     uvclight.name('Geburtsdatum')
     uvclight.context(IUnternehmen)
     weight = 30

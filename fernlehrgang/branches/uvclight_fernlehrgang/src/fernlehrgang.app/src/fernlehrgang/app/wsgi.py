@@ -4,9 +4,9 @@ import os
 import transaction
 
 from uvclight.backends.patterns import TrajectLookup
-from cromlech.browser import IPublicationRoot
-from cromlech.browser import IRequest
+from cromlech.browser import IRequest, IPublicationRoot
 from cromlech.configuration.utils import load_zcml
+from cromlech.dawnlight.directives import traversable
 from cromlech.dawnlight import DawnlightPublisher, ViewLookup
 from cromlech.dawnlight import view_locator, query_view
 from cromlech.security import Interaction
@@ -21,11 +21,15 @@ from zope.component.hooks import setSite
 from zope.interface import Interface, implementer, alsoProvides
 from zope.location import Location
 from zope.security.proxy import removeSecurityProxy
+from fernlehrgang.app.auth.handler import Users
+from cromlech.webob.request import Request
 
 from .trajects import register_all
 from .auth.handler import Benutzer
 from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
+from uvclight.auth import secured, Principal
+from cromlech.wsgistate import WsgistateSession
 
 
 class IFernlehrgangSkin(IRequest):
@@ -39,11 +43,25 @@ model_lookup = TrajectLookup()
 @implementer(IPublicationRoot, IFernlehrgangApp)
 class Root(Location):
 
-    def benutzer(self):
-        return Benutzer
-
     def getSiteManager(self):
         return getGlobalSiteManager()
+
+
+class UsersAuth(Users):
+
+    def get(self, login, default=None):
+        user = super(UsersAuth, self).get(login, default)
+        if user:
+            return user.password
+
+    def getRoles(self, login):
+        user = Users.get(self, login, None)
+        if user:
+            return [user.role]
+        return []
+
+Benutzer = UsersAuth()
+
 
 
 class Application(object):
@@ -55,27 +73,26 @@ class Application(object):
         self.publisher = DawnlightPublisher(
             model_lookup=model_lookup, view_lookup=view_lookup)
 
-    @wsgify(RequestClass=request.Request)
-    def __call__(self, request):
+    def __call__(self, environ, start_response):
+        request = Request(environ)
+
+        @secured(Benutzer, "PLEASE Login")
+        def publish(environ, start_response):
+            #roles = Benutzer.getRoles('gbleeck')
+            request.principal = Principal(environ['REMOTE_USER'])
+            with Interaction(request.principal):
+                with store.store_context(self.store):
+                    setSite(self.site)
+                    alsoProvides(request, IFernlehrgangSkin)
+                    response = self.publisher.publish(
+                        request, self.site, handle_errors=True)
+                    setSite()
+            return response(environ, start_response)
+
         with transaction.manager as tm:
             with SQLAlchemySession(self.engine, transaction_manager=tm):
-                with Interaction(unauthenticated_principal):
-                    # We apply the skin layer
-                    alsoProvides(request, IFernlehrgangSkin)
-                    
-                    # Site and implicit context set up
-                    setSite(self.site)
-                    store.push_store_context(self.store)
-    
-                    # publish
-                    result = self.publisher.publish(
-                        request, self.site, handle_errors=True)
-
-                    # Site and implicit context clean_up
-                    setSite()
-                    store.pop_store_context()
-
-        return removeSecurityProxy(result)
+                with WsgistateSession(environ, 'session.key'):
+                    return publish(environ, start_response)
 
 
 def application_factory(global_conf, store_root, store_prefix, dsn):
@@ -100,4 +117,4 @@ def application_factory(global_conf, store_root, store_prefix, dsn):
     fs_store = HttpExposedFileSystemStore(store_root, store_prefix)
     app = Application(fs_store, engine)
 
-    return app
+    return fs_store.wsgi_middleware(app)

@@ -59,14 +59,22 @@ minified = true
 rollup = true
 recompute_hashes = true
 
+[filter:session]
+use = egg:cromlech.wsgistate#file_session
+session_key = session.key
+session_cache = ${settings:session_cache}
+
 [app:fernlehrgang]
 use = egg:fernlehrgang.app#main
 store_root = ${settings:image_storage}
 store_prefix = /images
-dsn = ${settings:DSN}
+dsn = ${SQL:DSN}
 
 [app:quizz]
 paste.app_factory = fernlehrgang.questionary.app:application
+store_root = ${settings:image_storage}
+store_prefix = /images
+dsn = ${SQL:DSN}
 
 [app:router]
 use = egg:Paste#urlmap
@@ -74,7 +82,7 @@ use = egg:Paste#urlmap
 /quizz = quizz
 
 [pipeline:main]
-pipeline =  gzip fanstatic router
+pipeline =  gzip fanstatic session router
 
 [server:main]
 use = egg:Paste#http

@@ -2,32 +2,28 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
-
-from z3c import saconfig
+import uvclight
 from zope import component
-from dolmen import menu
-from megrok import layout
 from sqlalchemy import func, and_
 from fernlehrgang import models
 
 
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
-from fernlehrgang.viewlets import NavigationMenu
+from fernlehrgang.models import IFernlehrgang
+from fernlehrgang.models.kursteilnehmer import lieferstopps
+from fernlehrgang.app.browser.viewlets import NavigationMenu
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
-from zope.pluggableauth.interfaces import IAuthenticatorPlugin
-
+from cromlech.sqlalchemy import get_session
 from pygooglechart import PieChart2D, PieChart3D
 
-grok.templatedir('templates')
 
 
-@menu.menuentry(NavigationMenu, order=300)
-class FernlehrgangStatistik(layout.Page):
-    grok.context(IFernlehrgang)
-    grok.title(u"Statistik")
+@uvclight.menuentry(NavigationMenu, order=300)
+class FernlehrgangStatistik(uvclight.Page):
+    uvclight.context(IFernlehrgang)
+    uvclight.title(u"Statistik")
+
+    template = uvclight.get_template('fernlehrgangstatistik.cpt', __file__)
 
     title = u"Statistik Fernlehrgang"
     alle_kursteilnehmer = 0
@@ -40,14 +36,11 @@ class FernlehrgangStatistik(layout.Page):
     @property
     def isNotReader(self):
         ret = True
-        account = getUtility(IAuthenticatorPlugin, "principals").getAccount(self.request.principal.id)
-        if account:
-            if "uvc.reader" == account.role:
-                ret = False
+        # BBB
         return ret
 
     def update(self):
-        session = saconfig.Session()
+        session = get_session('fernlehrgang') 
         lfs = lieferstopps(None)
         self.alle_kursteilnehmer = len(self.context.kursteilnehmer)
         sql = session.query(models.Kursteilnehmer)
@@ -57,7 +50,7 @@ class FernlehrgangStatistik(layout.Page):
         self.kursteilnehmer_detail = [(lfs.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
 
     def getAntworten(self):
-        session = saconfig.Session()
+        session = get_session('fernlehrgang') 
         return session.query(models.Lehrheft.nummer, func.count()).filter(
             and_(models.Kursteilnehmer.fernlehrgang_id==self.context.id,
                  models.Lehrheft.fernlehrgang_id == self.context.id,

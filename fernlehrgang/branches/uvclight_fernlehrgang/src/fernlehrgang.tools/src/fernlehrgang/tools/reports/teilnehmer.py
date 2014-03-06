@@ -2,69 +2,34 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de 
 
-import grok
-import uvc.layout
-
+import uvclight
 from sqlalchemy.orm import joinedload
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.interfaces.kursteilnehmer import lieferstopps 
+from fernlehrgang.app.interfaces import IFernlehrgangApp
+from fernlehrgang.models.teilnehmer import ITeilnehmer
+from fernlehrgang.models.unternehmen import IUnternehmen
+from fernlehrgang.models.kursteilnehmer import lieferstopps 
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
-from fernlehrgang.viewlets import NavigationMenu
-from megrok.traject import locate
-from megrok.traject.components import DefaultModel
-from z3c.saconfig import Session
-from zeam.form.base import action, NO_VALUE, Fields
-from fernlehrgang.interfaces.resultate import ICalculateResults
-from fernlehrgang import Form
-from profilehooks import profile
-from fernlehrgang import fmtDate
+from fernlehrgang.app.browser.viewlets import NavigationMenu
+from fernlehrgang.models import ICalculateResults
+from fernlehrgang.app.browser.widgets import fmtDate
+from cromlech.sqlalchemy import get_session
+from fernlehrgang.app.wsgi import model_lookup
+from uvclight.backends.patterns import DefaultModel
 
 
-grok.templatedir('templates')
+@uvclight.menuentry(NavigationMenu, order=450)
+class TeilnehmerSuche(uvclight.Form):
+    uvclight.context(IFernlehrgangApp)
+    uvclight.title(u'Statusabfrage Kurs Teilnehmer')
+    uvclight.require('zope.View')
+    uvclight.order(1500)
 
-
-#@menuentry(NavigationMenu, order=500)
-class CreateTeilnehmer(Form):
-    grok.context(IFernlehrgangApp)
-    grok.title(u'Teilnehmer registrieren')
-    title = label = u"Teilnehmer registrieren"
-    description = u"Bitte geben Sie die Teilnehmer ID ein, den Sie registrieren möchten."
-    results = []
-
-    cssClasses = {'table': 'tablesorter myTable'}
-
-    fields = Fields(ITeilnehmer).select('id')
-    fields['id'].readonly = False
-
-    @action(u'Suchen')
-    def handle_search(self):
-        data, errors = self.extractData()
-        session = Session()
-        sql = session.query(Teilnehmer)
-        sql = sql.filter(Teilnehmer.id == data.get('id'))
-        teilnehmer = sql.first()
-        if teilnehmer:
-            site = grok.getSite()
-            locate(site, teilnehmer, DefaultModel)
-            self.redirect(self.url(teilnehmer, 'edit'))
-        else:
-            self.flash('Es wurde kein Teilnehmer gefunden')
-
-
-@menuentry(NavigationMenu, order=450)
-class TeilnehmerSuche(Form):
-    grok.context(IFernlehrgangApp)
-    grok.title(u'Statusabfrage KursTeilnehmer')
-    grok.require('zope.View')
-    grok.order(1500)
+    template = uvclight.get_template('teilnehmersuche.cpt', __file__)
 
     label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
 
-    fields = Fields(ITeilnehmer).select('id', 'name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
+    fields = uvclight.Fields(ITeilnehmer).select('id', 'name', 'vorname', 'geburtsdatum') + uvclight.Fields(IUnternehmen).select('mnr')
     fields['id'].readonly = False
     fields['mnr'].readonly = False
     fields['name'].required = False
@@ -77,15 +42,15 @@ class TeilnehmerSuche(Form):
         root = grok.getSite()
         lfs = lieferstopps(None)
         for kursteilnehmer, item in self.results:
-            locate(root, item, DefaultModel)
-            locate(root, item.unternehmen, DefaultModel)
+            model_lookup.patterns.locate(root, item, DefaultModel)
+            model_lookup.patterns.locate(root, item.unternehmen, DefaultModel)
             results = {"comment": "Kein Fernlehrgang."}
             if kursteilnehmer.fernlehrgang:
                 results = ICalculateResults(kursteilnehmer).summary()
-                locate(root, kursteilnehmer, DefaultModel)            
+                model_lookup.patterns.locate(root, kursteilnehmer, DefaultModel)            
                 name = '<a href="%s"> %s </a>' % (self.url(kursteilnehmer), item.name)
                 flg = kursteilnehmer.fernlehrgang
-                locate(root, flg, DefaultModel)
+                model_lookup.patterns.locate(root, flg, DefaultModel)
                 link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
             else:
                 name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
@@ -103,11 +68,11 @@ class TeilnehmerSuche(Form):
                      bestanden = results['comment'])
             yield d
 
-    @action(u'Suchen')
+    @uvclight.action(u'Suchen')
     def handle_search(self):
         v = False
         data, errors = self.extractData()
-        session = Session()
+        session = get_session('fernlehrgang')
         #sql = session.query(Kursteilnehmer, Teilnehmer)
         sql = session.query(Kursteilnehmer, Teilnehmer).options(joinedload(Kursteilnehmer.antworten))
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
@@ -130,7 +95,7 @@ class TeilnehmerSuche(Form):
         #    constraint = "%%%s%%" % data.get('mnr_g_alt')
         #    sql = sql.filter(Teilnehmer.unternehmen.mnr_g_alt.ilike(constraint))
         #    v = True
-        if data.get('geburtsdatum') != NO_VALUE:
+        if data.get('geburtsdatum'):
             sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
             v = True
         if not v:

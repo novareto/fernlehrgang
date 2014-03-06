@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-import grok
+import uvclight
 
 from datetime import datetime
-from dolmen.app.layout import models
 from uvc.composedview.components import ComposedPage, ITab
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from megrok.layout import Page
+from uvclight import Page
 from sqlalchemy import and_
-from z3c.saconfig import Session
-from zeam.form.base import Fields
+from dolmen.forms.base import Fields
 from zope.component import getMultiAdapter, getUtility
 from zope.interface import Interface, implementer
 from zope.location import locate
@@ -23,8 +20,7 @@ from fernlehrgang.app.upload import Storage
 from fernlehrgang.app.browser.uploader import format_file
 from fernlehrgang.app.browser.resources import bs_calendar
 
-from .skin import IQuestionary
-from ..app import Questionaries
+from ..app import IQuizzSkin, Questionaries
 from ..interfaces import IMembership
 
 
@@ -33,16 +29,15 @@ MISSING = "Missing value"
 BAD_VALUE = "Wrong value. Don't cheat"
 
 
-grok.templatedir('templates')
-
-
-class Index(models.Index):
-    grok.context(Questionaries)
-    grok.layer(IQuestionary)
-    grok.require('zope.View')
+class Index(uvclight.Index):
+    uvclight.context(Questionaries)
+    uvclight.layer(IQuizzSkin)
+    uvclight.require('zope.View')
 
     title = u"Whatever"
 
+    template = uvclight.get_template("index.cpt", __file__)
+    
     def getCourses(self):
         membership = IMembership(self.request.principal, None)
         if membership is not None:
@@ -52,10 +47,10 @@ class Index(models.Index):
 
 @implementer(IDCDescriptiveProperties)
 class CoursePage(ComposedPage):
-    grok.context(IFernlehrgang)
-    grok.name('index')
-    grok.layer(IQuestionary)
-    grok.require('zope.View')
+    uvclight.context(IFernlehrgang)
+    uvclight.name('index')
+    uvclight.layer(IQuizzSkin)
+    uvclight.require('zope.View')
 
     results = None
     title = u"Fernlehrgag"
@@ -86,48 +81,53 @@ class CoursePage(ComposedPage):
         return ret
 
 
-@implementer(ITab)
 class MyRegData(Page):
-    grok.order(3)
-    grok.context(CoursePage)
-    grok.title(u'Meine Registrierdaten')
-    grok.require('zope.View')
+    uvclight.order(3)
+    uvclight.context(CoursePage)
+    uvclight.title(u'Meine Registrierdaten')
+    uvclight.require('zope.View')
+    uvclight.provides(ITab)
+    template = uvclight.get_template('myregdata.cpt', __file__)
 
-
-@implementer(ITab)
+    
 class MyResults(Page):
-    grok.order(2)
-    grok.context(CoursePage)
-    grok.title(u'Meine Ergebnisse')
-    grok.require('zope.View')
+    uvclight.order(2)
+    uvclight.context(CoursePage)
+    uvclight.title(u'Meine Ergebnisse')
+    uvclight.require('zope.View')
+    uvclight.provides(ITab)
+    template = uvclight.get_template('myresults.cpt', __file__)
 
 
-@implementer(ITab)
 class MyLessons(Page):
-    grok.order(1)
-    grok.context(CoursePage)
-    grok.title(u'Meine Lehrhefte')
-    grok.require('zope.View')
+    uvclight.order(1)
+    uvclight.context(CoursePage)
+    uvclight.title(u'Meine Lehrhefte')
+    uvclight.require('zope.View')
+    uvclight.provides(ITab)
+    template = uvclight.get_template('mylessons.cpt', __file__)
+    
 
-
-@implementer(ITab)
 class Sessions(Page):
-    grok.order(5)
-    grok.title('Terminliste')
-    grok.context(CoursePage)
-    grok.require('zope.View')
-
+    uvclight.order(5)
+    uvclight.title('Terminliste')
+    uvclight.context(CoursePage)
+    uvclight.require('zope.View')
+    uvclight.provides(ITab)
+    template = uvclight.get_template('sessions.cpt', __file__)
+    
     def update(self):
         bs_calendar.need()
 
 
-@implementer(ITab)
 class MyDownloads(Page):
-    grok.order(4)
-    grok.context(CoursePage)
-    grok.title(u'Meine Downloads')
-    grok.require('zope.View')
-
+    uvclight.order(4)
+    uvclight.context(CoursePage)
+    uvclight.title(u'Meine Downloads')
+    uvclight.require('zope.View')
+    uvclight.provides(ITab)
+    template = uvclight.get_template('mydownloads.cpt', __file__)
+    
     def update(self):
         storage = Storage(self.context.context.storageid)
         locate(storage, self.context.context, '++storage++')
@@ -138,13 +138,13 @@ class MyDownloads(Page):
 class QuestionRenderer(object):
 
     modes = {
-        "display": ChameleonPageTemplateFile(
-            'templates/questiondisplayview.cpt'),
-        "edit": ChameleonPageTemplateFile(
-            'templates/questioneditview.cpt'),
-        "editchoice": ChameleonPageTemplateFile(
-            'templates/questioneditchoiceview.cpt'),
-            }
+        "display": uvclight.get_template(
+            'questiondisplayview.cpt', __file__),
+        "edit": uvclight.get_template(
+            'questioneditview.cpt', __file__),
+        "editchoice": uvclight.get_template(
+            'questioneditchoiceview.cpt', __file__),
+        }
 
     def __init__(self, context, request, **data):
         self.context = context
@@ -196,11 +196,11 @@ class QuestionRenderer(object):
                 }
 
 
-class LessonPage(models.Index):
-    grok.context(ILehrheft)
-    grok.name('index')
-    grok.layer(IQuestionary)
-    grok.require('zope.View')
+class LessonPage(uvclight.Index):
+    uvclight.context(ILehrheft)
+    uvclight.name('index')
+    uvclight.layer(IQuizzSkin)
+    uvclight.require('zope.View')
 
     title = u"Lehrheft"
 
@@ -210,11 +210,11 @@ class LessonPage(models.Index):
             self.context, self.request, 'display')
 
 
-class LessonAnswerPage(models.Index):
-    grok.context(ILehrheft)
-    grok.name('answer')
-    grok.layer(IQuestionary)
-    grok.require('zope.View')
+class LessonAnswerPage(uvclight.Index):
+    uvclight.context(ILehrheft)
+    uvclight.name('answer')
+    uvclight.layer(IQuizzSkin)
+    uvclight.require('zope.View')
 
     title = u"Lehrheft"
     submitted = False
@@ -263,7 +263,7 @@ class LessonAnswerPage(models.Index):
     
     def update(self):
         self.action = '%s/%s' % (self.url(self.context),
-                                 grok.name.bind().get(self))
+                                 uvclight.name.bind().get(self))
         if 'validate' in self.request.form:
             self.submitted = True
             errors, data = self.validate()
@@ -280,21 +280,21 @@ class LessonAnswerPage(models.Index):
             self.errors = {}
  
 
-class MemberPage(models.DefaultView):
-    grok.context(ITeilnehmer)
-    grok.name('index')
-    grok.layer(IQuestionary)
-    grok.require('zope.View')
+class MemberPage(uvclight.DefaultView):
+    uvclight.context(ITeilnehmer)
+    uvclight.name('index')
+    uvclight.layer(IQuizzSkin)
+    uvclight.require('zope.View')
 
     title = u"Teilnehmer"
 
     fields = Fields(ITeilnehmer)
 
 
-class MemberPageEdit(models.Edit):
-    grok.context(ITeilnehmer)
-    grok.layer(IQuestionary)
-    grok.require('zope.View')
+class MemberPageEdit(uvclight.EditForm):
+    uvclight.context(ITeilnehmer)
+    uvclight.layer(IQuizzSkin)
+    uvclight.require('zope.View')
 
     title = u"Teilnehmer"
 

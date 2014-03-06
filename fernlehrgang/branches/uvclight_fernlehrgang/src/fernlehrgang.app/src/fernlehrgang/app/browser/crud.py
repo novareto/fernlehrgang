@@ -6,14 +6,14 @@
 from uvclight import Action, Actions, SUCCESS, FAILURE
 from dolmen.forms.crud import Delete
 from dolmen.forms.crud import actions as formactions, i18n as _
-from z3c.saconfig import Session
+from cromlech.sqlalchemy import get_session
 
 
 class RDBDeleteAction(Action):
 
     def __call__(self, form):
         context = form.context
-        session = Session()
+        session = get_session('fernlehrgang')
         try:
             session.delete(context)
             form.status = self.successMessage

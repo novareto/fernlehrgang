@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
+import uvclight
 
-import grok
-
-from dolmen.menu import menuentry
 from fernlehrgang import models
-from fernlehrgang.browser.ergebnisse import CalculateResults
-from fernlehrgang.exports.menus import ExportItems
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.lib import nN
+from fernlehrgang.app.browser.ergebnisse import CalculateResults
+from fernlehrgang.tools.exports.menus import ExportItems
+from fernlehrgang.models.fernlehrgang import IFernlehrgang
+from fernlehrgang.app.lib import nN
 from openpyxl.workbook import Workbook
 from sqlalchemy import and_
 from sqlalchemy.orm import sessionmaker, joinedload
-from fernlehrgang.interfaces.kursteilnehmer import un_klasse, gespraech
-from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
+from fernlehrgang.models.kursteilnehmer import un_klasse, gespraech
+from fernlehrgang.tools.exports.utils import page_query, makeZipFile, getUserEmail
 from lxml.builder import E
 from lxml import etree as ET
 
@@ -85,14 +83,14 @@ def export(session, flg_id):
     return fn
 
 
-@menuentry(ExportItems)
-class ListeKompetenzzentrum(grok.View):
-    grok.context(IFernlehrgang)
-    grok.name('kompetenzzentrum')
-    grok.title('Liste Kompetenzzentrum')
+@uvclight.menuentry(ExportItems)
+class ListeKompetenzzentrum(uvclight.View):
+    uvclight.context(IFernlehrgang)
+    uvclight.name('kompetenzzentrum')
+    uvclight.title('Liste Kompetenzzentrum')
 
     def update(self):
-        from fernlehrgang.tasks import export_liste_kompetenzzentrum 
+        from fernlehrgang.app.tasks import export_liste_kompetenzzentrum 
         mail = getUserEmail(self.request.principal.id)
         fn = export_liste_kompetenzzentrum(flg_id=self.context.id, mail=mail)
         print fn

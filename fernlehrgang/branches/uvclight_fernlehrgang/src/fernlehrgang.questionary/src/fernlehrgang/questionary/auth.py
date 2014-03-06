@@ -1,129 +1,52 @@
 # -*- coding: utf-8 -*-
-
-import grok
-
-from dolmen.content import Container, nofactory
-from fernlehrgang.app.auth.handler import PrincipalInfo
-from fernlehrgang.models import Teilnehmer
-from z3c.saconfig import Session
-from zope.pluggableauth.interfaces import (
-    AuthenticatedPrincipalCreated, IAuthenticatorPlugin,
-    IFoundPrincipalFactory, IAuthenticatedPrincipalFactory)
-from zope.interface import implementer
-from zope.publisher.interfaces import IRequest
-from .interfaces import IMember, IMemberInfo
-from zope.pluggableauth.factories import Principal
-from zope.event import notify
-from zope.securitypolicy.principalrole import principalRoleManager
+# Copyright (c) 2007-2010 NovaReto GmbH
+# cklinger@novareto.de 
 
 
-@implementer(IMemberInfo)
-class MemberInfo(PrincipalInfo):
-    """A fernlehrgang member abstraction.
-    """
-    model = None
-
-    
-@implementer(IMember)
-class Member(Principal):
-    """A fernlehrgang member.
-    """
-    def __init__(self, id, title, description, model):
-        Principal.__init__(self, id, title, description)
-        self.model = model
-    
-
-class MemberFactory(grok.MultiAdapter):
-    grok.adapts(IMemberInfo, IRequest)
-    grok.implements(IAuthenticatedPrincipalFactory)
-    grok.provides(IAuthenticatedPrincipalFactory)
-
-    def __init__(self, info, request):
-        self.info = info
-        self.request = request
-
-    def __call__(self, authentication):
-        principal = Member(authentication.prefix + self.info.id,
-                           self.info.title,
-                           self.info.description, self.info.model)
-        notify(AuthenticatedPrincipalCreated(
-            authentication, principal, self.info, self.request))
-        return principal
+from cromlech.sqlalchemy import get_session
+from fernlehrgang.models.user import User
+from zope import component, interface, schema
+from zope.location import LocationProxy, locate
+from dolmen.authentication import UserLoginEvent
 
 
-class FoundMemberFactory(grok.Adapter):
-    grok.context(IMemberInfo)
-    grok.implements(IFoundPrincipalFactory)
-    grok.provides(IFoundPrincipalFactory)
+class Users(object):
 
-    def __init__(self, info):
-        self.info = info
+    def __iter__(self):
+        session = get_session('fernlehrgang')
+        return iter(session.query(User).all())
 
-    def __call__(self, authentication):
-        principal = Member(authentication.prefix + self.info.id,
-                              self.info.title,
-                              self.info.description, self.info.model)
-        notify(AuthenticatedPrincipalCreated(
-            authentication, principal, self.info, None))
-        return principal
-
-
-class QuizzMember(grok.Role):
-    grok.name('QuizzMember')
-    grok.permissions('zope.View')
-
-
-class RDBUsersAuthenticatorPlugin(grok.GlobalUtility):
-    grok.implements(IAuthenticatorPlugin)
-    grok.name('rdbauth')
-
-    def authenticateCredentials(self, credentials):
-        if not isinstance(credentials, dict):
-            return None
-
-        userid = credentials.get('login')
-        passwd = credentials.get('password')
-        if userid is None or passwd is None:
-            return None
-        else:
-            try:
-                userid = int(userid)
-            except ValueError:
-                return None
-        
-        session = Session()
-        if userid not in ["admin"]:
-            results = session.query(Teilnehmer).filter(Teilnehmer.id==userid)
-            if results.count() == 1:
-                user = results.one()
-                if user and user.passwort == passwd:
-                    roles = principalRoleManager.getRolesForPrincipal(str(user.id))
-                    if 'QuizzMember' not in roles:
-                        principalRoleManager.assignRoleToPrincipal(
-                            'QuizzMember', str(user.id))
-
-                    fullname = u"%s %s" % (user.name, user.vorname)
-                    info = MemberInfo(
-                        id=str(userid), title=fullname, description=fullname)
-                    info.model = user
-                    return info
-        return None
-            
-    def principalInfo(self, id):
+    def __contains__(self, login):
         try:
-            id = int(id)
+            session = get_session('fernlehrgang')
+            c = session.query(User).filter(User.login == login).count()
+            return bool(c > 0)
         except ValueError:
-            return None
+            return False
 
-        session = Session()
-        results = session.query(Teilnehmer).filter(Teilnehmer.id==id)
+    def get(self, login, default=None):
+        try:
+            session = get_session('fernlehrgang')
+            query = session.query(User).filter(User.login == login)
+            assert query.count() == 1
+            user = LocationProxy(query.one())
+            locate(user, self, str(login))
+            return user
+        except AssertionError, ValueError:
+            pass
+        return None
 
-        if results.count() != 1:
-            return None
+    def add(self, username, email, password, real_name, role):
+        if not account in self:
+            session = get_session('fernlehrgang')
+            user = User(
+                login=username, email=email, password=password,
+                real_name=real_name, role=role)
+            session.add(user)
 
-        user = results.one()
-        if user:
-            fullname = u"%s %s" % (user.name, user.vorname)
-            info = MemberInfo(id=str(id), title=fullname, description=fullname)
-            info.model = user
-            return info
+    def delete(self, user):
+        session = get_session('fernlehrgang')
+        session.delete(user)
+
+
+Benutzer = Users()

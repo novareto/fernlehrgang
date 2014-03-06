@@ -19,14 +19,11 @@ setup(name='fernlehrgang.questionary',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'dolmen.app.container',
           'dolmen.forms.base',
           'dolmen.forms.crud',
           'uvc.composedview',
-          'dolmen.security.policies',
-          'grok',
+          'dolmen.authentication',
           'setuptools',
-          'z3c.testsetup',
       ],
       entry_points = {
           'paste.app_factory': [

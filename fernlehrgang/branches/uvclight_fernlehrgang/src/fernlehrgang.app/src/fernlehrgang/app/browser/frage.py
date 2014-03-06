@@ -6,29 +6,28 @@ import uvclight
 
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.models import Frage
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from uvclight import Page
 from zope.location import locate
 from uvclight.backends.patterns import DefaultModel
 from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
-from zeam.form.base import Fields
+from dolmen.forms.base import Fields
 
 from . import AddForm, EditForm
 from ..interfaces import IFrage, ILehrheft
-from ..wsgi import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin, model_lookup
 from .lehrheft import EmbeddedFrage
 from .viewlets import AddMenu, NavigationMenu
 
 
 
 @menuentry(NavigationMenu)
-class FrageListing(TablePage):
+class FrageListing(uvclight.TablePage):
     uvclight.context(ILehrheft)
     uvclight.name('frage_listing')
     uvclight.title(u'Fragen verwalten')
     uvclight.layer(IFernlehrgangSkin)
     
-    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
+    template = uvclight.get_template('base_listing.cpt', __file__)
 
     label = u"Fragen"
     cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
@@ -42,18 +41,18 @@ class FrageListing(TablePage):
     def values(self):
         root = uvclight.getSite()
         for frage in self.context.fragen:
-            locate(root, frage, DefaultModel)
+            model_lookup.patterns.locate(root, frage, DefaultModel)
             yield frage
 
 
 @menuentry(AddMenu)
-class AddFrage(AddForm):
+class AddFrage(uvclight.AddForm):
     uvclight.context(ILehrheft)
     uvclight.title(u'Frage')
     uvclight.layer(IFernlehrgangSkin)
     
     label = u'Frage anlegen'
-    fields = Fields(IFrage).omit('id')
+    fields = uvclight.Fields(IFrage).omit('id')
 
     def create(self, data):
         return Frage(**data)
@@ -67,23 +66,25 @@ class AddFrage(AddForm):
 
 
 @menuentry(NavigationMenu, order=1)
-class FrageIndex(Page):
+class FrageIndex(uvclight.Page):
     uvclight.name('index')
     uvclight.context(IFrage)
     uvclight.title(u'Frage')
     uvclight.layer(IFernlehrgangSkin)
+    template = uvclight.get_template('frageindex.cpt', __file__)
     
     def update(self):
         view = EmbeddedFrage(self.context, self.request)
-        self.frage = view()
+        view.update()
+        self.frage = view.render()
         self.parent = view.context.lehrheft
         root = uvclight.getSite()
-        locate(root, self.parent, DefaultModel)
+        model_lookup.patterns.locate(root, self.parent, DefaultModel)
         self.link = self.url(self.parent)
 
 
 @menuentry(NavigationMenu, order=2)
-class Edit(EditForm):
+class Edit(uvclight.EditForm):
     uvclight.context(IFrage)
     uvclight.layer(IFernlehrgangSkin)
     uvclight.title(u'Bearbeiten')
@@ -91,13 +92,13 @@ class Edit(EditForm):
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."
 
-    fields = Fields(IFrage).omit('id')
+    fields = uvclight.Fields(IFrage).omit('id')
     fields['frage'].mode = 'hiddendisplay'
 
 
 ### Spalten
 
-class Id(GetAttrColumn):
+class Id(uvclight.GetAttrColumn):
     uvclight.name('id')
     uvclight.context(ILehrheft)
     weight = 5 
@@ -105,7 +106,7 @@ class Id(GetAttrColumn):
     attrName = "id"
 
 
-class Nummer(GetAttrColumn):
+class Nummer(uvclight.GetAttrColumn):
     uvclight.name('Nummer')
     uvclight.context(ILehrheft)
     weight =  10 
@@ -113,7 +114,7 @@ class Nummer(GetAttrColumn):
     attrName = "frage"
 
 
-class Link(LinkColumn):
+class Link(uvclight.LinkColumn):
     uvclight.name('Titel')
     uvclight.context(ILehrheft)
     weight = 20 
@@ -124,7 +125,7 @@ class Link(LinkColumn):
         return "%s" % (item.titel)
 
 
-class Antwortschema(GetAttrColumn):
+class Antwortschema(uvclight.GetAttrColumn):
     uvclight.name('Antwortschema')
     uvclight.context(ILehrheft)
     weight = 10
@@ -132,7 +133,7 @@ class Antwortschema(GetAttrColumn):
     header = u"Antwortschema"
 
 
-class Gewichtung(GetAttrColumn):
+class Gewichtung(uvclight.GetAttrColumn):
     uvclight.name('Gewichtung')
     uvclight.context(ILehrheft)
     weight = 20

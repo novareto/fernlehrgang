@@ -1,6 +1,6 @@
 <h1 tal:content="view.title"> </h1>
 <h2 class="current"> Anschrift des Unternehmens </h2>
-<div metal:use-macro="path: context/@@formmacros/template/macros/editform"> </div>
+<div metal:use-macro="macro['editform']"> </div>
 <div>
   <h2> Teilnehmer & Kursteilnehmer des Unternehmers </h2> 
   <table class="table table-striped table-bordered table-condensed">

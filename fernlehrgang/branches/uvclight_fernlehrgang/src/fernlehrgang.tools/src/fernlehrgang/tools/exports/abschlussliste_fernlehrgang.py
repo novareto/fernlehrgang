@@ -3,24 +3,22 @@
 # cklinger@novareto.de 
 
 import sys
-import grok
-
-
-from fernlehrgang import Form
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.exports.menus import ExportItems
-from fernlehrgang.lib.interfaces import IXLSExport
-from zeam.form.base import Fields, action
+import uvclight
 
 from xlwt import Workbook
+
+from dolmen.forms.base import Fields, action
+from dolmen.menu import menuentry
+from fernlehrgang import models
+from fernlehrgang.app.browser.ergebnisse import CalculateResults
+from fernlehrgang.app.lib import nN
+from fernlehrgang.app.lib.interfaces import IXLSExport
+from fernlehrgang.models.fernlehrgang import IFernlehrgang
+from fernlehrgang.tools.exports.menus import ExportItems
+from fernlehrgang.tools.exports.utils import page_query, makeZipFile, getUserEmail
+from fernlehrgang.tools.exports.versandliste_fernlehrgang import fd, versandanschrift
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker, joinedload
-from fernlehrgang import models
-from fernlehrgang.browser.ergebnisse import CalculateResults
-from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
-from fernlehrgang.lib import nN
-from fernlehrgang.exports.versandliste_fernlehrgang import fd, versandanschrift
 
 
 spalten = ('FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
@@ -171,13 +169,13 @@ def export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname):
 
 
 @menuentry(ExportItems)
-class XSLAbschlussForm(Form):
-    grok.context(IFernlehrgang)
-    grok.title('Abschlussliste Fernlehrgang')
+class XSLAbschlussForm(uvclight.Form):
+    uvclight.context(IFernlehrgang)
+    uvclight.title('Abschlussliste Fernlehrgang')
 
-    fields = Fields(IXLSExport)
+    fields = uvclight.Fields(IXLSExport)
 
-    @action(u"Export Starten")
+    @uvclight.action(u"Export Starten")
     def handle_export(self):
         data, errors = self.extractData()
         if errors:

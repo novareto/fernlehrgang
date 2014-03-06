@@ -19,10 +19,9 @@ from sqlalchemy_imageattach.context import push_store_context
 from .upload import IFileStore
 from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
+from .auth.handler import Benutzer, Users
 
-from z3c.saconfig import Session
-from z3c.saconfig.interfaces import IEngineCreatedEvent
-from zeam.form.base.markers import Marker
+from dolmen.forms.base.markers import Marker
 from zope.component import IFactory, provideUtility, getUtility
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
@@ -39,6 +38,20 @@ def located(func):
             return LocationProxy(item)
         return item
     return proxify
+
+
+class BenutzerModel(patterns.Model):
+    uvclight.context(IFernlehrgangApp)
+
+    model = Users
+    pattern = "benutzer"
+
+    @located
+    def factory():
+        return Benutzer
+
+    def arguments():
+        return dict()
 
 
 class Fernlehrgang(patterns.Model):
@@ -188,5 +201,5 @@ class Antwort(patterns.Model):
 
 def register_all(registry):
     models = frozenset((Fernlehrgang, Unternehmen, Teilnehmer, Lehrheft,
-                        Frage,  Kursteilnehmer, Antwort))
+                        Frage,  Kursteilnehmer, Antwort, BenutzerModel))
     patterns.register_models(registry, *models)
