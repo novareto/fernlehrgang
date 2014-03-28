@@ -15,12 +15,14 @@ from zope.interface import Interface, provider
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.location import ILocation
 
 from . import Base
 from .fernlehrgang import Fernlehrgang
 from .teilnehmer import Teilnehmer
 from .unternehmen import Unternehmen
 from .vocabularies import named_vocabulary
+
 
 
 LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
@@ -138,7 +140,7 @@ class IKursteilnehmer(Interface):
         )
 
 
-@implementer(IKursteilnehmer, IContent)
+@implementer(IKursteilnehmer, IContent, ILocation)
 class Kursteilnehmer(Base):
     __tablename__ = 'kursteilnehmer'
 

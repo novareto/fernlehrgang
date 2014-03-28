@@ -8,14 +8,15 @@ from uvc.composedview.components import ComposedPage, ITab
 from uvclight import Page
 from sqlalchemy import and_
 from dolmen.forms.base import Fields
-from zope.component import getMultiAdapter, getUtility
+from zope.component import getUtility
 from zope.interface import Interface, implementer
 from zope.location import locate
 from zope.dublincore.interfaces import IDCDescriptiveProperties
+from cromlech.sqlalchemy import get_session
 
-from fernlehrgang.models import Kursteilnehmer, Antwort, Lehrheft
-from fernlehrgang.models import IFernlehrgang, ILehrheft, IFrage
-from fernlehrgang.models import ITeilnehmer, ICalculateResults
+from fernlehrgang.models import Antwort, Lehrheft
+from fernlehrgang.models import IFernlehrgang, ILehrheft
+from fernlehrgang.models import ITeilnehmer
 from fernlehrgang.app.upload import Storage
 from fernlehrgang.app.browser.uploader import format_file
 from fernlehrgang.app.browser.resources import bs_calendar
@@ -37,7 +38,7 @@ class Index(uvclight.Index):
     title = u"Whatever"
 
     template = uvclight.get_template("index.cpt", __file__)
-    
+
     def getCourses(self):
         membership = IMembership(self.request.principal, None)
         if membership is not None:
@@ -55,7 +56,7 @@ class CoursePage(ComposedPage):
     results = None
     title = u"Fernlehrgag"
     description = u''
-    
+
     def update(self):
         ComposedPage.update(self)
         membership = IMembership(self.request.principal, None)
@@ -67,12 +68,12 @@ class CoursePage(ComposedPage):
         membership = IMembership(self.request.principal, None)
         if membership is not None:
             ktn = membership.get_course_member(self.context.id)
-            session = Session()
+            session = get_session('fernlehrgang')
             q = session.query(Antwort, Lehrheft).filter(
-                    and_(Antwort.kursteilnehmer_id == ktn.id,
-                        Antwort.lehrheft_id == lession_id,
-                        Lehrheft.id == lession_id,
-                        Lehrheft.vdatum <= datetime.now()))
+                and_(Antwort.kursteilnehmer_id == ktn.id,
+                     Antwort.lehrheft_id == lession_id,
+                     Lehrheft.id == lession_id,
+                     Lehrheft.vdatum <= datetime.now()))
             res = int(q.count())
             if res > 0:
                 ret = "erledigt"
@@ -89,7 +90,7 @@ class MyRegData(Page):
     uvclight.provides(ITab)
     template = uvclight.get_template('myregdata.cpt', __file__)
 
-    
+
 class MyResults(Page):
     uvclight.order(2)
     uvclight.context(CoursePage)
@@ -106,7 +107,7 @@ class MyLessons(Page):
     uvclight.require('zope.View')
     uvclight.provides(ITab)
     template = uvclight.get_template('mylessons.cpt', __file__)
-    
+
 
 class Sessions(Page):
     uvclight.order(5)
@@ -115,7 +116,7 @@ class Sessions(Page):
     uvclight.require('zope.View')
     uvclight.provides(ITab)
     template = uvclight.get_template('sessions.cpt', __file__)
-    
+
     def update(self):
         bs_calendar.need()
 
@@ -127,7 +128,7 @@ class MyDownloads(Page):
     uvclight.require('zope.View')
     uvclight.provides(ITab)
     template = uvclight.get_template('mydownloads.cpt', __file__)
-    
+
     def update(self):
         storage = Storage(self.context.context.storageid)
         locate(storage, self.context.context, '++storage++')
@@ -154,7 +155,7 @@ class QuestionRenderer(object):
 
     def namespace(self):
         return {}
-        
+
     def default_namespace(self):
         if self.context.bilder.count():
             store = getUtility(Interface, name='ImageStore')
@@ -177,7 +178,7 @@ class QuestionRenderer(object):
         template = self.modes.get(mode)
         if template is None:
             raise ValueError('No such mode %r' % mode)
-        return template.render(self)
+        return template.render(self, **self.default_namespace())
 
     @classmethod
     def batch(cls, lesson, request, name, **data):
@@ -188,7 +189,7 @@ class QuestionRenderer(object):
                 name = "editchoice"
             html = view.render(name)
             yield {
-                'id': question.frage,
+                'id': question.id,
                 'title': question.titel,
                 'render': html,
                 'idx': idx,
@@ -216,6 +217,8 @@ class LessonAnswerPage(uvclight.Index):
     uvclight.layer(IQuizzSkin)
     uvclight.require('zope.View')
 
+    template = uvclight.get_template('lessonanswerpage.cpt', __file__)
+
     title = u"Lehrheft"
     submitted = False
 
@@ -227,15 +230,17 @@ class LessonAnswerPage(uvclight.Index):
     def validate(self):
         errors = {}
         data = {}
-        
+
         # first thing : check if the user CAN answer
         # meaning : does he have access and no answers yet.
 
         questions = list(self.context.fragen)
         for question in questions:
+            an = set()
             qid = 'frage-%s' % question.id
             answer = self.request.form.get(qid)
-            an = set(answer)
+            if answer:
+                an = set(answer)
             if answer is None:
                 errors[question.id] = MISSING
             elif not an.issubset(VALUES):
@@ -249,7 +254,6 @@ class LessonAnswerPage(uvclight.Index):
         if membership is not None:
             ktn = membership.get_course_member(self.context.fernlehrgang_id)
             for frage_id, antwortschema in data.items():
-                import pdb; pdb.set_trace() 
                 ktn.antworten.append(
                     Antwort(
                         lehrheft_id=self.context.id,
@@ -260,7 +264,7 @@ class LessonAnswerPage(uvclight.Index):
                     )
                 )
         print data
-    
+
     def update(self):
         self.action = '%s/%s' % (self.url(self.context),
                                  uvclight.name.bind().get(self))
@@ -268,6 +272,7 @@ class LessonAnswerPage(uvclight.Index):
             self.submitted = True
             errors, data = self.validate()
             if not errors:
+                import pdb; pdb.set_trace() 
                 self.persist(data)
                 self.flash('thank you')
                 self.redirect(self.url(self.context))
@@ -278,7 +283,7 @@ class LessonAnswerPage(uvclight.Index):
         else:
             self.data = {}
             self.errors = {}
- 
+
 
 class MemberPage(uvclight.DefaultView):
     uvclight.context(ITeilnehmer)

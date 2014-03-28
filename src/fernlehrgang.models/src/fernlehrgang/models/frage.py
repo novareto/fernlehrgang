@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import cgi
 from cromlech.file import FileField
 from dolmen.content import IContent
 from sqlalchemy import *
@@ -152,14 +153,18 @@ class Frage(Base):
                 return self.bilder.original
 
         def fset(self, img):
-            if not isinstance(img, Marker):
+            if not isinstance(img, Marker) and not isinstance(img, unicode):
                 if img is None and self.bilder.count():
                     store = get_current_store()
                     for elm in self.bilder:
                         store.delete(elm)
                 elif img is not None:
-                    self.bilder.from_file(img)
-                    self.bilder.generate_thumbnail(height=150)
+                    store = get_current_store()
+                    if isinstance(img, cgi.FieldStorage):
+                        img.make_file()
+                        img = img.file
+                    self.bilder.from_file(img, store=store)
+                    self.bilder.generate_thumbnail(height=150, store=store)
 
         return property(fget, fset)
 
