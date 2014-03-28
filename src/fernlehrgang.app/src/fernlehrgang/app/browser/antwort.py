@@ -8,56 +8,28 @@ from datetime import datetime
 from dolmen.menu import menuentry
 
 from fernlehrgang.models import Antwort, Frage
-from uvclight import Page
 from uvclight.interfaces import IExtraInfo
-from zope.location import locate
-from uvclight.backends.patterns import DefaultModel
-from megrok.z3ctable.components import TablePage, GetAttrColumn
-from megrok.z3ctable.components import LinkColumn, Column
 from sqlalchemy import not_, and_
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base import Action, Fields
+from dolmen.forms.base import Action, Fields, INPUT, FAILURE, SUCCESS
+from dolmen.forms.base.errors import Error
+from dolmen.forms.base.utils import set_fields_data
 from dolmen.forms.composed import ComposedForm
 from dolmen.forms.table import SubTableForm, TableActions
 
-from .import Form, AddForm, DefaultView, EditForm
-from ..wsgi import IFernlehrgangSkin
+from ..wsgi import IFernlehrgangSkin, model_lookup
 from .viewlets import AddMenu, NavigationMenu
 from ..interfaces import IListing, IAntwort, IKursteilnehmer
 
 
-#@menuentry(NavigationMenu)
-class AntwortListing(TablePage):
-    uvclight.implements(IListing)
-    uvclight.context(IKursteilnehmer)
-    uvclight.name('antwort_listing')
-    uvclight.title(u'Antworten verwalten')
-    uvclight.baseclass()
-    uvclight.layer(IFernlehrgangSkin)
-
-    template = uvclight.get_template('base_listing.cpt', __file__)
-
-    label = u"Antworten"
-    description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
-
-    @property
-    def values(self):
-        rc = []
-        root = uvclight.getSite()
-        for x in self.context.antworten:
-            locate(root, x, DefaultModel)
-            rc.append(x)
-        return sorted(rc, key=lambda antwort: antwort.frage.frage)
-
-
 @menuentry(AddMenu)
-class AddAntwort(AddForm):
+class AddAntwort(uvclight.AddForm):
     uvclight.context(IKursteilnehmer)
     uvclight.title(u'Antwort')
     uvclight.layer(IFernlehrgangSkin)
-    
+
     label = u'Antwort anlegen'
-    fields = Fields(IAntwort).omit('id')
+    fields = uvclight.Fields(IAntwort).omit('id')
 
     def create(self, data):
         return Antwort(**data)
@@ -72,20 +44,15 @@ class AddAntwort(AddForm):
 
 class SaveTableAction(Action):
 
-       def __call__(self, form, content, line):
-           setattr(content, 'antwortschema',
-                   line.extractData(
-                       form.tableFields)[0].get('antwortschema', ''))
-           form.context.antworten.append(content)
-           form.redirect(form.url() + '/addantworten')
+    def __call__(self, form, content, line):
+        setattr(content, 'antwortschema',
+                line.extractData(
+                    form.tableFields)[0].get('antwortschema', ''))
+        form.context.antworten.append(content)
+        form.redirect(form.url() + '/addantworten')
 
 
-@menuentry(AddMenu)
-class AddAntworten(ComposedForm, Form):
-    uvclight.context(IKursteilnehmer)
-    uvclight.layer(IFernlehrgangSkin)
-    uvclight.title(u'Alle Antworten eingeben')
-    label = u"Alle Antworten eingeben"
+from dolmen.forms.table import TableForm
 
 
 class LHDummy(object):
@@ -94,19 +61,19 @@ class LHDummy(object):
     fragen = []
 
 
-class AddAntwortenTable(SubTableForm):
-    uvclight.title(u'Table Form')
+@menuentry(AddMenu)
+class AddAntworten(TableForm, uvclight.Form):
     uvclight.context(IKursteilnehmer)
-    uvclight.view(AddAntworten)
     uvclight.layer(IFernlehrgangSkin)
-    
-    prefix = "G"
+    uvclight.title(u'Alle Antworten eingeben')
     template = uvclight.get_template('alleantworten.cpt', __file__)
 
+    label = u"Alle Antworten eingeben"
+    tableFields = uvclight.Fields(IAntwort).omit('id', 'datum', 'system')
+    tableFields['antwortschema'].mode = INPUT
     ignoreContent = False
-    tableFields = Fields(IAntwort).omit('id', 'datum', 'system')
-    tableActions = TableActions(SaveTableAction('Speichern'))
-
+    ignoreRequest = False
+    
     def checkAntwort(self, lehrheft_id, frage_id):
         for antwort in self.context.antworten:
             if antwort.frage_id == frage_id and antwort.lehrheft_id == lehrheft_id:
@@ -115,7 +82,7 @@ class AddAntwortenTable(SubTableForm):
     def getItems(self):
         rc = []
         lehrhefte = self.lehrhefte
-        lh_id = self.request.get('lh_id') or self.request.get('select_lehrhefte')
+        lh_id = self.request.form.get('lh_id') or self.request.form.get('select_lehrhefte')
         if lh_id:
             lehrhefte = [lh for lh in lehrhefte if str(lh.id) == lh_id]
         for lehrheft in lehrhefte:
@@ -125,11 +92,12 @@ class AddAntwortenTable(SubTableForm):
                     rc.append(antwort)
                 else:
                     rc.append(Antwort(
-                        lehrheft_id = lehrheft.id,
-                        frage_id = frage.id, 
-                        antwortschema = u"",
-                        datum = datetime.now(),
-                        system = u"FernlehrgangApp", 
+                        lehrheft_id=lehrheft.id,
+                        frage_id=frage.id,
+                        antwortschema=u"",
+                        datum=datetime.now(),
+                        system=u"FernlehrgangApp",
+                        kursteilnehmer=self.context,
                         ))
         return rc
 
@@ -139,20 +107,49 @@ class AddAntwortenTable(SubTableForm):
 
     @property
     def script(self):
-        return "<script> var base_url = '%s/addantworten'; </script>" % self.url()
+        return "<script> var base_url = '%s/addantworten'; </script>" % self.url(self.context)
 
+    @uvclight.action('Speichern')
+    def handle_save(self):
+        data, errors = self.extractData(self.fields)
+        if errors:
+            self.errors = errors
+            return FAILURE
 
-class Index(DefaultView):
+        self.updateLines(mark_selected=True)
+
+        altered = []
+        for l in self.lines:
+            if l.selected:
+                line_data, line_errors = l.extractData(self.tableFields.select("antwortschema"))
+                if line_errors:
+                    errors.extend(line_errors)
+                else:
+                    altered.append((l.getContent(), line_data))
+
+        if not altered:
+            errors.append(Error('Please, select at least one entry', self.prefix))
+
+        if errors:
+            self.errors = errors
+            return FAILURE
+        
+        for line, line_data in altered:
+            set_fields_data(self.tableFields, line, line_data)
+
+        return SUCCESS
+
+class Index(uvclight.DefaultView):
     uvclight.context(IAntwort)
     uvclight.title(u'Index')
     uvclight.layer(IFernlehrgangSkin)
-    
+
     title = label = u"Antwort"
-    description = u"" #Hier können Sie Deteils zu Ihren Antworten ansehen."
+    description = u""  # Hier können Sie Deteils zu Ihren Antworten ansehen."
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(EditForm):
+class Edit(uvclight.EditForm):
     uvclight.context(IAntwort)
     uvclight.title(u'Edit')
     uvclight.name('edit')
@@ -167,6 +164,12 @@ class Edit(EditForm):
 
     def update(self):
         self.context.datum = datetime.now()
+
+
+from .crud import Delete
+class Delete(Delete):
+    uvclight.context(IAntwort)
+    uvclight.layer(IFernlehrgangSkin)
 
 
 ### ExtraInfo
@@ -186,29 +189,32 @@ class MoireInfoOnKursteilnehmer(uvclight.Viewlet):
         return self.script
 
 
-class JSON_Views(uvclight.JSON):
+class Context_Fragen(uvclight.JSON):
     """ Ajax basiertes Wechseln der Jahre"""
     uvclight.context(IKursteilnehmer)
+    uvclight.name('context_fragen')
 
-    def context_fragen(self, lehrheft_id=None):
+    def render(self):
+        lehrheft_id = self.request.form.get('lehrheft_id', None)
         rc = []
         li = []
         session = get_session('fernlehrgang')
-        i=0
+        i = 0
         for antwort in [x for x in self.context.antworten]:
             li.append(antwort.frage.id)
         for id, nr, titel in session.query(
-                Frage.id, Frage.frage, Frage.titel).filter(
-                    and_(Frage.lehrheft_id == int(lehrheft_id),
-                    not_(Frage.id.in_(li)))).all():
+            Frage.id, Frage.frage, Frage.titel).filter(
+                and_(Frage.lehrheft_id == int(lehrheft_id),
+                not_(Frage.id.in_(li)))
+            ).all():
             rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s - %s </option>' %(i, id, nr, titel))
-            i+=1
+            i += 1
         return {'fragen': ''.join(rc)}
 
 
 ### Spalten
 
-class Link(LinkColumn):
+class Link(uvclight.LinkColumn):
     uvclight.name('Nummer')
     uvclight.context(IKursteilnehmer)
     weight = 5
@@ -221,7 +227,7 @@ class Link(LinkColumn):
         return u"Antwort auf Frage '%s'; %s" %(item.frage.frage, item.frage.titel)
 
 
-class Lehrheft(Column):
+class Lehrheft(uvclight.Column):
     uvclight.name('Lehrheft')
     uvclight.context(IKursteilnehmer)
     weight = 9
@@ -231,7 +237,7 @@ class Lehrheft(Column):
         return item.frage.lehrheft.nummer
 
 
-class Antworten(GetAttrColumn):
+class Antworten(uvclight.GetAttrColumn):
     uvclight.name('Antworten')
     uvclight.context(IKursteilnehmer)
     weight = 10
@@ -240,13 +246,15 @@ class Antworten(GetAttrColumn):
 
 
 @menuentry(NavigationMenu)
-class OverviewAntworten(Page):
+class OverviewAntworten(uvclight.Page):
     uvclight.implements(IListing)
     uvclight.context(IKursteilnehmer)
     uvclight.name('antwort_listing')
     uvclight.title(u'Antworten verwalten')
     uvclight.layer(IFernlehrgangSkin)
-    
+
+    template = uvclight.get_template('overviewantworten.cpt', __file__)
+
     label = title = u"Antworten"
     description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
 

@@ -2,9 +2,10 @@
 
 import uvclight
 from uvclight import Page, Index
-from zope.interface import Interface
+from zope.interface import Interface, implementer
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from ..interfaces import IFernlehrgangApp
+from uvc.design.canvas.views import IHomepage
 
 
 class FaviconIco(uvclight.View):
@@ -18,6 +19,7 @@ class FaviconIco(uvclight.View):
         return "BLA"
 
 
+@implementer(IHomepage)
 class Index(Index):
     uvclight.context(IFernlehrgangApp)
     title = u"Fernlehrgang"

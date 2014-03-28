@@ -93,7 +93,7 @@ class Edit(uvclight.EditForm):
     description = u"Hier können Sie die Frage bearbeiten."
 
     fields = uvclight.Fields(IFrage).omit('id')
-    fields['frage'].mode = 'hiddendisplay'
+    #fields['frage'].mode = 'hiddendisplay'
 
 
 ### Spalten

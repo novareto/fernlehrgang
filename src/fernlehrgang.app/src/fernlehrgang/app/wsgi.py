@@ -2,7 +2,9 @@
 
 import os
 import transaction
+import dawnlight
 
+from uvclight import xmlrpc
 from uvclight.backends.patterns import TrajectLookup
 from cromlech.browser import IRequest, IPublicationRoot
 from cromlech.configuration.utils import load_zcml
@@ -16,7 +18,7 @@ from cromlech.webob import request
 from sqlalchemy_imageattach import context as store
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 from webob.dec import wsgify
-from zope.component import getGlobalSiteManager
+from zope.component import getMultiAdapter, getGlobalSiteManager
 from zope.component.hooks import setSite
 from zope.interface import Interface, implementer, alsoProvides
 from zope.location import Location
@@ -30,9 +32,10 @@ from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
 from uvclight.auth import secured, Principal
 from cromlech.wsgistate import WsgistateSession
+from uvc.themes.dguv import IDGUVRequest
 
 
-class IFernlehrgangSkin(IRequest):
+class IFernlehrgangSkin(IDGUVRequest):
     pass
 
 
@@ -52,7 +55,7 @@ class UsersAuth(Users):
     def get(self, login, default=None):
         user = super(UsersAuth, self).get(login, default)
         if user:
-            return user.password
+            return user
 
     def getRoles(self, login):
         user = Users.get(self, login, None)
@@ -62,6 +65,18 @@ class UsersAuth(Users):
 
 Benutzer = UsersAuth()
 
+
+@implementer(IFernlehrgangApp)
+class xmlrpc_factory(object):
+
+    def __init__(self, global_conf, dsn):
+        self.engine = create_and_register_engine(dsn, 'fernlehrgang')
+        self.engine.bind(models.Base)
+        self.handler = xmlrpc.XMLRPCApp(self, model_lookup)
+
+    def __call__(self, environ, start_response):
+        with SQLAlchemySession(self.engine):
+            return self.handler(environ, start_response)
 
 
 class Application(object):

@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 
 from cromlech.sqlalchemy import get_session
 from fernlehrgang.models.user import User
-from zope import component, interface, schema
 from zope.location import LocationProxy, locate
-from dolmen.authentication import UserLoginEvent
 
 
 class Users(object):
@@ -37,7 +35,7 @@ class Users(object):
         return None
 
     def add(self, username, email, password, real_name, role):
-        if not account in self:
+        if not username in self:
             session = get_session('fernlehrgang')
             user = User(
                 login=username, email=email, password=password,

@@ -15,13 +15,11 @@ from zope.component import getUtility
 from zope.interface import Interface, implementer
 from zope.security import checkPermission
 from zope.security.checker import CheckerPublic
-from uvc.tb_layout.menus import ContextualActionsMenu
 
 from . import AddForm, EditForm, pagetemplate
 from ..interfaces import IListing, IFernlehrgang, IFrage, ILehrheft
 from ..wsgi import IFernlehrgangSkin, model_lookup
 from .viewlets import AddMenu, NavigationMenu
-
 
 
 def check_object_permission(obj, permission):
@@ -107,7 +105,6 @@ class EmbeddedFrage(uvclight.View):
             self.thumb = self.context.thumbnail.locate()
   
 
-#@menuentry(ContextualActionsMenu, order=10)
 class LehrheftIndex(uvclight.Page):
     uvclight.context(ILehrheft)
     uvclight.name('index')
@@ -126,7 +123,6 @@ class LehrheftIndex(uvclight.Page):
             yield frage.render()
 
 
-#@menuentry(ContextualActionsMenu, order=20)
 class Edit(uvclight.EditForm):
     uvclight.context(ILehrheft)
     uvclight.title(u'Edit')

@@ -1,6 +1,6 @@
 <span tal:replace="structure view.script"/>
 
-<form action="." tal:attributes="action request.URL" method="post"
+<form action="." tal:attributes="action request.url" method="post"
       enctype="multipart/form-data"
       i18n:domain="zeam.form.base">
 
@@ -22,7 +22,7 @@
   <div class="control-group">
     <label class="control-label" for="select01">Lehrheft</label>
     <div class="controls">
-      <select name="select_lehrhefte" id="select_lehrheft" tal:define="dlhid request.get('lh_id')">
+      <select name="select_lehrhefte" id="select_lehrheft" tal:define="dlhid request.form.get('lh_id')">
         <option tal:repeat="lh view.lehrhefte" 
             tal:attributes="value lh.id; selected dlhid == str(lh.id) and 'selected' or None"> <span tal:content="lh.title"/> </option>
       </select>

@@ -51,10 +51,10 @@ class AddUser(Form):
         if errors:
             self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
             return
-        users = component.getUtility(IAuthenticatorPlugin, 'principals')
+        users = self.context 
         users.add(data['login'], data['email'],
                   data['password'], data['real_name'], data['role'])
-        self.redirect(self.url(grok.getSite()) + '/benutzer')
+        self.redirect(self.url(uvclight.getSite()) + '/benutzer')
 
 
 class EditUser(Form): 

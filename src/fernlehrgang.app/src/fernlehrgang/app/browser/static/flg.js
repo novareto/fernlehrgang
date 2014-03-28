@@ -3,7 +3,7 @@ $(document).ready(function() {
   $('div.subform table').addClass('table table-striped table-bordered table-condensed');
   $('div.subform form table select').attr('disabled', 'disabled');
 
-  $('#field-form-field-nr').appendFieldTo('#field-form-field-strasse');
+//  $('#field-form-field-nr').appendFieldTo('#field-form-field-strasse');
 //  $('#field-form-field-ort').appendFieldTo('#field-form-field-plz');
 
   var v1 = $("#form-field-lehrheft_id :selected").val();
@@ -13,10 +13,12 @@ $(document).ready(function() {
      }
   $("#form-field-lehrheft_id").change(function()
      {
+         console.log('I AM E')
          $('#form-field-frage_id').removeAttr('disabled');
          var value = $(this).val();
          $.getJSON(base_url+'/context_fragen', {'lehrheft_id': value}, function(d)
             {
+                alert('I AH MEREH');
                 $('#form-field-frage_id').html(d.fragen);
             });
      });

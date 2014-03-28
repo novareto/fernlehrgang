@@ -1,19 +1,52 @@
-<ul class="nav navbar-nav">
 <tal:globalmenu define="flgs viewlet.flgs" condition="flgs">
-<tal:entries repeat="flg sorted(flgs.keys())">
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown">
-  <span tal:replace="flg"> </span> 
-  <b class="caret"> </b>
-</a>
-<ul class="dropdown-menu">
-  <li tal:repeat="item flgs[flg]">
-  <a href="" tal:attributes="href item.url">
-    <span tal:content="item.title" > </span>
-  </a>
-  </li>
-</ul>
-</li>
-</tal:entries>
+  <div class="col-md-8">
+    <div class="fm-container">
+      <div class="fm-button" style="display: none;">
+	<span class="fm-bar"></span>
+	<span class="fm-bar"></span>
+	<span class="fm-bar"></span>
+      </div>
+      <div class="menu flexmenu fm-offcanvas fm-lg">
+	<ul class="icons-wrapper">
+	  <li tal:repeat="flg sorted(flgs.keys())">
+	    <a class="globalmenu-year"
+	       tal:attributes="rel 'year-%s' % flg">
+	      <span class="icon">
+		<i class="glyphicon glyphicon-book" aria-hidden="true"></i>
+	      </span>
+	      <span tal:content="flg" > </span>
+	    </a>
+	  </li>
+	</ul>
+      </div>
+    </div>
+  </div>
+  <div id="global-submenus">
+    <div class="year-links" name="top" style="display: none;"
+	 tal:attributes="id 'year-%s' % year" tal:repeat="year flgs.keys()">
+      <div class="container">
+	<div class="nav-selectmenu">
+	  <ul>
+	    <li tal:repeat="entry flgs[year]"
+		tal:attributes="class repeat['entry'].end and 'last' or ''">
+	      <a tal:attributes="href entry.url">
+		<span class="title" tal:content="entry.title" />
+	      </a>
+	    </li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+  </div>
 </tal:globalmenu>
-</ul>
+
+<script language="javascript">
+  $('.globalmenu-year').click(function(e) {
+    e.preventDefault();
+    $('.globalmenu-year').parent('li').removeClass('active');
+    $(this).parent('li').addClass('active');
+    var target = $(this).attr('rel');
+    $('.year-links').hide();
+    $('#' + target).show();
+  })
+</script>
