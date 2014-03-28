@@ -18,7 +18,7 @@
         <td tal:content="lh.nummer"> </td>
         <td tal:content="lh.vdatum"> </td>
         <td>
-	  <a tal:attributes="href string:${context.context.id}/lehrheft/${lh.id}/answer">
+          <a tal:attributes="href string:${view.application_url()}/course/${context.context.id}/lehrheft/${lh.id}/answer">
 	    <span tal:content="lh.title" />
 	  </a>
 	</td>

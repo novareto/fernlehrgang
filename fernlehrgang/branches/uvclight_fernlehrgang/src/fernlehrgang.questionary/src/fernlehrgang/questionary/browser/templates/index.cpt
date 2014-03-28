@@ -14,7 +14,7 @@ Herzlich willkommen im Onlineportal des Fernlehrgangs. Hier können Sie
   <legend> Ihre Kurseangebote </legend>
   <ul>
     <li tal:repeat="flg view.getCourses()">
-    <a href="#" tal:attributes="href string: course/${flg.id}"> <span tal:content="string: ${flg.titel} ${flg.jahr}"> </span> </a>
+    <a href="#" tal:attributes="href string: ${view.application_url()}/course/${flg.id}"> <span tal:content="string: ${flg.titel} ${flg.jahr}"> </span> </a>
     </li>
   </ul>
 </fieldset>

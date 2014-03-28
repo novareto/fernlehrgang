@@ -10,7 +10,6 @@
   <include package="dolmen.layout" file="meta.zcml" />
 
   <include package="uvclight" />
-  <include package="uvc.tb_layout" />
   <include package="dolmen.menu" />
   <include package="dolmen.request" />
   <include package="dolmen.content" />

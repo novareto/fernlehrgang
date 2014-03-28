@@ -39,7 +39,7 @@ class TeilnehmerSuche(uvclight.Form):
     results = []
 
     def getResults(self):
-        root = grok.getSite()
+        root = uvclight.getSite()
         lfs = lieferstopps(None)
         for kursteilnehmer, item in self.results:
             model_lookup.patterns.locate(root, item, DefaultModel)

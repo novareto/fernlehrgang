@@ -188,5 +188,7 @@ class Teilnehmer(Base):
     def title(self):
         return "%s %s" % (self.name, self.vorname)
 
+    password = passwort
+
     def __repr__(self):
         return "<Teilnehmer(id='%s', name='%s')>" % (self.id, self.name)

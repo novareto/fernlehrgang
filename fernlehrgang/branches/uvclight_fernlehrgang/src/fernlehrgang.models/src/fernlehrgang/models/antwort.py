@@ -15,6 +15,7 @@ from zope.interface import implementer
 from zope.schema import *
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.location import ILocation
 
 from . import Base
 from .vocabularies import named_vocabulary
@@ -78,7 +79,7 @@ class IAntwort(Interface):
         )
 
 
-@implementer(IAntwort, IContent)
+@implementer(IAntwort, IContent, ILocation)
 class Antwort(Base):
     __tablename__ = 'antwort'
     __table_args__ = (

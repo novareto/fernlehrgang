@@ -58,3 +58,8 @@ class User(Base):
     @property
     def __content_type__(self):
         return self.__tablename__
+
+    def getEmail(self):
+        if self.email:
+            return self.email
+        return ""
