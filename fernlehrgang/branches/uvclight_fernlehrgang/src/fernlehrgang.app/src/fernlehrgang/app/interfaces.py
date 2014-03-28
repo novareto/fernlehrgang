@@ -39,9 +39,9 @@ class IFernlehrgangApp(Interface):
 def lehrheft_vocab(context):    
     rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen',
                      'Bitte eine Auswahl treffen')]
-    if antwort.IAntwort.providedBy(context):
+    if IAntwort.providedBy(context):
         fernlehrgang = context.kursteilnehmer.fernlehrgang
-    if kursteilnehmer.IKursteilnehmer.providedBy(context):
+    if IKursteilnehmer.providedBy(context):
         fernlehrgang = context.fernlehrgang
     for lehrheft in fernlehrgang.lehrhefte:
         value = "%s - %s" % (lehrheft.nummer, lehrheft.titel)
@@ -54,9 +54,9 @@ def fragen_vocab(context):
     session = get_session('fernlehrgang')
     rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen',
                      'Bitte eine Auswahl treffen')]
-    if antwort.IAntwort.providedBy(context):
+    if IAntwort.providedBy(context):
         fernlehrgang = context.kursteilnehmer.fernlehrgang
-    if kursteilnehmer.IKursteilnehmer.providedBy(context):
+    if IKursteilnehmer.providedBy(context):
         fernlehrgang = context.fernlehrgang
     for lehrheft in fernlehrgang.lehrhefte:
         for frage in lehrheft.fragen: 

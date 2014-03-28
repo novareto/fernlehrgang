@@ -4,24 +4,19 @@
 
 import time
 import json
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import uvclight
 
 from dolmen.menu import menuentry
 from fernlehrgang.models import Fernlehrgang
-from uvclight import Page
-from zope.location import LocationProxy 
-from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
-from dolmen.forms.base import Fields
+from zope.location import LocationProxy
 
-from . import AddForm, DefaultView, EditForm, pagetemplate
 from ..interfaces import IFernlehrgang, IFernlehrgangApp
 from ..wsgi import IFernlehrgangSkin, model_lookup
 from .resources import bs_calendar
-from .viewlets import AddMenu, NavigationMenu, ObjectActionMenu
+from .viewlets import AddMenu, NavigationMenu
 from cromlech.sqlalchemy import get_session
 from uvclight.backends.patterns import DefaultModel
-from uvc.tb_layout.menus import ContextualActionsMenu
 
 
 @menuentry(NavigationMenu, order=-1)
@@ -37,7 +32,8 @@ class FernlehrgangListing(uvclight.TablePage):
     label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
 
-    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
+    cssClasses = {
+        'table': 'table table-striped table-bordered table-condensed'}
     status = None
 
     @property
@@ -50,24 +46,27 @@ class FernlehrgangListing(uvclight.TablePage):
 
 
 @menuentry(AddMenu)
-class AddFernlehrgang(AddForm):
+class AddFernlehrgang(uvclight.AddForm):
     uvclight.name('add-Fernlehrgang')
     uvclight.context(IFernlehrgangApp)
     uvclight.title(u'Fernlehrgang')
     uvclight.layer(IFernlehrgangSkin)
-    
+
     title = u'Fernlehrgang'
     label = u'Fernlehrgang anlegen'
     description = u""
 
-    fields = Fields(IFernlehrgang).omit('id')
+    fields = uvclight.Fields(IFernlehrgang).omit('id')
 
     def create(self, data):
-        return Fernlehrgang(**data)
+        root = uvclight.getSite()
+        flg = Fernlehrgang(**data)
+        model_lookup.patterns.locate(root, flg, DefaultModel)
+        return flg
 
-    def add(self, object):
+    def add(self, obj):
         session = get_session('fernlehrgang')
-        session.add(object)
+        session.add(obj)
 
     def nextURL(self):
         self.flash(u'Der Fernlehrgang wurde erfolgreich angelegt.')
@@ -100,14 +99,15 @@ class SessionsFeeder(uvclight.View):
                 "start": ts_start,
                 "end": ts_end,
                 }
-            
-        
+
     def render(self):
         result = {
             "success": 1,
             "result": list(self.sessions),
             }
-        self.response.setHeader('Content-Type', 'application/json; charset=utf-8')
+        self.response.setHeader(
+            'Content-Type',
+            'application/json; charset=utf-8')
         return json.dumps(result)
 
 
@@ -121,37 +121,35 @@ class Sessions(uvclight.Page):
     def update(self):
         bs_calendar.need()
 
-    
-#@menuentry(ContextualActionsMenu)
+
 @menuentry(NavigationMenu, order=-2)
-class FernlehrgangIndex(DefaultView):
+class FernlehrgangIndex(uvclight.DefaultView):
     uvclight.context(IFernlehrgang)
     uvclight.layer(IFernlehrgangSkin)
     uvclight.title('Index')
     uvclight.name('index')
-    
-    fields = Fields(IFernlehrgang).omit('id')
-    
+
+    fields = uvclight.Fields(IFernlehrgang).omit('id')
+
     @property
     def label(self):
         return u"Fernlehrgang: %s (%s)" % (
             self.context.titel, self.context.id)
 
 
-#@menuentry(ContextualActionsMenu)
-class Edit(EditForm):
+class Edit(uvclight.EditForm):
     uvclight.title(u'Bearbeiten')
     uvclight.context(IFernlehrgang)
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
-    fields = Fields(IFernlehrgang).omit('id')
+    fields = uvclight.Fields(IFernlehrgang).omit('id')
 
 
 ### Spalten
 class ID(uvclight.GetAttrColumn):
     uvclight.name('Id')
     uvclight.context(IFernlehrgangApp)
-    weight = 5 
+    weight = 5
     header = u"Id"
     attrName = u"id"
 
@@ -173,4 +171,3 @@ class Jahr(uvclight.GetAttrColumn):
     weight = 20
     header = u"Jahr"
     attrName = u"jahr"
-

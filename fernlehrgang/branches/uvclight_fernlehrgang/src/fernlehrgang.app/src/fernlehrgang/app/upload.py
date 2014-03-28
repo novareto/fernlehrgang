@@ -68,7 +68,7 @@ class Storage(Location):
     def decode(value):
         return base64.urlsafe_b64decode(value)
     
-    def __init__(self, id, root="/home/novareto/storage"):
+    def __init__(self, id, root="/home/novareto/fernlehrgang/uvclight"):
         self.id = id
 
         storage = create_directory(os.path.join(root, id))

@@ -22,7 +22,7 @@ class TeilnehmerAPI(uvclight.REST):
         branche = ""
         un_klasse = ""
         if kt_id:
-            for ktn in context.kursteilnehmer: 
+            for ktn in context.kursteilnehmer:
                 if ktn.id == int(kt_id):
                     branche = ktn.branche
                     un_klasse = ktn.un_klasse
@@ -30,24 +30,21 @@ class TeilnehmerAPI(uvclight.REST):
         if context.geburtsdatum:
             geburtsdatum = context.geburtsdatum.strftime('%d.%m.%Y')
         teilnehmer = dict(
-            anrede = context.anrede,
-            titel = context.titel,
-            vorname = context.vorname,
-            name = context.name,
-            geburtsdatum = geburtsdatum,
-            strasse = context.strasse,
-            nr = context.nr,
-            plz = context.plz,
-            ort = context.ort,
-            email = context.email,
-            un_klasse = un_klasse,
-            branche = branche,
-            kompetenzzentrum = context.kompetenzzentrum,
+            anrede=context.anrede,
+            titel=context.titel,
+            vorname=context.vorname,
+            name=context.name,
+            geburtsdatum=geburtsdatum,
+            strasse=context.strasse,
+            nr=context.nr,
+            plz=context.plz,
+            ort=context.ort,
+            email=context.email,
+            un_klasse=un_klasse,
+            branche=branche,
+            kompetenzzentrum=context.kompetenzzentrum,
             )
-        print "GET"
-        print teilnehmer
         return json.dumps(teilnehmer)
-
 
     def PUT(self):
         teilnehmer = self.context
@@ -76,11 +73,10 @@ class KursteilnehmerAPI(uvclight.REST):
         li = [adapter.summary(), adapter.lehrhefte()]
         return json.dumps(li)
 
-
     def PUT(self):
         kursteilnehmer = self.context
         data = json.loads(self.body)
         data['datum'] = datetime.datetime.strptime(data['datum'], "%d.%m.%Y")
         antwort = Antwort(**data)
         kursteilnehmer.antworten.append(antwort)
-        return antwort.id 
+        return antwort.id

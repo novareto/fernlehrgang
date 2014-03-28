@@ -1,0 +1,19 @@
+<tal:with-submenu condition="manager.viewlets">
+  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+    <span class="glyphicon glyphicon-user"></span>
+    <span tal:replace="manager.username" />
+    <b class="caret"></b>
+  </a>
+  <ul class="dropdown-menu">
+    <li tal:repeat="viewlet manager.viewlets">
+      <tal:entry tal:replace="structure viewlet.render()" />
+    </li>
+  </ul>
+</tal:with-submenu>
+
+<tal:no-submenu condition="not manager.viewlets">
+  <a tal:attributes="href manager.standalone()">
+    <span class="glyphicon glyphicon-user"></span>
+    <span tal:replace="manager.username" />
+  </a>
+</tal:no-submenu>

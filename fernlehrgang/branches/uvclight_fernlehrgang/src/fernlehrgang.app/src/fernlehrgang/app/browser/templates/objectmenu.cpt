@@ -1,13 +1,15 @@
-<ul tal:condition="viewlet.actions and viewlet.available()"
-  tal:attributes="id viewlet.id; class string: nav nav-pills">
+<ul tal:condition="manager.viewlets"
+    tal:attributes="id manager.id; class manager.menu_class">
   <li class="dropdown">
-  <a class="dropdown-toggle" data-toggle="dropdown">
-    <span tal:content="viewlet.title" tal:condition="viewlet.title"> </span> <b class="caret"></b>
-  </a>
-  <ul class="dropdown-menu">
-    <li tal:repeat="action viewlet.actions">
-    <a tal:attributes="href action.url; title action.title;" tal:content="action.title"> </a>
-    </li>
-  </ul>
+    <a class="dropdown-toggle" data-toggle="dropdown">
+      <span tal:content="manager.title" tal:condition="manager.title" />
+      <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+      <li tal:repeat="action manager.viewlets">
+	<a tal:attributes="href action.url; title action.title;"
+	   tal:content="action.title" />
+      </li>
+    </ul>
+  </li>
 </ul>
-

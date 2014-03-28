@@ -20,6 +20,8 @@ class LogoutMI(uvclight.MenuItem):
     uvclight.title(u"Abmelden")
     uvclight.menu(IPersonalPreferences)
 
+    icon = "glyphicons unlock"
+    
     @property
     def action(self):
         return self.view.application_url() + '/logout'

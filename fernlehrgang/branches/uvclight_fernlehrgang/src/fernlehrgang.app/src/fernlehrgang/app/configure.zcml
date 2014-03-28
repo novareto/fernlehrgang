@@ -8,12 +8,14 @@
   <include package="dolmen.layout" file="meta.zcml" />
 
   <include package="uvclight" />
-  <include package="uvc.tb_layout" />
+  <include package="uvc.themes.dguv" />
   <include package="dolmen.menu" />
   <include package="dolmen.request" />
   <include package="dolmen.content" />
   <include package="dolmen.forms.ztk" />
   <include package="dolmen.forms.crud" />
+  <include package="dolmen.forms.table" />
+  <include package="dolmen.widget.file" />
   <include package="zope.security" />
 
   <include package="dolmen.view" file="meta.zcml" />
