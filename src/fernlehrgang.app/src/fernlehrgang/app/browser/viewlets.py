@@ -8,9 +8,10 @@ from dolmen.message.utils import receive as receive_messages
 from fernlehrgang.models import Fernlehrgang
 from plone.memoize import ram
 from time import time
+from uvc.design.canvas.menus import *
 from uvclight import MenuItem
 from uvclight.interfaces import IAboveContent, IPageTop, IHeaders
-from uvclight.interfaces import IPersonalPreferences, IContextualActionsMenu
+from uvclight.interfaces import IPersonalMenu, IContextualActionsMenu
 from zope.i18n import translate
 from zope.interface import Interface, implementer
 
@@ -53,16 +54,6 @@ class GlobalMenuViewlet(uvclight.Viewlet):
 ## Object Menu
 #
 
-@implementer(IContextualActionsMenu)
-class ContextualActionsMenu(menu.Menu):
-    uvclight.name('contextualactionsmenu')
-    uvclight.title(u"Actions")
-    
-    template = uvclight.get_template('objectmenu.cpt', __file__)
-    menu_class = u'nav nav-pills pull-right'
-    css = "actions_menu"
-
-
 class ObjectActionMenuViewlet(uvclight.Viewlet):
     uvclight.name('contextualactions')
     uvclight.title('Actions')
@@ -84,17 +75,6 @@ class ObjectActionMenuViewlet(uvclight.Viewlet):
 ## Add Menu
 #
 
-class AddMenu(menu.Menu):
-    uvclight.name('uvcsite-addmenu')
-    uvclight.context(Interface)
-    uvclight.title(u'Hinzufügen')
-    uvclight.layer(IFernlehrgangSkin)
-
-    template = uvclight.get_template('addmenutemplate.cpt', __file__)
-
-    menu_class = u'nav nav-pills pull-right'
-    css = "addmenu"
-
 
 class AddMenuViewlet(uvclight.Viewlet):
     uvclight.context(Interface)
@@ -115,37 +95,6 @@ class AddMenuViewlet(uvclight.Viewlet):
 ## Personal menu
 #
 
-@implementer(IPersonalPreferences)
-class PersonalMenu(menu.Menu):
-    uvclight.name('personal')
-    uvclight.title('Personal menu')
-    uvclight.context(Interface)
-    uvclight.layer(IFernlehrgangSkin)
-    template = uvclight.get_template('personal.cpt', __file__) 
-
-    menu_class = u'nav nav-tabs'
-    css = "navigation"
-
-
-class UserMenu(menu.Menu):
-    uvclight.name('useractions')
-    uvclight.title('User actions')
-    uvclight.context(Interface)
-    uvclight.layer(IFernlehrgangSkin)
-    template = uvclight.get_template('useractions.cpt', __file__) 
-
-    menu_class = u'nav nav-tabs'
-    css = "navigation"
-    
-    def standalone(self):
-        return self.request.application_url + "/meine_daten"
-    
-    @property
-    def username(self):
-        principal = uvclight.current_principal()
-        return principal.description or principal.id
-
-    
 class PersonalMenuViewlet(uvclight.Viewlet):
     uvclight.context(Interface)
     uvclight.viewletmanager(IPageTop)
@@ -163,7 +112,7 @@ class UserName(MenuItem):
     """
     uvclight.name('myname')
     uvclight.context(Interface)
-    uvclight.menu(IPersonalPreferences)
+    uvclight.menu(IPersonalMenu)
     uvclight.order(300)
     uvclight.layer(IFernlehrgangSkin)
 
@@ -199,16 +148,6 @@ class ClickMe(MenuItem):
 #
 ## Navigation
 #
-
-class NavigationMenu(menu.Menu):
-    uvclight.name('navigation')
-    uvclight.title('Navigation')
-    uvclight.context(Interface)
-    uvclight.layer(IFernlehrgangSkin)
-    template = uvclight.get_template('navigationmenutemplate.cpt', __file__) 
-
-    menu_class = u'nav nav-tabs'
-    css = "navigation"
 
 
 class NavigationMenuViewlet(uvclight.Viewlet):

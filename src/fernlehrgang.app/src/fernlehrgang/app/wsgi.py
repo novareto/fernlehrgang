@@ -6,32 +6,35 @@ import dawnlight
 
 from uvclight import xmlrpc
 from uvclight.backends.patterns import TrajectLookup
+from webob.dec import wsgify
+
 from cromlech.browser import IRequest, IPublicationRoot
 from cromlech.configuration.utils import load_zcml
-from cromlech.dawnlight.directives import traversable
 from cromlech.dawnlight import DawnlightPublisher, ViewLookup
 from cromlech.dawnlight import view_locator, query_view
+from cromlech.dawnlight.directives import traversable
 from cromlech.security import Interaction
 from cromlech.security import unauthenticated_principal
 from cromlech.sqlalchemy import create_and_register_engine, SQLAlchemySession
 from cromlech.webob import request
+from cromlech.webob.request import Request
+from cromlech.wsgistate import WsgistateSession
+from cromlech.i18n.utils import setLanguage
+
 from sqlalchemy_imageattach import context as store
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
-from webob.dec import wsgify
+
 from zope.component import getMultiAdapter, getGlobalSiteManager
 from zope.component.hooks import setSite
 from zope.interface import Interface, implementer, alsoProvides
 from zope.location import Location
 from zope.security.proxy import removeSecurityProxy
-from fernlehrgang.app.auth.handler import Users
-from cromlech.webob.request import Request
 
 from .trajects import register_all
-from .auth.handler import Benutzer
+from .auth.handler import Benutzer, Users
 from .interfaces import IFernlehrgangApp
 from fernlehrgang import models
 from uvclight.auth import secured, Principal
-from cromlech.wsgistate import WsgistateSession
 from uvc.themes.dguv import IDGUVRequest
 
 
@@ -89,6 +92,7 @@ class Application(object):
             model_lookup=model_lookup, view_lookup=view_lookup)
 
     def __call__(self, environ, start_response):
+        setLanguage('de-DE')
         request = Request(environ)
 
         @secured(Benutzer, "PLEASE Login")

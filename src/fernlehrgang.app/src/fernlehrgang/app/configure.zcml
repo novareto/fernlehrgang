@@ -8,6 +8,7 @@
   <include package="dolmen.layout" file="meta.zcml" />
 
   <include package="uvclight" />
+  <include package="uvc.design.canvas" />
   <include package="uvc.themes.dguv" />
   <include package="dolmen.menu" />
   <include package="dolmen.request" />
@@ -34,5 +35,7 @@
   <grok:grok package="fernlehrgang.app" />
   <include package="fernlehrgang.tools" />
   <grok:grok package="dolmen.location" />
+  <grok:grok package="dolmen.clockwork" />
+  <grok:grok package="cromlech.i18n" />
 
 </configure>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import uvclight
-from uvclight.interfaces import IFooterMenu, IPersonalPreferences
+from uvclight.interfaces import IFooterMenu, IPersonalMenu
 from zope.interface import Interface
 
 
@@ -18,7 +18,7 @@ class KontaktMI(uvclight.MenuItem):
 class LogoutMI(uvclight.MenuItem):
     uvclight.context(Interface)
     uvclight.title(u"Abmelden")
-    uvclight.menu(IPersonalPreferences)
+    uvclight.menu(IPersonalMenu)
 
     icon = "glyphicons unlock"
     
