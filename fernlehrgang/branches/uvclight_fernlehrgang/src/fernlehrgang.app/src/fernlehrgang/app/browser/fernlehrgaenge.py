@@ -144,7 +144,7 @@ class Edit(uvclight.EditForm):
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
     fields = uvclight.Fields(IFernlehrgang).omit('id')
 
-
+    
 ### Spalten
 class ID(uvclight.GetAttrColumn):
     uvclight.name('Id')
