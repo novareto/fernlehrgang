@@ -46,5 +46,11 @@ class Users(object):
         session = get_session('fernlehrgang')
         session.delete(user)
 
+    def getRoles(self, login):
+        user = Users.get(self, login, None)
+        if user:
+            return [user.role]
+        return []
 
-Benutzer = Users()
+
+USERS = Users()

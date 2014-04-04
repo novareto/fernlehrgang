@@ -2,15 +2,12 @@
 # Copyright (c) 2007-2010 NovaReto GmbH
 # cklinger@novareto.de
 
-
 import json
 import datetime
 import uvclight
 
-from sqlalchemy import *
-from fernlehrgang.models import Frage, Teilnehmer, Antwort, Kursteilnehmer
-from .interfaces import (
-    ICalculateResults, ITeilnehmer, IKursteilnehmer, IFernlehrgangApp)
+from fernlehrgang.models import Antwort
+from .interfaces import ICalculateResults, ITeilnehmer, IKursteilnehmer
 
 
 class TeilnehmerAPI(uvclight.REST):

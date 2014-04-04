@@ -3,32 +3,20 @@
 # cklinger@novareto.de 
 
 import uvclight
-from .upload import IFileStore
 
-from dolmen.content import IContent, schema
 from uvclight.backends import patterns
 from cromlech.sqlalchemy import get_session
 
-from sqlalchemy import *
-from sqlalchemy import TypeDecorator
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relation, backref, relationship
-from sqlalchemy_imageattach.entity import Image, image_attachment
-from sqlalchemy_imageattach.context import push_store_context
+from sqlalchemy import and_
 
 from .upload import IFileStore
 from .interfaces import IFernlehrgangApp
+from .auth.handler import Users, USERS
 from fernlehrgang import models
-from .auth.handler import Benutzer, Users
 
-from dolmen.forms.base.markers import Marker
-from zope.component import IFactory, provideUtility, getUtility
-from zope.container.contained import Contained
-from zope.dublincore.interfaces import IDCDescriptiveProperties
-from zope.interface import Interface, implementer, provider
+from zope.component import IFactory, provideUtility
 from zope.interface import alsoProvides
 from zope.location import LocationProxy, ILocation
-from zope.publisher.interfaces import IStartRequestEvent
 
     
 def located(func):
@@ -48,7 +36,7 @@ class BenutzerModel(patterns.Model):
 
     @located
     def factory():
-        return Benutzer
+        return USERS
 
     def arguments():
         return dict()

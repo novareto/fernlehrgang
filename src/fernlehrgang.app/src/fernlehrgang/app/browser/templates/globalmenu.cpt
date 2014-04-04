@@ -8,13 +8,23 @@
       </div>
       <div class="menu flexmenu fm-offcanvas fm-lg">
 	<ul class="icons-wrapper">
+	  <li>
+	    <a href="" tal:attributes="href view.application_url()">
+	      <span class="icon">
+		<i class="glyphicon glyphicon-home" aria-hidden="true"></i>
+	      </span>
+	      <span>Home</span>
+	    </a>
+	  </li>
 	  <li tal:repeat="flg sorted(flgs.keys())">
 	    <a class="globalmenu-year"
 	       tal:attributes="rel 'year-%s' % flg">
 	      <span class="icon">
 		<i class="glyphicon glyphicon-book" aria-hidden="true"></i>
 	      </span>
-	      <span tal:content="flg" > </span>
+	      <span>
+		<strong tal:content="flg" />
+	      </span>
 	    </a>
 	  </li>
 	</ul>

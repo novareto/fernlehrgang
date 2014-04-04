@@ -1,28 +1,20 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
-from datetime import datetime
-from sqlalchemy.sql import and_
-from cromlech.sqlalchemy import get_session
-from zope.interface import Interface, Attribute
-from zope.schema import *
-from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 import grokcore.component as grok
 
+from cromlech.sqlalchemy import get_session
+from fernlehrgang.models import *
 from fernlehrgang.models.vocabularies import register_vocabulary
-from fernlehrgang.models import (
-    IAntwort,
-    IFernlehrgang,
-    ILehrheft,
-    IUnternehmen,
-    IKursteilnehmer,
-    lieferstopps,
-    ITeilnehmer,
-    generatePassword,
-    IFrage,
-    ICalculateResults)
+from uvc.themes.dguv import IDGUVRequest
+from zope.interface import Interface
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+
+
+class IFernlehrgangSkin(IDGUVRequest):
+    pass
 
 
 class IListing(Interface):
@@ -51,7 +43,6 @@ def lehrheft_vocab(context):
 
 @grok.provider(IContextSourceBinder)
 def fragen_vocab(context):
-    session = get_session('fernlehrgang')
     rc = [SimpleTerm(0, 'Bitte eine Auswahl treffen',
                      'Bitte eine Auswahl treffen')]
     if IAntwort.providedBy(context):
