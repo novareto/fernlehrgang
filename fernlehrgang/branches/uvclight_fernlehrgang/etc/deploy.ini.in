@@ -76,13 +76,21 @@ store_root = ${settings:image_storage}
 store_prefix = /images
 dsn = ${SQL:DSN}
 
+[app:xmlrpc]
+paste.app_factory = fernlehrgang.app.wsgi:xmlrpc_factory
+dsn = ${SQL:DSN}
+
 [app:router]
 use = egg:Paste#urlmap
 / = fernlehrgang
 /quizz = quizz
+/xmlrpc = xmlrpc
+filter-with = session
+
 
 [pipeline:main]
-pipeline =  gzip fanstatic session router
+pipeline = gzip fanstatic router
+
 
 [server:main]
 use = egg:Paste#http

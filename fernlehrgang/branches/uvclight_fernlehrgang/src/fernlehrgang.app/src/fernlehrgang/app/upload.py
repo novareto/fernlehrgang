@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-import uvclight
 import base64
 import shutil
 
-from dolmen.forms import crud
 from dolmen.uploader.service import create_directory
 from zope.interface import implementer, Interface, Attribute
-from zope.security.interfaces import Unauthorized
-from zope.security.management import checkPermission
 from zope.interface.common import mapping
-from zope.location import Location, locate
 from zope.container.interfaces import IContainer
+from zope.location import Location
 
 
 class IFileStore(Interface):

@@ -2,21 +2,16 @@
 
 import os
 import transaction
-import dawnlight
 
 from uvclight import xmlrpc
 from uvclight.backends.patterns import TrajectLookup
-from webob.dec import wsgify
 
-from cromlech.browser import IRequest, IPublicationRoot
+from cromlech.browser import IPublicationRoot
 from cromlech.configuration.utils import load_zcml
 from cromlech.dawnlight import DawnlightPublisher, ViewLookup
 from cromlech.dawnlight import view_locator, query_view
-from cromlech.dawnlight.directives import traversable
 from cromlech.security import Interaction
-from cromlech.security import unauthenticated_principal
 from cromlech.sqlalchemy import create_and_register_engine, SQLAlchemySession
-from cromlech.webob import request
 from cromlech.webob.request import Request
 from cromlech.wsgistate import WsgistateSession
 from cromlech.i18n.utils import setLanguage
@@ -24,22 +19,16 @@ from cromlech.i18n.utils import setLanguage
 from sqlalchemy_imageattach import context as store
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 
-from zope.component import getMultiAdapter, getGlobalSiteManager
+from zope.component import getGlobalSiteManager
 from zope.component.hooks import setSite
-from zope.interface import Interface, implementer, alsoProvides
+from zope.interface import implementer, alsoProvides
 from zope.location import Location
-from zope.security.proxy import removeSecurityProxy
 
 from .trajects import register_all
-from .auth.handler import Benutzer, Users
-from .interfaces import IFernlehrgangApp
+from .auth.handler import USERS
+from .interfaces import IFernlehrgangApp, IFernlehrgangSkin
 from fernlehrgang import models
 from uvclight.auth import secured, Principal
-from uvc.themes.dguv import IDGUVRequest
-
-
-class IFernlehrgangSkin(IDGUVRequest):
-    pass
 
 
 view_lookup = ViewLookup(view_locator(query_view))
@@ -53,20 +42,10 @@ class Root(Location):
         return getGlobalSiteManager()
 
 
-class UsersAuth(Users):
+ROOT = Root()
+PUBLISHER = DawnlightPublisher(
+    model_lookup=model_lookup, view_lookup=view_lookup)
 
-    def get(self, login, default=None):
-        user = super(UsersAuth, self).get(login, default)
-        if user:
-            return user
-
-    def getRoles(self, login):
-        user = Users.get(self, login, None)
-        if user:
-            return [user.role]
-        return []
-
-Benutzer = UsersAuth()
 
 
 @implementer(IFernlehrgangApp)
@@ -87,24 +66,20 @@ class Application(object):
     def __init__(self, store, engine):
         self.store = store
         self.engine = engine
-        self.site = Root()
-        self.publisher = DawnlightPublisher(
-            model_lookup=model_lookup, view_lookup=view_lookup)
 
     def __call__(self, environ, start_response):
         setLanguage('de-DE')
         request = Request(environ)
 
-        @secured(Benutzer, "PLEASE Login")
+        @secured(USERS, u"Please Login")
         def publish(environ, start_response):
-            #roles = Benutzer.getRoles('gbleeck')
             request.principal = Principal(environ['REMOTE_USER'])
             with Interaction(request.principal):
                 with store.store_context(self.store):
-                    setSite(self.site)
+                    setSite(ROOT)
                     alsoProvides(request, IFernlehrgangSkin)
-                    response = self.publisher.publish(
-                        request, self.site, handle_errors=True)
+                    response = PUBLISHER.publish(
+                        request, ROOT, handle_errors=True)
                     setSite()
             return response(environ, start_response)
 

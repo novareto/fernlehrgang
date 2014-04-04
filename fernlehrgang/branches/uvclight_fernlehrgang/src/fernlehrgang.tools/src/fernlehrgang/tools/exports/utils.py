@@ -4,12 +4,12 @@
 
 
 from os import system
-from fernlehrgang.app.auth.handler import Benutzer
+from fernlehrgang.app.auth.handler import USERS
 
 
 def getUserEmail(pid):
     return 'ck@novareto.de'
-    return Benutzer.get(pid).email
+    return USERS.get(pid).email
 
 
 def makeZipFile(fn):
