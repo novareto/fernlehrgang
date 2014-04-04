@@ -80,9 +80,14 @@ dsn = ${SQL:DSN}
 paste.app_factory = fernlehrgang.app.wsgi:xmlrpc_factory
 dsn = ${SQL:DSN}
 
+[app:logout]
+paste.app_factory = uvclight.auth:do_logout
+session_key = session.key
+
 [app:router]
 use = egg:Paste#urlmap
 / = fernlehrgang
+/logout = logout
 /quizz = quizz
 /xmlrpc = xmlrpc
 filter-with = session
