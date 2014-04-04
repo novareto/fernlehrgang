@@ -15,7 +15,7 @@ class KontaktMI(uvclight.MenuItem):
         return self.view.application_url() + '/kontakt'
 
 
-class LogoutMI(uvclight.MenuItem):
+class Logout(uvclight.MenuItem):
     uvclight.context(Interface)
     uvclight.title(u"Abmelden")
     uvclight.menu(IPersonalMenu)
