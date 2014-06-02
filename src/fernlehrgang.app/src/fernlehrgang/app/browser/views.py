@@ -3,7 +3,7 @@
 import uvclight
 from uvclight import Page, Index
 from zope.interface import Interface, implementer
-from zope.authentication.interfaces import IUnauthenticatedPrincipal
+from cromlech.security.interfaces import IUnauthenticatedPrincipal
 from ..interfaces import IFernlehrgangApp
 from uvc.design.canvas.views import IHomepage
 

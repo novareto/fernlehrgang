@@ -8,7 +8,6 @@ from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
-from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
 from uvclight.interfaces import IExtraInfo
 from dolmen.forms.base import Fields, action, NO_VALUE
 from dolmen.forms.base.markers import FAILURE
@@ -101,7 +100,7 @@ class AddTeilnehmer(uvclight.AddForm):
 
     def nextURL(self):
         self.flash(u'Der Teilnehmer wurde erfolgreich gespeichert')
-        return "%s/teilnehmer/%s" %(self.url(), self.tn.id)
+        return "%s/teilnehmer/%s" %(self.url(self.context), self.tn.id)
 
 
 class Index(uvclight.DefaultView):
@@ -249,7 +248,6 @@ class Name(uvclight.LinkColumn):
         return self.table.url(item).replace('_listing', '/'+str(item.id))
 
     def getLinkContent(self, item):
-        print "KLAUS"
         return item.name
 
 

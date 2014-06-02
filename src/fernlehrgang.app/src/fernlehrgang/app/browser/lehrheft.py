@@ -8,7 +8,6 @@ from dolmen.menu import menuentry
 from fernlehrgang.models import Lehrheft
 from uvclight import View, Page
 from uvclight.backends.patterns import DefaultModel
-from megrok.z3ctable import LinkColumn, GetAttrColumn, TablePage
 from dolmen.forms.base import Fields
 from sqlalchemy_imageattach import context as store
 from zope.component import getUtility

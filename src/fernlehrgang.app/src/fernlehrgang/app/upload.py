@@ -7,7 +7,6 @@ import shutil
 from dolmen.uploader.service import create_directory
 from zope.interface import implementer, Interface, Attribute
 from zope.interface.common import mapping
-from zope.container.interfaces import IContainer
 from zope.location import Location
 
 
@@ -51,7 +50,7 @@ def map_folder(root, decode=None):
     return datas
 
         
-@implementer(IStorage, IContainer)
+@implementer(IStorage)
 class Storage(Location):
 
     datas = dict()

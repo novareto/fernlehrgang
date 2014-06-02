@@ -83,7 +83,7 @@ class KursteilnehmerListing(uvclight.Form):
             qu = "%%%s%%" % data.get('name')
             sql = sql.filter(Teilnehmer.name.ilike(qu))
             v = True
-        if data.get('geburtsdatum'):
+        if data.get('geburtsdatum') and data.get('geburtsdatum') is not NO_VALUE:
             sql = sql.filter(Teilnehmer.geburtsdatum ==
                              data.get('geburtsdatum'))
             v = True

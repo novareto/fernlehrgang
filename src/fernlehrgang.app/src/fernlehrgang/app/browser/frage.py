@@ -9,7 +9,6 @@ from fernlehrgang.models import Frage
 from uvclight import Page
 from zope.location import locate
 from uvclight.backends.patterns import DefaultModel
-from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
 from dolmen.forms.base import Fields
 
 from . import AddForm, EditForm

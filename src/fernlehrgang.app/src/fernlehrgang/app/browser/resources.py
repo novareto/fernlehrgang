@@ -8,15 +8,14 @@ from uvclight import interfaces
 from dolmen.uploader.resources.hayageek import uploader as hayageek
 from fanstatic import Library, Resource, Group
 from js.jquery import jquery
-from uvc.widgets import double, DatePickerCSS
 from zope.interface import Interface
 from uvc.js.wysiwyg import bs_wysihtml5
 
 
 library = Library('fernlehrgang.app.browser', 'static')
-css = Group([DatePickerCSS])
-js = Group([double, bs_wysihtml5])
+js = Group([bs_wysihtml5])
 register_js = Resource(library, 'register.js', depends=[jquery])
+fernlehrgang_css = Resource(library, 'flg.css')
 fernlehrgang_js = Resource(library, 'flg.js', depends=[jquery])
 
 # Upload JS
@@ -36,7 +35,7 @@ class Resources(uvclight.Viewlet):
     uvclight.viewletmanager(interfaces.IHeaders)
 
     def render(self):
-        css.need()
         js.need()
+        fernlehrgang_css.need()
         fernlehrgang_js.need()
         return u''
