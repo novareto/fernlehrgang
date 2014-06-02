@@ -8,7 +8,10 @@ from dolmen.message.utils import receive as receive_messages
 from fernlehrgang.models import Fernlehrgang
 from plone.memoize import ram
 from time import time
+
 from uvc.design.canvas.menus import *
+from uvc.design.canvas import viewlets
+
 from uvclight import MenuItem
 from uvclight.interfaces import IAboveContent, IPageTop, IHeaders
 from uvclight.interfaces import IPersonalMenu, IContextualActionsMenu
@@ -24,13 +27,11 @@ from ..interfaces import IListing
 ## Global Menu
 #
 
-class GlobalMenuViewlet(uvclight.Viewlet):
-    uvclight.context(Interface)
-    uvclight.viewletmanager(IPageTop)
+class GlobalMenuViewlet(viewlets.GlobalMenuViewlet):
+    uvclight.name('globalmenu')
     uvclight.layer(IFernlehrgangSkin)
 
     template = uvclight.get_template('globalmenu.cpt', __file__)
-    uvclight.order(11)
     flgs = []
 
     @ram.cache(lambda *args: time() // (60 * 60))
@@ -54,57 +55,14 @@ class GlobalMenuViewlet(uvclight.Viewlet):
 ## Object Menu
 #
 
-class ObjectActionMenuViewlet(uvclight.Viewlet):
+class ObjectActionMenuViewlet(viewlets.ObjectActionMenuViewlet):
     uvclight.name('contextualactions')
-    uvclight.title('Actions')
-    uvclight.viewletmanager(IAboveContent)
     uvclight.layer(IFernlehrgangSkin)
-    uvclight.order(119)
 
     def available(self):
         if IListing.providedBy(self.view):
             return False 
         return True
-
-    def render(self):
-        menu = ContextualActionsMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
-    
-#
-## Add Menu
-#
-
-
-class AddMenuViewlet(uvclight.Viewlet):
-    uvclight.context(Interface)
-    uvclight.viewletmanager(IAboveContent)
-    uvclight.order(120)
-    uvclight.layer(IFernlehrgangSkin)
-
-    template = ''
-    
-    def render(self):
-        menu = AddMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
-
-
-
-#
-## Personal menu
-#
-
-class PersonalMenuViewlet(uvclight.Viewlet):
-    uvclight.context(Interface)
-    uvclight.viewletmanager(IPageTop)
-    uvclight.layer(IFernlehrgangSkin)
-    uvclight.order(100)
-    
-    def render(self):
-        menu = PersonalMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
 
 
 class UserName(MenuItem):
@@ -131,35 +89,6 @@ class UserName(MenuItem):
 
     def render(self):
         return self.menu.render()
-
-
-class ClickMe(MenuItem):
-    """ User Viewlet
-    """
-    uvclight.name('clickme')
-    uvclight.context(Interface)
-    uvclight.menu(UserMenu)
-    uvclight.order(300)
-    uvclight.layer(IFernlehrgangSkin)
-
-    action = "test"
-    
-    
-#
-## Navigation
-#
-
-
-class NavigationMenuViewlet(uvclight.Viewlet):
-    uvclight.context(Interface)
-    uvclight.viewletmanager(IAboveContent)
-    uvclight.layer(IFernlehrgangSkin)
-    uvclight.order(100)
-
-    def render(self):
-        menu = NavigationMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
 
 
 class FlashMessages(uvclight.Viewlet):

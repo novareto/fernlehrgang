@@ -1,4 +1,4 @@
-<div class="lehrheft outlined-block">
+<div class="lehrheft">
   <h1>
     <span tal:replace="context.titel" />
   </h1>
@@ -9,9 +9,5 @@
 	Question rendering
       </div>
     </div>
-  </div>
-  <div class="outlined-block-title">
-    Lesson <span tal:replace="context.nummer" />
-    (<span tal:replace="context.id" />)
   </div>
 </div>

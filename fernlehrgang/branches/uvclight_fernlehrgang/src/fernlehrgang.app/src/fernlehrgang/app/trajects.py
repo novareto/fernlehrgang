@@ -32,14 +32,14 @@ class BenutzerModel(patterns.Model):
     uvclight.context(IFernlehrgangApp)
 
     model = Users
-    pattern = "benutzer"
+    pattern = "benutzer/:name"
 
     @located
-    def factory():
-        return USERS
+    def factory(name):
+        return USERS.get(name)
 
-    def arguments():
-        return dict()
+    def arguments(Users):
+        return dict(name = Users.login)
 
 
 class Fernlehrgang(patterns.Model):

@@ -1,0 +1,26 @@
+<form method="POST" role="form" tal:attributes="action view.action">
+  <fieldset>
+    <legend tal:content="view.title"></legend>
+    <div class="field form-group">
+      <label tal:attributes="for view.userfield" i18n:translate="username">Benutzername</label>
+      <input type="text" class="form-control"
+             tal:attributes="name view.userfield;
+           id 'login-%s' + view.userfield;
+           value view.username" />
+    </div>
+    <div class="field form-group">
+      <label tal:attributes="for view.pwdfield" i18n:translate="password">Passwort</label>
+      <input type="password" class="form-control"
+             tal:attributes="name view.pwdfield;
+           id 'login-%s' + view.pwdfield" />
+    </div>
+    <div class="actions">
+      <input type="submit"
+       i18n:attributes="value submit"
+       value="Sign In" class="btn btn-default"
+       tal:attributes="name view.button;
+           id 'login-%s' + view.button" />
+    </div>
+  </fieldset>
+</form>
+

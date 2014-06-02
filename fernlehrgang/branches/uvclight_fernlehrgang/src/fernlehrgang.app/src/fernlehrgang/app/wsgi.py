@@ -3,7 +3,8 @@
 import os
 import transaction
 
-from uvclight import xmlrpc
+from uvclight import xmlrpc, sessionned
+from uvclight.backends.sql import transaction_sql
 from uvclight.backends.patterns import TrajectLookup
 
 from cromlech.browser import IPublicationRoot
@@ -13,7 +14,6 @@ from cromlech.dawnlight import view_locator, query_view
 from cromlech.security import Interaction
 from cromlech.sqlalchemy import create_and_register_engine, SQLAlchemySession
 from cromlech.webob.request import Request
-from cromlech.wsgistate import WsgistateSession
 from cromlech.i18n.utils import setLanguage
 
 from sqlalchemy_imageattach import context as store
@@ -21,7 +21,7 @@ from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 
 from zope.component import getGlobalSiteManager
 from zope.component.hooks import setSite
-from zope.interface import implementer, alsoProvides
+from zope.interface import Interface, implementer, alsoProvides, Attribute
 from zope.location import Location
 
 from .trajects import register_all
@@ -61,32 +61,27 @@ class xmlrpc_factory(object):
             return self.handler(environ, start_response)
 
 
-class Application(object):
+def application(fs_store, engine):
 
-    def __init__(self, store, engine):
-        self.store = store
-        self.engine = engine
-
-    def __call__(self, environ, start_response):
-        setLanguage('de-DE')
+    @transaction_sql(engine)
+    @sessionned('session.key')
+    @secured(USERS, u"Please Login")
+    def publish(environ, start_response):
+        setLanguage('de')
         request = Request(environ)
+        request.principal = Principal(
+            environ['REMOTE_USER'], roles=['dolmen.content.Edit'])
 
-        @secured(USERS, u"Please Login")
-        def publish(environ, start_response):
-            request.principal = Principal(environ['REMOTE_USER'])
-            with Interaction(request.principal):
-                with store.store_context(self.store):
-                    setSite(ROOT)
-                    alsoProvides(request, IFernlehrgangSkin)
-                    response = PUBLISHER.publish(
-                        request, ROOT, handle_errors=True)
-                    setSite()
-            return response(environ, start_response)
+        with Interaction(request.principal):
+            with store.store_context(fs_store):
+                setSite(ROOT)
+                alsoProvides(request, IFernlehrgangSkin)
+                response = PUBLISHER.publish(request, ROOT, handle_errors=True)
+                setSite()
 
-        with transaction.manager as tm:
-            with SQLAlchemySession(self.engine, transaction_manager=tm):
-                with WsgistateSession(environ, 'session.key'):
-                    return publish(environ, start_response)
+        return response(environ, start_response)
+
+    return publish
 
 
 def application_factory(global_conf, store_root, store_prefix, dsn):
@@ -109,6 +104,6 @@ def application_factory(global_conf, store_root, store_prefix, dsn):
     # We now instanciate the Application
     # The name and engine are passed, to be used for the querying.
     fs_store = HttpExposedFileSystemStore(store_root, store_prefix)
-    app = Application(fs_store, engine)
-
+    app = application(fs_store, engine)
+    
     return fs_store.wsgi_middleware(app)
