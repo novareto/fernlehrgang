@@ -1,5 +1,4 @@
 <tal:globalmenu define="flgs viewlet.flgs" condition="flgs">
-  <div class="col-md-8">
     <div class="fm-container">
       <div class="fm-button" style="display: none;">
 	<span class="fm-bar"></span>
@@ -30,7 +29,7 @@
 	</ul>
       </div>
     </div>
-  </div>
+
   <div id="global-submenus">
     <div class="year-links" name="top" style="display: none;"
 	 tal:attributes="id 'year-%s' % year" tal:repeat="year flgs.keys()">
