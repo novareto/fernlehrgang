@@ -2,6 +2,8 @@
 
 import uvclight
 from uvclight.interfaces import IFooterMenu, IPersonalMenu
+from uvclight.security import unauthenticated_principal
+from uvclight.utils import current_principal
 from zope.interface import Interface
 
 
@@ -21,7 +23,12 @@ class Logout(uvclight.MenuItem):
     uvclight.menu(IPersonalMenu)
 
     icon = "glyphicons unlock"
-    
+
+    @property
+    def available(self):
+        principal = current_principal()
+        return principal is not unauthenticated_principal
+
     @property
     def action(self):
         return self.view.application_url() + '/logout'
