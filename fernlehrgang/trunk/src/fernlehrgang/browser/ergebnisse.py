@@ -54,12 +54,17 @@ class CalculateResults(grok.Adapter):
     grok.implements(ICalculateResults)
     grok.context(IKursteilnehmer)
 
-    def lehrhefte(self, lehrhefte=None):
+    def lehrhefte(self, lehrhefte=None, session=None):
+        #if not session:
+        #    session = Session()
         context = self.context
         rc = []
         points = context.fernlehrgang.punktzahl
         if not lehrhefte:
-            session = Session()
+            if not session:
+                print "creating Session"
+                session = Session()
+            #session = Session()
             sql = session.query(Lehrheft).options(joinedload(Lehrheft.fragen))
             sql = sql.filter(Lehrheft.fernlehrgang_id == context.fernlehrgang.id)
             lehrhefte = sql.all()
@@ -103,12 +108,12 @@ class CalculateResults(grok.Adapter):
                 return 0
         return gewichtung
 
-    def summary(self, lehrhefte=None):
+    def summary(self, lehrhefte=None, session=None):
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context
         mindest_punktzahl = context.fernlehrgang.punktzahl
-        lehrhefte = self.lehrhefte(lehrhefte)
+        lehrhefte = self.lehrhefte(lehrhefte, session)
         for lehrheft in lehrhefte:
             punkte += lehrheft['punkte']
         if context.status in POSTVERSANDSPERRE:
