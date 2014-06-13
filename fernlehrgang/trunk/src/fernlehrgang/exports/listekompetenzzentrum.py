@@ -28,7 +28,7 @@ def createRows(session, flg_id):
         and_(
             models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
             models.Kursteilnehmer.un_klasse == "G3",
-            models.Teilnehmer.kompetenzzentrum == "ja",
+            #models.Teilnehmer.kompetenzzentrum == "ja",
             )).order_by(models.Teilnehmer.id)
     i=1
     return result
@@ -49,36 +49,41 @@ def export(session, flg_id):
     i=1
     for teilnehmer in rc:
         print i
+
         i+=1
-        lhg = E(u'Lehrgänge')
-        for ktn in teilnehmer.kursteilnehmer:
-            cal_res = CalculateResults(ktn)
-            summary = cal_res.summary()
-            lhg.append(
-                E('Lehrgang', titel=ktn.fernlehrgang.titel, ergebnis=summary['comment'])
-                )
-        xml.append( 
-                E('TEILNEHMER',
-                    E('Name', teilnehmer.name),
-                    E('Vorname', teilnehmer.vorname),
-                    E('Titel', nN(teilnehmer.titel)),
-                    E('Anrede', nN(teilnehmer.anrede)),
-                    E('Telefon', nN(teilnehmer.telefon)),
-                    E('Email', nN(teilnehmer.email)),
-                    E('Branche'),
-                    E('Unternehmensklasse', nN(teilnehmer.kategorie)),
-                    E('Erklaerung', teilnehmer.kompetenzzentrum),
-                    E('Unternehmen',
-                        E('Name1', teilnehmer.unternehmen.name),
-                        E('Name2', nN(teilnehmer.unternehmen.name2)),
-                        E('Name3', nN(teilnehmer.unternehmen.name3)),
-                        E('PLZ', teilnehmer.unternehmen.plz),
-                        E('ORT', teilnehmer.unternehmen.ort),
-                        E('Ergaenzung'),
-                    ),
-                    lhg,
-                )
-                )
+        if teilnehmer.kompetenzzentrum == "ja":
+            lhg = E(u'Lehrgänge')
+            for ktn in teilnehmer.kursteilnehmer:
+                cal_res = CalculateResults(ktn)
+                summary = cal_res.summary()
+                lhg.append(
+                    E('Lehrgang', titel=ktn.fernlehrgang.titel, ergebnis=summary['comment'])
+                    )
+            xml.append( 
+                    E('TEILNEHMER',
+                        E('Name', teilnehmer.name),
+                        E('Vorname', teilnehmer.vorname),
+                        E('Titel', nN(teilnehmer.titel)),
+                        E('Anrede', nN(teilnehmer.anrede)),
+                        E('Telefon', nN(teilnehmer.telefon)),
+                        E('Email', nN(teilnehmer.email)),
+                        E('Branche'),
+                        E('Unternehmensklasse', nN(teilnehmer.kategorie)),
+                        E('Erklaerung', teilnehmer.kompetenzzentrum),
+                        E('Unternehmen',
+                            E('Name1', teilnehmer.unternehmen.name),
+                            E('Name2', nN(teilnehmer.unternehmen.name2)),
+                            E('Name3', nN(teilnehmer.unternehmen.name3)),
+                            E('PLZ', teilnehmer.unternehmen.plz),
+                            E('ORT', teilnehmer.unternehmen.ort),
+                            E('Ergaenzung'),
+                        ),
+                        lhg,
+                    )
+                    )
+        else:
+            print "MNR"
+            xml.append(E('Mitgliedsummer', teilnehmer.unternehmen.mnr))
     open(fn, 'w').write(ET.tostring(xml, encoding="ISO-8859-15", xml_declaration=True, pretty_print=True))
     #print "Writing File %s" % fn
     #fn = makeZipFile(fn)
