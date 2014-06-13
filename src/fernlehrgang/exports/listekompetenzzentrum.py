@@ -55,7 +55,7 @@ def export(session, flg_id):
             lhg = E(u'Lehrgänge')
             for ktn in teilnehmer.kursteilnehmer:
                 cal_res = CalculateResults(ktn)
-                summary = cal_res.summary()
+                summary = cal_res.summary(session=session)
                 lhg.append(
                     E('Lehrgang', titel=ktn.fernlehrgang.titel, ergebnis=summary['comment'])
                     )
