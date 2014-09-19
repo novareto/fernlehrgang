@@ -65,7 +65,7 @@ def createRows(rc, session, flg_id):
         summary = cal_res.summary(lehrhefte)
         liste = []
         teilnehmer = ktn.teilnehmer
-        ss = set([x.lehrheft_id for x in ktn.antworten])
+        ss = set([x.rlhid for x in ktn.antworten])
         antworten = len(ss)
         if teilnehmer:
             gebdat = ""

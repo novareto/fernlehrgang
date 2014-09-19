@@ -311,6 +311,10 @@ class Antwort(Base, RDBMixin):
     def title(self):
         return self.frage.titel
 
+    @property
+    def rlhid(self):
+        return self.frage.lehrheft_id
+
     def __repr__(self):
         return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage_id, self.antwortschema)
 

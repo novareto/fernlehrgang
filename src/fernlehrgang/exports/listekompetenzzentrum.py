@@ -44,12 +44,10 @@ def export(session, flg_id):
     """
     fn = "/tmp/k_zentrum_%s.xml" % flg_id
     rc = createRows(session, flg_id)
-    xml = E('Komptenzzentrum')
     print rc.count()
+    xml = E('Komptenzzentrum')
     i=1
     for teilnehmer in rc:
-        print i
-
         i+=1
         if teilnehmer.kompetenzzentrum == "ja":
             lhg = E(u'Lehrgänge')
@@ -71,9 +69,11 @@ def export(session, flg_id):
                         E('Unternehmensklasse', nN(teilnehmer.kategorie)),
                         E('Erklaerung', teilnehmer.kompetenzzentrum),
                         E('Unternehmen',
+                            E('Mitgliedsnummer', teilnehmer.unternehmen.mnr),
                             E('Name1', teilnehmer.unternehmen.name),
                             E('Name2', nN(teilnehmer.unternehmen.name2)),
                             E('Name3', nN(teilnehmer.unternehmen.name3)),
+                            E('Strasse', nN(teilnehmer.unternehmen.str)),
                             E('PLZ', teilnehmer.unternehmen.plz),
                             E('ORT', teilnehmer.unternehmen.ort),
                             E('Ergaenzung'),
@@ -82,7 +82,6 @@ def export(session, flg_id):
                     )
                     )
         else:
-            print "MNR"
             xml.append(E('Mitgliedsummer', teilnehmer.unternehmen.mnr))
     open(fn, 'w').write(ET.tostring(xml, encoding="ISO-8859-15", xml_declaration=True, pretty_print=True))
     #print "Writing File %s" % fn
@@ -99,7 +98,7 @@ class ListeKompetenzzentrum(grok.View):
     def update(self):
         from fernlehrgang.tasks import export_liste_kompetenzzentrum 
         mail = getUserEmail(self.request.principal.id)
-        fn = export_liste_kompetenzzentrum(flg_id=self.context.id, mail=mail)
+        fn = export_liste_kompetenzzentrum.delay(flg_id=self.context.id, mail=mail)
         print fn
 
     def render(self):
