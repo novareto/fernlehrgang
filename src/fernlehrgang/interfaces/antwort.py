@@ -12,7 +12,10 @@ from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.frage import IFrage
 
-from datetime import datetime
+import datetime
+
+def today():
+        return datetime.date.today()
 
 
 @grok.provider(IContextSourceBinder)
@@ -76,13 +79,12 @@ class IAntwort(Interface):
         default = u'',
         )
 
-    datum = Datetime(
+    datum = Date(
         title = u'Datum',
         description = u'Modifikationsdatum',
         required = False,
         readonly = False,
-        defaultFactory = datetime.now,
-        default = datetime.now(),
+        defaultFactory = today,
         )
 
     system = Choice(

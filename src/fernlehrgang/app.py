@@ -119,10 +119,17 @@ class RestLayer(grok.IRESTLayer):
     grok.restskin('api')
 
 
+class KPTZLayer(grok.IRESTLayer):
+    """ Layer for Rest Access"""
+    grok.restskin('kptz')
+
+
 
 @customize(origin=IDate)
 def customize_size(field):
     field.valueLength = 'medium'
+
+
 
 
 from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
@@ -188,7 +195,7 @@ class TestSystem(grok.Viewlet):
         from zope.app.appsetup.product import getProductConfiguration
         config = getProductConfiguration('database')
         DSN = config['dsn']
-        if DSN.startswith('oracle://novareto:retonova@10.30.4.95/BGETest'):
+        if DSN.startswith('oracle://novareto:retonova@10.30.131.206/BGETest'):
             self.view.flash(u"Test - System", type="info")
 
     def render(self):
