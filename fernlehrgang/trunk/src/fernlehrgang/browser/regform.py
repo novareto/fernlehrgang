@@ -47,6 +47,7 @@ class AutoRegForm(Form):
             plz = data['plz'],
             nr = data['nr'],
             strasse = data['strasse'],
+            email = data['email'],
             anrede = data['anrede'],
             titel = data['titel'],
         )
@@ -56,10 +57,11 @@ class AutoRegForm(Form):
         kursteilnehmer = Kursteilnehmer(
             fernlehrgang_id=data.get('fernlehrgang_id'),
             status=data.get('status'),
+            erstell_datum=data.get('erstell_datum'),
             un_klasse = data.get('un_klasse'),
             branche = data.get('branche'),
             unternehmen_mnr=data['mnr'])
         kursteilnehmer.teilnehmer = tn
         flg.kursteilnehmer.append(kursteilnehmer)
         session.flush()
-        self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
+        self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % tn.id )

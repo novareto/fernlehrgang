@@ -3,6 +3,7 @@
 # cklinger@novareto.de 
 
 import grokcore.component as grok
+import datetime
 
 from sqlalchemy.sql import and_
 from z3c.saconfig import Session
@@ -11,6 +12,10 @@ from zope.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 from fernlehrgang.interfaces.app import IFernlehrgangApp
+from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
+
+def today():
+    return datetime.date.today()
 
 
 LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
@@ -23,6 +28,7 @@ LIEFERSTOPPS = (('L1', u'UN-Modell anderer UV-Träger'),
                 ('S1', u'Interner Fehler'),
                 ('A1', u'angemeldet'),
                 ('A2', u'nicht registriert'),
+                ('Z1', u'Bearbeitungsfrist abgelaufen'),
                ) 
 
 
@@ -133,7 +139,8 @@ class IKursteilnehmer(Interface):
         title = u"Erstelldatum",
         description = u"Datum der Erstellung des Kursteilnehmers",
         required = False,
-        readonly = True,
+        defaultFactory=today,
+        #readonly = True,
         )
 
     un_klasse = Choice(

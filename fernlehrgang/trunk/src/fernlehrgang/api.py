@@ -9,7 +9,7 @@ import datetime
 from sqlalchemy import *
 from z3c.saconfig import Session
 from fernlehrgang.models import Frage, Teilnehmer, Antwort, Kursteilnehmer
-from fernlehrgang.app import RestLayer
+from fernlehrgang.app import RestLayer, KPTZLayer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
@@ -101,8 +101,6 @@ class TeilnehmerAPI(grok.REST):
             branche = branche,
             kompetenzzentrum = context.kompetenzzentrum,
             )
-        print "GET"
-        print teilnehmer
         return json.dumps(teilnehmer)
 
 
@@ -122,6 +120,19 @@ class TeilnehmerAPI(grok.REST):
                 ktm.un_klasse = un_klasse
                 ktm.branche = branche
                 ktm.status = "A1"
+        return "1"
+
+
+class KPTZTeilnehmerAPI(grok.REST):
+    grok.layer(KPTZLayer)
+    grok.context(ITeilnehmer)
+
+    def PUT(self):
+        teilnehmer = self.context
+        data = json.loads(self.body[1:-1])
+        #data = json.loads(self.body)
+        kptz = data.get('kompetenzzentrum')
+        teilnehmer.kompetenzzentrum = kptz
         return "1"
 
 

@@ -97,9 +97,10 @@ def main(argv=None):
     z = 0
     #import pdb; pdb.set_trace() 
     for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=";")):
-        if z < 19820:
+        if z < 18186:
             MNR = line['MNR'].strip().replace('-', '')
             if len(MNR) == 8:
+                print "GROLA MNR"
                 unternehmen = Session.query(Unternehmen).filter(and_(Unternehmen.mnr_g_alt == MNR, Unternehmen.mnr == Unternehmen.mnr_e)).all()
                 if unternehmen:
                     if len(unternehmen) == 1:
@@ -130,22 +131,32 @@ def main(argv=None):
                         status = NICHT_REGISTRIERT)
                     tids.append(teilnehmer.id)
                     fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+                    print z
                     z += 1
                 else:
                     print "Schon mehr als 1 Teilnehmer --> %s" % line['MNR']
                     mto += 1
             else:
-                #print "Kein Unternehmen gefunden --> %s" % line['MNR']
+                print "Kein Unternehmen gefunden --> %s" % line['MNR']
                 err.append(line['MNR'])
     import transaction; transaction.commit()    
     print len(err)
     print "#" * 50
-    for x in err:
-        print x+','
+    ef = open('/tmp/bad_report.txt', 'w+')
+    ef.write('\n'.join([str(x) for x in err]))
+    ef.close()
+    #for x in err:
+    #    print x+','
     print "#" * 50
-    print tids
+    #print tids
     print "STATISTIK"
     print "GESAMT", i
     print "OK", len(tids)
+    fo = open('/tmp/good_report.txt', 'w+')
+    fo.write('\n'.join([str(x) for x in tids]))
+    fo.close()
     print "MEHR ALS 0", mto
+    #foo = open('/tmp/more_then_one.txt', 'w+')
+    #foo.write('\n'.join([str(x) for x in mto]))
+    #foo.close()
     print "Kein Unternehmen", len(err)

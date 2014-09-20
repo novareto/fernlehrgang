@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import datetime
 import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
@@ -131,9 +132,27 @@ class Edit(models.Edit):
     fields['fernlehrgang_id'].mode = 'hiddendisplay'
     fields['branche'].mode = "radio"
 
-#    def update(self):
-#        super(Edit, self).update()
-#        import pdb; pdb.set_trace()                                              
+
+@menuentry(NavigationMenu)
+class ExtendDate(Form):
+    grok.context(IKursteilnehmer)
+    grok.title(u'Fristverlängerung')
+    grok.name('extend_date')
+
+    title = u"Fristverlängerung"
+    description = u"Hier können Sie die Frist für den OFLG neu setzen"
+
+    fields = Fields(IKursteilnehmer).select('erstell_datum')
+    fields['erstell_datum'].title = u"Fristverlängerung"
+    fields['erstell_datum'].description = u"Fristverlängerung"
+
+    @action(u'Frist verlängern')
+    def handle_save(self):
+        data, errors = self.extractData()
+        if errors:
+            return 
+        self.context.erstell_datum = data['erstell_datum'] - datetime.timedelta(days=356)
+        self.flash(u'Die Frist für die Fertigstellung des Online-Fernlehrgangs wurde bis zum %s verlängert' % data['erstell_datum'].strftime('%d.%m.%Y'))
 
 
 class MoreInfoOnKursteilnehmer(grok.Viewlet):

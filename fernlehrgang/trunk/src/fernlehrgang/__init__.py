@@ -6,6 +6,9 @@ import grok
 import logging
 
 from uvc.layout.forms.components import AddForm, Form
+from zeam.form.ztk.widgets.date import DateField
+
+DateField.valueLength = "medium"
 
 
 class Form(Form):

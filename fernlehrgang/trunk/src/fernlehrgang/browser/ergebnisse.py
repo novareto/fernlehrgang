@@ -62,7 +62,6 @@ class CalculateResults(grok.Adapter):
         points = context.fernlehrgang.punktzahl
         if not lehrhefte:
             if not session:
-                print "creating Session"
                 session = Session()
             #session = Session()
             sql = session.query(Lehrheft).options(joinedload(Lehrheft.fragen))

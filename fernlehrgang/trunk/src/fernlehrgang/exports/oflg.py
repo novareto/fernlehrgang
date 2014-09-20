@@ -4,6 +4,7 @@
 
 import grok
 import datetime
+import sqlalchemy
 
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.flg import IFernlehrgang
@@ -23,11 +24,12 @@ def report(session):
         models.Lehrheft.fernlehrgang_id == '112',
         models.Lehrheft.id == models.Antwort.lehrheft_id))
     query = session.query(models.Kursteilnehmer)
+    vgdatum = now - datetime.timedelta(days=180)
     query = query.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id == '112',
-            models.Kursteilnehmer.erstell_datum > now - datetime.timedelta(weeks=(4*7)),
-            models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*6)),
+            sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
+            #models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*6)),
         )
     )
 
@@ -35,14 +37,13 @@ def report(session):
     print "-" * 44
     print "Keine Lehrhefte im Zeitraum"
 
-
     no_answers = query.filter(
             not_(models.Kursteilnehmer.id.in_(t)),
             #models.Antwort.lehrheft_id == models.Lehrheft.id,
             #models.Lehrheft.nummer < 4,
         )
     for x in no_answers.all():
-        print x, x.teilnehmer
+        #print x, x.teilnehmer
         titel = ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title
         if titel == "kein Titel":
             titel = ""
@@ -111,11 +112,12 @@ def report(session):
 
 
     query = session.query(models.Kursteilnehmer)
+    vgdatum = now - datetime.timedelta(days=300)
     query = query.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id == '112',
-            models.Kursteilnehmer.erstell_datum > now - datetime.timedelta(weeks=(4*11)),
-            models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*10)),
+            sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
+            # models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*10)),
         )
     )
     almost_finished = query.filter(
@@ -152,16 +154,17 @@ def report(session):
     print "> 12 Monate weninger als 8 Lehrhefte"
 
     query = session.query(models.Kursteilnehmer)
+    vgdatum = now - datetime.timedelta(days=365)
     query = query.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id == '112',
-            models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*12)),
-            models.Kursteilnehmer.erstell_datum > now - datetime.timedelta(weeks=(4*13)),
+            sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
+            #models.Kursteilnehmer.erstell_datum > now - datetime.timedelta(weeks=(4*13)),
         )
     )
     #print query.count()
-    for x in query.all():
-        print x, x.teilnehmer
+    for ktn in query.all():
+        print ktn, ktn.teilnehmer
 
     #import pdb; pdb.set_trace() 
 
@@ -173,21 +176,23 @@ def report(session):
     #    )
     #)
     #for x in almost_finished.all():
-        print x.teilnehmer.name
-        if len(x.antworten) < 80:
-            titel = ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title
+        print ktn.teilnehmer.name
+        if len(ktn.antworten) < 80:
+            titel = ITeilnehmer['titel'].vocabulary.getTerm(ktn.teilnehmer.titel).title
             if titel == "kein Titel":
                 titel = ""
             send_mail(
                 'fernlehrgang@bghw.de',
-                [x.teilnehmer.email,],  # x.teilnehmer.email,
-                'Online-Fernlehrgang der BGHW Benutzername: %s' % x.teilnehmer.id,
+                [ktn.teilnehmer.email,],  # x.teilnehmer.email,
+                'Online-Fernlehrgang der BGHW Benutzername: %s' % ktn.teilnehmer.id,
                 text = TEXT4 % (
                     titel,
-                    ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-                    x.teilnehmer.name
+                    ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
+                    ktn.teilnehmer.name
                     )
                 )
+            ktn.status = "Z1"
+            #import pdb; pdb.set_trace() 
         #print unicode(TEXT3).encode('utf-8') % (
         #    ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title,
         #    ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
@@ -203,7 +208,10 @@ class OFLG_Report(grok.View):
     def update(self):
         from fernlehrgang.tasks import notifications_for_ofg 
         #mail = getUserEmail(self.request.principal.id)
+
         stat = notifications_for_ofg()
+        #from z3c.saconfig import Session
+        #report(Session())
         print stat 
 
     def render(self):
