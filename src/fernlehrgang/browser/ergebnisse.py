@@ -10,7 +10,7 @@ from fernlehrgang.config import POSTVERSANDSPERRE
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.viewlets import NavigationMenu
-from megrok.layout import Page
+from uvc.layout import Page
 from z3c.saconfig import Session
 from fernlehrgang.models import Lehrheft
 

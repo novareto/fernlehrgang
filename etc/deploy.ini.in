@@ -52,7 +52,7 @@ logger_name = wsgi
 use = egg:grokcore.startup
 
 [pipeline:main]
-pipeline =  gzip fanstatic grok
+pipeline = translogger gzip fanstatic grok
 
 
 [filter:gzip]

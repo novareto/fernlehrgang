@@ -20,7 +20,7 @@ from sqlalchemy import not_, and_
 from z3c.saconfig import Session
 from zeam.form.base import Fields, action
 from uvc.layout.interfaces import IExtraInfo
-from megrok.layout import Page
+from uvc.layout import Page
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang import AddForm, Form
 

@@ -12,7 +12,7 @@ from dolmen.app.layout import models
 from zope.interface import Interface
 from dolmen.menu import menuentry
 from uvc.layout.interfaces import IFooter, IExtraInfo, IPersonalPreferences
-from megrok.layout import Page
+from uvc.layout import Page
 #from megrok import navigation
 
 from fernlehrgang.auth.handler import UserAuthenticatorPlugin
@@ -72,6 +72,7 @@ class KontaktMI(MenuItem):
 
     @property
     def action(self):
+        return "/kontakt"
         return self.view.application_url() + '/kontakt'
 
 
@@ -90,6 +91,7 @@ class LogoutMI(MenuItem):
 
     @property
     def action(self):
+        return "/kontakt"
         return self.view.application_url() + '/logout'
 
 
@@ -196,7 +198,10 @@ class TestSystem(grok.Viewlet):
         config = getProductConfiguration('database')
         DSN = config['dsn']
         if DSN.startswith('oracle://novareto:retonova@10.30.131.206/BGETest'):
-            self.view.flash(u"Test - System", type="info")
+            if hasattr(self.view, 'flash'):
+                self.view.flash(u"Test - System", type="info")
+            else:
+                print self.view
 
     def render(self):
         return ""

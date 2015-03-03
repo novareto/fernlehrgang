@@ -8,7 +8,7 @@ import grok
 from dolmen.forms.base import apply_data_event
 from handler import Account, UserFolder
 from interfaces import IAddUserForm
-from megrok.layout import Page
+from uvc.layout import Page
 from uvc.layout import MenuItem
 from uvc.layout.interfaces import IFooter
 from uvc.layout.forms.components import Form
