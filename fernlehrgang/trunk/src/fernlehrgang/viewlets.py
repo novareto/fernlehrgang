@@ -53,7 +53,7 @@ class GlobalMenuViewlet(grok.Viewlet):
         d = {}
         for fernlehrgang in session.query(Fernlehrgang).all():
             url = "%s/fernlehrgang/%s" % (
-                self.view.application_url(), fernlehrgang.id)
+                self.view.layout.application_url(), fernlehrgang.id)
             titel = fernlehrgang.titel
             if not fernlehrgang.jahr in d.keys():
                 d[fernlehrgang.jahr] = []

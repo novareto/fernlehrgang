@@ -8,7 +8,7 @@ from zope.interface import Interface
 from dolmen.menu import menuentry, Menu
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.viewlets import NavigationMenu
-from megrok.layout import Page
+from uvc.layout import Page
 
 
 grok.templatedir('templates')

@@ -19,7 +19,6 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 
-from pygooglechart import PieChart2D, PieChart3D
 
 grok.templatedir('templates')
 
