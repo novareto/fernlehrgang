@@ -65,6 +65,15 @@ class HelperAPI(grok.XMLRPC):
             return True
         return False
 
+    def changePW(self, teilnehmer_id, passwort):
+        session = Session()
+        ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
+        if ret.count() != 1:
+            return False
+        ret = ret.one()
+        ret.passwort = passwort
+        return True 
+
 #
 ### REST
 #

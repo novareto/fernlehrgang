@@ -33,7 +33,6 @@ class AutoRegForm(Form):
         if errors:
             return errors
         session = Session()
-        print data
         unternehmen = session.query(Unternehmen).get(data.get('mnr'))
         if not unternehmen:
             self.flash(u'Das Unternehmen mit der Mitgliedsnummer %s existiert nicht' % data.get('mnr'))
