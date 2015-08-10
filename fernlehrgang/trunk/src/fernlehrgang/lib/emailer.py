@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 
 import os
+import grok
 import zope.sendmail
 import grok
 import zope.component
 import smtplib
+import zope.sendmail
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
 from email.Utils import COMMASPACE, formatdate
 from email import Encoders
 from email.header import Header
+from zope.sendmail.mailer import SMTPMailer
 
+queue_path = "/root/fernlehrgang/prod/var/mq"
 
-queue_path = "/root/fernlehrgang/test/var/mq"
-
-mailer_object = zope.sendmail.mailer.SMTPMailer('192.168.2.200', 25, force_tls=False)
+mailer_object = SMTPMailer('mail.bghw.de', 25, force_tls=False)
 
 
 def mailer():
@@ -27,11 +29,13 @@ def delivery():
 
 
 def start_processor_thread():
-    thread = zope.sendmail.queue.QueueProcessorThread()
+    from zope.sendmail.queue import QueueProcessorThread
+    thread = QueueProcessorThread()
     thread.setMailer(mailer_object)
     thread.setQueuePath(queue_path)
     thread.start()
 
+ 
 
 
 def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"):
@@ -60,15 +64,12 @@ def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"
             'attachment; filename="%s"' % os.path.basename(f))
         msg.attach(part)
 
-    #smtp = smtplib.SMTP(server)
     mailer = zope.component.getUtility(
         zope.sendmail.interfaces.IMailDelivery,
         name=u'flg.maildelivery'
         )
     mailer.send(send_from, send_to, msg.as_string())
 
-    #smtp.sendmail(send_from, send_to, msg.as_string())
-    #smtp.close()
 
 grok.global_utility(
     mailer,
@@ -79,5 +80,3 @@ grok.global_utility(
     zope.sendmail.interfaces.IMailDelivery,
     name='flg.maildelivery')
 start_processor_thread()
-
-#send_mail('fernlehrgang@bghw.de', ('ck@novareto.de',), 'bb', 'bb', server="mail.bghw.de")
