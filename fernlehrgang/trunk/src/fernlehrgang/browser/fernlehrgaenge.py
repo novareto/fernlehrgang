@@ -13,7 +13,7 @@ from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable import TablePage, GetAttrColumn, LinkColumn
+from megrok.z3ctable import GetAttrColumn, LinkColumn
 from uvc.layout import TablePage
 from z3c.saconfig import Session
 from zeam.form.base import Fields
@@ -94,7 +94,7 @@ class Edit(models.Edit):
 class ID(GetAttrColumn):
     grok.name('Id')
     grok.context(IFernlehrgangApp)
-    weight = 5 
+    weight = 5
     header = u"Id"
     attrName = u"id"
 
@@ -115,34 +115,3 @@ class Jahr(GetAttrColumn):
     weight = 20
     header = u"Jahr"
     attrName = u"jahr"
-
-
-#import elementtree.ElementTree as ET
-#from elementtree.ElementTree import Element
-#class CreateXML(grok.View):
-#    grok.context(IFernlehrgang)
-#    xml = ""
-#
-#    def update(self):
-#        from elementtree.SimpleXMLWriter import XMLWriter
-#        import sys
-#        fernlehrgang = self.context
-
-#        w = XMLWriter('/Users/cklinger/Desktop/t.xml')
-#        html = w.start("xml")
-#        w.start("fernlehrgang")
-#        w.element("id", str(fernlehrgang.id))
-#        w.element("titel", fernlehrgang.titel)
-#        w.element("jahr", str(fernlehrgang.jahr))
-#        w.end()
-#
-#        w.start("kursteilnehmer")
-#        for kursteilnehmer in fernlehrgang.kursteilnehmer:
-#            w.start("teilnehmer")
-#            w.element('id', str(kursteilnehmer.id))
-#            w.end()
-#        w.end()
-#        w.close(html)
-#
-#    def render(self):
-#        return self.xml

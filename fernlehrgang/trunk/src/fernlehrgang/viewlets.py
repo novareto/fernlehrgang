@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 
 import grok
@@ -15,7 +15,7 @@ from fernlehrgang.interfaces import IListing
 from fernlehrgang.models import Fernlehrgang
 from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
-from uvc.layout import IPersonalPreferences, MenuItem 
+from uvc.layout import IPersonalPreferences, MenuItem
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from uvc.layout.slots import managers
 
@@ -53,7 +53,7 @@ class GlobalMenuViewlet(grok.Viewlet):
         d = {}
         for fernlehrgang in session.query(Fernlehrgang).all():
             url = "%s/fernlehrgang/%s" % (
-                self.view.layout.application_url(), fernlehrgang.id)
+                self.view.application_url(), fernlehrgang.id)
             titel = fernlehrgang.titel
             if not fernlehrgang.jahr in d.keys():
                 d[fernlehrgang.jahr] = []
@@ -83,7 +83,7 @@ class ObjectActionMenu(viewlets.ContextualActions):
 
     def available(self):
         if IListing.providedBy(self.view):
-            return False 
+            return False
         return True
 
 #
@@ -132,7 +132,7 @@ class NavigationMenuViewlet(grok.Viewlet):
     grok.context(Interface)
     grok.viewletmanager(IAboveContent)
     grok.order(100)
-    
+
     def render(self):
         menu = NavigationMenu(self.context, self.request, self.view)
         menu.update()

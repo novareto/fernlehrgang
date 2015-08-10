@@ -1,5 +1,5 @@
 <ul tal:condition="viewlet.actions and viewlet.available()"
-  tal:attributes="id viewlet.id; class string: nav nav-pills">
+  tal:attributes="id viewlet.id; class string: nav nav-pills pull-right">
   <li class="dropdown">
   <a class="dropdown-toggle" data-toggle="dropdown">
     <span tal:content="viewlet.title" tal:condition="viewlet.title"> </span> <b class="caret"></b>
