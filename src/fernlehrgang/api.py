@@ -66,6 +66,8 @@ class HelperAPI(grok.XMLRPC):
         return False
 
     def changePW(self, teilnehmer_id, passwort):
+        if teilnehmer_id == "admin":
+            return False
         session = Session()
         ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
         if ret.count() != 1:
