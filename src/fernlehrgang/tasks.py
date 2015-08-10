@@ -22,9 +22,6 @@ def setupZCA(signal, sender):
     logger.log(logging.INFO, 'Starting Zope/Grok ENVIRONMENT')
 
 
-
-
-
 text = """ Im Anhang finden Sie die entsprechende Datei"""
 
                                                                                 
@@ -40,7 +37,6 @@ def export_abschlussliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, date
 def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
     from fernlehrgang.exports.versandliste_fernlehrgang import export
     session = Session()
-    import pdb; pdb.set_trace() 
     fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
     send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
@@ -69,9 +65,16 @@ def export_liste_kompetenzzentrum(flg_id, mail="cklinger@novareto.de"):
     send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
 
 
+from nva.asynctask.conf import celery_app
+import transaction
+
 @celery_app.task
 def notifications_for_ofg():
-    from fernlehrgang.exports.oflg import report
-    session = Session()
-    report(session)
-
+    #from fernlehrgang.exports.oflg import report
+    with transaction.manager as tm:
+        session = Session()
+        #rreport(session)
+        mail = "ck@novareto.de"
+        send_mail('fernlehrgang@bghw.de', (mail,), "TEST", text) 
+        from fernlehrgang import logger
+        logger.log(logging.DEBUG, 'STARTING DAILY WORK')

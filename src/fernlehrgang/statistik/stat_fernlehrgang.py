@@ -7,7 +7,7 @@ import grok
 from z3c import saconfig
 from zope import component
 from dolmen import menu
-from megrok import layout
+from grokcore import layout
 from sqlalchemy import func, and_
 from fernlehrgang import models
 

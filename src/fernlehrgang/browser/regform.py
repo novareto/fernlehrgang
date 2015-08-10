@@ -7,7 +7,7 @@ import grok
 
 from z3c.saconfig import Session
 from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
@@ -26,6 +26,10 @@ class AutoRegForm(Form):
     fields += Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'gespraech')
 
     ignoreRequest = False
+
+    def updateForm(self):
+        super(AutoRegForm, self).updateForm()
+        self.fields['passwort'].defaultValue = generatePassword()
 
     @action('Teilnehmer anlegen')
     def handle_save(self):
