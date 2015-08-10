@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
 
@@ -39,7 +39,7 @@ def setup_pau(PAU):
 
 
 class FernlehrgangApp(grok.Application, grok.Container):
-    grok.implements(IFernlehrgangApp) 
+    grok.implements(IFernlehrgangApp)
     grok.traversable(attr='benutzer')
 
     grok.local_utility(
@@ -48,7 +48,7 @@ class FernlehrgangApp(grok.Application, grok.Container):
         )
 
     grok.local_utility(
-        PluggableAuthentication, 
+        PluggableAuthentication,
         provides=IAuthentication,
         public=True,
         setup=setup_pau,
@@ -58,7 +58,7 @@ class FernlehrgangApp(grok.Application, grok.Container):
         return getUtility(IAuthenticatorPlugin, 'principals').user_folder
 
 
-class Index(models.Index):
+class Index(Page):
     grok.context(IFernlehrgangApp)
     title = u"Fernlehrgang"
     description = u"Testplattform Fernlehrgang"
@@ -177,15 +177,15 @@ class FaviconIco(grok.View):
         return "BLA"
 
 
-from zope.i18n.interfaces import IUserPreferredLanguages                        
+from zope.i18n.interfaces import IUserPreferredLanguages
 from zope.publisher.interfaces.http import IHTTPRequest
 
-class GermanBrowserLangugage(grok.Adapter):                                     
-    grok.context(IHTTPRequest)                                                  
-    grok.implements(IUserPreferredLanguages)                                    
-                                                                                
-    def getPreferredLanguages(self):                                            
-        return ['de', 'de-de'] 
+class GermanBrowserLangugage(grok.Adapter):
+    grok.context(IHTTPRequest)
+    grok.implements(IUserPreferredLanguages)
+
+    def getPreferredLanguages(self):
+        return ['de', 'de-de']
 
 
 from uvc.layout.interfaces import IHeaders

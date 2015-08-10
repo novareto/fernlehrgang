@@ -15,7 +15,7 @@ from email import Encoders
 from email.header import Header
 from zope.sendmail.mailer import SMTPMailer
 
-queue_path = "/root/fernlehrgang/prod/var/mq"
+queue_path = "/Users/christian/work/bghw/fernlehrgang/var/mq"
 
 mailer_object = SMTPMailer('mail.bghw.de', 25, force_tls=False)
 
@@ -35,7 +35,7 @@ def start_processor_thread():
     thread.setQueuePath(queue_path)
     thread.start()
 
- 
+
 
 
 def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"):
