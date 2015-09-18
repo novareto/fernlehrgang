@@ -8,8 +8,8 @@
     </dd> 
     <dt> Der Teilnehmer ist beschäftigt bei dem Unternehmen: <dt>
     <dd>
-    <span tal:content="context.unternehmen.mnr"> </span> <br>
-    <span tal:content="context.unternehmen.name"> </span>
+    <span tal:content="context.unternehmen_mnr"> </span> <br>
+    <!-- <span tal:content="context.unternehmen.name"> </span>-->
     </dd>
     <dt> Der Teilnehmer ist bei folgenden Lehrgängen angemeldet: </dt>
     <dd tal:repeat="ktl viewlet.res">

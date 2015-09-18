@@ -123,6 +123,24 @@ class NavigationMenu(menu.Menu):
     grok.context(Interface)
     menu_class = u'nav nav-tabs'
 
+    @property
+    def selected(self):
+        url = self.request.getURL()
+        for viewlet in self.viewlets:
+            if url.startswith(viewlet.url):
+                return viewlet
+        return None
+
+    def entries(self):
+        selected = self.selected
+        for idx, viewlet in enumerate(self.viewlets, 1):
+            if selected is None and idx == 1:
+                yield viewlet, 'active'
+            elif viewlet == selected:
+                yield viewlet, 'active'
+            else:
+                yield viewlet, ''
+
 
 class NavigationMenuTemplate(pagetemplate.PageTemplate):
     grok.view(NavigationMenu)

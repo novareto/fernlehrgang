@@ -5,7 +5,7 @@ from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
 DSN = config['dsn']
-#print DSN
+print DSN
 #DSN = 'oracle://flgprod:prodflg!@10.30.4.80/BGETest'
 
 ### FIX: engine_factory = EngineFactory(DSN, convert_unicode=True, encoding='utf-8', optimize_limits=True, echo=False)

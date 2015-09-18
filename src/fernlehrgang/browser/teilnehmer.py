@@ -17,7 +17,7 @@ from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
-from megrok.z3ctable import TablePage, Column, GetAttrColumn, LinkColumn
+from megrok.z3ctable import Column, GetAttrColumn, LinkColumn
 from profilestats import profile
 from uvc.layout.interfaces import IExtraInfo
 from fernlehrgang import Form, AddForm 
@@ -31,6 +31,7 @@ from zope.component import getMultiAdapter
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang.resources import register_js
 from fernlehrgang import fmtDate
+from uvc.layout import TablePage
 
 
 grok.templatedir('templates')
@@ -72,7 +73,7 @@ class AddTeilnehmer(AddForm):
     grok.title(u'Teilnehmer')
     label = u'Teilnehmer anlegen für Unternehmen'
 
-    fields = Fields(ITeilnehmer).omit('id')
+    fields = Fields(ITeilnehmer).omit('id') + Fields(IKursteilnehmer).select('branche', 'un_klasse')
     fields['kompetenzzentrum'].mode = "radio"
 
     def updateForm(self):
@@ -81,30 +82,17 @@ class AddTeilnehmer(AddForm):
 
     def create(self, data):
         data = no_value(data)
-        #lehrgang = data.pop('lehrgang')
-        lehrgang = None
-        kursteilnehmer = None
-        if lehrgang:
-            kursteilnehmer = Kursteilnehmer(
-                fernlehrgang_id=lehrgang,
-                status="A1", 
-                unternehmen_mnr=self.context.mnr)
+        self.context.brachne = data.pop('branche')
+        self.context.un_klasse = data.pop('un_klasse')
         teilnehmer = Teilnehmer(**data)
-        return (kursteilnehmer, teilnehmer)
+        teilnehmer.unternehmen_mnr=self.context.mnr
+        return teilnehmer
 
-    def add(self, object):
-        kursteilnehmer, teilnehmer = object
+    def add(self, teilnehmer):
         session = Session()
         self.context.teilnehmer.append(teilnehmer)
         self.tn = teilnehmer
         session.flush()
-        #if kursteilnehmer:
-        #    kursteilnehmer.teilnehmer = teilnehmer
-        #    kursteilnehmer.unternehmen = self.context
-        #    #if kursteilnehmer.fernlehrgang_id:
-        #    print "BBB----->", kursteilnehmer.fernlehrgang_id
-        #    fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
-        #    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
 
     def nextURL(self):
         self.flash(u'Der Teilnehmer wurde erfolgreich gespeichert')
@@ -155,7 +143,7 @@ class Register(Form):
     label = u"Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
 
-    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
+    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'branche', 'un_klasse')
 
     def update(self):
         register_js.need()
@@ -170,9 +158,9 @@ class Register(Form):
             kursteilnehmer = Kursteilnehmer(
                 fernlehrgang_id=data.get('fernlehrgang_id'),
                 status=data.get('status'),
-                un_klasse = data.get('un_klasse'),
-                branche = data.get('branche'),
-                unternehmen_mnr=self.context.unternehmen.mnr)
+                #    un_klasse = data.get('un_klasse'),
+                #    branche = data.get('branche'),
+                unternehmen_mnr=self.context.unternehmen_mnr)
             kursteilnehmer.teilnehmer = self.context
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
             print "ADD Kursteilnehmer to Fernlehrgang"

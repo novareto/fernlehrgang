@@ -15,7 +15,7 @@ from email import Encoders
 from email.header import Header
 from zope.sendmail.mailer import SMTPMailer
 
-queue_path = "/Users/christian/work/bghw/fernlehrgang/var/mq"
+queue_path = "/home/novareto/bghw/fernlehrgang/var/mq"
 
 mailer_object = SMTPMailer('mail.bghw.de', 25, force_tls=False)
 

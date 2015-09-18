@@ -90,14 +90,17 @@ class TeilnehmerSuche(Form):
             else:
                 name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
                 link_flg = "Kein Fernlehrgang"
-            unternehmen = '<a href="%s"> %s </a>' % (self.url(item.unternehmen), item.unternehmen.name)
+            rcu = []
+            for unt in item.unternehmen:
+                locate(root, unt, DefaultModel)
+                rcu.append('<a href="%s"> %s </a>' % (self.url(unt), unt.name))
             gebdat = ""
             if item.geburtsdatum:
                 gebdat = fmtDate(item.geburtsdatum)
             d = dict(name=name,
                      link_flg = link_flg,
                      gebdat = gebdat,
-                     unternehmen = unternehmen,
+                     unternehmen = ','.join(rcu),
                      vorname = item.vorname,
                      status = lfs.getTerm(kursteilnehmer.status).title,
                      bestanden = results['comment'])

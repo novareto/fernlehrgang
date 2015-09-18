@@ -13,20 +13,23 @@ from sqlalchemy.orm import relation, backref
 from sqlalchemy.ext.declarative import declarative_base
 
 from dolmen.content import IContent, schema
-
-from z3c.saconfig import Session
-from z3c.saconfig.interfaces import IEngineCreatedEvent
-
+from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.interfaces.antwort import IAntwort
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from megrok import traject
 from plone.memoize import ram, instance
-
+from sqlalchemy import *
+from sqlalchemy import TypeDecorator
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, relation, backref
+from z3c.saconfig import Session
+from z3c.saconfig.interfaces import IEngineCreatedEvent
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 
@@ -99,10 +102,12 @@ class Unternehmen(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr")
 
-    __tablename__ = 'adr'
+    __tablename__ = 'unternehmen'
+
+    #__tablename__ = 'adr'
 
     #id = Column("ID", Numeric, primary_key=True)
-    mnr = Column("MNR", MyStringType(12), primary_key=True, index=True)
+    mnr = Column("MNR", Integer, primary_key=True, index=True)
     name = Column("NAME1", String(32))
     name2 = Column("NAME2", String(32))
     name3 = Column("NAME3", String(32))
@@ -112,6 +117,8 @@ class Unternehmen(Base, RDBMixin):
     betriebsart = Column("BETRIEBSART", String(1))
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
+    un_klasse = Column(String(3))
+    branche = Column(String(5))
 
     @property
     def title(self):
@@ -127,6 +134,14 @@ class Unternehmen(Base, RDBMixin):
 
     def arguments(unternehmen):
         return dict(unternehmen_mnr = unternehmen.mnr)
+
+
+
+unternehmen_teilnehmer = Table(
+    'unternehmen_teilnehmer', Base.metadata,
+    Column('unternehmen_id', Integer, ForeignKey('unternehmen.MNR')),
+    Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
+)
 
 
 class Teilnehmer(Base, RDBMixin):
@@ -154,10 +169,15 @@ class Teilnehmer(Base, RDBMixin):
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
 
-    unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR'))
+    unternehmen_mnr = Column(Integer, ForeignKey(Unternehmen.mnr))
 
-    unternehmen = relation(Unternehmen,
-                           backref = backref('teilnehmer', order_by=id))
+    #unternehmen = relation(Unternehmen,
+    #                       backref = backref('teilnehmer', order_by=id))
+
+    unternehmen = relationship(
+        "Unternehmen",
+        secondary=unternehmen_teilnehmer, backref="teilnehmer"
+        )
 
     @property
     def title(self):
@@ -258,15 +278,13 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String(12), ForeignKey('adr.MNR',))
-    un_klasse = Column(String(3))
-    branche = Column(String(5))
+    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.MNR',))
     gespraech = Column(String(20))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
-    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    #unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     @property
     def title(self):

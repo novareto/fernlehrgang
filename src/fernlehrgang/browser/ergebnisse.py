@@ -107,7 +107,7 @@ class CalculateResults(grok.Adapter):
                 return 0
         return gewichtung
 
-    def summary(self, lehrhefte=None, session=None):
+    def summary(self, lehrhefte=None, session=None, unternehmen=None):
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context

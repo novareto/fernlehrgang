@@ -39,5 +39,7 @@ $(document).ready(function() {
      $('form table').hide();
   }
 
-  $(".G-select").attr('checked', 'checked');
+    $(".G-select").attr('checked', 'checked');
+
+    $(".tabbable.responsive").resptabs(); 
 }); 

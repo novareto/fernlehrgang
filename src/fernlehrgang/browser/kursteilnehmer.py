@@ -51,13 +51,16 @@ class KursteilnehmerListing(Form):
         lf_vocab = lieferstopps(None)
         for teilnehmer, kursteilnehmer in self.results:
             locate(root, kursteilnehmer, DefaultModel)
-            locate(root, teilnehmer.unternehmen, DefaultModel)
+            #locate(root, teilnehmer.unternehmen, DefaultModel)
             name = '<a href="%s"> %s %s </a>' %(self.url(kursteilnehmer), teilnehmer.name, teilnehmer.vorname)
-            unternehmen = '<a href="%s"> %s %s </a>' %(self.url(teilnehmer.unternehmen), teilnehmer.unternehmen.mnr, teilnehmer.unternehmen.name)
+            rcu = []
+            for unt in teilnehmer.unternehmen:
+                locate(root, unt, DefaultModel)
+                rcu.append('<a href="%s"> %s %s </a>' %(self.url(unt), unt.mnr, unt.name))
             r = dict(name=name,
                      id = teilnehmer.id,
                      status=lf_vocab.getTerm(kursteilnehmer.status).title,
-                     unternehmen=unternehmen)
+                     unternehmen=','.join(rcu))
             yield r 
 
     def update(self):

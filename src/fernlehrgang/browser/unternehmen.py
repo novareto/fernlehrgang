@@ -84,7 +84,7 @@ class UnternehmenListing(Form):
         if not v:
             self.flash(u'Bitte geben Sie die Suchkriterien ein.')
             return
-        sql = sql.filter(func.length(Unternehmen.mnr) == 9)
+        ### FIXME length between (100000000 and 1000000000) instead of --> sql = sql.filter(func.length(Unternehmen.mnr) == 9)
         self.results = sql.all()
 
 
