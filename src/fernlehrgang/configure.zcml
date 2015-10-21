@@ -27,5 +27,10 @@
 
   <browser:defaultSkin name="tbskin" />
 
+  <browser:defaultView
+      name="index"
+      for="fernlehrgang.models.GodData"
+      />
+  
   <grok:grok package="." />
 </configure>

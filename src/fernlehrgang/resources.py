@@ -16,10 +16,14 @@ from uvc.tbskin.resources import TBSkinViewlet
 
 library = Library('fernlehrgang', 'static')
 
+chosen_js = Resource(library, 'chosen.jquery.js', depends=[jquery])
+chosen_css = Resource(library, 'chosen.css', depends=[chosen_js])
+btchosen = Resource(library, 'chosen.bootstrap.css', depends=[chosen_css])
+
 css = Resource(library, 'flg.css', depends=[DatePickerCSS])
 responsive = Resource(library, 'responsive.css')
 tabs = Resource(library, 'tabs.js', depends=[responsive, bootstrap_js, jquery])
-js = Resource(library, 'flg.js', depends=[tabs, double, ])
+js = Resource(library, 'flg.js', depends=[tabs, double, btchosen])
 register_js = Resource(library, 'register.js', depends=[jquery])
 
 

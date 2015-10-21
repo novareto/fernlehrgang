@@ -9,29 +9,34 @@ from dolmen.app.layout import models, IDisplayView
 from dolmen.forms.base.utils import set_fields_data, apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
+from fernlehrgang import Form, AddForm 
+from fernlehrgang import fmtDate
 from fernlehrgang.interfaces import IListing
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.models import Teilnehmer, Kursteilnehmer, Fernlehrgang
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
+from fernlehrgang.interfaces.teilnehmer import generatePassword
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.models import Unternehmen, Teilnehmer
+from fernlehrgang.models import Kursteilnehmer, Fernlehrgang
+from fernlehrgang.resources import register_js
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import Column, GetAttrColumn, LinkColumn
 from profilestats import profile
+from uvc.layout import TablePage
 from uvc.layout.interfaces import IExtraInfo
-from fernlehrgang import Form, AddForm 
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
 from zeam.form.base.markers import SUCCESS, FAILURE
-from fernlehrgang.interfaces.teilnehmer import generatePassword
-from zope.interface import Interface
 from zope.component import getMultiAdapter
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang.resources import register_js
-from fernlehrgang import fmtDate
-from uvc.layout import TablePage
+from zope.interface import Interface
+from zope.schema import Set, Choice
+from grokcore.component import provider
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 
 grok.templatedir('templates')
@@ -135,6 +140,50 @@ class Edit(models.Edit):
         self.redirect(self.url(self.context))
 
 
+@provider(IContextSourceBinder)
+def voc_unternehmen(context):
+    session = Session()
+    items = []
+    for unternehmen in session.query(Unternehmen).all():
+        items.append(SimpleTerm(
+            unternehmen, unternehmen.mnr, unternehmen.name))
+    return SimpleVocabulary(items)
+
+
+class ICompany(Interface):
+
+    unternehmen = Set(
+        title=u"Unternehmen",
+        value_type=Choice(source=voc_unternehmen),
+        required=False)
+
+
+class AssignCompany(models.Edit):
+    grok.context(ITeilnehmer)
+    grok.name('assign_company')
+    label = u"Teilnehmer"
+
+    #fields = Fields(ITeilnehmer).select('unternehmen')
+    fields = Fields(ICompany)
+    fields['unternehmen'].mode = 'multiselect'
+    
+    @action('Assign')
+    def handle_edit(self):
+        data, errors = self.extractData()
+        if errors:
+            self.submissionError = errors
+            return FAILURE
+        data['unternehmen'] = list(data['unternehmen'])
+        apply_data_event(self.fields, self.getContentData(), data)
+        self.flash(_(u"Content updated"))
+        self.redirect(self.url(self.context))
+
+    @action('Abbrechen')
+    def handle_cancel(self):
+        self.flash(u'Ihre Aktion wurde abgebrochen.')
+        self.redirect(self.url(self.context))
+
+        
 @menuentry(NavigationMenu, order=200)
 class Register(Form):
     grok.context(ITeilnehmer)

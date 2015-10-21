@@ -1,5 +1,7 @@
 $(document).ready(function() { 
 
+  $('select[name="form.field.unternehmen"]').chosen({}).
+    
   $('div.subform table').addClass('table table-striped table-bordered table-condensed');
   $('div.subform form table select').attr('disabled', 'disabled');
 

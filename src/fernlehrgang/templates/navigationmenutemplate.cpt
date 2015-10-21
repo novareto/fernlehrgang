@@ -4,6 +4,7 @@
       tal:attributes="id viewletmanager.id; class viewletmanager.menu_class;">
     <li tal:attributes="class action[1]"
 	tal:repeat="action viewletmanager.entries()">
+      <span tal:content="action"/>
       <tal:entry content="structure action[0].render()" />
     </li>
   </ul>

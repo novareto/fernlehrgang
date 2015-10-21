@@ -7,27 +7,33 @@ import uvc.layout
 
 from dolmen.app.layout import models
 from dolmen.menu import menuentry
+from fernlehrgang import Form, AddForm, fmtDate
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.models import Unternehmen
+from fernlehrgang.models import Unternehmen, GodData
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from fernlehrgang.viewlets import NavigationMenu
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
+from sqlalchemy import func
+from uvc.layout import Page
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
-from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import Form, AddForm, fmtDate
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from sqlalchemy import func
 
 
 NO_VALUE = ""
 
 
 grok.templatedir('templates')
+
+
+class GodDataIndex(Page):
+    grok.context(GodData)
+    grok.name('index')
 
 
 @menuentry(NavigationMenu)

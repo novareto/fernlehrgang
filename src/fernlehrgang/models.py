@@ -15,13 +15,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from dolmen.content import IContent, schema
 from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.lehrheft import ILehrheft
+from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces.god import IGodData
 from megrok import traject
 from plone.memoize import ram, instance
 from sqlalchemy import *
@@ -33,7 +34,9 @@ from z3c.saconfig.interfaces import IEngineCreatedEvent
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 
-from sqlalchemy import TypeDecorator
+
+Base = declarative_base()
+
 
 class MyStringType(TypeDecorator):
     impl = String
@@ -42,10 +45,6 @@ class MyStringType(TypeDecorator):
         if value is not None and dialect.name == "oracle":
             value = value.encode('utf-8')
         return value
-
-
-
-Base = declarative_base()
 
 
 @grok.subscribe(IEngineCreatedEvent)
@@ -97,11 +96,17 @@ class Fernlehrgang(Base, RDBMixin):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
+class GodData(object):
+    def __init__(self, unternehmen):
+        self.unternehmen = unternehmen
+
+
 class Unternehmen(Base, RDBMixin):
     grok.implements(IUnternehmen, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr")
-
+    grok.traversable(attr='god_data')
+    
     __tablename__ = 'unternehmen'
 
     #__tablename__ = 'adr'
@@ -117,8 +122,10 @@ class Unternehmen(Base, RDBMixin):
     betriebsart = Column("BETRIEBSART", String(1))
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
-    un_klasse = Column(String(3))
-    branche = Column(String(5))
+
+    @property
+    def god_data(self):
+        return GodData(self)
 
     @property
     def title(self):
@@ -190,6 +197,39 @@ class Teilnehmer(Base, RDBMixin):
         session = Session()
         return session.query(Teilnehmer).filter(
             and_(Teilnehmer.id == id, Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
+
+    def arguments(teilnehmer):
+        return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
+
+
+class GodData(Base, RDBMixin):
+    grok.implements(IGodData, IDCDescriptiveProperties)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("unternehmen/:unternehmen_mnr/goddata/:id")
+
+    __tablename__ = 'goddata'
+
+    id = Column(Integer, Sequence('goddata_seq', start=100000, increment=1), primary_key=True)
+    un_klasse = Column(String(3))
+    branche = Column(String(5))
+    gespraech = Column(String(20))
+
+    unternehmen_mnr = Column(Integer, ForeignKey(Unternehmen.mnr))
+
+    unternehmen = relation(Unternehmen,
+                           backref = backref('goddata', order_by=id))
+
+    @property
+    def title(self):
+        return u"GOD-Daten für %s %s" % ('context.mnr', 'context.name1')
+
+    def __repr__(self):
+        return "<GodData(id='%s')>" %(self.id)
+
+    def factory(id, unternehmen_mnr):
+        session = Session()
+        return session.query(GodData).filter(
+            and_(GodData.id == id, GodData.unternehmen_mnr == unternehmen_mnr)).one()
 
     def arguments(teilnehmer):
         return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
@@ -278,13 +318,12 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String(12), ForeignKey('unternehmen.MNR',))
-    gespraech = Column(String(20))
+    unternehmen_mnr = Column(Integer, ForeignKey('unternehmen.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
-    #unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     @property
     def title(self):
