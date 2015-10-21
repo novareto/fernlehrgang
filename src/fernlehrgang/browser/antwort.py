@@ -23,6 +23,7 @@ from uvc.layout.interfaces import IExtraInfo
 from uvc.layout import Page
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang import AddForm, Form
+from uvc.layout import TablePage
 
 grok.templatedir('templates')
 

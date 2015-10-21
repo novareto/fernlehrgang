@@ -22,7 +22,7 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.interfaces.god import IGodData
+from fernlehrgang.interfaces.gbo import IGBOData
 from megrok import traject
 from plone.memoize import ram, instance
 from sqlalchemy import *
@@ -96,10 +96,6 @@ class Fernlehrgang(Base, RDBMixin):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
-class GodData(object):
-    def __init__(self, unternehmen):
-        self.unternehmen = unternehmen
-
 
 class Unternehmen(Base, RDBMixin):
     grok.implements(IUnternehmen, IDCDescriptiveProperties)
@@ -122,10 +118,6 @@ class Unternehmen(Base, RDBMixin):
     betriebsart = Column("BETRIEBSART", String(1))
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
-
-    @property
-    def god_data(self):
-        return GodData(self)
 
     @property
     def title(self):
@@ -202,8 +194,8 @@ class Teilnehmer(Base, RDBMixin):
         return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
 
 
-class GodData(Base, RDBMixin):
-    grok.implements(IGodData, IDCDescriptiveProperties)
+class GBOData(Base, RDBMixin):
+    grok.implements(IGBOData, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr/goddata/:id")
 
@@ -212,24 +204,23 @@ class GodData(Base, RDBMixin):
     id = Column(Integer, Sequence('goddata_seq', start=100000, increment=1), primary_key=True)
     un_klasse = Column(String(3))
     branche = Column(String(5))
-    gespraech = Column(String(20))
 
     unternehmen_mnr = Column(Integer, ForeignKey(Unternehmen.mnr))
 
     unternehmen = relation(Unternehmen,
-                           backref = backref('goddata', order_by=id))
+                           backref = backref('gbodata', order_by=id, uselist=False))
 
     @property
     def title(self):
-        return u"GOD-Daten für %s %s" % ('context.mnr', 'context.name1')
+        return u"GBO-Daten für %s %s" % ('context.mnr', 'context.name1')
 
     def __repr__(self):
-        return "<GodData(id='%s')>" %(self.id)
+        return "<GBOData(id='%s')>" %(self.id)
 
     def factory(id, unternehmen_mnr):
         session = Session()
-        return session.query(GodData).filter(
-            and_(GodData.id == id, GodData.unternehmen_mnr == unternehmen_mnr)).one()
+        return session.query(GBOData).filter(
+            and_(GBOData.id == id, GBOData.unternehmen_mnr == unternehmen_mnr)).one()
 
     def arguments(teilnehmer):
         return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
@@ -320,6 +311,7 @@ class Kursteilnehmer(Base, RDBMixin):
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
     unternehmen_mnr = Column(Integer, ForeignKey('unternehmen.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
+    gespraech = Column(String(20))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))

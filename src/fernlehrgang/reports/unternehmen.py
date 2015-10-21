@@ -67,13 +67,13 @@ class UnternehmenSuche(Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Kursteilnehmer, Teilnehmer, Unternehmen)
-        sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
-        sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
+        sql = session.query(Unternehmen)
+        #sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
+        #sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
         if data.get('mnr') != "":
             v = True
             constraint = "%%%s%%" % data.get('mnr')
-            sql = sql.filter(Unternehmen.mnr.like(constraint))
+            sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
         if data.get('mnr_g_alt') != "":
             v = True
             constraint = "%%%s%%" % data.get('mnr_g_alt')
@@ -85,24 +85,26 @@ class UnternehmenSuche(Form):
         if not v:
             self.flash(u'Bitte geben Sie entsprechende Kriterien ein.')
             return
-        for kursteilnehmer, teilnehmer, unternehmen in sql.all():
-            results = ICalculateResults(kursteilnehmer).summary()
-            flg = kursteilnehmer.fernlehrgang
-            self.locateit(flg)
-            self.locateit(unternehmen)
-            self.locateit(kursteilnehmer)
-            link_flg = self.url(flg)
-            link_unternehmen = self.url(unternehmen)
-            link_kursteilnehmer = self.url(kursteilnehmer)
-            rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr + ' ' + kursteilnehmer.fernlehrgang.titel,
-                           link_flg = link_flg,
-                           name = teilnehmer.name,
-                           vorname = teilnehmer.vorname,
-                           link_kt = link_kursteilnehmer,
-                           id = teilnehmer.id,
-                           unternehmen = unternehmen.name,
-                           link_unternehmen = link_unternehmen,
-                           mnr = unternehmen.mnr,
-                           bestanden = results['comment'],
-                          ))
-        self.results = rc
+        for unternehmen in sql.all():
+            for teilnehmer in unternehmen.teilnehmer:
+                for kursteilnehmer in teilnehmer.kursteilnehmer:
+                    results = ICalculateResults(kursteilnehmer).summary(unternehmen=unternehmen)
+                    flg = kursteilnehmer.fernlehrgang
+                    self.locateit(flg)
+                    self.locateit(unternehmen)
+                    self.locateit(kursteilnehmer)
+                    link_flg = self.url(flg)
+                    link_unternehmen = self.url(unternehmen)
+                    link_kursteilnehmer = self.url(kursteilnehmer)
+                    rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr + ' ' + kursteilnehmer.fernlehrgang.titel,
+                                    link_flg = link_flg,
+                                    name = teilnehmer.name,
+                                    vorname = teilnehmer.vorname,
+                                    link_kt = link_kursteilnehmer,
+                                    id = teilnehmer.id,
+                                    unternehmen = unternehmen.name,
+                                    link_unternehmen = link_unternehmen,
+                                    mnr = unternehmen.mnr,
+                                    bestanden = results['comment'],
+                                    ))
+                    self.results = rc

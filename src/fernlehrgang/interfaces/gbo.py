@@ -7,7 +7,7 @@ from zope.schema import Choice
 from .kursteilnehmer import janein, un_klasse, gespraech
 
 
-class IGodData(Interface):
+class IGBOData(Interface):
 
     un_klasse = Choice(
         title=u"Mitarbeiteranzahl",

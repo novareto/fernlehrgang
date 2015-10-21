@@ -24,13 +24,8 @@
   <include package="dolmen.app.breadcrumbs" />
 
   <include package="grokcore.chameleon" />
+  <include package="megrok.pagetemplate" file="meta.zcml" />
 
   <browser:defaultSkin name="tbskin" />
-
-  <browser:defaultView
-      name="index"
-      for="fernlehrgang.models.GodData"
-      />
-  
   <grok:grok package="." />
 </configure>

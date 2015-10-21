@@ -18,9 +18,20 @@ from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
 from uvc.layout import IPersonalPreferences, MenuItem
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from uvc.layout.slots import managers
-
+from uvc.layout.slots.menuviewlets import PersonalPreferencesViewlet, PersonalPreferencesTemplate
+from uvc.tbskin.skin import ITBSkinLayer
 
 grok.templatedir('templates')
+
+
+class PersonalPreferencesTemplate(PersonalPreferencesTemplate):
+    grok.view(PersonalPreferencesViewlet)
+    grok.layer(ITBSkinLayer)
+#    template = None
+
+    def render(self):
+        return u"HALLLO"
+
 
 class UserName(MenuItem):
     """ User Viewlet"""

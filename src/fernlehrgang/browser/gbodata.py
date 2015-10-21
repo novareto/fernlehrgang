@@ -4,41 +4,37 @@
 
 import grok
 
-from dolmen.app.layout import models, IDisplayView
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.god import IGodData
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.models import GodData
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang import Form
 from zeam.form.base import Fields
 from zeam.form.base import action
-from fernlehrgang import Form
+from megrok.traject import locate
+from fernlehrgang.models import GBOData
+from dolmen.menu import Entry, menu, menuentry
+from fernlehrgang.interfaces.gbo import IGBOData
+from dolmen.app.layout import models, IDisplayView
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
 
 
 @menuentry(AddMenu)
-class AddKursteilnehmer(Form):
+class AddBGODaten(Form):
     grok.context(IUnternehmen)
     grok.title(u'GOD-Daten')
     label = u'GOD-Daten anlegen'
     description = u'GOD-Daten anlegen'
 
-    fields = Fields(IGodData).omit('id')
+    fields = Fields(IGBOData).omit('id')
 
     @action(u'Anlegen')
     def handleSearch(self):
         data, errors = self.extractData()
         if errors:
             return
-        gd = GodData(**data)
+        gd = GBOData(**data)
         self.context.goddata.append(gd)
         self.redirect(self.url(self.context, 'index'))
 
 
-from megrok.traject import locate
-from uvc.layout import Page
-
-from dolmen.menu import Entry, menu
 class GodMenu(Entry):
     grok.implements(IDisplayView)
     menu(NavigationMenu)
@@ -50,22 +46,24 @@ class GodMenu(Entry):
 
     @property
     def url(self):
-        return "%s/goddata/%s" % (self.context.mnr, self.context.goddata[0].id)
+        if len(self.context.goddata) > 0:
+            return "%s/goddata/%s" % (self.context.mnr, self.context.goddata[0].id)
+        return ""
 
 
 class Index(models.DefaultView):
-    grok.context(IGodData)
+    grok.context(IGBOData)
     grok.title(u'View')
     title = label = u"God-Daten"
     description = u"Details GOD-Daten"
 
-    fields = Fields(IGodData).omit(id)
+    fields = Fields(IGBOData).omit(id)
 
 
 class Edit(models.Edit):
-    grok.context(IGodData)
+    grok.context(IGBOData)
     grok.name('edit')
     grok.title(u'Edit')
 
-    fields = Fields(IGodData).omit('id')
+    fields = Fields(IGBOData).omit('id')
     fields['branche'].mode = "radio"

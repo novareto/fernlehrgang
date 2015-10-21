@@ -108,6 +108,7 @@ class CalculateResults(grok.Adapter):
         return gewichtung
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
+        print unternehmen
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context
@@ -120,23 +121,30 @@ class CalculateResults(grok.Adapter):
         elif punkte >= mindest_punktzahl:
             comment = "Bestanden"
         # Abschlussgespräch Seminar
-        if True:
-            if context.branche == "ja":
-                if context.un_klasse == 'G2':
-                    if context.gespraech == '2':
-                        comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
-                    elif context.gespraech == '0':
-                        comment = u'Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.'
-                if context.un_klasse == 'G3':
-                    if context.gespraech == '2':
-                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
-                    elif context.gespraech == '0':
-                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
-            elif context.branche == "nein":
-                if context.un_klasse == 'G2':
-                    if context.gespraech == '2':
-                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
-                    elif context.gespraech == '0':
-                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
+        if not unternehmen:
+            unternehmen = context.unternehmen
+        if unternehmen.gbodata:
+            branche = unternehmen.gbodata.branche
+            un_klasse = unternehmen.gbodata.un_klasse
+            if comment == "Bestanden":
+                if branche == "ja":
+                    if un_klasse == 'G2':
+                        if context.gespraech == '2':
+                            comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
+                        elif context.gespraech == '0':
+                            comment = u'Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.'
+                    if un_klasse == 'G3':
+                        if context.gespraech == '2':
+                            comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                        elif context.gespraech == '0':
+                            comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
+                elif branche == "nein":
+                    if un_klasse == 'G2':
+                        if context.gespraech == '2':
+                            comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                        elif context.gespraech == '0':
+                            comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
 
+        else:
+            comment = u"%s - %s" % (comment, u'Achtung keine Branchen & Gruppeninformationen für %s vorhanden' % unternehmen.mnr)
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)

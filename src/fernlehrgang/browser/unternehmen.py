@@ -11,7 +11,7 @@ from fernlehrgang import Form, AddForm, fmtDate
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.models import Unternehmen, GodData
+from fernlehrgang.models import Unternehmen
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from fernlehrgang.viewlets import NavigationMenu
 from grokcore.chameleon.components import ChameleonPageTemplateFile
@@ -29,11 +29,6 @@ NO_VALUE = ""
 
 
 grok.templatedir('templates')
-
-
-class GodDataIndex(Page):
-    grok.context(GodData)
-    grok.name('index')
 
 
 @menuentry(NavigationMenu)

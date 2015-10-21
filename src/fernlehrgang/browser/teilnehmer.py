@@ -37,6 +37,7 @@ from zope.schema import Set, Choice
 from grokcore.component import provider
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from uvc.layout import TablePage
 
 
 grok.templatedir('templates')

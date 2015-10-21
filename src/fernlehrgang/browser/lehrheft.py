@@ -19,6 +19,7 @@ from zeam.form.base import Fields
 from fernlehrgang.interfaces import IListing
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang import AddForm
+from uvc.layout import TablePage
 
 
 grok.templatedir('templates')

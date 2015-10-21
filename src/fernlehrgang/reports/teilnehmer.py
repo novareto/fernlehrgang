@@ -78,7 +78,7 @@ class TeilnehmerSuche(Form):
         lfs = lieferstopps(None)
         for kursteilnehmer, item in self.results:
             locate(root, item, DefaultModel)
-            locate(root, item.unternehmen, DefaultModel)
+            #locate(root, item.unternehmen, DefaultModel)
             results = {"comment": "Kein Fernlehrgang."}
             if kursteilnehmer.fernlehrgang:
                 results = ICalculateResults(kursteilnehmer).summary()
@@ -93,17 +93,18 @@ class TeilnehmerSuche(Form):
             rcu = []
             for unt in item.unternehmen:
                 locate(root, unt, DefaultModel)
-                rcu.append('<a href="%s"> %s </a>' % (self.url(unt), unt.name))
+                res = ICalculateResults(kursteilnehmer).summary(unternehmen=unt)
+                rcu.append('<a href="%s"> %s (%s) </a>' % (self.url(unt), unt.name, res['comment']))
             gebdat = ""
             if item.geburtsdatum:
                 gebdat = fmtDate(item.geburtsdatum)
             d = dict(name=name,
                      link_flg = link_flg,
                      gebdat = gebdat,
-                     unternehmen = ','.join(rcu),
+                     unternehmen = '<br>'.join(rcu),
                      vorname = item.vorname,
                      status = lfs.getTerm(kursteilnehmer.status).title,
-                     bestanden = results['comment'])
+                     bestanden = "") # results['comment'])
             yield d
 
     @action(u'Suchen')
