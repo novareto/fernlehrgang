@@ -1,0 +1,5 @@
+<div>
+  <span tal:content="context.branche" />
+  <span tal:content="context.un_klasse" />
+  <span tal:content="context.gespraech" />
+</div>
