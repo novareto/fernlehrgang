@@ -10,6 +10,7 @@ from dolmen import menu
 from grokcore import layout
 from sqlalchemy import func, and_
 from fernlehrgang import models
+from uvc.layout import Page
 
 
 from fernlehrgang.interfaces.flg import IFernlehrgang
@@ -24,7 +25,7 @@ grok.templatedir('templates')
 
 
 @menu.menuentry(NavigationMenu, order=300)
-class FernlehrgangStatistik(layout.Page):
+class FernlehrgangStatistik(Page):
     grok.context(IFernlehrgang)
     grok.title(u"Statistik")
 

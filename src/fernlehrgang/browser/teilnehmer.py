@@ -50,7 +50,7 @@ def no_value(d):
     return d
 
 
-@menuentry(NavigationMenu)
+@menuentry(NavigationMenu, order=20)
 class TeilnehmerListing(TablePage):
     grok.implements(IDisplayView, IListing)
     grok.context(IUnternehmen)
@@ -105,6 +105,7 @@ class AddTeilnehmer(AddForm):
         return "%s/teilnehmer/%s" %(self.url(), self.tn.id)
 
 
+menuentry(NavigationMenu, order=10)
 class Index(models.DefaultView):
     grok.context(ITeilnehmer)
     title = label = u"Teilnehmer"
@@ -159,9 +160,11 @@ class ICompany(Interface):
         required=False)
 
 
+@menuentry(NavigationMenu, order=40)
 class AssignCompany(models.Edit):
     grok.context(ITeilnehmer)
     grok.name('assign_company')
+    grok.title(u'Unternehmen des Teilnehmers')
     label = u"Teilnehmer"
 
     #fields = Fields(ITeilnehmer).select('unternehmen')

@@ -3,7 +3,6 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
 from megrok.traject import locate
 from dolmen.menu import menuentry
@@ -11,8 +10,7 @@ from fernlehrgang.models import Lehrheft
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from megrok.z3ctable import (TablePage,
-    CheckBoxColumn, LinkColumn, GetAttrColumn)
+from megrok.z3ctable import LinkColumn, GetAttrColumn
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from dolmen.app.layout import models, IDisplayView
 from zeam.form.base import Fields
@@ -72,9 +70,12 @@ class AddLehrheft(AddForm):
         return self.url(self.context, 'lehrheft_listing')
 
 
+@menuentry(NavigationMenu, order=1)
 class Index(models.DefaultView):
     grok.context(ILehrheft)
     grok.name('index')
+    grok.title(u'Lehrheft')
+    grok.order(51)
     title = label = u"Lehrheft"
     description = u"Details zu Ihrem Lehrheft"
     fields = Fields(ILehrheft).omit(id)
@@ -90,17 +91,17 @@ class Edit(models.Edit):
     @property
     def description(self):
         return u"Hier können Sie das '%s' vom Fernlehrgang '%s' bearbeiten." % (
-                self.context.titel, 'MUSS')
+            self.context.titel, 'MUSS')
 
     fields = Fields(ILehrheft).omit('id')
 
 
-## Spalten
+# Spalten
 
 class Id(GetAttrColumn):
     grok.name('id')
     grok.context(IFernlehrgang)
-    weight = 5 
+    weight = 5
     attrName = "id"
     header = "Id"
 

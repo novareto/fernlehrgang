@@ -133,7 +133,6 @@ class Edit(models.Edit):
     fields = Fields(IKursteilnehmer).omit('id')
     fields['teilnehmer_id'].mode = 'hiddendisplay'
     fields['fernlehrgang_id'].mode = 'hiddendisplay'
-    fields['branche'].mode = "radio"
 
 
 @menuentry(NavigationMenu)

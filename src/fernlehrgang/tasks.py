@@ -25,44 +25,44 @@ def setupZCA(signal, sender):
 text = """ Im Anhang finden Sie die entsprechende Datei"""
 
                                                                                 
-@zope_task                                                                
-def export_abschlussliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.abschlussliste_fernlehrgang import export
-    session = Session()
-    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
+#@zope_task                                                                
+#def export_abschlussliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
+#    from fernlehrgang.exports.abschlussliste_fernlehrgang import export
+#    session = Session()
+#    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+#    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 
-@zope_task                                                                
-def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.versandliste_fernlehrgang import export
-    session = Session()
-    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
+#@zope_task                                                                
+#def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
+#    from fernlehrgang.exports.versandliste_fernlehrgang import export
+#    session = Session()
+#    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+#    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 
-@zope_task                                                                
-def export_versandliste_fortbildung(flg_ids, stichtag, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.versandliste_fortbildung import export
-    session = Session()
-    fn = export(session, flg_ids, stichtag) 
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,]) 
+#@zope_task                                                                
+#def export_versandliste_fortbildung(flg_ids, stichtag, mail="cklinger@novareto.de"):
+#    from fernlehrgang.exports.versandliste_fortbildung import export
+#    session = Session()
+#    fn = export(session, flg_ids, stichtag) 
+#    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,]) 
 
 
-@zope_task                                                                
-def export_statusliste(flg_id, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.statusliste import export
-    session = Session()
-    fn = export(session, flg_id) 
-    send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,]) 
+#@zope_task                                                                
+#def export_statusliste(flg_id, mail="cklinger@novareto.de"):
+#    from fernlehrgang.exports.statusliste import export
+#    session = Session()
+#    fn = export(session, flg_id) 
+#    send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,]) 
 
 
-@zope_task                                                                
-def export_liste_kompetenzzentrum(flg_id, mail="cklinger@novareto.de"):
-    from fernlehrgang.exports.listekompetenzzentrum import export
-    session = Session()
-    fn = export(session, flg_id) 
-    send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
+#@zope_task                                                                
+#def export_liste_kompetenzzentrum(flg_id, mail="cklinger@novareto.de"):
+#    from fernlehrgang.exports.listekompetenzzentrum import export
+#    session = Session()
+#    fn = export(session, flg_id) 
+#    send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
 
 
 from nva.asynctask.conf import celery_app
@@ -77,4 +77,5 @@ def notifications_for_ofg():
         mail = "ck@novareto.de"
         send_mail('fernlehrgang@bghw.de', (mail,), "TEST", text) 
         from fernlehrgang import logger
+        1/0
         logger.log(logging.DEBUG, 'STARTING DAILY WORK')

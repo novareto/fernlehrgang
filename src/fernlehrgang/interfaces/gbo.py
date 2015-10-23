@@ -24,11 +24,3 @@ class IGBOData(Interface):
         source=janein,
         default='nein',
         )
-
-    gespraech = Choice(
-        title=u"Abschlussgesräch / Abschlusseminar",
-        description=u'Wie hat der Teilnehmer, falls nötig, das \
-                Abschlussgespräch / Abschussseminar absolviert?',
-        required=True,
-        source=gespraech,
-        )

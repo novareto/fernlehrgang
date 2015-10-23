@@ -17,7 +17,7 @@ from zope.sendmail.mailer import SMTPMailer
 
 queue_path = "/Users/ck/work/bghw/fernlehrgang/var/mq"
 
-mailer_object = SMTPMailer('mail.bghw.de', 25, force_tls=False)
+mailer_object = SMTPMailer('localhost', 25, force_tls=False)
 
 
 def mailer():

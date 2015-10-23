@@ -3,7 +3,6 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
 from dolmen.menu import menuentry
@@ -72,7 +71,9 @@ class AddFernlehrgang(AddForm):
         return url
 
 
+@menuentry(NavigationMenu)
 class Index(models.DefaultView):
+    grok.title('Fernlehrgang')
     grok.context(IFernlehrgang)
     fields = Fields(IFernlehrgang).omit('id')
 
@@ -89,7 +90,7 @@ class Edit(models.Edit):
     fields = Fields(IFernlehrgang).omit('id')
 
 
-### Spalten
+# Spalten
 
 class ID(GetAttrColumn):
     grok.name('Id')
@@ -97,6 +98,7 @@ class ID(GetAttrColumn):
     weight = 5
     header = u"Id"
     attrName = u"id"
+
 
 class Title(LinkColumn):
     grok.name('titel')

@@ -89,9 +89,11 @@ class UnternehmenListing(Form):
         self.results = sql.all()
 
 
+@menuentry(NavigationMenu, order=1)
 class Index(models.DefaultView):
     grok.context(IUnternehmen)
     grok.name('index')
+    grok.title('Unternehmen')
     template = ChameleonPageTemplateFile('templates/unternehmen_view.cpt')
 
     title = u"Unternehmen"

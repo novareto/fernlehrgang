@@ -19,8 +19,8 @@ from fernlehrgang.interfaces.unternehmen import IUnternehmen
 @menuentry(AddMenu)
 class AddBGODaten(Form):
     grok.context(IUnternehmen)
-    grok.title(u'GOD-Daten')
-    label = u'GOD-Daten anlegen'
+    grok.title(u'GBO-Daten')
+    label = u'GBO-Daten anlegen'
     description = u'GOD-Daten anlegen'
 
     fields = Fields(IGBOData).omit('id')
@@ -39,15 +39,16 @@ class GodMenu(Entry):
     grok.implements(IDisplayView)
     menu(NavigationMenu)
     grok.context(IUnternehmen)
+    grok.order(20)
 
     @property
     def title(self):
-        return "GOD-DATEN"
+        return "GBO-DATEN"
 
     @property
     def url(self):
-        if len(self.context.goddata) > 0:
-            return "%s/goddata/%s" % (self.context.mnr, self.context.goddata[0].id)
+        if self.context.gbodata:
+            return "%s/goddata/%s" % (self.context.mnr, self.context.gbodata.id)
         return ""
 
 
