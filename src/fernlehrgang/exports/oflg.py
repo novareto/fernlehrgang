@@ -18,18 +18,29 @@ from fernlehrgang.lib.mt import TEXT1, TEXT2, TEXT3, TEXT4
 from fernlehrgang.lib.emailer import send_mail
 
 
+def _send_mail(f, t, s, text):  ## REMOVE the _ (underscore to prevent sending mails)
+    print "#"*55
+    print f
+    print t
+    print s
+    print text
+    print "#"*55
+    print 
+
+
 def report(session):
     now = datetime.datetime.now()
     t = session.query(models.Antwort.kursteilnehmer_id).filter(and_(
-        models.Lehrheft.fernlehrgang_id == '112',
+        models.Lehrheft.fernlehrgang_id == models.Fernlehrgang.id,
+        models.Fernlehrgang.typ == "2",
         models.Lehrheft.id == models.Antwort.lehrheft_id))
     query = session.query(models.Kursteilnehmer)
     vgdatum = now - datetime.timedelta(days=180)
     query = query.filter(
         and_(
-            models.Kursteilnehmer.fernlehrgang_id == '112',
+            models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
+            models.Fernlehrgang.typ == "2",
             sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
-            #models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*6)),
         )
     )
 
@@ -39,17 +50,14 @@ def report(session):
 
     no_answers = query.filter(
             not_(models.Kursteilnehmer.id.in_(t)),
-            #models.Antwort.lehrheft_id == models.Lehrheft.id,
-            #models.Lehrheft.nummer < 4,
         )
     for x in no_answers.all():
-        #print x, x.teilnehmer
         titel = ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title
         if titel == "kein Titel":
             titel = ""
         send_mail(
             'fernlehrgang@bghw.de',
-            [x.teilnehmer.email,],  # x.teilnehmer.email,
+            [x.teilnehmer.email, 'fernlehrgangemail@bghw.de'],
             'Online-Fernlehrgang der BGHW Benutzername: %s' % x.teilnehmer.id,
             text = TEXT1 % (
                 titel,
@@ -57,7 +65,6 @@ def report(session):
                 x.teilnehmer.name
                 )
             )
-    #print no_answers.count()
 
 
     print 
@@ -77,7 +84,7 @@ def report(session):
             titel = ""
         send_mail(
             'fernlehrgang@bghw.de',
-            [x.teilnehmer.email,],  # x.teilnehmer.email,
+            [x.teilnehmer.email, 'fernlehrgangemail@bghw.de'],
             'Online-Fernlehrgang der BGHW Benutzername: %s' % x.teilnehmer.id,
             text = TEXT2 % (
                 titel,
@@ -85,26 +92,20 @@ def report(session):
                 x.teilnehmer.name
                 )
             )
-        #print TEXT1 % (
-        #    ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title,
-        #    ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-        #    teilnehmer.name)
-    #print not_finished.count()
-    print
-    print "-" * 44
-    print "Mehr als 4.Lehrheft beendet"
-
-    almost_finished = query.filter(
-        and_(
-            models.Kursteilnehmer.id == models.Antwort.kursteilnehmer_id,
-            models.Antwort.lehrheft_id == models.Lehrheft.id,
-            models.Lehrheft.nummer > 4,
-            models.Lehrheft.nummer < 8,
-        )
-    )
-    for x in almost_finished.all():
-        print x, x.teilnehmer
-    print almost_finished.count()
+    #print
+    #print "-" * 44
+    #print "Mehr als 4.Lehrheft beendet"
+    #almost_finished = query.filter(
+    #    and_(
+    #        models.Kursteilnehmer.id == models.Antwort.kursteilnehmer_id,
+    #        models.Antwort.lehrheft_id == models.Lehrheft.id,
+    #        models.Lehrheft.nummer > 4,
+    #        models.Lehrheft.nummer < 8,
+    #    )
+    #)
+    #for x in almost_finished.all():
+    #    print x, x.teilnehmer
+    #print almost_finished.count()
 
     print
     print "-" * 44
@@ -115,9 +116,9 @@ def report(session):
     vgdatum = now - datetime.timedelta(days=300)
     query = query.filter(
         and_(
-            models.Kursteilnehmer.fernlehrgang_id == '112',
+            models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
+            models.Fernlehrgang.typ == "2",
             sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
-            # models.Kursteilnehmer.erstell_datum < now - datetime.timedelta(weeks=(4*10)),
         )
     )
     almost_finished = query.filter(
@@ -134,7 +135,7 @@ def report(session):
             titel = ""
         send_mail(
             'fernlehrgang@bghw.de',
-            [x.teilnehmer.email,],  # x.teilnehmer.email,
+            [x.teilnehmer.email, 'fernlehrgangemail@bghw.de'],
             'Online-Fernlehrgang der BGHW Benutzername: %s' % x.teilnehmer.id,
             text = TEXT3 % (
                 titel,
@@ -142,11 +143,6 @@ def report(session):
                 x.teilnehmer.name
                 )
             )
-        #print TEXT2 % (
-        #    ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title,
-        #    ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-        #    teilnehmer.name)
-    print almost_finished.count()
 
 
     print
@@ -157,33 +153,19 @@ def report(session):
     vgdatum = now - datetime.timedelta(days=365)
     query = query.filter(
         and_(
-            models.Kursteilnehmer.fernlehrgang_id == '112',
+            models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
+            models.Fernlehrgang.typ == "2",
             sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
-            #models.Kursteilnehmer.erstell_datum > now - datetime.timedelta(weeks=(4*13)),
         )
     )
-    #print query.count()
     for ktn in query.all():
-        print ktn, ktn.teilnehmer
-
-    #import pdb; pdb.set_trace() 
-
-    #almost_finished = query.filter(
-    #    and_(
-    #        models.Kursteilnehmer.id == models.Antwort.kursteilnehmer_id,
-    #        models.Antwort.lehrheft_id == models.Lehrheft.id,
-    #        models.Lehrheft.nummer != 8,
-    #    )
-    #)
-    #for x in almost_finished.all():
-        print ktn.teilnehmer.name
         if len(ktn.antworten) < 80:
             titel = ITeilnehmer['titel'].vocabulary.getTerm(ktn.teilnehmer.titel).title
             if titel == "kein Titel":
                 titel = ""
             send_mail(
                 'fernlehrgang@bghw.de',
-                [ktn.teilnehmer.email,],  # x.teilnehmer.email,
+                [ktn.teilnehmer.email, 'fernlehrgangemail@bghw.de'],
                 'Online-Fernlehrgang der BGHW Benutzername: %s' % ktn.teilnehmer.id,
                 text = TEXT4 % (
                     titel,
@@ -192,27 +174,18 @@ def report(session):
                     )
                 )
             ktn.status = "Z1"
-            #import pdb; pdb.set_trace() 
-        #print unicode(TEXT3).encode('utf-8') % (
-        #    ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title,
-        #    ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-        #    x.teilnehmer.name)
-    #print almost_finished.count()
     
+
 @menuentry(ExportItems)
 class OFLG_Report(grok.View):
     grok.context(IFernlehrgang)
     grok.name('oflg_report')
     grok.title('Report Online Fernlehrgang')
+    grok.require('zope.Public')
 
     def update(self):
-        from fernlehrgang.tasks import notifications_for_ofg 
-        #mail = getUserEmail(self.request.principal.id)
-
-        stat = notifications_for_ofg()
-        #from z3c.saconfig import Session
-        #report(Session())
-        print stat 
+        from z3c.saconfig import Session
+        report(Session())
 
     def render(self):
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
