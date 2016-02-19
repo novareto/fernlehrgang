@@ -79,4 +79,4 @@ grok.global_utility(
     delivery,
     zope.sendmail.interfaces.IMailDelivery,
     name='flg.maildelivery')
-start_processor_thread()
+#start_processor_thread()

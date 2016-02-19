@@ -27,5 +27,6 @@
   <include package="megrok.pagetemplate" file="meta.zcml" />
 
   <browser:defaultSkin name="tbskin" />
+  <include package="fernlehrgang.api" file="mq.zcml"/>
   <grok:grok package="." />
 </configure>

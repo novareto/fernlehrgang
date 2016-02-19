@@ -10,7 +10,10 @@ from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
-DSN = config['dsn']
+try:
+    DSN = config['dsn']
+except:
+    DSN = "postgresql+psycopg2://flg:flg@localhost/flg"
 log(DSN)
 
 # FIX: engine_factory = EngineFactory(DSN, convert_unicode=True, encoding='utf-8', optimize_limits=True, echo=False)
