@@ -4,44 +4,24 @@
 
 import grok
 
-from zope import interface
 from fernlehrgang import models
 from z3c.saconfig import Session
+from uvc.layout.layout import IUVCSkin
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 
-from zope.publisher.interfaces.browser import IHTTPRequest
-from zope.traversing.interfaces import ITraversable
+
+class IVLWSkinLayer(grok.IDefaultBrowserLayer):
+    pass
 
 
-from nva.mq import reader
-from nva.mq.interfaces import IListener
-
-
-grok.global_utility(reader.BaseReader, IListener, direct=True)
-
-
-def test_processor(queue, name):
-    def info_processor(body, message, **data):
-        print body, message, data
-    return info_processor
-
-
-class Traverser(grok.MultiAdapter):
-    grok.provides(ITraversable)
-    grok.name('++create++')
-    grok.adapts(interface.Interface, IHTTPRequest)
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        import pdb; pdb.set_trace()
+class IVLWSkin(IVLWSkinLayer, IUVCSkin):
+    grok.skin('vlw')
 
 
 class APILernwelten(grok.JSON):
     grok.context(IFernlehrgangApp)
+    grok.layer(IVLWSkinLayer)
 
     @property
     def session(self):
