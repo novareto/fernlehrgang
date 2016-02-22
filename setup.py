@@ -50,6 +50,7 @@ setup(name='fernlehrgang',
                         'lxml',
                         'nva.asynctask',
                         'zope.sendmail',
+                        'reportlab',
                         # Add extra requirements here
                         ],
       entry_points = {
