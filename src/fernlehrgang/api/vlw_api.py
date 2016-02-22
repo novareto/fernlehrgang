@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import simplejson
 
 from .certpdf import createpdf
 from base64 import encodestring
@@ -30,16 +31,37 @@ class APILernwelten(grok.JSON):
     def session(self):
         return Session()
 
+    def checkAuth(self):
+        data = simplejson.loads(self.body)
+        teilnehmer_id = data.get('teilnehmer_id')
+        if teilnehmer_id:
+            teilnehmer = self.session.query(
+                models.Teilnehmer).get(teilnehmer_id)
+            if teilnehmer.passwort == data['passwort']:
+                return teilnehmer.id
+        return False
+
     def getTeilnehmer(self):
         ret = dict()
-        teilnehmer_id = self.request.get('teilnehmer_id')
-        teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
-        if teilnehmer:
-            ret['teilnehmer_id'] = teilnehmer.id
-            ret['name'] = teilnehmer.name
-            ret['vorname'] = teilnehmer.vorname
-            ret['geburtsdatum'] = str(teilnehmer.geburtsdatum)
-            ret['passwort'] = teilnehmer.passwort
+        ktns = []
+        data = simplejson.loads(self.body)
+        teilnehmer_id = data.get('teilnehmer_id')
+        if teilnehmer_id:
+            teilnehmer = self.session.query(
+                models.Teilnehmer).get(teilnehmer_id)
+            for ktn in teilnehmer.kursteilnehmer:
+                ktns.append(
+                        dict(
+                            kursteilnehmer_id=ktn.id,
+                            fernlehrgang_id=ktn.fernlehrgang_id
+                            )
+                    )
+            if teilnehmer:
+                ret['teilnehmer_id'] = teilnehmer.id
+                ret['name'] = teilnehmer.name
+                ret['vorname'] = teilnehmer.vorname
+                ret['geburtsdatum'] = str(teilnehmer.geburtsdatum)
+                ret['kurse'] = ktns
         return ret
 
     def setTeilnehmer(self):
