@@ -4,9 +4,12 @@
 
 import grok
 
+from .certpdf import createpdf
+from base64 import encodestring
 from fernlehrgang import models
 from z3c.saconfig import Session
 from uvc.layout.layout import IUVCSkin
+from tempfile import NamedTemporaryFile
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 
@@ -49,3 +52,9 @@ class APILernwelten(grok.JSON):
                 if value:
                     iField = ITeilnehmer[field]
                     iField.set(teilnehmer, value)
+
+    def getCertificate(self):
+        ftf = NamedTemporaryFile()
+        fh = createpdf(ftf, {'druckdatum': '01.01.2015'})
+        fh.seek(0)
+        return encodestring(fh.read())
