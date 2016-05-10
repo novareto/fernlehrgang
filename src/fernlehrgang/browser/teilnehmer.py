@@ -88,8 +88,10 @@ class AddTeilnehmer(AddForm):
 
     def create(self, data):
         data = no_value(data)
-        self.context.brachne = data.pop('branche')
-        self.context.un_klasse = data.pop('un_klasse')
+        if 'branche' in data.keys():
+            self.context.brachne = data.pop('branche')
+        if 'un_klasse' in data.keys():
+            self.context.un_klasse = data.pop('un_klasse')
         teilnehmer = Teilnehmer(**data)
         teilnehmer.unternehmen_mnr=self.context.mnr
         return teilnehmer
