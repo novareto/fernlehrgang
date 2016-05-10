@@ -53,7 +53,8 @@ class CreateTeilnehmer(Form):
         else:
             self.flash('Es wurde kein Teilnehmer gefunden')
 
-
+from fernlehrgang.interfaces.search import ISearch
+from fernlehrgang.resources import chosen_js, chosen_css
 @menuentry(NavigationMenu, order=450)
 class TeilnehmerSuche(Form):
     grok.context(IFernlehrgangApp)
@@ -64,7 +65,7 @@ class TeilnehmerSuche(Form):
     label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
 
-    fields = Fields(ITeilnehmer).select('id', 'name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
+    fields = Fields(ISearch).select('id') + Fields(ITeilnehmer).select('name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
     fields['id'].readonly = False
     fields['mnr'].readonly = False
     fields['name'].required = False
@@ -72,6 +73,10 @@ class TeilnehmerSuche(Form):
     fields['geburtsdatum'].required = False
 
     results = []
+
+    def update(self):
+        chosen_js.need()
+        chosen_css.need()
 
     def getResults(self):
         root = grok.getSite()
