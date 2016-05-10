@@ -9,7 +9,7 @@ from fanstatic import Library, Resource
 from zope.interface import Interface
 from uvc.layout.interfaces import IHeaders
 from js.bootstrap import bootstrap_js
-from uvc.widgets import double, DatePickerCSS
+from uvc.widgets import double
 from js.jquery import jquery
 from uvc.tbskin.resources import TBSkinViewlet
 
@@ -20,7 +20,7 @@ chosen_js = Resource(library, 'chosen.jquery.js', depends=[jquery])
 chosen_css = Resource(library, 'chosen.css', depends=[chosen_js])
 btchosen = Resource(library, 'chosen.bootstrap.css', depends=[chosen_css])
 
-css = Resource(library, 'flg.css', depends=[DatePickerCSS])
+css = Resource(library, 'flg.css')
 responsive = Resource(library, 'responsive.css')
 tabs = Resource(library, 'tabs.js', depends=[responsive, bootstrap_js, jquery])
 js = Resource(library, 'flg.js', depends=[tabs, double, btchosen])
