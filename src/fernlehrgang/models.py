@@ -14,6 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from dolmen.content import IContent, schema
 from fernlehrgang.interfaces.antwort import IAntwort
+from fernlehrgang.interfaces.journal import IJournalEntry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
@@ -378,3 +379,35 @@ class Antwort(Base, RDBMixin):
                     kursteilnehmer_id = antwort.kursteilnehmer_id,
                     fernlehrgang_id = antwort.kursteilnehmer.fernlehrgang.id)
 
+
+class JournalEntry(Base, RDBMixin):
+    grok.implements(IJournalEntry)
+    grok.context(IFernlehrgangApp)
+    traject.pattern("unternehmen/:unternehmen_mnr/teilnehmer/:id/journal/:jid")
+
+    __tablename__ = 'journal'
+
+    id = Column(Integer, primary_key=True)
+    teilnehmer_id = Column(Integer, ForeignKey(Teilnehmer.id))
+    date = Column(DateTime, default=datetime.datetime.now)
+    status = Column(String(50))
+    type = Column(String(50))
+    kursteilnehmer_id = Column(Integer, ForeignKey(Kursteilnehmer.id))
+    teilnehmer = relationship(Teilnehmer, backref="journal_entries")
+
+    def __repr__(self):
+        return "<JournalEntry(id='%i', teilnehmer='%i')>" % (
+            self.id, self.teilnehmer_id)
+
+    def factory(unternehmen_mnr, id, jid):
+        session = Session()
+        return session.query(TeilnehmerJournal).filter(
+            and_(TeilnehmerJournal.id == jid,
+                 TeilnehmerJournal.teilnehmer_id==id,
+                 TeilnehmerJournal.teilnehmer.unternehmen_mnr==unternehmen_mnr)).one()
+
+    def arguments(entry):
+        return dict(
+            jid = entry.id,
+            id = entry.teilnehmer.id,
+            unternehmen_mnr = entry.teilnehmer.unternehmen_mnr)
