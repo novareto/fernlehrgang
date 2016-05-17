@@ -6,11 +6,11 @@ from fernlehrgang import models
 from fernlehrgang.lib.emailer import send_mail
 
 import logging
-import celeryconfig
+#import celeryconfig
 import zope.app.wsgi
 
 from celery.signals import worker_process_init
-from nva.asynctask.task import zope_task, transactional_task
+#from nva.asynctask.task import zope_task, transactional_task
 from celery import task
 from z3c.saconfig import Session
 from fernlehrgang import logger
@@ -65,17 +65,17 @@ text = """ Im Anhang finden Sie die entsprechende Datei"""
 #    send_mail('flgapp@bghw.de', (mail,), "Liste Kompetenzzentrum", text, [fn,]) 
 
 
-from nva.asynctask.conf import celery_app
-import transaction
-
-@celery_app.task
-def notifications_for_ofg():
-    #from fernlehrgang.exports.oflg import report
-    with transaction.manager as tm:
-        session = Session()
-        #rreport(session)
-        mail = "ck@novareto.de"
-        send_mail('fernlehrgang@bghw.de', (mail,), "TEST", text) 
-        from fernlehrgang import logger
-        1/0
-        logger.log(logging.DEBUG, 'STARTING DAILY WORK')
+#from nva.asynctask.conf import celery_app
+#import transaction
+#
+#@celery_app.task
+#def notifications_for_ofg():
+#    #from fernlehrgang.exports.oflg import report
+#    with transaction.manager as tm:
+#        session = Session()
+#        #rreport(session)
+#        mail = "ck@novareto.de"
+#        send_mail('fernlehrgang@bghw.de', (mail,), "TEST", text) 
+#        from fernlehrgang import logger
+#        1/0
+###        logger.log(logging.DEBUG, 'STARTING DAILY WORK')
