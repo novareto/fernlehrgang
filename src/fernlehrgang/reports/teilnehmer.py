@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
-import uvc.layout
 
 from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.interfaces.kursteilnehmer import lieferstopps 
+from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
@@ -19,19 +17,20 @@ from z3c.saconfig import Session
 from zeam.form.base import action, NO_VALUE, Fields
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import Form
-from profilehooks import profile
 from fernlehrgang import fmtDate
+from fernlehrgang.interfaces.search import ISearch
+from fernlehrgang.resources import chosen_js, chosen_css
 
 
 grok.templatedir('templates')
 
 
-#@menuentry(NavigationMenu, order=500)
 class CreateTeilnehmer(Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Teilnehmer registrieren')
     title = label = u"Teilnehmer registrieren"
-    description = u"Bitte geben Sie die Teilnehmer ID ein, den Sie registrieren möchten."
+    description = u"Bitte geben Sie die Teilnehmer ID ein,\
+            den Sie registrieren möchten."
     results = []
 
     cssClasses = {'table': 'tablesorter myTable'}
@@ -53,8 +52,7 @@ class CreateTeilnehmer(Form):
         else:
             self.flash('Es wurde kein Teilnehmer gefunden')
 
-from fernlehrgang.interfaces.search import ISearch
-from fernlehrgang.resources import chosen_js, chosen_css
+
 @menuentry(NavigationMenu, order=450)
 class TeilnehmerSuche(Form):
     grok.context(IFernlehrgangApp)
@@ -65,12 +63,12 @@ class TeilnehmerSuche(Form):
     label = u"Statusabfrage Teilnehmer."
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
 
-    fields = Fields(ISearch).select('id') + Fields(ITeilnehmer).select('name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
-    fields['id'].readonly = False
-    fields['mnr'].readonly = False
-    fields['name'].required = False
-    fields['vorname'].required = False
-    fields['geburtsdatum'].required = False
+    fields = Fields(ISearch).select('id') # + Fields(ITeilnehmer).select('name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
+    # fields['id'].readonly = False
+    # fields['mnr'].readonly = False
+    # fields['name'].required = False
+    # fields['vorname'].required = False
+    # fields['geburtsdatum'].required = False
 
     results = []
 
@@ -87,7 +85,7 @@ class TeilnehmerSuche(Form):
             results = {"comment": "Kein Fernlehrgang."}
             if kursteilnehmer.fernlehrgang:
                 results = ICalculateResults(kursteilnehmer).summary()
-                locate(root, kursteilnehmer, DefaultModel)            
+                locate(root, kursteilnehmer, DefaultModel)
                 name = '<a href="%s"> %s </a>' % (self.url(kursteilnehmer), item.name)
                 flg = kursteilnehmer.fernlehrgang
                 locate(root, flg, DefaultModel)
@@ -123,25 +121,25 @@ class TeilnehmerSuche(Form):
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
-        if data.get('name') != "":
-            constraint = "%%%s%%" % data.get('name')
-            sql = sql.filter(Teilnehmer.name.ilike(constraint))
-            v = True
-        if data.get('vorname') != "":
-            constraint = "%%%s%%" % data.get('vorname')
-            sql = sql.filter(Teilnehmer.vorname.ilike(constraint))
-            v = True
-        if data.get('mnr') != "":
-            constraint = "%%%s%%" % data.get('mnr')
-            sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
-            v = True
+        #if data.get('name') != "":
+        #    constraint = "%%%s%%" % data.get('name')
+        #    sql = sql.filter(Teilnehmer.name.ilike(constraint))
+        #    v = True
+        #if data.get('vorname') != "":
+        #    constraint = "%%%s%%" % data.get('vorname')
+        #    sql = sql.filter(Teilnehmer.vorname.ilike(constraint))
+        #    v = True
+        #if data.get('mnr') != "":
+        #    constraint = "%%%s%%" % data.get('mnr')
+        #    sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
+        #    v = True
         #if data.get('mnr_g_alt') != "":
         #    constraint = "%%%s%%" % data.get('mnr_g_alt')
         #    sql = sql.filter(Teilnehmer.unternehmen.mnr_g_alt.ilike(constraint))
         #    v = True
-        if data.get('geburtsdatum') != NO_VALUE:
-            sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
-            v = True
+        #if data.get('geburtsdatum') != NO_VALUE:
+        #    sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
+        #    v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return
