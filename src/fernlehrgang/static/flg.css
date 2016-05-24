@@ -20,13 +20,13 @@ div#uvc-inner-body {
 #form-field-punktzahl,
 #form-field-nr, 
 #form-field-plz {
- width: 4em;
+ width: 6em;
 }
 
 #form-field-ende,
 #form-field-beginn,
 #form-field-geburtsdatum {
- width: 6em;
+ width: 8em;
 }
 
 textarea {

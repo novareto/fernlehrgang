@@ -14,14 +14,14 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 @grok.provider(IContextSourceBinder)
 def getTeilnehmerId(context):
-    rc = []
+    rc = [SimpleTerm(None, None, u'Bitte Auswahl treffen.')]
     session = Session()
     teilnehmer = session.query(models.Teilnehmer)
     for tn in teilnehmer.all():
         rc.append(
             SimpleTerm(
                 tn.id,
-                tn.id, 
+                tn.id,
                 "%s %s" % (tn.id, tn.name)
             )
         )
