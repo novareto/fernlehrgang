@@ -15,7 +15,7 @@ from fernlehrgang.interfaces.frage import IFrage
 import datetime
 
 def today():
-        return datetime.date.today()
+    return datetime.date.today()
 
 
 @grok.provider(IContextSourceBinder)
@@ -77,6 +77,18 @@ class IAntwort(Interface):
         description = u'Bitte geben Sie Antwortmöglichkeiten ein.',
         required = True,
         default = u'',
+        )
+
+    gbo = TextLine(
+        title = u'GBO',
+        description = u'TO BE DONE',
+        required = False,
+        )
+
+    gbo_daten = Bytes(
+        title = u"GBO-Daten",
+        description = u"JSON-GBO Datenstreamm der vlw",
+        required = False,
         )
 
     datum = Date(

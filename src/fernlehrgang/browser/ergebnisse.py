@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.config import POSTVERSANDSPERRE
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
+from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.viewlets import NavigationMenu
 from uvc.layout import Page
@@ -123,9 +124,8 @@ class CalculateResults(grok.Adapter):
         # Abschlussgespräch Seminar
         if not unternehmen:
             unternehmen = context.unternehmen
-        if unternehmen.gbodata:
-            branche = unternehmen.gbodata.branche
-            un_klasse = unternehmen.gbodata.un_klasse
+            branche = context.branche
+            un_klasse = context.un_klasse
             if comment == "Bestanden":
                 if branche == "ja":
                     if un_klasse == 'G2':
@@ -145,6 +145,48 @@ class CalculateResults(grok.Adapter):
                         elif context.gespraech == '0':
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
 
-        else:
-            comment = u"%s - %s" % (comment, u'Achtung keine Branchen & Gruppeninformationen für %s vorhanden' % unternehmen.mnr)
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
+
+
+class CalculateResultsVLW(grok.Adapter):
+    grok.implements(ICalculateResults)
+    grok.context(IVLWKursteilnehmer)
+
+    def lehrhefte(self, lehrhefte=None, session=None):
+        return []
+
+    def getResults(self):
+        for antwort in self.context.antworten:
+            if antwort.gbo == "OK":
+                return True
+        return False
+
+    def summary(self, lehrhefte=None, session=None, unternehmen=None):
+        comment = "Nicht Bestanden (Noch keine Antwort aus der VLW)"
+        context = self.context
+        if context.status in POSTVERSANDSPERRE:
+            comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
+        elif self.getResults():
+            comment = "VLW abgeschlossen"
+        unternehmen = context.unternehmen
+        branche = context.branche
+        un_klasse = context.un_klasse
+        if comment == "Bestanden":
+            if branche == "ja":
+                if un_klasse == 'G2':
+                    if context.gespraech == '2':
+                        comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
+                    elif context.gespraech == '0':
+                        comment = u'Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.'
+                if un_klasse == 'G3':
+                    if context.gespraech == '2':
+                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                    elif context.gespraech == '0':
+                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
+            elif branche == "nein":
+                if un_klasse == 'G2':
+                    if context.gespraech == '2':
+                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                    elif context.gespraech == '0':
+                        comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
+        return dict(points=0, resultpoints=0, comment=comment)

@@ -19,11 +19,11 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
+from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.interfaces.gbo import IGBOData
 from megrok import traject
 from plone.memoize import ram, instance
 from sqlalchemy import *
@@ -34,6 +34,9 @@ from z3c.saconfig import Session
 from z3c.saconfig.interfaces import IEngineCreatedEvent
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
+from sqlalchemy import event
+from zope.interface import alsoProvides
+
 
 
 Base = declarative_base()
@@ -195,38 +198,6 @@ class Teilnehmer(Base, RDBMixin):
         return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
 
 
-class GBOData(Base, RDBMixin):
-    grok.implements(IGBOData, IDCDescriptiveProperties)
-    grok.context(IFernlehrgangApp)
-    traject.pattern("unternehmen/:unternehmen_mnr/goddata/:id")
-
-    __tablename__ = 'goddata'
-
-    id = Column(Integer, Sequence('goddata_seq', start=100000, increment=1), primary_key=True)
-    un_klasse = Column(String(3))
-    branche = Column(String(5))
-
-    unternehmen_mnr = Column(Integer, ForeignKey(Unternehmen.mnr))
-
-    unternehmen = relation(Unternehmen,
-                           backref = backref('gbodata', order_by=id, uselist=False))
-
-    @property
-    def title(self):
-        return u"GBO-Daten für %s %s" % ('context.mnr', 'context.name1')
-
-    def __repr__(self):
-        return "<GBOData(id='%s')>" %(self.id)
-
-    def factory(id, unternehmen_mnr):
-        session = Session()
-        return session.query(GBOData).filter(
-            and_(GBOData.id == id, GBOData.unternehmen_mnr == unternehmen_mnr)).one()
-
-    def arguments(teilnehmer):
-        return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
-
-
 class Lehrheft(Base, RDBMixin):
     grok.implements(ILehrheft, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
@@ -313,6 +284,8 @@ class Kursteilnehmer(Base, RDBMixin):
     unternehmen_mnr = Column(Integer, ForeignKey('unternehmen.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
+    un_klasse = Column(String(20))
+    branche = Column(String(20))
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
@@ -335,6 +308,15 @@ class Kursteilnehmer(Base, RDBMixin):
         return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
                     kursteilnehmer_id = kursteilnehmer.id)
 
+# standard decorator style
+@event.listens_for(Kursteilnehmer, 'load')
+def receive_load(target, context):
+    print target, context
+    if target.fernlehrgang.typ == "4":
+        alsoProvides(target, IVLWKursteilnehmer)
+        print "Provided Kursteilnehemr with IVLWKursteilnehmer Interface"
+
+
 class Antwort(Base, RDBMixin):
     grok.implements(IAntwort, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
@@ -349,6 +331,8 @@ class Antwort(Base, RDBMixin):
     antwortschema = Column(String(50))
     datum = Column(DateTime)
     system = Column(String(50))
+    gbo = Column(String(50))
+    gbo_daten = Column(BLOB())
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 

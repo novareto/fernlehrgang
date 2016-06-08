@@ -18,7 +18,7 @@ from fernlehrgang.lib.mt import TEXT1, TEXT2, TEXT3, TEXT4
 from fernlehrgang.lib.emailer import send_mail
 
 
-def _send_mail(f, t, s, text):  ## REMOVE the _ (underscore to prevent sending mails)
+def send_mail(f, t, s, text):  ## REMOVE the _ (underscore to prevent sending mails)
     print "#"*55
     print f
     print t
@@ -34,8 +34,11 @@ def report(session):
         models.Lehrheft.fernlehrgang_id == models.Fernlehrgang.id,
         models.Fernlehrgang.typ == "2",
         models.Lehrheft.id == models.Antwort.lehrheft_id))
+
+    # 30 TAGE
     query = session.query(models.Kursteilnehmer)
     vgdatum = now - datetime.timedelta(days=180)
+    print vgdatum
     query = query.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
@@ -47,6 +50,42 @@ def report(session):
     # Keine Lehrhefte im Zeitraum
     print "-" * 44
     print "Keine Lehrhefte im Zeitraum"
+    print query.count()
+
+    no_answers = query.filter(
+            not_(models.Kursteilnehmer.id.in_(t)),
+        )
+    for x in no_answers.all():
+        titel = ITeilnehmer['titel'].vocabulary.getTerm(x.teilnehmer.titel).title
+        if titel == "kein Titel":
+            titel = ""
+        send_mail(
+            'fernlehrgang@bghw.de',
+            [x.teilnehmer.email, 'fernlehrgangemail@bghw.de'],
+            'Online-Fernlehrgang der BGHW Benutzername: %s' % x.teilnehmer.id,
+            text = TEXT1 % (
+                titel,
+                ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
+                x.teilnehmer.name
+                )
+            )
+
+    #
+
+    query = session.query(models.Kursteilnehmer)
+    vgdatum = now - datetime.timedelta(days=30)
+    query = query.filter(
+        and_(
+            models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
+            models.Fernlehrgang.typ == "2",
+            sqlalchemy.sql.expression.cast(models.Kursteilnehmer.erstell_datum, sqlalchemy.types.Date) == vgdatum.date(),
+        )
+    )
+
+    # Keine Lehrhefte im Zeitraum
+    print "-" * 44
+    print "Keine Lehrhefte im Zeitraum"
+    print query.count()
 
     no_answers = query.filter(
             not_(models.Kursteilnehmer.id.in_(t)),
@@ -74,7 +113,8 @@ def report(session):
         and_(
             models.Kursteilnehmer.id == models.Antwort.kursteilnehmer_id,
             models.Antwort.lehrheft_id == models.Lehrheft.id,
-            models.Lehrheft.nummer < 4,
+            models.Lehrheft.nummer.in_(('1','2','3','4')), 
+            models.Lehrheft.nummer.notin_(('5','6','7','8')) 
         )
     )
     for x in not_finished.all():
@@ -125,7 +165,7 @@ def report(session):
         and_(
             models.Kursteilnehmer.id == models.Antwort.kursteilnehmer_id,
             models.Antwort.lehrheft_id == models.Lehrheft.id,
-            models.Lehrheft.nummer < 8,
+            sqlalchemy.sql.expression.cast(models.Lehrheft.nummer, sqlalchemy.types.Integer) < 8,
         )
     )
     for x in almost_finished.all():
