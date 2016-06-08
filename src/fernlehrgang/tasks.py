@@ -9,20 +9,20 @@ import logging
 #import celeryconfig
 import zope.app.wsgi
 
-from celery.signals import worker_process_init
+#from celery.signals import worker_process_init
 #from nva.asynctask.task import zope_task, transactional_task
-from celery import task
+#from celery import task
 from z3c.saconfig import Session
 from fernlehrgang import logger
 
 
-@worker_process_init.connect
-def setupZCA(signal, sender):
-    zope.app.wsgi.config(celeryconfig.ZOPE_CONF)
-    logger.log(logging.INFO, 'Starting Zope/Grok ENVIRONMENT')
+#@worker_process_init.connect
+#def setupZCA(signal, sender):
+#    zope.app.wsgi.config(celeryconfig.ZOPE_CONF)
+#    logger.log(logging.INFO, 'Starting Zope/Grok ENVIRONMENT')
 
 
-text = """ Im Anhang finden Sie die entsprechende Datei"""
+#text = """ Im Anhang finden Sie die entsprechende Datei"""
 
                                                                                 
 #@zope_task                                                                
