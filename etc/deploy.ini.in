@@ -16,6 +16,11 @@ keys = generic, accesslog
 level = INFO
 handlers = console
 
+
+[filter:sqltap]
+use = egg:sqltap#sqltap
+
+
 [logger_wsgi]
 level = INFO
 handlers = accesslog
@@ -52,7 +57,7 @@ logger_name = wsgi
 use = egg:grokcore.startup
 
 [pipeline:main]
-pipeline = translogger gzip fanstatic grok
+pipeline = translogger gzip fanstatic sqltap grok
 
 
 [filter:gzip]

@@ -4,6 +4,7 @@
 
 import grok
 
+from profilehooks import profile
 from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
@@ -19,7 +20,8 @@ from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import Form
 from fernlehrgang import fmtDate
 from fernlehrgang.interfaces.search import ISearch
-from fernlehrgang.resources import chosen_js, chosen_css
+from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 
 
 grok.templatedir('templates')
@@ -75,6 +77,11 @@ class TeilnehmerSuche(Form):
     def update(self):
         chosen_js.need()
         chosen_css.need()
+        chosen_ajax.need()
+
+    def updateWidgets(self):
+        super(TeilnehmerSuche, self).updateWidgets()
+        self.fieldWidgets.get('form.field.id').template = ChameleonPageTemplateFile('templates/select.cpt')
 
     def getResults(self):
         root = grok.getSite()

@@ -19,6 +19,7 @@ library = Library('fernlehrgang', 'static')
 chosen_js = Resource(library, 'chosen.jquery.js', depends=[jquery])
 chosen_css = Resource(library, 'chosen.css', depends=[chosen_js])
 btchosen = Resource(library, 'chosen.bootstrap.css', depends=[chosen_css])
+chosen_ajax = Resource(library, 'chosen.ajaxaddition.jquery.js', depends=[chosen_js])
 
 css = Resource(library, 'flg.css')
 responsive = Resource(library, 'responsive.css')

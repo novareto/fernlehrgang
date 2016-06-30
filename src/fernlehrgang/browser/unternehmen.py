@@ -112,7 +112,6 @@ class Index(models.DefaultView):
                           gebdat = gebdat,
                           lehrgang = [])
             for kurs in teilnehmer.kursteilnehmer:
-                print kurs.fernlehrgang
                 if kurs.fernlehrgang:
                     person['lehrgang'].append(kurs.fernlehrgang.titel)
             if not len(person['lehrgang']):

@@ -105,11 +105,11 @@ class Unternehmen(Base, RDBMixin):
     grok.implements(IUnternehmen, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr")
-    grok.traversable(attr='god_data')
+    #grok.traversable(attr='god_data')
     
-    __tablename__ = 'unternehmen'
+    #__tablename__ = 'unternehmen'
 
-    #__tablename__ = 'adr'
+    __tablename__ = 'adr'
 
     #id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", Integer, primary_key=True, index=True)
@@ -142,7 +142,7 @@ class Unternehmen(Base, RDBMixin):
 
 unternehmen_teilnehmer = Table(
     'unternehmen_teilnehmer', Base.metadata,
-    Column('unternehmen_id', Integer, ForeignKey('unternehmen.MNR')),
+    Column('unternehmen_id', Integer, ForeignKey('adr.MNR')),
     Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
 )
 
@@ -281,7 +281,7 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(Integer, ForeignKey('unternehmen.MNR',))
+    unternehmen_mnr = Column(Integer, ForeignKey('adr.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
@@ -311,10 +311,8 @@ class Kursteilnehmer(Base, RDBMixin):
 # standard decorator style
 @event.listens_for(Kursteilnehmer, 'load')
 def receive_load(target, context):
-    print target, context
     if target.fernlehrgang.typ == "4":
         alsoProvides(target, IVLWKursteilnehmer)
-        print "Provided Kursteilnehemr with IVLWKursteilnehmer Interface"
 
 
 class Antwort(Base, RDBMixin):
@@ -330,16 +328,17 @@ class Antwort(Base, RDBMixin):
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))
     datum = Column(DateTime)
-    system = Column(String(50))
-    gbo = Column(String(50))
-    gbo_daten = Column(BLOB())
+    #system = Column(String(50))
+    #gbo = Column(String(50))
+    #gbo_daten = Column(BLOB())
+    system = 1
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer, 
-                              backref = backref('antworten', order_by=frage_id, cascade="all,delete"),
+                              backref = backref('antworten', lazy='joined', order_by=frage_id, cascade="all,delete"),
                              )
 
-    frage = relation(Frage)
+    frage = relation(Frage, lazy="joined")
                      
     @property
     def title(self):
@@ -373,7 +372,7 @@ class JournalEntry(Base, RDBMixin):
 
     id = Column(Integer, primary_key=True)
     teilnehmer_id = Column(Integer, ForeignKey(Teilnehmer.id))
-    date = Column(DateTime, default=datetime.datetime.now)
+    creation_date = Column(DateTime, default=datetime.datetime.now)
     status = Column(String(50))
     type = Column(String(50))
     kursteilnehmer_id = Column(Integer, ForeignKey(Kursteilnehmer.id))

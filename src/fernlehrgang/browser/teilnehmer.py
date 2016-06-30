@@ -12,6 +12,8 @@ from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang import Form, AddForm 
 from fernlehrgang import fmtDate
 from fernlehrgang.interfaces import IListing
+from fernlehrgang.interfaces.search import getTeilnehmerId
+from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
 from fernlehrgang.interfaces.teilnehmer import generatePassword
@@ -38,6 +40,7 @@ from grokcore.component import provider
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from uvc.layout import TablePage
+from GenericCache.GenericCache import GenericCache
 
 
 grok.templatedir('templates')
@@ -251,6 +254,27 @@ class TeilnehmerJSONViews(grok.JSON):
         ktn = session.query(Kursteilnehmer).get(ktn_id)
         print {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
         return {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
+
+
+import json
+
+
+class SearchTeilnehmer(grok.View):
+    grok.name('search_teilnehmer')
+    grok.context(IFernlehrgangApp)
+
+    def update(self):
+        self.term = self.request.form['data[q]']
+        self.vocabulary = getTeilnehmerId(None)
+
+    def render(self):
+        self.request.response.setHeader('Content-Type', 'application/json')
+        terms = []
+        matcher = self.term.lower()
+        for item in self.vocabulary:
+            if matcher in item.title.lower():
+                terms.append({'id': item.token, 'text': item.title})
+        return json.dumps({'q': self.term, 'results': terms})
 
 
 class OverviewKurse(grok.Viewlet):

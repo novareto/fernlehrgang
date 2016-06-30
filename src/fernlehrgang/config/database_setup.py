@@ -16,6 +16,9 @@ except:
     DSN = "postgresql+psycopg2://flg:flg@localhost/flg"
 log(DSN)
 
+
+print DSN
+
 # FIX: engine_factory = EngineFactory(DSN, convert_unicode=True, encoding='utf-8', optimize_limits=True, echo=False)
 engine_factory = EngineFactory(
     DSN, convert_unicode=True, encoding='utf-8', echo=False)

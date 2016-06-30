@@ -1,6 +1,23 @@
 <html>
 <body>
 <div metal:use-macro="path: context/@@formmacros/template/macros/editform"> </div>
+<!--
+<div class="form-group" id="select_teilnehmer">
+<select name="form.field.id" style="width: 550px" />
+</div>
+-->
+
+<script language="Javascript">
+  $('select#teilnehmer_id').ajaxChosen({
+     dataType: 'json',
+     type: 'POST',
+     url: '<tal:url replace="'%s/search_teilnehmer' % view.application_url()" />'
+   },
+   {
+      minLength: 3
+   });
+</script>
+
 <div tal:define="results list(view.getResults())" tal:condition="results" class="panel panel-default">
   <div class="panel-heading" tal:define="result results[0]">
     <h3> Teilnehmer </h3>

@@ -56,20 +56,16 @@ class CalculateResults(grok.Adapter):
     grok.context(IKursteilnehmer)
 
     def lehrhefte(self, lehrhefte=None, session=None):
-        #if not session:
-        #    session = Session()
         context = self.context
         rc = []
         points = context.fernlehrgang.punktzahl
         if not lehrhefte:
             if not session:
                 session = Session()
-            #session = Session()
             sql = session.query(Lehrheft).options(joinedload(Lehrheft.fragen))
             sql = sql.filter(Lehrheft.fernlehrgang_id == context.fernlehrgang.id)
             lehrhefte = sql.all()
         for lehrheft in sorted(lehrhefte, key=lambda lehrheft: lehrheft.nummer):
-        #for lehrheft in context.fernlehrgang.lehrhefte:
             res = {}
             res['titel'] = "%s - %s" %(lehrheft.nummer, lehrheft.titel)
             lehrheft_id = lehrheft.id
@@ -109,7 +105,6 @@ class CalculateResults(grok.Adapter):
         return gewichtung
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
-        print unternehmen
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context

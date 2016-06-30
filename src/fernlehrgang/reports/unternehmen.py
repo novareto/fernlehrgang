@@ -17,6 +17,7 @@ from zeam.form.base import action, NO_VALUE, Fields
 from zope.interface import Interface
 from zope.schema import TextLine
 from fernlehrgang import Form
+from profilehooks import profile
 
 
 grok.templatedir('templates')
@@ -67,9 +68,10 @@ class UnternehmenSuche(Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Unternehmen)
-        #sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
-        #sql = sql.filter(Teilnehmer.unternehmen_mnr == Unternehmen.mnr)
+        sql = session.query(Unternehmen, Teilnehmer, Kursteilnehmer).filter(
+            Unternehmen.mnr == Teilnehmer.unternehmen_mnr, 
+            Teilnehmer.id == Kursteilnehmer.teilnehmer_id)
+        app_url = self.application_url()
         if data.get('mnr') != "":
             v = True
             constraint = "%%%s%%" % data.get('mnr')
@@ -85,26 +87,21 @@ class UnternehmenSuche(Form):
         if not v:
             self.flash(u'Bitte geben Sie entsprechende Kriterien ein.')
             return
-        for unternehmen in sql.all():
-            for teilnehmer in unternehmen.teilnehmer:
-                for kursteilnehmer in teilnehmer.kursteilnehmer:
-                    results = ICalculateResults(kursteilnehmer).summary(unternehmen=unternehmen)
-                    flg = kursteilnehmer.fernlehrgang
-                    self.locateit(flg)
-                    self.locateit(unternehmen)
-                    self.locateit(kursteilnehmer)
-                    link_flg = self.url(flg)
-                    link_unternehmen = self.url(unternehmen)
-                    link_kursteilnehmer = self.url(kursteilnehmer)
-                    rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr + ' ' + kursteilnehmer.fernlehrgang.titel,
-                                    link_flg = link_flg,
-                                    name = teilnehmer.name,
-                                    vorname = teilnehmer.vorname,
-                                    link_kt = link_kursteilnehmer,
-                                    id = teilnehmer.id,
-                                    unternehmen = unternehmen.name,
-                                    link_unternehmen = link_unternehmen,
-                                    mnr = unternehmen.mnr,
-                                    bestanden = results['comment'],
-                                    ))
-                    self.results = rc
+        for unternehmen, teilnehmer, kursteilnehmer in sql.all():
+            results = ICalculateResults(kursteilnehmer).summary(unternehmen=unternehmen)
+            flg = kursteilnehmer.fernlehrgang
+            link_flg = "%s/fernlehrgang/%s" % (app_url, flg.id)
+            link_unternehmen = "%s/unternehmen/%s" % (app_url, unternehmen.mnr)
+            link_kursteilnehmer = "%s/kursteilnehmer/%s" % (link_flg, kursteilnehmer.id)
+            rc.append(dict(flg = kursteilnehmer.fernlehrgang.jahr + ' ' + kursteilnehmer.fernlehrgang.titel,
+                            link_flg = link_flg,
+                            name = teilnehmer.name,
+                            vorname = teilnehmer.vorname,
+                            link_kt = link_kursteilnehmer,
+                            id = teilnehmer.id,
+                            unternehmen = unternehmen.name,
+                            link_unternehmen = link_unternehmen,
+                            mnr = unternehmen.mnr,
+                            bestanden = results['comment'],
+                            ))
+            self.results = rc
