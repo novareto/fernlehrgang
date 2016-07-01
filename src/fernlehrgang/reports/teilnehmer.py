@@ -66,11 +66,6 @@ class TeilnehmerSuche(Form):
     description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
 
     fields = Fields(ISearch).select('id') # + Fields(ITeilnehmer).select('name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
-    # fields['id'].readonly = False
-    # fields['mnr'].readonly = False
-    # fields['name'].required = False
-    # fields['vorname'].required = False
-    # fields['geburtsdatum'].required = False
 
     results = []
 
@@ -88,7 +83,6 @@ class TeilnehmerSuche(Form):
         lfs = lieferstopps(None)
         for kursteilnehmer, item in self.results:
             locate(root, item, DefaultModel)
-            #locate(root, item.unternehmen, DefaultModel)
             results = {"comment": "Kein Fernlehrgang."}
             if kursteilnehmer.fernlehrgang:
                 results = ICalculateResults(kursteilnehmer).summary()
@@ -111,10 +105,12 @@ class TeilnehmerSuche(Form):
             d = dict(name=name,
                      link_flg = link_flg,
                      gebdat = gebdat,
+                     titel = ITeilnehmer.get('titel').source.getTermByToken(item.titel).title,
+                     anrede = ITeilnehmer.get('anrede').source.getTermByToken(item.anrede).title,
                      unternehmen = '<br>'.join(rcu),
                      vorname = item.vorname,
                      status = lfs.getTerm(kursteilnehmer.status).title,
-                     bestanden = "") # results['comment'])
+                     bestanden = results['comment'])
             yield d
 
     @action(u'Suchen')
@@ -122,31 +118,11 @@ class TeilnehmerSuche(Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        #sql = session.query(Kursteilnehmer, Teilnehmer)
         sql = session.query(Kursteilnehmer, Teilnehmer).options(joinedload(Kursteilnehmer.antworten))
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
-        #if data.get('name') != "":
-        #    constraint = "%%%s%%" % data.get('name')
-        #    sql = sql.filter(Teilnehmer.name.ilike(constraint))
-        #    v = True
-        #if data.get('vorname') != "":
-        #    constraint = "%%%s%%" % data.get('vorname')
-        #    sql = sql.filter(Teilnehmer.vorname.ilike(constraint))
-        #    v = True
-        #if data.get('mnr') != "":
-        #    constraint = "%%%s%%" % data.get('mnr')
-        #    sql = sql.filter(Teilnehmer.unternehmen_mnr.ilike(constraint))
-        #    v = True
-        #if data.get('mnr_g_alt') != "":
-        #    constraint = "%%%s%%" % data.get('mnr_g_alt')
-        #    sql = sql.filter(Teilnehmer.unternehmen.mnr_g_alt.ilike(constraint))
-        #    v = True
-        #if data.get('geburtsdatum') != NO_VALUE:
-        #    sql = sql.filter(Teilnehmer.geburtsdatum == data.get('geburtsdatum'))
-        #    v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return

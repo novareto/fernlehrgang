@@ -18,22 +18,45 @@
    });
 </script>
 
-<div tal:define="results list(view.getResults())" tal:condition="results" class="panel panel-default">
-  <div class="panel-heading" tal:define="result results[0]">
-    <h3> Teilnehmer </h3>
-    <p> <span tal:content="structure result['name']"> </p>
-    <p tal:content="structure result['vorname']"> </p> 
-    <p tal:content="structure result['gebdat']"> </p> 
-    <p tal:content="structure result['unternehmen']"> </p> 
-  </div> 
-  <div class="panel-body">
-    <table>
+<fieldset tal:define="results list(view.getResults())" tal:condition="results">
+  <legend> Ergebnisse </legend>
+  <div class="row">
+  <div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3> Teilnehmer </h3>
+    </div>
+    <div class="panel-body" tal:define="result results[0]">
+      <p tal:content="structure result['anrede']"> </p>
+      <p tal:content="structure result['titel']"> </p>
+      <p tal:content="structure result['name']"> </p>
+      <p tal:content="structure result['vorname']"> </p> 
+      <p tal:content="structure result['gebdat']"> </p> 
+    </div> 
+  </div>
+  </div>
+  <div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3> Unternehmen </h3>
+    </div>
+    <div class="panel-body" tal:define="result results[0]">
+      <p tal:content="structure result['unternehmen']"> </p> 
+    </div> 
+  </div>
+  </div>
+  </div>
+  <div class="row col-md-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3> Lehrgänge </h3>
+    </div>
+    <div class="panel-body">
+
+    <table class="table">
       <thead>
         <tr>
           <th> Kursteilnehmer </th>
-          <th> Vorname </th>
-          <th> Geburtsdatum </th>
-          <th> Unternehmen </th>
           <th> Status </th>
           <th> Ergebnis </th>
         </tr>
@@ -41,16 +64,13 @@
       <tbody>
       <tr tal:repeat="result results">
         <td> <span tal:content="structure result['link_flg']"> </span> </td>
-        <td> <span tal:content="structure result['name']"> </span> </td>
-        <td> <span tal:content="structure result['vorname']"></span> </td>
-        <td> <span tal:content="structure result['gebdat']"></span> </td>
-        <td> <span tal:content="structure result['unternehmen']"></span> </td>
         <td> <span tal:content="structure result['status']"></span> </td>
         <td> <span tal:content="structure result['bestanden']"></span> </td>
       </tr>
       </tbody>
     </table>
+    </div>
   </div>
-</div>
+</fieldset>
 </body>
 </html>

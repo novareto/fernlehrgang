@@ -131,3 +131,11 @@ textarea {
     margin-left: 0px;
     position: absolute;
 }
+
+.row {
+  margin-left: -15px !important;
+}
+
+input#form-action-suchen {
+  margin-top: 5px;
+}
