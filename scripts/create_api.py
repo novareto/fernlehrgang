@@ -17,11 +17,17 @@ print result.status_code
 
 
 data = {'teilnehmer_id': 100000, 'passwort': 'DW5Casvh'}
-data = {'teilnehmer_id': 100000, 'passwort': 'DW5Cavh'}
+data = {'teilnehmer_id': 100000, 'passwort': 'passwort'}
 result = requests.post(URL % 'checkAuth', data=simplejson.dumps(data))
 print result.json()
 
 
+result = requests.post(URL % 'getTeilnehmer', data=simplejson.dumps(data))
+print result.json()
+
+
+#result = requests.get(URL % 'getResults')
+#print result.json()
 
 #data = {
 #    'teilnehmer_id': 100000,

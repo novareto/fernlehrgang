@@ -85,5 +85,6 @@ class GBOAPI(object):
 
 gboapi = GBOAPI()
 
-print gboapi.get_info('123456789')
+t = gboapi.get_info('123456789')
+t = gboapi.get_info('888899998')
 print gboapi.set_data(TESTJSON)

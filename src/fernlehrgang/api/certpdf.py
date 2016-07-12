@@ -8,7 +8,7 @@ from reportlab.graphics.barcode import code39
 from reportlab.lib.colors import gray
 
 
-image = "/Users/ck/work/bghw/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Bescheinigung_Ansicht_Image.jpg"
+image = "/home/vlw/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Bescheinigung_Ansicht_Image.jpg"
 
 
 #Definition einer Funktion
