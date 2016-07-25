@@ -1,0 +1,686 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.5.3
+-- Dumped by pg_dump version 9.5.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: flg; Type: DATABASE; Schema: -; Owner: flg
+--
+
+CREATE DATABASE flg WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'de_DE.UTF-8' LC_CTYPE = 'de_DE.UTF-8';
+
+
+ALTER DATABASE flg OWNER TO flg;
+
+\connect flg
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: adr; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE adr (
+    "MNR" integer NOT NULL,
+    "NAME1" character varying(32),
+    "NAME2" character varying(32),
+    "NAME3" character varying(32),
+    "STR" character varying(70),
+    "PLZ" character varying(10),
+    "ORT" character varying(30),
+    "BETRIEBSART" character varying(1),
+    "MNR_E" character varying(12),
+    "MNR_G_ALT" character varying(12)
+);
+
+
+ALTER TABLE adr OWNER TO flg;
+
+--
+-- Name: adr_MNR_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE "adr_MNR_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE "adr_MNR_seq" OWNER TO flg;
+
+--
+-- Name: adr_MNR_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flg
+--
+
+ALTER SEQUENCE "adr_MNR_seq" OWNED BY adr."MNR";
+
+
+--
+-- Name: antwort; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE antwort (
+    id integer NOT NULL,
+    lehrheft_id integer,
+    frage_id integer,
+    antwortschema character varying(50),
+    datum timestamp without time zone,
+    kursteilnehmer_id integer
+);
+
+
+ALTER TABLE antwort OWNER TO flg;
+
+--
+-- Name: antwort_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE antwort_seq
+    START WITH 100000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE antwort_seq OWNER TO flg;
+
+--
+-- Name: fernlehrgang; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE fernlehrgang (
+    id integer NOT NULL,
+    jahr character varying(50),
+    titel character varying(256),
+    typ character varying(50),
+    beschreibung character varying(256),
+    punktzahl integer,
+    beginn date,
+    ende date
+);
+
+
+ALTER TABLE fernlehrgang OWNER TO flg;
+
+--
+-- Name: fernlehrgang_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE fernlehrgang_seq
+    START WITH 100
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE fernlehrgang_seq OWNER TO flg;
+
+--
+-- Name: frage; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE frage (
+    id integer NOT NULL,
+    frage character varying(5),
+    titel character varying(256),
+    antwortschema character varying(50),
+    gewichtung integer,
+    lehrheft_id integer
+);
+
+
+ALTER TABLE frage OWNER TO flg;
+
+--
+-- Name: frage_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE frage_seq
+    START WITH 10000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE frage_seq OWNER TO flg;
+
+--
+-- Name: journal; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE journal (
+    id integer NOT NULL,
+    teilnehmer_id integer,
+    creation_date timestamp without time zone,
+    status character varying(50),
+    type character varying(50),
+    kursteilnehmer_id integer
+);
+
+
+ALTER TABLE journal OWNER TO flg;
+
+--
+-- Name: journal_id_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE journal_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE journal_id_seq OWNER TO flg;
+
+--
+-- Name: journal_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flg
+--
+
+ALTER SEQUENCE journal_id_seq OWNED BY journal.id;
+
+
+--
+-- Name: kursteilnehmer; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE kursteilnehmer (
+    id integer NOT NULL,
+    status character varying(50),
+    fernlehrgang_id integer,
+    teilnehmer_id integer,
+    unternehmen_mnr integer,
+    erstell_datum timestamp without time zone,
+    gespraech character varying(20),
+    un_klasse character varying(20),
+    branche character varying(20)
+);
+
+
+ALTER TABLE kursteilnehmer OWNER TO flg;
+
+--
+-- Name: kursteilnehmer_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE kursteilnehmer_seq
+    START WITH 900000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE kursteilnehmer_seq OWNER TO flg;
+
+--
+-- Name: lehrheft; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE lehrheft (
+    id integer NOT NULL,
+    nummer character varying(5),
+    titel character varying(256),
+    fernlehrgang_id integer
+);
+
+
+ALTER TABLE lehrheft OWNER TO flg;
+
+--
+-- Name: lehrheft_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE lehrheft_seq
+    START WITH 1000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE lehrheft_seq OWNER TO flg;
+
+--
+-- Name: teilnehmer; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE teilnehmer (
+    id integer NOT NULL,
+    anrede character varying(50),
+    titel character varying(50),
+    vorname character varying(50),
+    name character varying(50),
+    geburtsdatum date,
+    strasse character varying(50),
+    nr character varying(50),
+    plz character varying(50),
+    ort character varying(50),
+    adresszusatz character varying(50),
+    email character varying(50),
+    telefon character varying(50),
+    passwort character varying(8),
+    kategorie character varying(1),
+    kompetenzzentrum character varying(5),
+    unternehmen_mnr integer
+);
+
+
+ALTER TABLE teilnehmer OWNER TO flg;
+
+--
+-- Name: teilnehmer_seq; Type: SEQUENCE; Schema: public; Owner: flg
+--
+
+CREATE SEQUENCE teilnehmer_seq
+    START WITH 100000
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE teilnehmer_seq OWNER TO flg;
+
+--
+-- Name: unternehmen_teilnehmer; Type: TABLE; Schema: public; Owner: flg
+--
+
+CREATE TABLE unternehmen_teilnehmer (
+    unternehmen_id integer,
+    teilnehmer_id integer
+);
+
+
+ALTER TABLE unternehmen_teilnehmer OWNER TO flg;
+
+--
+-- Name: MNR; Type: DEFAULT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY adr ALTER COLUMN "MNR" SET DEFAULT nextval('"adr_MNR_seq"'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY journal ALTER COLUMN id SET DEFAULT nextval('journal_id_seq'::regclass);
+
+
+--
+-- Data for Name: adr; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY adr ("MNR", "NAME1", "NAME2", "NAME3", "STR", "PLZ", "ORT", "BETRIEBSART", "MNR_E", "MNR_G_ALT") FROM stdin;
+123456789	Novareto 	Geschäftsprozesse im Netz	GmbH	Karolinenstr. 17	90763	Fürth		\N	
+987654321	CreateAT	CreateAT	CreateAT	Musterstr. 17	67878	Wien		\N	
+\.
+
+
+--
+-- Name: adr_MNR_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('"adr_MNR_seq"', 1, false);
+
+
+--
+-- Data for Name: antwort; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY antwort (id, lehrheft_id, frage_id, antwortschema, datum, kursteilnehmer_id) FROM stdin;
+\.
+
+
+--
+-- Name: antwort_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('antwort_seq', 100000, false);
+
+
+--
+-- Data for Name: fernlehrgang; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY fernlehrgang (id, jahr, titel, typ, beschreibung, punktzahl, beginn, ende) FROM stdin;
+100	2016	Online Fernlehrgang	4	Online Fernlehrgang	1	2016-01-01	2016-12-31
+\.
+
+
+--
+-- Name: fernlehrgang_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('fernlehrgang_seq', 100, true);
+
+
+--
+-- Data for Name: frage; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY frage (id, frage, titel, antwortschema, gewichtung, lehrheft_id) FROM stdin;
+\.
+
+
+--
+-- Name: frage_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('frage_seq', 10000, false);
+
+
+--
+-- Data for Name: journal; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY journal (id, teilnehmer_id, creation_date, status, type, kursteilnehmer_id) FROM stdin;
+\.
+
+
+--
+-- Name: journal_id_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('journal_id_seq', 1, false);
+
+
+--
+-- Data for Name: kursteilnehmer; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY kursteilnehmer (id, status, fernlehrgang_id, teilnehmer_id, unternehmen_mnr, erstell_datum, gespraech, un_klasse, branche) FROM stdin;
+900000	A1	100	100000	123456789	2016-07-25 10:01:49.978183	\N	\N	\N
+900001	A1	100	100001	987654321	2016-07-25 10:02:17.5761	\N	\N	\N
+\.
+
+
+--
+-- Name: kursteilnehmer_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('kursteilnehmer_seq', 900001, true);
+
+
+--
+-- Data for Name: lehrheft; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY lehrheft (id, nummer, titel, fernlehrgang_id) FROM stdin;
+\.
+
+
+--
+-- Name: lehrheft_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('lehrheft_seq', 1000, false);
+
+
+--
+-- Data for Name: teilnehmer; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY teilnehmer (id, anrede, titel, vorname, name, geburtsdatum, strasse, nr, plz, ort, adresszusatz, email, telefon, passwort, kategorie, kompetenzzentrum, unternehmen_mnr) FROM stdin;
+100000	1	0	Christian	Klinger	1980-07-04	Westheim	48	91471	Illesheim		ck@novareto.de		passwort	0	nein	123456789
+100001	1	0	Max	Mustermann	1970-01-01						info@create.at		passwort	0	nein	987654321
+\.
+
+
+--
+-- Name: teilnehmer_seq; Type: SEQUENCE SET; Schema: public; Owner: flg
+--
+
+SELECT pg_catalog.setval('teilnehmer_seq', 100001, true);
+
+
+--
+-- Data for Name: unternehmen_teilnehmer; Type: TABLE DATA; Schema: public; Owner: flg
+--
+
+COPY unternehmen_teilnehmer (unternehmen_id, teilnehmer_id) FROM stdin;
+123456789	100000
+987654321	100001
+\.
+
+
+--
+-- Name: adr_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY adr
+    ADD CONSTRAINT adr_pkey PRIMARY KEY ("MNR");
+
+
+--
+-- Name: antwort_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY antwort
+    ADD CONSTRAINT antwort_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fernlehrgang_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY fernlehrgang
+    ADD CONSTRAINT fernlehrgang_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frage_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY frage
+    ADD CONSTRAINT frage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: journal_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY journal
+    ADD CONSTRAINT journal_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kursteilnehmer_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY kursteilnehmer
+    ADD CONSTRAINT kursteilnehmer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lehrheft_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY lehrheft
+    ADD CONSTRAINT lehrheft_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: teilnehmer_pkey; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY teilnehmer
+    ADD CONSTRAINT teilnehmer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: unique_frage; Type: CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY antwort
+    ADD CONSTRAINT unique_frage UNIQUE (frage_id, kursteilnehmer_id);
+
+
+--
+-- Name: ix_adr_MNR; Type: INDEX; Schema: public; Owner: flg
+--
+
+CREATE INDEX "ix_adr_MNR" ON adr USING btree ("MNR");
+
+
+--
+-- Name: antwort_frage_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY antwort
+    ADD CONSTRAINT antwort_frage_id_fkey FOREIGN KEY (frage_id) REFERENCES frage(id);
+
+
+--
+-- Name: antwort_kursteilnehmer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY antwort
+    ADD CONSTRAINT antwort_kursteilnehmer_id_fkey FOREIGN KEY (kursteilnehmer_id) REFERENCES kursteilnehmer(id);
+
+
+--
+-- Name: antwort_lehrheft_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY antwort
+    ADD CONSTRAINT antwort_lehrheft_id_fkey FOREIGN KEY (lehrheft_id) REFERENCES lehrheft(id);
+
+
+--
+-- Name: frage_lehrheft_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY frage
+    ADD CONSTRAINT frage_lehrheft_id_fkey FOREIGN KEY (lehrheft_id) REFERENCES lehrheft(id);
+
+
+--
+-- Name: journal_kursteilnehmer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY journal
+    ADD CONSTRAINT journal_kursteilnehmer_id_fkey FOREIGN KEY (kursteilnehmer_id) REFERENCES kursteilnehmer(id);
+
+
+--
+-- Name: journal_teilnehmer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY journal
+    ADD CONSTRAINT journal_teilnehmer_id_fkey FOREIGN KEY (teilnehmer_id) REFERENCES teilnehmer(id);
+
+
+--
+-- Name: kursteilnehmer_fernlehrgang_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY kursteilnehmer
+    ADD CONSTRAINT kursteilnehmer_fernlehrgang_id_fkey FOREIGN KEY (fernlehrgang_id) REFERENCES fernlehrgang(id);
+
+
+--
+-- Name: kursteilnehmer_teilnehmer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY kursteilnehmer
+    ADD CONSTRAINT kursteilnehmer_teilnehmer_id_fkey FOREIGN KEY (teilnehmer_id) REFERENCES teilnehmer(id);
+
+
+--
+-- Name: kursteilnehmer_unternehmen_mnr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY kursteilnehmer
+    ADD CONSTRAINT kursteilnehmer_unternehmen_mnr_fkey FOREIGN KEY (unternehmen_mnr) REFERENCES adr("MNR");
+
+
+--
+-- Name: lehrheft_fernlehrgang_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY lehrheft
+    ADD CONSTRAINT lehrheft_fernlehrgang_id_fkey FOREIGN KEY (fernlehrgang_id) REFERENCES fernlehrgang(id);
+
+
+--
+-- Name: teilnehmer_unternehmen_mnr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY teilnehmer
+    ADD CONSTRAINT teilnehmer_unternehmen_mnr_fkey FOREIGN KEY (unternehmen_mnr) REFERENCES adr("MNR");
+
+
+--
+-- Name: unternehmen_teilnehmer_teilnehmer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY unternehmen_teilnehmer
+    ADD CONSTRAINT unternehmen_teilnehmer_teilnehmer_id_fkey FOREIGN KEY (teilnehmer_id) REFERENCES teilnehmer(id);
+
+
+--
+-- Name: unternehmen_teilnehmer_unternehmen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flg
+--
+
+ALTER TABLE ONLY unternehmen_teilnehmer
+    ADD CONSTRAINT unternehmen_teilnehmer_unternehmen_id_fkey FOREIGN KEY (unternehmen_id) REFERENCES adr("MNR");
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: ck
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM ck;
+GRANT ALL ON SCHEMA public TO ck;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

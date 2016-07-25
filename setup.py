@@ -46,18 +46,15 @@ setup(name='fernlehrgang',
                         'zeam.form.table',
                         'xlwt',
                         'openpyxl',
-                        'celery',
                         'lxml',
-                        #'nva.asynctask',
                         'zope.sendmail',
                         'GenericCache',
                         'reportlab',
                         'ibm-db-sa',
                         'ibm_db',
                         'ukh.ibmdbsa',
-                        # Add extra requirements here
                         ],
-      entry_points = {
+      entry_points={
           'paste.app_factory': [
                'main = grokcore.startup:application_factory',
                'debug = grokcore.startup:debug_application_factory'
