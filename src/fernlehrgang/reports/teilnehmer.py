@@ -4,7 +4,7 @@
 
 import grok
 
-from profilehooks import profile
+# from profilehooks import profile
 from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
@@ -15,7 +15,7 @@ from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from z3c.saconfig import Session
-from zeam.form.base import action, NO_VALUE, Fields
+from zeam.form.base import action, Fields
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import Form
 from fernlehrgang import fmtDate
@@ -63,9 +63,10 @@ class TeilnehmerSuche(Form):
     grok.order(1500)
 
     label = u"Statusabfrage Teilnehmer."
-    description = u"Bitte geben Sie die Kriterien ein um den Teilnehmer zu finden."
+    description = u"Bitte geben Sie die Kriterien ein \
+    um den Teilnehmer zu finden."
 
-    fields = Fields(ISearch).select('id') # + Fields(ITeilnehmer).select('name', 'vorname', 'geburtsdatum') + Fields(IUnternehmen).select('mnr')
+    fields = Fields(ISearch).select('id')
 
     results = []
 
@@ -76,7 +77,8 @@ class TeilnehmerSuche(Form):
 
     def updateWidgets(self):
         super(TeilnehmerSuche, self).updateWidgets()
-        self.fieldWidgets.get('form.field.id').template = ChameleonPageTemplateFile('templates/select.cpt')
+        field_id = self.fieldWidgets.get('form.field.id')
+        field_id.template = ChameleonPageTemplateFile('templates/select.cpt')
 
     def getResults(self):
         root = grok.getSite()
@@ -87,7 +89,8 @@ class TeilnehmerSuche(Form):
             if kursteilnehmer.fernlehrgang:
                 results = ICalculateResults(kursteilnehmer).summary()
                 locate(root, kursteilnehmer, DefaultModel)
-                name = '<a href="%s"> %s </a>' % (self.url(kursteilnehmer), item.name)
+                name = '<a href="%s"> %s </a>' % (
+                    self.url(kursteilnehmer), item.name)
                 flg = kursteilnehmer.fernlehrgang
                 locate(root, flg, DefaultModel)
                 link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
@@ -97,20 +100,24 @@ class TeilnehmerSuche(Form):
             rcu = []
             for unt in item.unternehmen:
                 locate(root, unt, DefaultModel)
-                res = ICalculateResults(kursteilnehmer).summary(unternehmen=unt)
-                rcu.append('<a href="%s"> %s (%s) </a>' % (self.url(unt), unt.name, res['comment']))
+                res = ICalculateResults(
+                    kursteilnehmer).summary(unternehmen=unt)
+                rcu.append('<a href="%s"> %s (%s) </a>' % (
+                    self.url(unt), unt.name, res['comment']))
             gebdat = ""
             if item.geburtsdatum:
                 gebdat = fmtDate(item.geburtsdatum)
             d = dict(name=name,
-                     link_flg = link_flg,
-                     gebdat = gebdat,
-                     titel = ITeilnehmer.get('titel').source.getTermByToken(item.titel).title,
-                     anrede = ITeilnehmer.get('anrede').source.getTermByToken(item.anrede).title,
-                     unternehmen = '<br>'.join(rcu),
-                     vorname = item.vorname,
-                     status = lfs.getTerm(kursteilnehmer.status).title,
-                     bestanden = results['comment'])
+                     link_flg=link_flg,
+                     gebdat=gebdat,
+                     titel=ITeilnehmer.get('titel').source.getTermByToken(
+                         item.titel).title,
+                     anrede=ITeilnehmer.get('anrede').source.getTermByToken(
+                         item.anrede).title,
+                     unternehmen='<br>'.join(rcu),
+                     vorname=item.vorname,
+                     status=lfs.getTerm(kursteilnehmer.status).title,
+                     bestanden=results['comment'])
             yield d
 
     @action(u'Suchen')
@@ -118,7 +125,8 @@ class TeilnehmerSuche(Form):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Kursteilnehmer, Teilnehmer).options(joinedload(Kursteilnehmer.antworten))
+        sql = session.query(Kursteilnehmer, Teilnehmer).options(
+            joinedload(Kursteilnehmer.antworten))
         sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))

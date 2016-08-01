@@ -1,4 +1,3 @@
-import json
 import requests
 
 
@@ -76,15 +75,16 @@ class GBOAPI(object):
     def set_data(self, data):
         url = "%s/import/clients" % self.url
         r = requests.post(
-            url, 
-            json=TESTJSON, 
+            url,
+            json=TESTJSON,
             headers=self.headers
         )
         return r
 
 
-gboapi = GBOAPI()
+if __name__ == '__main__':
+    gboapi = GBOAPI()
 
-t = gboapi.get_info('123456789')
-t = gboapi.get_info('888899998')
-print gboapi.set_data(TESTJSON)
+    t = gboapi.get_info('123456789')
+    t = gboapi.get_info('888899998')
+    print gboapi.set_data(TESTJSON)

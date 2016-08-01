@@ -9,7 +9,7 @@ from dolmen.app.layout import models, IDisplayView
 from dolmen.forms.base.utils import set_fields_data, apply_data_event
 from dolmen.forms.crud import i18n as _
 from dolmen.menu import menuentry, Entry, menu
-from fernlehrgang import Form, AddForm 
+from fernlehrgang import Form, AddForm
 from fernlehrgang import fmtDate
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.journal import IJournalEntry
@@ -47,23 +47,22 @@ class JournalListing(TablePage):
 
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
     description = "Journal"
-    
+
     label = u"Journal"
     batchSize = 150
     startBatchingAt = 150
-    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
+    cssClasses = {
+        'table': 'table table-striped table-bordered table-condensed'}
 
     @property
     def values(self):
         return self.context.journal_entries
 
 
-## Spalten
-
 class ID(LinkColumn):
     grok.name('Id')
     grok.context(ITeilnehmer)
-    weight = 5 
+    weight = 5
     header = u"Id"
     attrName = "id"
 
@@ -81,6 +80,9 @@ class Status(Column):
     header = u"Status"
     attrName = "status"
 
+    def renderCell(self, item):
+        return getattr(item, 'status', '')
+
 
 class Type(Column):
     grok.name('Type')
@@ -89,7 +91,10 @@ class Type(Column):
     header = u"Type"
     attrName = "type"
 
-    
+    def renderCell(self, item):
+        return getattr(item, 'type', '')
+
+
 class Date(Column):
     grok.name('Date')
     grok.context(ITeilnehmer)
@@ -97,38 +102,9 @@ class Date(Column):
     header = u"Date"
 
     def renderCell(self, item):
-        if item.date != None:
+        if item.date is not None:
             return fmtDate(item.date)
         return ""
-
-
-class Kursteilnehmer(LinkColumn):
-    grok.name('kursteilnehmer')
-    grok.context(ITeilnehmer)
-    weight = 45 
-    header = u"Kursteilnehmer"
-    attrName = "kursteilnehmer_id"
-
-    def getLinkURL(self, item):
-        # FIXME
-        return ""
-
-    def getLinkContent(self, item):
-        return item.kursteilnehmer_id
-
-
-class Teilnehmer(LinkColumn):
-    grok.name('Teilnehmer')
-    grok.context(ITeilnehmer)
-    weight = 42 
-    header = u"Teilnehmer"
-    attrName = "teilnehmer_id"
-
-    def getLinkURL(self, item):
-        return ""
-
-    def getLinkContent(self, item):
-        return item.teilnehmer_id
 
 
 @menuentry(AddMenu)
@@ -136,7 +112,7 @@ class AddJournalEntry(AddForm):
     grok.context(ITeilnehmer)
     grok.title(u'Journal Eintrag')
     label = u'Journal entry'
-    
+
     fields = Fields(IJournalEntry).omit('id', 'teilnehmer_id', 'date')
 
     def create(self, data):
@@ -159,7 +135,7 @@ class EditJournalEntry(models.Edit):
     grok.context(IJournalEntry)
     grok.title(u'Journal')
     label = u'Journal entry'
-    
+
     fields = Fields(IJournalEntry).omit('id', 'teilnehmer_id', 'date')
 
     @action('Speichern')
@@ -181,7 +157,7 @@ class DeleteJournalEntry(models.Form):
     grok.context(IJournalEntry)
     grok.title(u'Journal entry')
     label = u'Journal entry'
-    
+
     fields = Fields()
 
     @action('Delete')

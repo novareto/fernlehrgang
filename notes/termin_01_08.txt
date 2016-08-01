@@ -1,0 +1,41 @@
+Status
+======
+
+Schnittstellen
+--------------
+
+Schnittstellen GBO
+ - Abfrage Unternehmen in GBO. --> OK
+ - Ergebnisdaten weiterreichen? --> Funkioniert mit Testdaten
+
+Schnittstelle CREATE
+ - Login --> OK
+ - Teilnehmerdaten lesen --> OK
+ - Teilnehmerdaten schreiben --> OK
+ - getCertificate --> OK
+ - getLehrhefte --> OK
+
+ - Journal schreiben! --> nicht implementiert
+ - Ergebnisdaten schreiben! --> nicht implementiert
+ - Status --> nicht implementiert
+
+
+Datenbank
+---------
+
+ - Migration getestet mit Hr. Winkler
+ - Funkionalität getestet and angepasst falls nötig
+ - Performance getesetet und bereits teilweise angepasst
+ - 
+
+Fernlehrang
+-----------
+ - Relation und UI für Teilnehmer & Unternehmen gändert
+ - Schuchmasken und Darstellung für den Kursteilnehmer angepasst
+ - Cleanup
+ - Journaling UI und Storage
+ - Erweiterte Ergebnisberchnung 
+   (VLW GBO) Schnittstelle
+ - Semistatische Persistierung der Ergebnisdaten. Im Anschluss der
+   Ergebnisberechnugn (nicht implementiert aber probiert)
+   

@@ -14,12 +14,19 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 @grok.provider(IContextSourceBinder)
 def getKursteilnehmer(context):
     rc = []
-    for ktn in context.kursteilnehmer:
+    if IJournalEntry.providedBy(context):
+        tn = context.teilnehmer
+    else:
+        tn = context
+    for ktn in tn.kursteilnehmer:
         rc.append(
             SimpleTerm(
                 ktn.id,
                 ktn.id,
-                "%s-%s %s" % (ktn.fernlehrgang.titel, ktn.fernlehrgang.jahr, teilnehmer.name)
+                "%s-%s %s" % (
+                    ktn.fernlehrgang.titel,
+                    ktn.fernlehrgang.jahr,
+                    tn.name)
             )
         )
     return SimpleVocabulary(rc)
@@ -33,7 +40,7 @@ class IJournalEntry(Interface):
     )
 
     type = TextLine(
-        title=u'Status',
+        title=u'Type',
         required=True,
     )
 

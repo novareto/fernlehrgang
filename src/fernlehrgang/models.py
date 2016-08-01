@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2011 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 
 import grok
@@ -86,7 +86,7 @@ class Fernlehrgang(Base, RDBMixin):
 
     @property
     def title(self):
-        return self.jahr 
+        return self.jahr
 
     def __repr__(self):
         return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" %(self.id, self.jahr, self.titel)
@@ -106,7 +106,7 @@ class Unternehmen(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr")
     #grok.traversable(attr='god_data')
-    
+
     #__tablename__ = 'unternehmen'
 
     __tablename__ = 'adr'
@@ -210,9 +210,9 @@ class Lehrheft(Base, RDBMixin):
     titel = Column(String(256))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
 
-    fernlehrgang = relation(Fernlehrgang, 
+    fernlehrgang = relation(Fernlehrgang,
                             backref = backref('lehrhefte', order_by=nummer.asc(), cascade="all,delete"),
-                           ) 
+                           )
 
     @property
     def title(self):
@@ -247,7 +247,7 @@ class Frage(Base, RDBMixin):
     gewichtung = Column(Integer)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
 
-    lehrheft = relation(Lehrheft, 
+    lehrheft = relation(Lehrheft,
                         backref = backref('fragen', order_by=frage, cascade="all,delete"),
                         )
 
@@ -334,12 +334,12 @@ class Antwort(Base, RDBMixin):
     system = 1
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
-    kursteilnehmer = relation(Kursteilnehmer, 
+    kursteilnehmer = relation(Kursteilnehmer,
                               backref = backref('antworten', lazy='joined', order_by=frage_id, cascade="all,delete"),
                              )
 
     frage = relation(Frage, lazy="joined")
-                     
+
     @property
     def title(self):
         return self.frage.titel
@@ -378,19 +378,24 @@ class JournalEntry(Base, RDBMixin):
     kursteilnehmer_id = Column(Integer, ForeignKey(Kursteilnehmer.id))
     teilnehmer = relationship(Teilnehmer, backref="journal_entries")
 
+    @property
+    def date(self):
+        return self.creation_date
+
     def __repr__(self):
         return "<JournalEntry(id='%i', teilnehmer='%i')>" % (
             self.id, self.teilnehmer_id)
 
     def factory(unternehmen_mnr, id, jid):
         session = Session()
-        return session.query(TeilnehmerJournal).filter(
-            and_(TeilnehmerJournal.id == jid,
-                 TeilnehmerJournal.teilnehmer_id==id,
-                 TeilnehmerJournal.teilnehmer.unternehmen_mnr==unternehmen_mnr)).one()
+        return session.query(JournalEntry).filter(
+            and_(JournalEntry.id == jid,
+                 JournalEntry.teilnehmer_id == id)).one()
+
+            #     JournalEntry.teilnehmer.unternehmen_mnr==unternehmen_mnr)).one()
 
     def arguments(entry):
         return dict(
-            jid = entry.id,
-            id = entry.teilnehmer.id,
-            unternehmen_mnr = entry.teilnehmer.unternehmen_mnr)
+            jid=entry.id,
+            id=entry.teilnehmer.id,
+            unternehmen_mnr=entry.teilnehmer.unternehmen_mnr)

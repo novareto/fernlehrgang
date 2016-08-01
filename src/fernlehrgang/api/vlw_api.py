@@ -56,7 +56,7 @@ class APILernwelten(grok.JSON):
             info = self.gbo.get_info(str(mnr))
             if info.status_code == 200:
                 ret['gbo'] = True
-        return ret 
+        return ret
 
     def getTeilnehmer(self):
         ret = dict()
@@ -111,6 +111,7 @@ class APILernwelten(grok.JSON):
         return results.lehrhefte()
 
     def _getResults(self, kursteilnehmer_id=900000):
-        kursteilnehmer = self.session.query(models.Kursteilnehmer).get(kursteilnehmer_id)
+        kursteilnehmer = self.session.query(models.Kursteilnehmer).get(
+            kursteilnehmer_id)
         results = ICalculateResults(kursteilnehmer)
         return results
