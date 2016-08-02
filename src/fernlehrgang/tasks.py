@@ -34,11 +34,11 @@ from fernlehrgang import logger
 
 
 #@zope_task                                                                
-#def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
-#    from fernlehrgang.exports.versandliste_fernlehrgang import export
-#    session = Session()
-#    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
-#    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
+def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, dateiname, mail="cklinger@novareto.de"):
+    from fernlehrgang.exports.versandliste_fernlehrgang import export
+    session = Session()
+    fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 
 #@zope_task                                                                

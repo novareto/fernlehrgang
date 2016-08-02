@@ -89,7 +89,7 @@ def export(session, flg_id):
     return fn
 
 
-@menuentry(ExportItems)
+#@menuentry(ExportItems)
 class ListeKompetenzzentrum(grok.View):
     grok.context(IFernlehrgang)
     grok.name('kompetenzzentrum')

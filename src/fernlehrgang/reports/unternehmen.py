@@ -44,7 +44,7 @@ class IUnternehmenSearch(Interface):
         )
 
 
-@menuentry(NavigationMenu, order=400)
+#@menuentry(NavigationMenu, order=400)
 class UnternehmenSuche(Form):
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage Unternehmen')

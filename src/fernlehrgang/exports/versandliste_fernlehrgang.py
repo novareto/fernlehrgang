@@ -24,20 +24,7 @@ from fernlehrgang.lib import nN
 spalten = ('FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ', 
     'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM',
     'STRASSE', 'WOHNORT', 'PASSWORT', 'BELIEFART', 'R_DATUM', 'RSENDUNG', 'PUNKTZAHL',
-    'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME', 'L1_F_1', 'L1_F_2',
-    'L1_F_3', 'L1_F_4', 'L1_F_5', 'L1_F_6', 'L1_F_7', 'L1_F_8', 'L1_F_9', 'L1_F_10',
-    'L2_F_1', 'L2_F_2', 'L2_F_3', 'L2_F_4', 'L2_F_5', 'L2_F_6', 'L2_F_7', 'L2_F_8', 'L2_F_9',
-    'L2_F_10', 'L3_F_1', 'L3_F_2', 'L3_F_3', 'L3_F_4', 'L3_F_5', 'L3_F_6', 'L3_F_7',
-    'L3_F_8', 'L3_F_9', 'L3_F_10', 'L4_F_1', 'L4_F_2', 'L4_F_3', 'L4_F_4', 'L4_F_5',
-    'L4_F_6', 'L4_F_7', 'L4_F_8', 'L4_F_9', 'L4_F_10','L5_F_1', 'L5_F_2', 'L5_F_3',
-    'L5_F_4', 'L5_F_5', 'L5_F_6', 'L5_F_7', 'L5_F_8', 'L5_F_9', 'L5_F_10', 'L6_F_1',
-    'L6_F_2', 'L6_F_3', 'L6_F_4', 'L6_F_5', 'L6_F_6', 'L6_F_7', 'L6_F_8', 'L6_F_9',
-    'L6_F_10', 'L7_F_1', 'L7_F_2', 'L7_F_3', 'L7_F_4', 'L7_F_5', 'L7_F_6', 'L7_F_7',
-    'L7_F_8', 'L7_F_9', 'L7_F_10', 'L8_F_1', 'L8_F_2', 'L8_F_3', 'L8_F_4', 'L8_F_5',
-    'L8_F_6', 'L8_F_7', 'L8_F_8', 'L8_F_9', 'L8_F_10','L1_P', 'L2_P', 'L3_P',
-    'L4_P', 'L5_P', 'L6_P', 'L7_P', 'L8_P', 'L9_P', 'L10_P', 'BDANZSDG', 'BDNR', 'BDGEWICHT',
-    'BZANZSDG', 'BZANZBD', 'BDANFANG', 'BDENDE',
-)
+    'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME')
 
 
 def getXLSBases():
@@ -115,29 +102,29 @@ def createRows(book, adressen, session, flg_id, lh_id, lh_nr, rdatum, stichtag):
             row.write(23, nN(teilnehmer.titel))
             row.write(24, nN(teilnehmer.vorname))
             row.write(25, nN(teilnehmer.name))
-            z = 26 
-            for lehrheft in lehrhefte:
-                for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
-                    r=""
-                    for antwort in ktn.antworten:
-                        if frage.id == antwort.frage_id:
-                            r = "%s\r %s\n %s\r" %(
-                                    frage.antwortschema.upper(), 
-                                    antwort.antwortschema, 
-                                    cal_res.calculateResult(
-                                        frage.antwortschema,
-                                        antwort.antwortschema,
-                                        frage.gewichtung))
-                    row.write(z, r) 
-                    z += 1
-            lhid = ""        
-            for lhr in cal_res.lehrhefte(lehrhefte):
-                row.write(z, lhr.get('punkte'))
-                z += 1
-                if len(lhr['antworten']):
-                   lhid = lhr['titel'].split('-')[0] 
-            row.write(19, lhid) # RSENDUNG --> Anzahl der Rücksendung
-            ii+=1
+#            z = 26 
+#            for lehrheft in lehrhefte:
+#                for frage in sorted(lehrheft.fragen, key=lambda frage: int(frage.frage)):
+#                    r=""
+#                    for antwort in ktn.antworten:
+#                        if frage.id == antwort.frage_id:
+#                            r = "%s\r %s\n %s\r" %(
+#                                    frage.antwortschema.upper(), 
+#                                    antwort.antwortschema, 
+#                                    cal_res.calculateResult(
+#                                        frage.antwortschema,
+#                                        antwort.antwortschema,
+#                                        frage.gewichtung))
+#                    row.write(z, r) 
+#                    z += 1
+#            lhid = ""        
+#            for lhr in cal_res.lehrhefte(lehrhefte):
+#                row.write(z, lhr.get('punkte'))
+#                z += 1
+#                if len(lhr['antworten']):
+#                   lhid = lhr['titel'].split('-')[0] 
+#            row.write(19, lhid) # RSENDUNG --> Anzahl der Rücksendung
+#            ii+=1
 
 
 def export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname):
@@ -168,8 +155,11 @@ class XSLExportForm(Form):
         if errors:
             self.flash(u'Bitte korrigieren Sie die Fehler')
         from fernlehrgang.tasks import export_versandliste_fernlehrgang
-        lh_id, lh = data['lehrheft'].split('-')
-        mail = getUserEmail(self.request.principal.id)
-        fn = export_versandliste_fernlehrgang.delay(self.context.id, lh_id, lh, data['rdatum'], data['stichtag'], data['dateiname'], mail) 
+        lh_id, lh = 1, 2 
+        try:
+            mail = getUserEmail(self.request.principal.id)
+        except:
+            mail = "ck@novareto.de"
+        fn = export_versandliste_fernlehrgang(self.context.id, lh_id, lh, data['rdatum'], data['stichtag'], data['dateiname'], mail) 
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

@@ -170,7 +170,7 @@ def export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname):
     return fn
 
 
-@menuentry(ExportItems)
+#@menuentry(ExportItems)
 class XSLAbschlussForm(Form):
     grok.context(IFernlehrgang)
     grok.title('Abschlussliste Fernlehrgang')

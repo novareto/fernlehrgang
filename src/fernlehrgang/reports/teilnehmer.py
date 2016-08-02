@@ -55,8 +55,9 @@ class CreateTeilnehmer(Form):
             self.flash('Es wurde kein Teilnehmer gefunden')
 
 
-@menuentry(NavigationMenu, order=450)
+@menuentry(NavigationMenu, order=-100)
 class TeilnehmerSuche(Form):
+    grok.name('index')
     grok.context(IFernlehrgangApp)
     grok.title(u'Statusabfrage KursTeilnehmer')
     grok.require('zope.View')

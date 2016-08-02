@@ -22,13 +22,13 @@ cache = GenericCache()
 def getTeilnehmerId(context):
     rc = [SimpleTerm(None, None, u'Bitte Auswahl treffen.')]
     session = Session()
-    results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname)
-    for tid, name, vname in results.all():
+    results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname, models.Teilnehmer.unternehmen_mnr)
+    for tid, name, vname, mnr in results.all():
         rc.append(
             SimpleTerm(
                 tid,
                 tid,
-                "%s - %s %s" % (tid, name, vname)
+                "%s - %s %s - %s" % (tid, name, vname, mnr)
             )
         )
     return SimpleVocabulary(rc)

@@ -216,7 +216,7 @@ def report(session):
             ktn.status = "Z1"
     
 
-@menuentry(ExportItems)
+#@menuentry(ExportItems)
 class OFLG_Report(grok.View):
     grok.context(IFernlehrgang)
     grok.name('oflg_report')
