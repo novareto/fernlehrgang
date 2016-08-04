@@ -37,6 +37,8 @@ def getTeilnehmerId(context):
 @grok.subscribe(IDatabaseOpened)
 def fill_cache(*args):
     getTeilnehmerId(None)
+    from fernlehrgang.browser.teilnehmer import voc_unternehmen 
+    voc_unternehmen(None)
     print "CACHED FILLED"
 
 

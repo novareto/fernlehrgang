@@ -1,6 +1,6 @@
 $(document).ready(function() { 
 
-  $('select[name="form.field.unternehmen"]').chosen({});
+  //$('select[name="form.field.unternehmen"]').chosen({});
   $('select#form-field-id').chosen({});
     
   $('div.subform table').addClass('table table-striped table-bordered table-condensed');

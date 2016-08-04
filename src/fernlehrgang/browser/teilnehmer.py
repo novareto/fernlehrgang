@@ -41,6 +41,7 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from uvc.layout import TablePage
 from GenericCache.GenericCache import GenericCache
+from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
 
 
 grok.templatedir('templates')
@@ -147,13 +148,20 @@ class Edit(models.Edit):
         self.redirect(self.url(self.context))
 
 
+from GenericCache import GenericCache
+from GenericCache.decorators import cached
+
+cache = GenericCache()
+
 @provider(IContextSourceBinder)
+@cached(cache)
 def voc_unternehmen(context):
     session = Session()
     items = []
-    for unternehmen in session.query(Unternehmen).all():
+    from sqlalchemy.sql.expression import func
+    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9).all():
         items.append(SimpleTerm(
-            unternehmen, unternehmen.mnr, unternehmen.name))
+            mnr, mnr, "%s - %s" % (mnr, name)))
     return SimpleVocabulary(items)
 
 
@@ -176,13 +184,40 @@ class AssignCompany(models.Edit):
     fields = Fields(ICompany)
     fields['unternehmen'].mode = 'multiselect'
     
+    def update(self):
+        chosen_js.need()
+        chosen_css.need()
+        chosen_ajax.need()
+
+    def updateWidgets(self):
+        super(AssignCompany, self).updateWidgets()
+        field_id = self.fieldWidgets.get('form.field.unternehmen')
+        field_id.template = ChameleonPageTemplateFile('templates/select.cpt')
+
+    def getDefaults(self):
+        rc = []
+        for unt in self.context.unternehmen:
+            rc.append(
+                dict(
+                    title="%s - %s" % (unt.mnr, unt.name),
+                    value=unt.mnr
+                )
+            )
+        print rc
+        return rc
+
     @action('Assign')
     def handle_edit(self):
         data, errors = self.extractData()
         if errors:
             self.submissionError = errors
             return FAILURE
-        data['unternehmen'] = list(data['unternehmen'])
+        print data
+
+        def getUnternehmen(mnr):
+            session= Session()
+            return session.query(Unternehmen).get(mnr)
+        data['unternehmen'] = [getUnternehmen(x) for x in list(data['unternehmen'])]
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))
@@ -277,6 +312,23 @@ class SearchTeilnehmer(grok.View):
         return json.dumps({'q': self.term, 'results': terms})
 
 
+class SearchUnternehmen(grok.View):
+    grok.name('search_unternehmen')
+    grok.context(IFernlehrgangApp)
+
+    def update(self):
+        self.term = self.request.form['data[q]']
+        self.vocabulary = voc_unternehmen(None)
+
+    def render(self):
+        self.request.response.setHeader('Content-Type', 'application/json')
+        terms = []
+        matcher = self.term.lower()
+        for item in self.vocabulary:
+            if matcher in item.title.lower():
+                terms.append({'id': item.token, 'text': item.title})
+        return json.dumps({'q': self.term, 'results': terms})
+
 class OverviewKurse(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(ITeilnehmer)
@@ -301,7 +353,7 @@ class HelperEntry(Entry):
 class ID(GetAttrColumn):
     grok.name('Id')
     grok.context(IUnternehmen)
-    weight = 5 
+    weight = 5
     header = u"Id"
     attrName = "id"
 
@@ -309,7 +361,7 @@ class ID(GetAttrColumn):
 class Name(LinkColumn):
     grok.name('Name')
     grok.context(IUnternehmen)
-    weight = 10 
+    weight = 10
     linkContent = "edit"
 
     def getLinkURL(self, item):
