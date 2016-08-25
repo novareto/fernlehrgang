@@ -22,16 +22,25 @@
   <legend> Ergebnisse </legend>
   <div class="row">
   <div class="col-md-6">
-  <div class="panel panel-default">
+  <div class="panel panel-default" tal:define="result results[0]">
     <div class="panel-heading">
-      <h3> Teilnehmer </h3>
+      <h3> Teilnehmer 
+        <small class="pull-right">
+      <span tal:content="structure result['link_ktn']"> </span> 
+      <span tal:content="structure result['link_tn']"> </span> 
+    </small>
+    </h3>
     </div>
-    <div class="panel-body" tal:define="result results[0]">
+    <div class="panel-body">
       <p tal:content="structure result['anrede']"> </p>
       <p tal:content="structure result['titel']"> </p>
       <p tal:content="structure result['name']"> </p>
       <p tal:content="structure result['vorname']"> </p> 
       <p tal:content="structure result['gebdat']"> </p> 
+      <!--
+      <p tal:content="structure result['link_ktn']"> </p> 
+      <p tal:content="structure result['link_tn']"> </p> 
+      -->
     </div> 
   </div>
   </div>
@@ -56,7 +65,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th> Kursteilnehmer </th>
+          <th> Lehrgang </th>
           <th> Status </th>
           <th> Ergebnis </th>
         </tr>
@@ -66,6 +75,31 @@
         <td> <span tal:content="structure result['link_flg']"> </span> </td>
         <td> <span tal:content="structure result['status']"></span> </td>
         <td> <span tal:content="structure result['bestanden']"></span> </td>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="row col-md-12">
+  <div class="panel panel-default" tal:define="result results[0]">
+    <div class="panel-heading">
+      <h3> Journal </h3>
+    </div>
+    <div class="panel-body">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th> Typ </th>
+          <th> Datum</th>
+          <th> Info </th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr tal:repeat="result result['journal']">
+        <td> <span tal:content="result['status']"> </span> </td>
+        <td> <span tal:content="result['datum']"></span> </td>
+        <td> <span tal:content="result['info']"></span> </td>
       </tr>
       </tbody>
     </table>

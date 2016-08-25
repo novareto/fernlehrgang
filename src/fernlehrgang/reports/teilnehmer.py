@@ -92,6 +92,11 @@ class TeilnehmerSuche(Form):
                 locate(root, kursteilnehmer, DefaultModel)
                 name = '<a href="%s"> %s </a>' % (
                     self.url(kursteilnehmer), item.name)
+                name = item.name
+                link_ktn = '<a href="%s"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>' % (
+                    self.url(kursteilnehmer))
+                link_tn = '<a href="%s"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>' % (
+                    self.url(kursteilnehmer.teilnehmer))
                 flg = kursteilnehmer.fernlehrgang
                 locate(root, flg, DefaultModel)
                 link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
@@ -108,9 +113,19 @@ class TeilnehmerSuche(Form):
             gebdat = ""
             if item.geburtsdatum:
                 gebdat = fmtDate(item.geburtsdatum)
+            je = []
+            for j in item.journal_entries:
+                je.append(
+                    dict(
+                        status=j.status,
+                        datum=j.date.strftime("%d.%m.%Y"),
+                        info=j.type
+                        ))
             d = dict(name=name,
                      link_flg=link_flg,
                      gebdat=gebdat,
+                     link_ktn=link_ktn,
+                     link_tn=link_tn,
                      titel=ITeilnehmer.get('titel').source.getTermByToken(
                          item.titel).title,
                      anrede=ITeilnehmer.get('anrede').source.getTermByToken(
@@ -118,6 +133,7 @@ class TeilnehmerSuche(Form):
                      unternehmen='<br>'.join(rcu),
                      vorname=item.vorname,
                      status=lfs.getTerm(kursteilnehmer.status).title,
+                     journal=je,
                      bestanden=results['comment'])
             yield d
 

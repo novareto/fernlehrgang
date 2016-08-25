@@ -38,6 +38,7 @@ def export_versandliste_fernlehrgang(flg_id, lh_id, lh, rdatum, stichtag, datein
     from fernlehrgang.exports.versandliste_fernlehrgang import export
     session = Session()
     fn = export(session, flg_id, lh_id, lh, rdatum, stichtag, dateiname) 
+    text =" BLAB"
     send_mail('flgapp@bghw.de', (mail,), "Versandliste Fernlehrgang", text, [fn,]) 
 
 

@@ -55,6 +55,7 @@ class FernlehrgangStatistik(Page):
             models.Kursteilnehmer.fernlehrgang_id == self.context.id).group_by(
             models.Kursteilnehmer.status).all()
         self.kursteilnehmer_detail = [(lfs.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
+        print self.kursteilnehmer_detail
 
     def getAntworten(self):
         session = saconfig.Session()
@@ -65,4 +66,11 @@ class FernlehrgangStatistik(Page):
                  models.Antwort.lehrheft_id == models.Lehrheft.id)).group_by(
                  models.Lehrheft.nummer).order_by(
                  models.Lehrheft.nummer).all()
-        
+       
+    def chartUser(self):
+        import pygal
+        pie_chart = pygal.Pie()
+        pie_chart.title = 'Benutzerverteilung nach Status'
+        for x in self.kursteilnehmer_detail:
+            pie_chart.add(x[0], x[1])
+        return pie_chart.render()
