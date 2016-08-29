@@ -112,7 +112,7 @@ class Unternehmen(Base, RDBMixin):
     __tablename__ = 'adr'
 
     #id = Column("ID", Numeric, primary_key=True)
-    mnr = Column("MNR", Integer, primary_key=True, index=True)
+    mnr = Column("MNR", String(10), primary_key=True, index=True)
     name = Column("NAME1", String(32))
     name2 = Column("NAME2", String(32))
     name3 = Column("NAME3", String(32))
@@ -307,6 +307,12 @@ class Kursteilnehmer(Base, RDBMixin):
     def arguments(kursteilnehmer):
         return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
                     kursteilnehmer_id = kursteilnehmer.id)
+
+    @property
+    def result(self):
+        from fernlehrgang.interfaces.resultate import ICalculateResults
+        return ICalculateResults(self).summary()
+
 
 # standard decorator style
 @event.listens_for(Kursteilnehmer, 'load')

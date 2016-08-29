@@ -28,3 +28,9 @@
     </tr>
   </table>
 </div>
+
+<!--
+<div>
+  <img src="" tal:attributes="src view.chartUser()"/>
+</div>
+-->

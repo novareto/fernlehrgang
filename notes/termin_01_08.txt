@@ -38,4 +38,15 @@ Fernlehrang
    (VLW GBO) Schnittstelle
  - Semistatische Persistierung der Ergebnisdaten. Im Anschluss der
    Ergebnisberechnugn (nicht implementiert aber probiert)
-   
+  
+
+
+- NEUES
+ - neue Startseite
+ - Mitgliedsnummer in der Suche mit aufnehmen
+ - Diagramm Status
+ - Versandliste alle Teilnehmer
+ - Eintrag im Journal nach Erinnernungsmail?
+ - Erinnerungsmails für OnlineFortbildung
+
+

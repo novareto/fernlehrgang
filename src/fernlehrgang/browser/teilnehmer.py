@@ -42,6 +42,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from uvc.layout import TablePage
 from GenericCache.GenericCache import GenericCache
 from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
+from fernlehrgang.interfaces.kursteilnehmer import un_klasse, janein
 
 
 grok.templatedir('templates')
@@ -159,7 +160,7 @@ def voc_unternehmen(context):
     session = Session()
     items = []
     from sqlalchemy.sql.expression import func
-    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9).all():
+    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).all(): ###.filter(func.length(Unternehmen.mnr) == 9).all():
         items.append(SimpleTerm(
             mnr, mnr, "%s - %s" % (mnr, name)))
     return SimpleVocabulary(items)
@@ -172,6 +173,21 @@ class ICompany(Interface):
         value_type=Choice(source=voc_unternehmen),
         required=False)
 
+    un_klasse = Choice(
+        title = u"Mitarbeiteranzahl",
+        description = u'Hier können Sie die Gruppe des Unternehmens festlegen.',
+        required = False,
+        source = un_klasse,
+        )
+
+    branche = Choice(
+        title = u"Branche",
+        description = u'Betrieb ist ein Recyclingunternehmen, ein Motorradhandel oder ein Speditions- oder Umschalgunternehmen.',
+        required = True,
+        source = janein,
+        default = 'nein',
+        )
+
 
 @menuentry(NavigationMenu, order=40)
 class AssignCompany(models.Edit):
@@ -183,7 +199,7 @@ class AssignCompany(models.Edit):
     #fields = Fields(ITeilnehmer).select('unternehmen')
     fields = Fields(ICompany)
     fields['unternehmen'].mode = 'multiselect'
-    
+
     def update(self):
         chosen_js.need()
         chosen_css.need()
@@ -203,22 +219,24 @@ class AssignCompany(models.Edit):
                     value=unt.mnr
                 )
             )
-        print rc
         return rc
 
-    @action('Assign')
+    @action('Speichern')
     def handle_edit(self):
         data, errors = self.extractData()
         if errors:
             self.submissionError = errors
             return FAILURE
-        print data
-
         def getUnternehmen(mnr):
-            session= Session()
+            session = Session()
             return session.query(Unternehmen).get(mnr)
         data['unternehmen'] = [getUnternehmen(x) for x in list(data['unternehmen'])]
+        un_klasse = data.pop('un_klasse')
+        branche = data.pop('branche')
         apply_data_event(self.fields, self.getContentData(), data)
+        for ktn in self.context.kursteilnehmer:
+            ktn.un_klasse = un_klasse
+            ktn.branche = branche
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))
 
@@ -227,7 +245,7 @@ class AssignCompany(models.Edit):
         self.flash(u'Ihre Aktion wurde abgebrochen.')
         self.redirect(self.url(self.context))
 
-        
+
 @menuentry(NavigationMenu, order=200)
 class Register(Form):
     grok.context(ITeilnehmer)
@@ -328,6 +346,7 @@ class SearchUnternehmen(grok.View):
             if matcher in item.title.lower():
                 terms.append({'id': item.token, 'text': item.title})
         return json.dumps({'q': self.term, 'results': terms})
+
 
 class OverviewKurse(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
