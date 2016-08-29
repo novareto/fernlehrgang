@@ -29,11 +29,12 @@ grok.templatedir('templates')
 
 class CreateTeilnehmer(Form):
     grok.context(IFernlehrgangApp)
+    grok.baseclass()  ### BBB
     grok.title(u'Teilnehmer registrieren')
     title = label = u"Teilnehmer registrieren"
     description = u"Bitte geben Sie die Teilnehmer ID ein,\
             den Sie registrieren möchten."
-    results = []
+    results = None 
 
     cssClasses = {'table': 'tablesorter myTable'}
 
@@ -69,7 +70,7 @@ class TeilnehmerSuche(Form):
 
     fields = Fields(ISearch).select('id')
 
-    results = []
+    results = None 
 
     def update(self):
         chosen_js.need()
@@ -137,18 +138,36 @@ class TeilnehmerSuche(Form):
                      bestanden=results['comment'])
             yield d
 
+    def namespace(self):
+        tn = None
+        unternehmenl = [] 
+        ktns = []
+        root = grok.getSite()
+        if self.results:
+            tn = self.results
+            locate(root, tn, DefaultModel)
+            for unternehmen in tn.unternehmen:
+                locate(root, unternehmen, DefaultModel)
+                unternehmenl.append(unternehmen)
+            for ktn in tn.kursteilnehmer:
+                locate(root, ktn, DefaultModel)
+                ktns.append(ktn)
+        return {'teilnehmer': tn, 'unternehmen': unternehmenl, 'kursteilnehmer': ktns}
+
     @action(u'Suchen')
     def handle_search(self):
         v = False
         data, errors = self.extractData()
         session = Session()
-        sql = session.query(Kursteilnehmer, Teilnehmer).options(
-            joinedload(Kursteilnehmer.antworten))
-        sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
+        #sql = session.query(Teilnehmer).options(
+        #    joinedload(Kursteilnehmer.antworten))
+        #sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
+        print data
+        sql = session.query(Teilnehmer)
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
             v = True
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return
-        self.results = sql.all()
+        self.results = sql.one()

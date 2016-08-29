@@ -18,29 +18,27 @@
    });
 </script>
 
-<fieldset tal:define="results list(view.getResults())" tal:condition="results">
+<span tal:content="teilnehmer"> TN
+<span tal:content="unternehmen"> UNT
+<span tal:content="kursteilnehmer"> UNT
+
+<fieldset tal:condition="teilnehmer">
   <legend> Ergebnisse </legend>
   <div class="row">
   <div class="col-md-6">
-  <div class="panel panel-default" tal:define="result results[0]">
+  <div class="panel panel-default">
     <div class="panel-heading">
-      <h3> Teilnehmer 
-        <small class="pull-right">
-      <span tal:content="structure result['link_ktn']"> </span> 
-      <span tal:content="structure result['link_tn']"> </span> 
-    </small>
-    </h3>
+      <h3> 
+        <a href="" tal:attributes="href view.url(teilnehmer)"> Teilnehmer </a>
+      </h3>
     </div>
     <div class="panel-body">
-      <p tal:content="structure result['anrede']"> </p>
-      <p tal:content="structure result['titel']"> </p>
-      <p tal:content="structure result['name']"> </p>
-      <p tal:content="structure result['vorname']"> </p> 
-      <p tal:content="structure result['gebdat']"> </p> 
-      <!--
-      <p tal:content="structure result['link_ktn']"> </p> 
-      <p tal:content="structure result['link_tn']"> </p> 
-      -->
+      <p tal:content="teilnehmer.anrede"> </p>
+      <p tal:content="teilnehmer.titel"> </p>
+      <p tal:content="teilnehmer.name"> </p>
+      <p tal:content="teilnehmer.vorname"> </p> 
+      <p tal:content="teilnehmer.geburtsdatum.strftime('%d.%m.%Y')"> </p> 
+      <p tal:content="teilnehmer.email"> </p> 
     </div> 
   </div>
   </div>
@@ -49,10 +47,14 @@
     <div class="panel-heading">
       <h3> Unternehmen </h3>
     </div>
-    <div class="panel-body" tal:define="result results[0]">
-      <p tal:content="structure result['unternehmen']"> </p> 
+    <div class="panel-body">
+      <ul tal:repeat="unt unternehmen">
+        <li>
+          <a href="" tal:attributes="href view.url(unt)"> <span
+              tal:content="string: ${unt.mnr} - ${unt.name}"/> </a>
+        </li>
+      </ul>
     </div> 
-  </div>
   </div>
   </div>
   <div class="row col-md-12">
@@ -61,27 +63,28 @@
       <h3> Lehrgänge </h3>
     </div>
     <div class="panel-body">
-
     <table class="table">
       <thead>
         <tr>
           <th> Lehrgang </th>
+          <th> Teilnehmer </th>
           <th> Status </th>
           <th> Ergebnis </th>
         </tr>
       </thead>
       <tbody>
-      <tr tal:repeat="result results">
-        <td> <span tal:content="structure result['link_flg']"> </span> </td>
-        <td> <span tal:content="structure result['status']"></span> </td>
-        <td> <span tal:content="structure result['bestanden']"></span> </td>
+      <tr tal:repeat="ktn kursteilnehmer">
+        <td> <a tal:attributes="href view.url(ktn.fernlehrgang)" tal:content="ktn.fernlehrgang.title"> </a> </td>
+        <td> <a tal:attributes="href view.url(ktn)" tal:content="ktn.teilnehmer.name"> </a> </td>
+        <td> <span tal:content="ktn.status"></span> </td>
+        <td> <span tal:content="ktn.result['comment']"></span> </td>
       </tr>
       </tbody>
     </table>
     </div>
   </div>
   <div class="row col-md-12">
-  <div class="panel panel-default" tal:define="result results[0]">
+  <div class="panel panel-default">
     <div class="panel-heading">
       <h3> Journal </h3>
     </div>
@@ -96,10 +99,10 @@
         </tr>
       </thead>
       <tbody>
-      <tr tal:repeat="result result['journal']">
-        <td> <span tal:content="result['status']"> </span> </td>
-        <td> <span tal:content="result['datum']"></span> </td>
-        <td> <span tal:content="result['info']"></span> </td>
+      <tr tal:repeat="result teilnehmer.journal_entries">
+        <td tal:content="result.status"> </td>
+        <td tal:content="result.creation_date.strftime('%d.%m.%Y')"> </td>
+        <td tal:content="result.type"> </td>
       </tr>
       </tbody>
     </table>

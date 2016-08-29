@@ -308,6 +308,12 @@ class Kursteilnehmer(Base, RDBMixin):
         return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
                     kursteilnehmer_id = kursteilnehmer.id)
 
+    @property
+    def result(self):
+        from fernlehrgang.interfaces.resultate import ICalculateResults
+        return ICalculateResults(self).summary()
+
+
 # standard decorator style
 @event.listens_for(Kursteilnehmer, 'load')
 def receive_load(target, context):

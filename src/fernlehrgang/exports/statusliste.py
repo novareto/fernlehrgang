@@ -129,9 +129,10 @@ class XLSReport(grok.View):
     grok.title('Statusliste')
 
     def update(self):
-        from fernlehrgang.tasks import export_statusliste
-        mail = getUserEmail(self.request.principal.id)
-        fn = export_statusliste.delay(flg_id=self.context.id, mail=mail)
+        from z3c.saconfig import Session
+        session = Session()
+        # mail = getUserEmail(self.request.principal.id)
+        fn = export(session, flg_id=self.context.id)
         #fn = export_statusliste(flg_id=self.context.id, mail=mail)
         print fn
 
