@@ -334,10 +334,9 @@ class Antwort(Base, RDBMixin):
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))
     datum = Column(DateTime)
-    #system = Column(String(50))
-    #gbo = Column(String(50))
-    #gbo_daten = Column(BLOB())
-    system = 1
+    system = Column(String(50))
+    gbo = Column(String(50))
+    gbo_daten = Column(BLOB())
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer,
