@@ -264,13 +264,15 @@ class Register(Form):
         data, errors = self.extractData()
         if errors:
             return FAILURE
+        print data
         if data.get('lehrgang') is not NO_VALUE:
             session = Session()
             kursteilnehmer = Kursteilnehmer(
                 fernlehrgang_id=data.get('fernlehrgang_id'),
                 status=data.get('status'),
-                #    un_klasse = data.get('un_klasse'),
-                #    branche = data.get('branche'),
+                erstell_datum = data.get('erstell_datum'),
+                un_klasse = data.get('un_klasse'),
+                branche = data.get('branche'),
                 unternehmen_mnr=self.context.unternehmen_mnr)
             kursteilnehmer.teilnehmer = self.context
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
@@ -294,6 +296,7 @@ class Register(Form):
         ktn.branche = data.get('branche')
         ktn.gespraech = data.get('gespraech')
         ktn.un_klasse = data.get('un_klasse')
+        ktn.erstell_datum = data.get('erstell_datum')
         session.flush()
 
 

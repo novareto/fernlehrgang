@@ -27,6 +27,7 @@ def typ(context):
         SimpleTerm('2', '2', 'Online Fernlehrgang'),
         SimpleTerm('3', '3', 'Fortbildung'),
         SimpleTerm('4', '4', 'Virtuelle Lernwelt'),
+        SimpleTerm('5', '5', 'Online Fortbildung'),
         ))
 
 

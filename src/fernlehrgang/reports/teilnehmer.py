@@ -138,6 +138,12 @@ class TeilnehmerSuche(Form):
                      bestanden=results['comment'])
             yield d
 
+    def gVt(self, value):
+        return ITeilnehmer.get('titel').source.getTermByToken(value).title
+
+    def gVa(self, value):
+        return ITeilnehmer.get('anrede').source.getTermByToken(value).title
+
     def namespace(self):
         tn = None
         unternehmenl = [] 
