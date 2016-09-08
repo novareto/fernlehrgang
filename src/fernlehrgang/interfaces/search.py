@@ -13,9 +13,12 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from GenericCache import GenericCache
 from GenericCache.decorators import cached
 from zope.processlifetime import IDatabaseOpened
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+
 
 cache = GenericCache()
-RESULTS = {}
+RESULTS = GenericCache() 
 
 
 @grok.provider(IContextSourceBinder)
@@ -25,7 +28,8 @@ def getTeilnehmerId(context):
     session = Session()
     results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname, models.Teilnehmer.unternehmen_mnr)
     #for tid, name, vname, mnr in results.all():
-    for tid, name, vname, mnr in RESULTS.values():
+    for v in RESULTS.values.values():
+        tid, name, vname, mnr = v.value
         rc.append(
             SimpleTerm(
                 tid,
@@ -36,20 +40,16 @@ def getTeilnehmerId(context):
     return SimpleVocabulary(rc)
 
 
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-
 @grok.subscribe(ITeilnehmer, IObjectModifiedEvent)
 def invalidate_cache(obj, event):
-    RESULTS[obj.id] = (obj.id, obj.name, obj.vorname, obj.unternehmen_mnr)
+    RESULTS.insert(obj.id, (obj.id, obj.name, obj.vorname, obj.unternehmen_mnr))
 
 @grok.subscribe(IDatabaseOpened)
 def fill_cache(*args):
     session = Session()
     results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname, models.Teilnehmer.unternehmen_mnr)
     for tid, name, vname, mnr in results.all():
-        RESULTS[tid] = (tid, name, vname, mnr)
-    #getTeilnehmerId(None)
+        RESULTS.insert(tid, (tid, name, vname, mnr))
     from fernlehrgang.browser.teilnehmer import voc_unternehmen 
     voc_unternehmen(None)
     print "CACHED FILLED"
