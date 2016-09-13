@@ -56,6 +56,7 @@ setup(name='fernlehrgang',
                         #'ibm_db',
                         'ukh.ibmdbsa',
                         'rq',
+                        'kombu',
                         ],
       entry_points={
           'paste.app_factory': [

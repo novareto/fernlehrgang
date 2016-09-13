@@ -30,7 +30,7 @@
       <p tal:content="view.gVt(teilnehmer.titel)"> </p>
       <p tal:content="teilnehmer.name"> </p>
       <p tal:content="teilnehmer.vorname"> </p> 
-      <p tal:content="teilnehmer.geburtsdatum.strftime('%d.%m.%Y')"> </p> 
+      <p tal:condition="teilnehmer.geburtsdatum" tal:content="teilnehmer.geburtsdatum.strftime('%d.%m.%Y')"> </p> 
       <p tal:content="teilnehmer.email"> </p> 
     </div> 
   </div>

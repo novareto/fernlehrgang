@@ -51,7 +51,6 @@ class BN(grok.View):
                         ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
                         x.teilnehmer.name
                     )
-                    text=u"TEST"
                     ))
                 ktn.teilnehmer.journal_entries.append(
                         models.JournalEntry(

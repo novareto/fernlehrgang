@@ -43,6 +43,8 @@ from uvc.layout import TablePage
 from GenericCache.GenericCache import GenericCache
 from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, janein
+from zope.event import notify
+from grok import ObjectAddedEvent
 
 
 grok.templatedir('templates')
@@ -106,6 +108,7 @@ class AddTeilnehmer(AddForm):
         self.context.teilnehmer.append(teilnehmer)
         self.tn = teilnehmer
         session.flush()
+        notify(ObjectAddedEvent(teilnehmer))
 
     def nextURL(self):
         self.flash(u'Der Teilnehmer wurde erfolgreich gespeichert')

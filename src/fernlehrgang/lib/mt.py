@@ -84,7 +84,7 @@ in der Zeit Montag bis Freitag zwischen 8:30 Uhr und 15:30 Uhr zur Verfügung.
 Mit freundlichen Grüßen
 
 Ihre Fernlehrgangsbetreuung der BGHW
-""""
+"""
 
 TEXTFB2 = u"""
 Sehr geehrte(r) %s %s %s,
