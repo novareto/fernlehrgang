@@ -9,6 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 from fernlehrgang import models
 from z3c.saconfig import Session
+from fernlehrgang.lib import mt
 
 
 JETZT = datetime.now()
@@ -40,13 +41,17 @@ class BN1(grok.View):
         for ktn in alle_ktns.all():
             erstell_datum = ktn.erstell_datum.date()
             print "KTN %s - %s" %(ktn.id, erstell_datum)
-            BETREFF = "BENACHRICHTIGUNG 30 Tage - Keine Antworten"
+            BETREFF = 'Online-Fernlehrgang der BGHW Benutzername: %s' % ktn.teilnehmer.id,
             if erstell_datum == T30.date() and len(ktn.antworten) == 0:
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     subject=BETREFF,
-                    text=u"TEST"
+                    text=mt.TEXT1 % (
+                        titel,
+                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
+                        x.teilnehmer.name
+                    )
                     ))
                 ktn.teilnehmer.journal_entries.append(
                         models.JournalEntry(
@@ -57,12 +62,15 @@ class BN1(grok.View):
                         )
                 print "30 TAGE"
             elif erstell_datum == T180.date() and len(ktn.antworten) == 0:
-                BETREFF="180 TAGE NIX"
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     subject=BETREFF,
-                    text=u"TEST"
+                    text=mt.TEXT1 % (
+                        titel,
+                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
+                        x.teilnehmer.name
+                    )
                     ))
                 ktn.teilnehmer.journal_entries.append(
                         models.JournalEntry(
@@ -72,12 +80,15 @@ class BN1(grok.View):
                             teilnehmer_id=ktn.teilnehmer.id)
                         )
             elif erstell_datum == T180.date() and len(ktn.antworten) <= 40:
-                BETREFF="180 TAGE LH 1-4"
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     subject=BETREFF,
-                    text=u"TEST"
+                    text=mt.TEXT2 % (
+                        titel,
+                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
+                        x.teilnehmer.name
+                    )
                     ))
                 ktn.teilnehmer.journal_entries.append(
                         models.JournalEntry(
@@ -88,12 +99,15 @@ class BN1(grok.View):
                         )
                 print "180 TAGE"
             elif erstell_datum == T300.date() and len(ktn.antworten) < 80:
-                BETREFF="380 TAGE LH 1-4"
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     subject=BETREFF,
-                    text=u"TEST"
+                    text=mt.TEXT3 % (
+                        titel,
+                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
+                        x.teilnehmer.name
+                    )
                     ))
                 ktn.teilnehmer.journal_entries.append(
                         models.JournalEntry(
@@ -104,12 +118,15 @@ class BN1(grok.View):
                         )
                 print "300 TAGE"
             elif erstell_datum == T365.date() and len(ktn.antworten) < 80:
-                BETREFF="356 nicht FERTIG"
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     subject=BETREFF,
-                    text=u"TEST"
+                    text=mt.TEXT4 % (
+                        titel,
+                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
+                        x.teilnehmer.name
+                    )
                     ))
                 ktn.teilnehmer.journal_entries.append(
                         models.JournalEntry(
