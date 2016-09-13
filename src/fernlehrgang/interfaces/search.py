@@ -13,7 +13,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from GenericCache import GenericCache
 from GenericCache.decorators import cached
 from zope.processlifetime import IDatabaseOpened
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent, IObjectAddedEvent
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 
 
@@ -43,6 +43,13 @@ def getTeilnehmerId(context):
 @grok.subscribe(ITeilnehmer, IObjectModifiedEvent)
 def invalidate_cache(obj, event):
     RESULTS.insert(obj.id, (obj.id, obj.name, obj.vorname, obj.unternehmen_mnr))
+
+
+@grok.subscribe(ITeilnehmer, IObjectAddedEvent)
+def invalidate_cache(obj, event):
+    print "ADDED", obj
+    RESULTS.insert(obj.id, (obj.id, obj.name, obj.vorname, obj.unternehmen_mnr))
+
 
 @grok.subscribe(IDatabaseOpened)
 def fill_cache(*args):
