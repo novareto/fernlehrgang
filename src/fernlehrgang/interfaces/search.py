@@ -18,50 +18,70 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 
 
 cache = GenericCache()
-RESULTS = GenericCache() 
 
+
+class Vocabulary(SimpleVocabulary):
+
+    def add(self, term):
+        if term.value in self.by_value:
+            raise ValueError(
+                'term values must be unique: %s' % repr(term.value))
+        if term.token in self.by_token:
+            raise ValueError(
+                'term tokens must be unique: %s' % repr(term.token))
+        self._terms.append(term)
+        self.by_value[term.value] = term
+        self.by_token[term.token] = term
+
+    def delete(self, term):
+        del self.by_value[term.value]
+        del self.by_token[term.token]
+        self._terms.remove(term)
+
+
+VOCABULARY = None
+        
 
 @grok.provider(IContextSourceBinder)
-#@cached(cache)
 def getTeilnehmerId(context):
-    rc = [SimpleTerm(None, None, u'Bitte Auswahl treffen.')]
-    session = Session()
-    results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname, models.Teilnehmer.unternehmen_mnr)
-    #for tid, name, vname, mnr in results.all():
-    for v in RESULTS.values.values():
-        tid, name, vname, mnr = v.value
-        rc.append(
-            SimpleTerm(
-                tid,
-                tid,
-                "%s - %s %s - %s" % (tid, name, vname, mnr)
-            )
-        )
-    return SimpleVocabulary(rc)
+    return VOCABULARY
 
 
 @grok.subscribe(ITeilnehmer, IObjectModifiedEvent)
-def invalidate_cache(obj, event):
-    RESULTS.insert(obj.id, (obj.id, obj.name, obj.vorname, obj.unternehmen_mnr))
-
+def update_cache(obj, event):
+    term = VOCABULARY.getTermByToken(obj.id)
+    term.title = u'%s - %s %s - %s' % (
+        obj.id, obj.name, obj.vorname, obj.unternehmen_mnr)
+    
 
 @grok.subscribe(ITeilnehmer, IObjectAddedEvent)
-def invalidate_cache(obj, event):
-    print "ADDED", obj
-    RESULTS.insert(obj.id, (obj.id, obj.name, obj.vorname, obj.unternehmen_mnr))
-
+def add_in_cache(obj, event):
+    title = u'%s - %s %s - %s' % (
+        obj.id, obj.name, obj.vorname, obj.unternehmen_mnr)
+    term = SimpleTerm(title=title, token=obj.id, value=obj.id)
+    global VOCABULARY
+    VOCABULARY.add(term)
+    
 
 @grok.subscribe(IDatabaseOpened)
-def fill_cache(*args):
+def fill_cache_teilnehmer(*args):
     session = Session()
     results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname, models.Teilnehmer.unternehmen_mnr)
-    for tid, name, vname, mnr in results.all():
-        RESULTS.insert(tid, (tid, name, vname, mnr))
+    terms = [SimpleTerm(
+        title=u'%s - %s %s - %s' % (tid, name, vname, mnr),
+        token=tid,
+        value=tid) for tid, name, vname, mnr in results.all()]
+    terms = [SimpleTerm(None, None, u'Bitte Auswahl treffen.')] + terms
+    global VOCABULARY
+    VOCABULARY = Vocabulary(terms)
+ 
+
+@grok.subscribe(IDatabaseOpened)
+def fill_cache_unternehmen(*args):
     from fernlehrgang.browser.teilnehmer import voc_unternehmen 
     voc_unternehmen(None)
-    print "CACHED FILLED"
 
-
+    
 class ISearch(interface.Interface):
 
     id = schema.Choice(
