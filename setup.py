@@ -57,6 +57,7 @@ setup(name='fernlehrgang',
                         'ukh.ibmdbsa',
                         'rq',
                         'kombu',
+                        'pyodbc',
                         ],
       entry_points={
           'paste.app_factory': [
