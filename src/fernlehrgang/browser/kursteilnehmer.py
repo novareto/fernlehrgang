@@ -148,12 +148,20 @@ class ExtendDate(Form):
     fields['erstell_datum'].title = u"Fristverlängerung"
     fields['erstell_datum'].description = u"Fristverlängerung"
 
+    def updateWidgets(self):
+        super(ExtendDate, self).updateWidgets()
+        dd = self.fieldWidgets.get('form.field.erstell_datum')
+        import datetime
+        now = datetime.datetime.now() + datetime.timedelta(days=30)
+        dd.value = {'form.field.erstell_datum': now.strftime('%d.%m.%Y')}
+
     @action(u'Frist verlängern')
     def handle_save(self):
         data, errors = self.extractData()
         if errors:
             return 
-        self.context.erstell_datum = data['erstell_datum'] - datetime.timedelta(days=356)
+        self.context.status = u'A1'
+        self.context.erstell_datum = data['erstell_datum'] - datetime.timedelta(days=365)
         self.flash(u'Die Frist für die Fertigstellung des Online-Fernlehrgangs wurde bis zum %s verlängert' % data['erstell_datum'].strftime('%d.%m.%Y'))
 
 

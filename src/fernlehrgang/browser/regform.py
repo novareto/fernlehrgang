@@ -53,6 +53,7 @@ class AutoRegForm(Form):
             email = data['email'],
             anrede = data['anrede'],
             titel = data['titel'],
+            telefon = data['telefon'],
         )
         unternehmen.teilnehmer.append(tn)
         session.flush()

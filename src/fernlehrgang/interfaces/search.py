@@ -2,7 +2,7 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
-
+import os
 import grokcore.component as grok
 
 from z3c.saconfig import Session
@@ -15,6 +15,8 @@ from GenericCache.decorators import cached
 from zope.processlifetime import IDatabaseOpened
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent, IObjectAddedEvent
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from profilehooks import profile
+from fernlehrgang import log
 
 
 cache = GenericCache()
@@ -49,7 +51,7 @@ def getTeilnehmerId(context):
 
 @grok.subscribe(ITeilnehmer, IObjectModifiedEvent)
 def update_cache(obj, event):
-    term = VOCABULARY.getTermByToken(obj.id)
+    term = VOCABULARY.getTermByToken(str(obj.id))
     term.title = u'%s - %s %s - %s' % (
         obj.id, obj.name, obj.vorname, obj.unternehmen_mnr)
     
@@ -66,7 +68,15 @@ def add_in_cache(obj, event):
 @grok.subscribe(IDatabaseOpened)
 def fill_cache_teilnehmer(*args):
     session = Session()
-    results = session.query(models.Teilnehmer.id, models.Teilnehmer.name, models.Teilnehmer.vorname, models.Teilnehmer.unternehmen_mnr)
+    results = session.query(
+        models.Teilnehmer.id, 
+        models.Teilnehmer.name, 
+        models.Teilnehmer.vorname, 
+        models.Teilnehmer.unternehmen_mnr).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
+    print os.environ.get('DEBUG')
+    if os.environ.get('DEBUG'):
+        print "I FILTER IT NOW"
+        results = results.filter(models.Teilnehmer.unternehmen_mnr == 995000221)
     terms = [SimpleTerm(
         title=u'%s - %s %s - %s' % (tid, name, vname, mnr),
         token=tid,
@@ -74,12 +84,14 @@ def fill_cache_teilnehmer(*args):
     terms = [SimpleTerm(None, None, u'Bitte Auswahl treffen.')] + terms
     global VOCABULARY
     VOCABULARY = Vocabulary(terms)
+    log(u'Der Cache für die Teilnehmer ist gefüllt')
  
 
 @grok.subscribe(IDatabaseOpened)
 def fill_cache_unternehmen(*args):
     from fernlehrgang.browser.teilnehmer import voc_unternehmen 
     voc_unternehmen(None)
+    log(u'Der Cache für Unternehmen ist gefüllt')
 
     
 class ISearch(interface.Interface):

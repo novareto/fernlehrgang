@@ -45,6 +45,9 @@ from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, janein
 from zope.event import notify
 from grok import ObjectAddedEvent
+from GenericCache import GenericCache
+from plone.memoize import ram
+from GenericCache.decorators import cached
 
 
 grok.templatedir('templates')
@@ -100,7 +103,7 @@ class AddTeilnehmer(AddForm):
         if 'un_klasse' in data.keys():
             self.context.un_klasse = data.pop('un_klasse')
         teilnehmer = Teilnehmer(**data)
-        teilnehmer.unternehmen_mnr=self.context.mnr
+        teilnehmer.unternehmen_mnr=int(self.context.mnr)
         return teilnehmer
 
     def add(self, teilnehmer):
@@ -152,18 +155,23 @@ class Edit(models.Edit):
         self.redirect(self.url(self.context))
 
 
-from GenericCache import GenericCache
-from GenericCache.decorators import cached
+
+def default_marshaller(func, *args, **kwargs):
+    """
+    Default marshaller
+    """
+    return repr((func.__name__,))
+
 
 cache = GenericCache()
 
 @provider(IContextSourceBinder)
-@cached(cache)
+@cached(cache, marshaller=default_marshaller)
 def voc_unternehmen(context):
     session = Session()
     items = []
     from sqlalchemy.sql.expression import func
-    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).all(): ###.filter(func.length(Unternehmen.mnr) == 9).all():
+    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9).all():
         items.append(SimpleTerm(
             mnr, mnr, "%s - %s" % (mnr, name)))
     return SimpleVocabulary(items)
@@ -267,7 +275,6 @@ class Register(Form):
         data, errors = self.extractData()
         if errors:
             return FAILURE
-        print data
         if data.get('lehrgang') is not NO_VALUE:
             session = Session()
             kursteilnehmer = Kursteilnehmer(

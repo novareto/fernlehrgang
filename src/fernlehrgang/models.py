@@ -38,8 +38,11 @@ from sqlalchemy import event
 from zope.interface import alsoProvides
 
 
+SCHEMA = "tflg"
+
 
 Base = declarative_base()
+Base.metadata.schema = SCHEMA 
 
 
 class MyStringType(TypeDecorator):
@@ -75,7 +78,7 @@ class Fernlehrgang(Base, RDBMixin):
 
     __tablename__ = 'fernlehrgang'
 
-    id = Column(Integer, Sequence('fernlehrgang_seq', start=100, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('fernlehrgang_seq', start=100, increment=1, schema=SCHEMA), primary_key=True)
     jahr = Column(String(50))
     titel = Column(String(256))
     typ = Column(String(50))
@@ -142,7 +145,7 @@ class Unternehmen(Base, RDBMixin):
 
 unternehmen_teilnehmer = Table(
     'unternehmen_teilnehmer', Base.metadata,
-    Column('unternehmen_id', Integer, ForeignKey('adr.MNR')),
+    Column('unternehmen_id', String(10), ForeignKey('adr.MNR')),
     Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
 )
 
@@ -154,7 +157,7 @@ class Teilnehmer(Base, RDBMixin):
 
     __tablename__ = 'teilnehmer'
 
-    id = Column(Integer, Sequence('teilnehmer_seq', start=100000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('teilnehmer_seq', start=100000, increment=1, schema=SCHEMA), primary_key=True)
 
     anrede = Column(String(50))
     titel = Column(String(50))
@@ -172,7 +175,7 @@ class Teilnehmer(Base, RDBMixin):
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
 
-    unternehmen_mnr = Column(Integer, ForeignKey(Unternehmen.mnr))
+    unternehmen_mnr = Column(String(10), ForeignKey(Unternehmen.mnr))
 
     #unternehmen = relation(Unternehmen,
     #                       backref = backref('teilnehmer', order_by=id))
@@ -192,7 +195,7 @@ class Teilnehmer(Base, RDBMixin):
     def factory(id, unternehmen_mnr):
         session = Session()
         return session.query(Teilnehmer).filter(
-            and_(Teilnehmer.id == id, Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
+            and_(Teilnehmer.id == int(id), Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
 
     def arguments(teilnehmer):
         return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
@@ -205,7 +208,7 @@ class Lehrheft(Base, RDBMixin):
 
     __tablename__ = 'lehrheft'
 
-    id = Column(Integer, Sequence('lehrheft_seq', start=1000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('lehrheft_seq', start=1000, increment=1, schema=SCHEMA), primary_key=True)
     nummer = Column(String(5))
     titel = Column(String(256))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
@@ -240,7 +243,7 @@ class Frage(Base, RDBMixin):
 
     __tablename__ = 'frage'
 
-    id = Column(Integer, Sequence('frage_seq', start=10000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('frage_seq', start=10000, increment=1, schema=SCHEMA), primary_key=True)
     frage = Column(String(5))
     titel = Column(String(256))
     antwortschema = Column(String(50))
@@ -277,11 +280,11 @@ class Kursteilnehmer(Base, RDBMixin):
 
     __tablename__ = 'kursteilnehmer'
 
-    id = Column(Integer, Sequence('kursteilnehmer_seq', start=900000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('kursteilnehmer_seq', start=900000, increment=1, schema=SCHEMA), primary_key=True)
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(Integer, ForeignKey('adr.MNR',))
+    unternehmen_mnr = Column(String(10), ForeignKey('adr.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
@@ -329,7 +332,7 @@ class Antwort(Base, RDBMixin):
     __tablename__ = 'antwort'
     __table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
 
-    id = Column(Integer, Sequence('antwort_seq', start=100000, increment=1), primary_key=True)
+    id = Column(Integer, Sequence('antwort_seq', start=100000, increment=1, schema=SCHEMA), primary_key=True)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))

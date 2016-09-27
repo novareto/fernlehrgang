@@ -57,7 +57,7 @@ class AddAntwort(AddForm):
     grok.title(u'Antwort')
     label = u'Antwort anlegen'
 
-    fields = Fields(IAntwort).omit('id')
+    fields = Fields(IAntwort).omit('id', 'gbo', 'gbo_daten')
 
     def create(self, data):
         return Antwort(**data)
@@ -105,7 +105,7 @@ class AddAntwortenTable(SubTableForm):
     template = ChameleonPageTemplateFile('templates/alleantworten.cpt')
 
     ignoreContent = False
-    tableFields = Fields(IAntwort).omit('id', 'datum', 'system')
+    tableFields = Fields(IAntwort).omit('id', 'datum', 'system', 'gbo', 'gbo_daten')
     tableActions = TableActions(SaveTableAction('Speichern'))
 
     def checkAntwort(self, lehrheft_id, frage_id):

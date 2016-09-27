@@ -9,7 +9,7 @@ from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer 
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
@@ -27,35 +27,6 @@ from grokcore.chameleon.components import ChameleonPageTemplateFile
 grok.templatedir('templates')
 
 
-class CreateTeilnehmer(Form):
-    grok.context(IFernlehrgangApp)
-    grok.baseclass()  ### BBB
-    grok.title(u'Teilnehmer registrieren')
-    title = label = u"Teilnehmer registrieren"
-    description = u"Bitte geben Sie die Teilnehmer ID ein,\
-            den Sie registrieren möchten."
-    results = None 
-
-    cssClasses = {'table': 'tablesorter myTable'}
-
-    fields = Fields(ITeilnehmer).select('id')
-    fields['id'].readonly = False
-
-    @action(u'Suchen')
-    def handle_search(self):
-        data, errors = self.extractData()
-        session = Session()
-        sql = session.query(Teilnehmer)
-        sql = sql.filter(Teilnehmer.id == data.get('id'))
-        teilnehmer = sql.first()
-        if teilnehmer:
-            site = grok.getSite()
-            locate(site, teilnehmer, DefaultModel)
-            self.redirect(self.url(teilnehmer, 'edit'))
-        else:
-            self.flash('Es wurde kein Teilnehmer gefunden')
-
-
 @menuentry(NavigationMenu, order=-100)
 class TeilnehmerSuche(Form):
     grok.name('index')
@@ -69,6 +40,8 @@ class TeilnehmerSuche(Form):
     um den Teilnehmer zu finden."
 
     fields = Fields(ISearch).select('id')
+    fields['id'].title = u"Teilnehmer"
+    fields['id'].description = u"Hier können Sie einen Teilnehmer suchen."
 
     results = None 
 
@@ -142,10 +115,13 @@ class TeilnehmerSuche(Form):
         if value:
             return ITeilnehmer.get('titel').source.getTermByToken(value).title
 
-
     def gVa(self, value):
         if value:
             return ITeilnehmer.get('anrede').source.getTermByToken(value).title
+
+    def gLS(self, value):
+        if value:
+            return IKursteilnehmer.get('status').source(None).getTermByToken(value).title
 
     def namespace(self):
         tn = None

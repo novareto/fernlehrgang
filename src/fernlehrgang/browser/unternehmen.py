@@ -86,7 +86,8 @@ class UnternehmenListing(Form):
             self.flash(u'Bitte geben Sie die Suchkriterien ein.')
             return
         ### FIXME length between (100000000 and 1000000000) instead of --> sql = sql.filter(func.length(Unternehmen.mnr) == 9)
-        self.results = sql.all()
+        
+        self.results = sql.order_by(Unternehmen.name).all()
 
 
 @menuentry(NavigationMenu, order=1)
@@ -117,7 +118,7 @@ class Index(models.DefaultView):
             if not len(person['lehrgang']):
                 person['lehrgang'].append(u'Noch für keinen Fernlehrgang registriert.')
             rc.append(person)
-        return rc
+        return sorted(rc, key=lambda v: v.get('name'))
 
 
 @menuentry(AddMenu)

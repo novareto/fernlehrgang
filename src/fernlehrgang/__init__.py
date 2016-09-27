@@ -33,3 +33,17 @@ logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
 
 def fmtDate(d):
     return "%02d.%02d.%02d" % (d.day, d.month, d.year)
+
+
+
+from ibm_db_sa.base import DB2Compiler
+
+def visit_sequence(self, sequence):
+    print "MPATCH"
+    nn = sequence.name
+    if sequence.metadata.schema:
+        nn = "%s.%s" %(sequence.metadata.schema, nn)
+    return "NEXT VALUE FOR %s" % nn
+
+
+DB2Compiler.visit_sequence = visit_sequence 

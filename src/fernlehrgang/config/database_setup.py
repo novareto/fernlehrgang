@@ -21,7 +21,7 @@ print DSN
 
 # FIX: engine_factory = EngineFactory(DSN, convert_unicode=True, encoding='utf-8', optimize_limits=True, echo=False)
 engine_factory = EngineFactory(
-    DSN, convert_unicode=True, encoding='utf-8', echo=False)
+    DSN, convert_unicode=True, encoding='iso-8859-15', echo=False)
 scoped_session = GloballyScopedSession()
 
 grok.global_utility(engine_factory, direct=True)

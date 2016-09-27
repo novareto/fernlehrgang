@@ -1,7 +1,7 @@
 $(document).ready(function() { 
 
   //$('select[name="form.field.unternehmen"]').chosen({});
-  $('select#form-field-id').chosen({});
+  $('select#form-field-id').chosen({placeholder_text_single: 'Bitte wählen Sie einen Teilnehmer'});
     
   $('div.subform table').addClass('table table-striped table-bordered table-condensed');
   $('div.subform form table select').attr('disabled', 'disabled');
@@ -45,4 +45,12 @@ $(document).ready(function() {
     $(".G-select").attr('checked', 'checked');
 
     $(".tabbable.responsive").resptabs(); 
+
+
+$('.collapse').on('show.bs.collapse', function () { 
+  $otherPanels = $(this).parents('.panel').siblings('.panel');
+  $('.collapse',$otherPanels).removeClass('in');
+});
+
+
 }); 

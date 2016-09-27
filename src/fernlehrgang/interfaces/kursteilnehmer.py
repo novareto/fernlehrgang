@@ -115,7 +115,7 @@ class IKursteilnehmer(Interface):
         readonly = True
         )
 
-    teilnehmer_id = TextLine(
+    teilnehmer_id = Int(
         title = u'Id des Teilnehmers',
         description = u'Die Eindeutige Nummer des Teilnehmers',
         required = True,

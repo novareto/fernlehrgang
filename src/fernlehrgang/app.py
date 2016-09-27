@@ -92,7 +92,6 @@ class LogoutMI(MenuItem):
 
     @property
     def action(self):
-        return "/kontakt"
         return self.view.application_url() + '/logout'
 
 
