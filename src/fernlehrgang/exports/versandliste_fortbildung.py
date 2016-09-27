@@ -19,6 +19,7 @@ from fernlehrgang.lib import nN
 from fernlehrgang.exports.versandliste_fernlehrgang import versandanschrift
 from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 from fernlehrgang.lib.emailer import send_mail
+from fernlehrgang.exports import q
 
 
 spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
@@ -125,9 +126,11 @@ def createRows(session, rc, flg_ids, stichtag):
 
 
 
-def export(session, flg_ids, stichtag, mail):
+def export(flg_ids, stichtag, mail):
     """This should be the "shared" export function.
     """
+    from z3c.saconfig import Session
+    session = Session()
     book, adressen, rc = getXLSBases()
     flg_ids = [x for x in flg_ids]
     createRows(session, rc, flg_ids, stichtag)
@@ -138,7 +141,9 @@ def export(session, flg_ids, stichtag, mail):
     book.save(fn)
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
-    send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,])
+    import transaction
+    with transaction.manager:
+        send_mail('flgapp@bghw.de', (mail,), "Versandliste Fortbildung", text, [fn,])
     return fn
 
 
@@ -162,9 +167,7 @@ class XLSFortbildung(Form):
             mail = getUserEmail(self.request.principal.id)
         except:
             mail = "ck@novareto.de"
-        from z3c.saconfig import Session
-        session = Session()
-        fn = export(session, flg_ids, data['stichtag'], mail)
+        fn = q.enqueue(export, flg_ids, data['stichtag'], mail)
         # fn = export_versandliste_fortbildung(flg_ids, data['stichtag'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

@@ -8,8 +8,11 @@ from zope import interface
 from datetime import datetime
 from datetime import timedelta
 from fernlehrgang import models
+from fernlehrgang import log
 from z3c.saconfig import Session
 from fernlehrgang.lib import mt
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.lib.emailer import send_mail
 
 
 
@@ -22,15 +25,13 @@ def time_ranges():
     return JETZT, T30, T180, T300, T365
 
 
-MAILS = [] 
-
-
 class BN(grok.View):
     grok.context(interface.Interface)
 
     def update(self):
+        MAILS = [] 
         JETZT, T30, T180, T300, T365 = time_ranges()
-        log("%s, %s, %s, %s, %s", %(JETZT.date(), T30.date(), T180.date(), T300.date(), T365.date()))
+        log("%s, %s, %s, %s, %s" % (JETZT.date(), T30.date(), T180.date(), T300.date(), T365.date()))
         session = Session()
         alle_ktns = session.query(models.Kursteilnehmer).filter(
             models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
@@ -38,16 +39,19 @@ class BN(grok.View):
 
         for ktn in alle_ktns.all():
             erstell_datum = ktn.erstell_datum.date()
+            titel = ITeilnehmer['titel'].vocabulary.getTerm(ktn.teilnehmer.titel).title
+            if titel == "kein Titel":
+                titel = ""
             print "KTN %s - %s" %(ktn.id, erstell_datum)
             if erstell_datum == T30.date():
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
-                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % x.teilnehmer.id,
+                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % ktn.teilnehmer.id,
                     text = mt.TEXTFB1 % (
                         titel,
-                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-                        x.teilnehmer.name
+                        ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
+                        ktn.teilnehmer.name
                     )
                     ))
                 ktn.teilnehmer.journal_entries.append(
@@ -62,11 +66,11 @@ class BN(grok.View):
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
-                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % x.teilnehmer.id,
+                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % ktn.teilnehmer.id,
                     text = mt.TEXTFB2 % (
                         titel,
-                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-                        x.teilnehmer.name
+                        ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
+                        ktn.teilnehmer.name
                     )
                     ))
                 ktn.teilnehmer.journal_entries.append(
@@ -81,11 +85,11 @@ class BN(grok.View):
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
-                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % x.teilnehmer.id,
+                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % ktn.teilnehmer.id,
                     text = mt.TEXTFB3 % (
                         titel,
-                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-                        x.teilnehmer.name
+                        ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
+                        ktn.teilnehmer.name
                     )
                     ))
                 ktn.teilnehmer.journal_entries.append(
@@ -100,11 +104,11 @@ class BN(grok.View):
                 MAILS.append(dict(
                     _from='fernlehrgang.bghw.de',
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
-                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % x.teilnehmer.id,
+                    subject="Online-Fernlehrgang-Fortbildung der BGHW Benutzername %s" % ktn.teilnehmer.id,
                     text = mt.TEXTFB4 % (
                         titel,
-                        ITeilnehmer['anrede'].vocabulary.getTerm(x.teilnehmer.anrede).title,
-                        x.teilnehmer.name
+                        ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
+                        ktn.teilnehmer.name
                     )
                     ))
                 ktn.teilnehmer.journal_entries.append(
@@ -117,7 +121,7 @@ class BN(grok.View):
                 print "356 TAGE"
 
             for mail in MAILS:
-                print mail
+                send_mail('flg_app', (mail['_to'],), mail['subject'], mail['text'])
 
     def render(self):
         return u"HALLO WELT"

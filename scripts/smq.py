@@ -9,7 +9,7 @@ results = dict(
 
 
 with Connection('amqp://guest:guest@localhost:5672//') as conn:
-    simple_queue = conn.SimpleQueue('info')
+    simple_queue = conn.SimpleQueue('vlwd.antwort')
     message = json.dumps(results)
     simple_queue.put(message)
     print('Sent: %s' % message)

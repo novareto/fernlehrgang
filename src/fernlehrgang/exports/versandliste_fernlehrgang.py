@@ -112,7 +112,9 @@ def export(flg_id, dateiname, mail):
     xls_file.close()
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
-    send_mail('flgapp@bghw.de', (mail,), "Fortbildung Datenquelle", text, [fn,])
+    import transaction
+    with transaction.manager as tm:
+        send_mail('flgapp@bghw.de', (mail,), "Fortbildung Datenquelle", text, [fn,])
     return fn
 
 
@@ -134,7 +136,7 @@ class XSLExportForm(Form):
             mail = getUserEmail(self.request.principal.id)
         except:
             mail = "ck@novareto.de"
-        #result = q.enqueue(export, flg_id, data['dateiname'], mail)
-        result = export(flg_id, data['dateiname'], mail)
+        result = q.enqueue(export, flg_id, data['dateiname'], mail)
+        #result = export(flg_id, data['dateiname'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())
