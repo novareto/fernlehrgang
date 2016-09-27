@@ -12,18 +12,14 @@ from z3c.saconfig import Session
 from fernlehrgang.lib import mt
 
 
-JETZT = datetime.now()
-T30 = JETZT - timedelta(days=30)
-T180 = JETZT - timedelta(days=180)
-T300 = JETZT - timedelta(days=300)
-T365 = JETZT - timedelta(days=365)
 
-
-print "JETZT", JETZT
-print "T30", T30
-print "T180", T180
-print "T300", T300
-print "T365", T365
+def time_ranges():
+    JETZT = datetime.now()
+    T30 = JETZT - timedelta(days=30)
+    T180 = JETZT - timedelta(days=180)
+    T300 = JETZT - timedelta(days=300)
+    T365 = JETZT - timedelta(days=365)
+    return JETZT, T30, T180, T300, T365
 
 
 MAILS = [] 
@@ -33,6 +29,8 @@ class BN(grok.View):
     grok.context(interface.Interface)
 
     def update(self):
+        JETZT, T30, T180, T300, T365 = time_ranges()
+        log("%s, %s, %s, %s, %s", %(JETZT.date(), T30.date(), T180.date(), T300.date(), T365.date()))
         session = Session()
         alle_ktns = session.query(models.Kursteilnehmer).filter(
             models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
