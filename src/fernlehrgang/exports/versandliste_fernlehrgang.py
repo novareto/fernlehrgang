@@ -19,6 +19,8 @@ from fernlehrgang.browser.ergebnisse import CalculateResults
 from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 from fernlehrgang.lib import nN
 from z3c.saconfig import Session
+from fernlehrgang.lib.emailer import send_mail
+from fernlehrgang.exports import q
 
 
 spalten = (
@@ -97,22 +99,7 @@ def createRows(book, adressen, session, flg_id):
             ii += 1
 
 
-from redis import Redis
-from rq import Queue
-from rq.worker import SimpleWorker
-from zope.app.wsgi import config
-
-q = Queue(connection=Redis())
-
-
-class ZCAWorker(SimpleWorker):
-
-    def __init__(self, *args, **kwargs):
-        super(ZCAWorker, self).__init__(*args, **kwargs)
-        config('/Users/ck/work/bghw/fernlehrgang/parts/etc/zope.conf')
-
-
-def export(flg_id, dateiname):
+def export(flg_id, dateiname, mail):
     """This should be the "shared" export function.
     """
     session = Session()
@@ -123,8 +110,9 @@ def export(flg_id, dateiname):
     xls_file = open(fn, 'w+')
     book.save(xls_file)
     xls_file.close()
-    print "Writing File %s" % fn
     fn = makeZipFile(fn)
+    text=u"Bitte öffen Sie die Datei im Anhang"
+    send_mail('flgapp@bghw.de', (mail,), "Fortbildung Datenquelle", text, [fn,])
     return fn
 
 
@@ -141,11 +129,12 @@ class XSLExportForm(Form):
         if errors:
             self.flash(u'Bitte korrigieren Sie die Fehler')
         flg_id = self.context.id
-        #result = q.enqueue(export, flg_id, data['dateiname'])
-        result = export(flg_id, data['dateiname'])
+        #result = export(flg_id, data['dateiname'])
         try:
             mail = getUserEmail(self.request.principal.id)
         except:
             mail = "ck@novareto.de"
+        #result = q.enqueue(export, flg_id, data['dateiname'], mail)
+        result = export(flg_id, data['dateiname'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

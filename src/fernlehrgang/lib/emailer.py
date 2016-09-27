@@ -16,7 +16,7 @@ from email.header import Header
 from zope.sendmail.mailer import SMTPMailer
 
 queue_path = "/Users/ck/work/bghw/fernlehrgang/var/mq"
-
+queue_path = "/home/teamweb/fernlehrgang/var/mq"
 mailer_object = SMTPMailer('localhost', 25, force_tls=False)
 
 
@@ -68,6 +68,7 @@ def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"
         zope.sendmail.interfaces.IMailDelivery,
         name=u'flg.maildelivery'
         )
+    print "I SEND THE MAIL VIA THE MAILER"
     mailer.send(send_from, send_to, msg.as_string())
 
 
