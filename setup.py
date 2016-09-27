@@ -52,7 +52,7 @@ setup(name='fernlehrgang',
                         'reportlab',
                         'pygal',
                         'cairosvg',
-                        #'ibm-db-sa',
+                        'ibm-db-sa',
                         #'ibm_db',
                         'ukh.ibmdbsa',
                         'rq',
@@ -60,6 +60,9 @@ setup(name='fernlehrgang',
                         'pyodbc',
                         ],
       entry_points={
+          'sqlalchemy.dialects': [
+               'bghw.pyodbc400=fernlehrgang.config.odbc:AS400Dialect_pyodbc',
+          ],
           'paste.app_factory': [
                'main = grokcore.startup:application_factory',
                'debug = grokcore.startup:debug_application_factory'
