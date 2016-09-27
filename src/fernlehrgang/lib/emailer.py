@@ -15,10 +15,18 @@ from email import Encoders
 from email.header import Header
 from zope.sendmail.mailer import SMTPMailer
 
-queue_path = "/Users/ck/work/bghw/fernlehrgang/var/mq"
-queue_path = "/home/teamweb/fernlehrgang/var/mq"
-mailer_object = SMTPMailer('localhost', 25, force_tls=False)
+import zope.app.appsetup.product
 
+config = zope.app.appsetup.product.getProductConfiguration('mailer')
+queue_path = config.get('queue-path')
+hostname = config.get('hostname', 'localhost')
+port = int(config.get('port', 25))
+username = config.get('username', None) or None
+password = config.get('password', None) or None
+
+
+mailer_object = zope.sendmail.mailer.SMTPMailer(
+        hostname, port, username, password, force_tls=False)
 
 def mailer():
     return mailer_object
@@ -80,4 +88,4 @@ grok.global_utility(
     delivery,
     zope.sendmail.interfaces.IMailDelivery,
     name='flg.maildelivery')
-#start_processor_thread()
+start_processor_thread()

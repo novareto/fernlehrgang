@@ -7,6 +7,7 @@ import grok
 import datetime
 
 from megrok import traject
+from fernlehrgang import log
 
 from sqlalchemy import *
 from sqlalchemy.orm import relation, backref
@@ -36,10 +37,14 @@ from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 from sqlalchemy import event
 from zope.interface import alsoProvides
+from z3c.saconfig import EngineFactory, GloballyScopedSession
+from zope.app.appsetup.product import getProductConfiguration
 
+config = getProductConfiguration('database')
 
-SCHEMA = "tflg"
+SCHEMA = config['schema'] or None 
 
+log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 
 Base = declarative_base()
 Base.metadata.schema = SCHEMA 

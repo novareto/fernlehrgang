@@ -56,5 +56,13 @@ ${zope_conf:extra}
 
 <product-config database>
     DSN ${settings:DSN}
+    SCHEMA ${settings:SCHEMA}
 </product-config>
 
+<product-config mailer>
+    queue-path ${buildout:directory}/var/mailer-queue
+    hostname ${settings:mailer_hostname}
+    port ${settings:mailer_port}
+    username ${settings:mailer_username}
+    password ${settings:mailer_password}
+</product-config>
