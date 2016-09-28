@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import os
 import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
@@ -171,7 +172,11 @@ def voc_unternehmen(context):
     session = Session()
     items = []
     from sqlalchemy.sql.expression import func
-    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9).all():
+    results = session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9)
+    if os.environ.get('DEBUG'):
+        print "I FILTER IT NOW"
+        results = results.filter(Unternehmen.mnr == 995000221)
+    for mnr, name in results.all():
         items.append(SimpleTerm(
             mnr, mnr, "%s - %s" % (mnr, name)))
     return SimpleVocabulary(items)
