@@ -43,7 +43,7 @@ from zope.app.appsetup.product import getProductConfiguration
 config = getProductConfiguration('database')
 
 SCHEMA = config['schema'] or None 
-
+#SCHEMA = "xflg"
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 
 Base = declarative_base()
@@ -342,9 +342,9 @@ class Antwort(Base, RDBMixin):
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))
     datum = Column(DateTime)
-    system = Column('SYSTEMWERT', String(50))
+    system = Column("SYSTEMWERT", String(50))
     gbo = Column(String(50))
-    gbo_daten = Column(BLOB())
+    gbo_daten = Column(LargeBinary)
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer,
@@ -357,9 +357,9 @@ class Antwort(Base, RDBMixin):
     def title(self):
         return self.frage.titel
 
-    #@property
-    #def system(self):
-    #    return "FernlehrgangApp"
+    @property
+    def system(self):
+        return "FernlehrgangApp"
 
     @property
     def rlhid(self):
