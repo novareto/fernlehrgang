@@ -131,9 +131,9 @@ class TeilnehmerSuche(Form):
         if value:
             return IKursteilnehmer.get('un_klasse').source(None).getTermByToken(value).title
 
-    def igKV(self, value):
+    def gBR(self, value):
         if value:
-            return ITeilnehmer.get('kategorie').source.getTermByToken(value).title
+            return IKursteilnehmer.get('branche').source(None).getTermByToken(value).title
 
     def namespace(self):
         tn = None
