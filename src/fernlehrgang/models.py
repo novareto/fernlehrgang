@@ -120,10 +120,10 @@ class Unternehmen(Base, RDBMixin):
     __tablename__ = 'adr'
 
     #id = Column("ID", Numeric, primary_key=True)
-    mnr = Column("MNR", String(10), primary_key=True, index=True)
-    name = Column("NAME1", String(32))
-    name2 = Column("NAME2", String(32))
-    name3 = Column("NAME3", String(32))
+    mnr = Column("MNR", String(11), primary_key=True, index=True)
+    name = Column("NAME1", String(33))
+    name2 = Column("NAME2", String(33))
+    name3 = Column("NAME3", String(33))
     str = Column("STR", String(70))
     plz = Column("PLZ", String(10))
     ort = Column("ORT", String(30))
@@ -150,7 +150,7 @@ class Unternehmen(Base, RDBMixin):
 
 unternehmen_teilnehmer = Table(
     'unternehmen_teilnehmer', Base.metadata,
-    Column('unternehmen_id', String(10), ForeignKey('adr.MNR')),
+    Column('unternehmen_id', String(11), ForeignKey('adr.MNR')),
     Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
 )
 
@@ -180,7 +180,7 @@ class Teilnehmer(Base, RDBMixin):
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
 
-    unternehmen_mnr = Column(String(10), ForeignKey(Unternehmen.mnr))
+    unternehmen_mnr = Column(String(11), ForeignKey(Unternehmen.mnr))
 
     #unternehmen = relation(Unternehmen,
     #                       backref = backref('teilnehmer', order_by=id))
@@ -289,7 +289,7 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String(10), ForeignKey('adr.MNR',))
+    unternehmen_mnr = Column(String(11), ForeignKey('adr.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
