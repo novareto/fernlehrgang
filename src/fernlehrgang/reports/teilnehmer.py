@@ -123,6 +123,18 @@ class TeilnehmerSuche(Form):
         if value:
             return IKursteilnehmer.get('status').source(None).getTermByToken(value).title
 
+    def gKV(self, value):
+        if value:
+            return ITeilnehmer.get('kategorie').source.by_value.get(str(value)).title
+
+    def gU(self, value):
+        if value:
+            return IKursteilnehmer.get('un_klasse').source(None).getTermByToken(value).title
+
+    def igKV(self, value):
+        if value:
+            return ITeilnehmer.get('kategorie').source.getTermByToken(value).title
+
     def namespace(self):
         tn = None
         unternehmenl = [] 
