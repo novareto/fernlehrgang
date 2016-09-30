@@ -21,7 +21,7 @@
       <h3>
         Teilnehmer
         <a href="pull-right" tal:attributes="href view.url(teilnehmer)"> 
-          <span class="glyphicon glyphicon-user" aria-hidden="true"> </span>
+          <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ( <span tal:content="teilnehmer.id"/> ) 
         </a>
       </h3> 
     </div>
@@ -73,7 +73,7 @@
         <td> <a tal:attributes="href view.url(ktn)" tal:content="ktn.teilnehmer.name"> </a> </td>
         <td> <span tal:content="view.gLS(ktn.status)"></span> </td>
         <td> <span tal:content="string: ${view.gU(ktn.un_klasse)}, ${view.gBR(ktn.branche)}"></span></td>
-        <td> <span tal:content="ktn.result['comment']"></span> </td>
+        <td> <small tal:content="structure ktn.result['comment']"></small> </td>
       </tr>
       </tbody>
     </table>

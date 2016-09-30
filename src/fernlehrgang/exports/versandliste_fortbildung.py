@@ -50,6 +50,8 @@ def createRows(session, rc, flg_ids, stichtag):
     lhs = {}
     ids = [x for x in flg_ids]
     result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).options(joinedload(models.Kursteilnehmer.antworten))
+    from datetime import datetime
+    stichtag = datetime.combine(stichtag, datetime.min.time())
     result = result.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id.in_(ids),
@@ -61,7 +63,7 @@ def createRows(session, rc, flg_ids, stichtag):
         lehrhefte_sql = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen))
         lhs[x] = lehrhefte_sql.filter(models.Lehrheft.fernlehrgang_id == x).all()
     i=1
-    for teilnehmer, unternehmen, ktn in page_query(result):
+    for teilnehmer, unternehmen, ktn in result.all():
         if ktn.status in ('A1', 'A2'):
             cal_res = CalculateResults(ktn)
             summary = cal_res.summary(lhs[ktn.fernlehrgang_id])
@@ -123,6 +125,7 @@ def createRows(session, rc, flg_ids, stichtag):
                         liste.append(r)
                 rc.append(liste)
             i+=1
+            print i
 
 
 
@@ -167,7 +170,8 @@ class XLSFortbildung(Form):
             mail = getUserEmail(self.request.principal.id)
         except:
             mail = "ck@novareto.de"
-        fn = q.enqueue(export, flg_ids, data['stichtag'], mail)
+        #export(flg_ids, data['stichtag'], mail)
+        fn = q.enqueue_call(func=export,args=( flg_ids, data['stichtag'], mail), timeout=600)
         # fn = export_versandliste_fortbildung(flg_ids, data['stichtag'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

@@ -81,7 +81,9 @@ class TeilnehmerListing(TablePage):
 
     @property
     def values(self):
-        return self.context.teilnehmer
+        tns = self.context.teilnehmer
+        vv = sorted(tns, key=lambda t: t.name)
+        return vv
 
 
 @menuentry(AddMenu)
@@ -187,7 +189,7 @@ class ICompany(Interface):
     unternehmen = Set(
         title=u"Unternehmen",
         value_type=Choice(source=voc_unternehmen),
-        required=False)
+        required=True)
 
     un_klasse = Choice(
         title = u"Mitarbeiteranzahl",
@@ -213,7 +215,7 @@ class AssignCompany(models.Edit):
     label = u"Teilnehmer"
 
     #fields = Fields(ITeilnehmer).select('unternehmen')
-    fields = Fields(ICompany)
+    fields = Fields(ICompany).select('unternehmen')
     fields['unternehmen'].mode = 'multiselect'
 
     def update(self):
@@ -247,12 +249,12 @@ class AssignCompany(models.Edit):
             session = Session()
             return session.query(Unternehmen).get(mnr)
         data['unternehmen'] = [getUnternehmen(x) for x in list(data['unternehmen'])]
-        un_klasse = data.pop('un_klasse')
-        branche = data.pop('branche')
+        #un_klasse = data.pop('un_klasse')
+        #branche = data.pop('branche')
         apply_data_event(self.fields, self.getContentData(), data)
-        for ktn in self.context.kursteilnehmer:
-            ktn.un_klasse = un_klasse
-            ktn.branche = branche
+        #for ktn in self.context.kursteilnehmer:
+        #    ktn.un_klasse = un_klasse
+        #    ktn.branche = branche
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))
 
@@ -270,7 +272,7 @@ class Register(Form):
     label = u"Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
 
-    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'branche', 'un_klasse')
+    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
 
     def update(self):
         register_js.need()

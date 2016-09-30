@@ -31,13 +31,14 @@ _ = MessageFactory('zeam.form.base')
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
 class KursteilnehmerListing(Form):
     grok.context(IFernlehrgang)
     grok.implements(IDisplayView)
     grok.name('kursteilnehmer_listing')
     grok.title("Kursteilnehmer verwalten")
     grok.order(10)
+#    grok.baseclass()
 
     fields = Fields(ITeilnehmer).select('id', 'name', 'geburtsdatum')
 

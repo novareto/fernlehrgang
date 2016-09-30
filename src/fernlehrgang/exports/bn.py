@@ -120,8 +120,9 @@ class BN(grok.View):
                         )
                 print "356 TAGE"
 
-            for mail in MAILS:
-                send_mail('flg_app', (mail['_to'],), mail['subject'], mail['text'])
+        for mail in MAILS:
+            print mail
+            #send_mail('flg_app', (mail['_to'],), mail['subject'], mail['text'])
 
     def render(self):
         return u"HALLO WELT"

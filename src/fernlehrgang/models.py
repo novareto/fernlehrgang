@@ -43,7 +43,7 @@ from zope.app.appsetup.product import getProductConfiguration
 config = getProductConfiguration('database')
 
 SCHEMA = config['schema'] or None 
-#SCHEMA = "xflg"
+SCHEMA = "xflg"
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 
 Base = declarative_base()
@@ -195,7 +195,7 @@ class Teilnehmer(Base, RDBMixin):
         return "%s %s" % (self.name, self.vorname)
 
     def __repr__(self):
-        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
+        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.id)
 
     def factory(id, unternehmen_mnr):
         session = Session()
@@ -356,10 +356,6 @@ class Antwort(Base, RDBMixin):
     @property
     def title(self):
         return self.frage.titel
-
-    @property
-    def system(self):
-        return "FernlehrgangApp"
 
     @property
     def rlhid(self):
