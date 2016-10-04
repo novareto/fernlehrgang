@@ -12,6 +12,6 @@ class ZCAWorker(SimpleWorker):
 
     def __init__(self, *args, **kwargs):
         super(ZCAWorker, self).__init__(*args, **kwargs)
-        config('/Users/ck/work/bghw/fernlehrgang/parts/etc/zope.conf')
+        config('/home/teamweb/fernlehrgang/parts/etc/zope.conf')
 
 
