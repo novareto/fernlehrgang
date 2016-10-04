@@ -136,6 +136,7 @@ class XSLExportForm(Form):
             mail = getUserEmail(self.request.principal.id)
         except:
             mail = "ck@novareto.de"
+        #mail = "ck@novareto.de"
         result = q.enqueue(export, flg_id, data['dateiname'], mail)
         #result = export(flg_id, data['dateiname'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
