@@ -43,7 +43,6 @@ from zope.app.appsetup.product import getProductConfiguration
 config = getProductConfiguration('database')
 
 SCHEMA = config['schema'] or None 
-SCHEMA = "xflg"
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 
 Base = declarative_base()
@@ -335,7 +334,7 @@ class Antwort(Base, RDBMixin):
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id")
 
     __tablename__ = 'antwort'
-    __table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
+    #__table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
 
     id = Column(Integer, Sequence('antwort_seq', start=100000, increment=1, schema=SCHEMA), primary_key=True)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
