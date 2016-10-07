@@ -16,6 +16,16 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.lib.emailer import send_mail
 
 
+def time_ranges():
+    JETZT = datetime(2016, 10, 1)
+    T30 = JETZT - timedelta(days=30)
+    T180 = JETZT - timedelta(days=180)
+    T300 = JETZT - timedelta(days=300)
+    T365 = JETZT - timedelta(days=365)
+    return JETZT, T30, T180, T300, T365
+
+
+
 class BN1(grok.View):
     grok.context(interface.Interface)
 

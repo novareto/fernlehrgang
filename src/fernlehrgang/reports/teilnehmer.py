@@ -165,7 +165,6 @@ class TeilnehmerSuche(Form):
         if errors:
             return
         session = Session()
-        print data
         sql = session.query(Teilnehmer)
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
@@ -175,5 +174,3 @@ class TeilnehmerSuche(Form):
             return
         zs = self.getSession()
         zs['tn'] = sql.one()
-        #self.results = sql.one()
-        #import pdb; pdb.set_trace()
