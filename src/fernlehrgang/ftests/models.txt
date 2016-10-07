@@ -87,7 +87,7 @@ Diese Teilnehmer werden mit Ihrer *ID* schon beim Initiallauf angelegt.
    >>> from fernlehrgang.models import Teilnehmer
    >>> lars = Teilnehmer(name='Lars Walther')
    >>> lars
-   <Teilnehmer(id='None', name='Lars Walther')>
+   <Teilnehmer(id='None', name='None')>
 
 Auch hier sollte die Datenbank noch keine Einträge für Teilnehmer haben:
 
@@ -105,7 +105,7 @@ Bevor wir den Teilnehmer Lars speichern weißen wir ihm noch ein Unternehmen zu:
 Nun sollten wir auch die Instanz von lars aus der Datenbank bekommen.
 
    >>> session.query(Teilnehmer).one()
-   <Teilnehmer(id='1', name='Lars Walther')>
+   <Teilnehmer(id='1', name='1')>
 
 
    >>> import transaction; transaction.commit()
@@ -146,7 +146,7 @@ Kursteilnehmer
 und natürlich den Teilnehmer selbst.
 
    >>> ktn.teilnehmer
-   <Teilnehmer(id='1', name='Lars Walther')>
+   <Teilnehmer(id='1', name='1')>
 
 
 Lehrhefte für den Fernlehrgang
