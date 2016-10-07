@@ -41,7 +41,6 @@ from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
-
 SCHEMA = config['schema'] or None 
 
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
@@ -344,7 +343,7 @@ class Antwort(Base, RDBMixin):
     datum = Column(DateTime)
     system = Column('SYSTEMWERT', String(50))
     gbo = Column(String(50))
-    gbo_daten = Column(BLOB())
+    gbo_daten = Column(LargeBinary)
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
 
     kursteilnehmer = relation(Kursteilnehmer,
