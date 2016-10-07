@@ -135,13 +135,20 @@ class TeilnehmerSuche(Form):
         if value:
             return IKursteilnehmer.get('branche').source(None).getTermByToken(value).title
 
+    def getSession(self):
+        key = "fernlehrgang.teilnehmer"
+        from zope.session.interfaces import ISession
+        session = ISession(self.request)[key]
+        return session
+
     def namespace(self):
         tn = None
         unternehmenl = [] 
         ktns = []
         root = grok.getSite()
-        if self.results:
-            tn = self.results
+        zs = self.getSession()
+        if zs.get('tn'):
+            tn = zs['tn']
             locate(root, tn, DefaultModel)
             for unternehmen in tn.unternehmen:
                 locate(root, unternehmen, DefaultModel)
@@ -155,11 +162,9 @@ class TeilnehmerSuche(Form):
     def handle_search(self):
         v = False
         data, errors = self.extractData()
+        if errors:
+            return
         session = Session()
-        #sql = session.query(Teilnehmer).options(
-        #    joinedload(Kursteilnehmer.antworten))
-        #sql = sql.filter(Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
-        print data
         sql = session.query(Teilnehmer)
         if data.get('id') != "":
             sql = sql.filter(Teilnehmer.id == data.get('id'))
@@ -167,4 +172,5 @@ class TeilnehmerSuche(Form):
         if not v:
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return
-        self.results = sql.one()
+        zs = self.getSession()
+        zs['tn'] = sql.one()

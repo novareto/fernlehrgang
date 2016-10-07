@@ -160,7 +160,7 @@ class IKursteilnehmer(Interface):
         )
 
     gespraech = Choice(
-        title = u"Abschlussgesräch / Abschlusseminar",
+        title = u"Abschlussgespräch / Abschlusseminar",
         description = u'Wie hat der Teilnehmer, falls nötig, das Abschlussgespräch / Abschussseminar absolviert?',
         required = True,
         source = gespraech,

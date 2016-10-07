@@ -42,7 +42,6 @@ from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
 SCHEMA = config['schema'] or None 
-
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 
 Base = declarative_base()
@@ -119,10 +118,10 @@ class Unternehmen(Base, RDBMixin):
     __tablename__ = 'adr'
 
     #id = Column("ID", Numeric, primary_key=True)
-    mnr = Column("MNR", String(10), primary_key=True, index=True)
-    name = Column("NAME1", String(32))
-    name2 = Column("NAME2", String(32))
-    name3 = Column("NAME3", String(32))
+    mnr = Column("MNR", String(11), primary_key=True, index=True)
+    name = Column("NAME1", String(33))
+    name2 = Column("NAME2", String(33))
+    name3 = Column("NAME3", String(33))
     str = Column("STR", String(70))
     plz = Column("PLZ", String(10))
     ort = Column("ORT", String(30))
@@ -149,7 +148,7 @@ class Unternehmen(Base, RDBMixin):
 
 unternehmen_teilnehmer = Table(
     'unternehmen_teilnehmer', Base.metadata,
-    Column('unternehmen_id', String(10), ForeignKey('adr.MNR')),
+    Column('unternehmen_id', String(11), ForeignKey('adr.MNR')),
     Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
 )
 
@@ -179,7 +178,7 @@ class Teilnehmer(Base, RDBMixin):
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
 
-    unternehmen_mnr = Column(String(10), ForeignKey(Unternehmen.mnr))
+    unternehmen_mnr = Column(String(11), ForeignKey(Unternehmen.mnr))
 
     #unternehmen = relation(Unternehmen,
     #                       backref = backref('teilnehmer', order_by=id))
@@ -194,7 +193,7 @@ class Teilnehmer(Base, RDBMixin):
         return "%s %s" % (self.name, self.vorname)
 
     def __repr__(self):
-        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.name)
+        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.id)
 
     def factory(id, unternehmen_mnr):
         session = Session()
@@ -288,7 +287,7 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    unternehmen_mnr = Column(String(10), ForeignKey('adr.MNR',))
+    unternehmen_mnr = Column(String(11), ForeignKey('adr.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
@@ -334,14 +333,14 @@ class Antwort(Base, RDBMixin):
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id")
 
     __tablename__ = 'antwort'
-    __table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
+    #__table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
 
     id = Column(Integer, Sequence('antwort_seq', start=100000, increment=1, schema=SCHEMA), primary_key=True)
     lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
     frage_id = Column(Integer, ForeignKey('frage.id'))
     antwortschema = Column(String(50))
     datum = Column(DateTime)
-    system = Column('SYSTEMWERT', String(50))
+    system = Column("SYSTEMWERT", String(50))
     gbo = Column(String(50))
     gbo_daten = Column(LargeBinary)
     kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
@@ -355,10 +354,6 @@ class Antwort(Base, RDBMixin):
     @property
     def title(self):
         return self.frage.titel
-
-    #@property
-    #def system(self):
-    #    return "FernlehrgangApp"
 
     @property
     def rlhid(self):

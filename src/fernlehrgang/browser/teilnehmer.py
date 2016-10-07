@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import os
 import uvc.layout
 
 from dolmen.app.layout import models, IDisplayView
@@ -80,7 +81,9 @@ class TeilnehmerListing(TablePage):
 
     @property
     def values(self):
-        return self.context.teilnehmer
+        tns = self.context.teilnehmer
+        vv = sorted(tns, key=lambda t: t.name)
+        return vv
 
 
 @menuentry(AddMenu)
@@ -171,7 +174,11 @@ def voc_unternehmen(context):
     session = Session()
     items = []
     from sqlalchemy.sql.expression import func
-    for mnr, name in session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9).all():
+    results = session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9)
+    if os.environ.get('DEBUG'):
+        print "I FILTER IT NOW"
+        results = results.filter(Unternehmen.mnr == 995000221)
+    for mnr, name in results.all():
         items.append(SimpleTerm(
             mnr, mnr, "%s - %s" % (mnr, name)))
     return SimpleVocabulary(items)
@@ -182,7 +189,7 @@ class ICompany(Interface):
     unternehmen = Set(
         title=u"Unternehmen",
         value_type=Choice(source=voc_unternehmen),
-        required=False)
+        required=True)
 
     un_klasse = Choice(
         title = u"Mitarbeiteranzahl",
@@ -208,7 +215,7 @@ class AssignCompany(models.Edit):
     label = u"Teilnehmer"
 
     #fields = Fields(ITeilnehmer).select('unternehmen')
-    fields = Fields(ICompany)
+    fields = Fields(ICompany).select('unternehmen')
     fields['unternehmen'].mode = 'multiselect'
 
     def update(self):
@@ -242,12 +249,12 @@ class AssignCompany(models.Edit):
             session = Session()
             return session.query(Unternehmen).get(mnr)
         data['unternehmen'] = [getUnternehmen(x) for x in list(data['unternehmen'])]
-        un_klasse = data.pop('un_klasse')
-        branche = data.pop('branche')
+        #un_klasse = data.pop('un_klasse')
+        #branche = data.pop('branche')
         apply_data_event(self.fields, self.getContentData(), data)
-        for ktn in self.context.kursteilnehmer:
-            ktn.un_klasse = un_klasse
-            ktn.branche = branche
+        #for ktn in self.context.kursteilnehmer:
+        #    ktn.un_klasse = un_klasse
+        #    ktn.branche = branche
         self.flash(_(u"Content updated"))
         self.redirect(self.url(self.context))
 
@@ -265,7 +272,7 @@ class Register(Form):
     label = u"Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
 
-    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'branche', 'un_klasse')
+    fields = Fields(IKursteilnehmer).omit('id', 'teilnehmer_id')
 
     def update(self):
         register_js.need()

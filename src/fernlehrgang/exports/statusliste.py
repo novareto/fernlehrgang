@@ -9,7 +9,7 @@ from fernlehrgang import models
 from fernlehrgang.browser.ergebnisse import CalculateResults
 from fernlehrgang.exports.menus import ExportItems
 from fernlehrgang.interfaces.flg import IFernlehrgang
-from fernlehrgang.lib import nN
+from fernlehrgang.exports.versandliste_fortbildung import nN
 from openpyxl.workbook import Workbook
 from sqlalchemy import and_
 from sqlalchemy.orm import sessionmaker, joinedload
@@ -97,28 +97,37 @@ def createRows(rc, session, flg_id):
             else:
                 liste.append('nein')
             liste.append(nN(teilnehmer.kategorie))
-            liste.append(ktn.status)
+            liste.append(nN(ktn.status))
             liste.append(un_helper(ktn.un_klasse))
             liste.append(nN(ktn.branche))
             liste.append(ges_helper(ktn.gespraech))
             liste.append(nN(summary['comment']))
             liste.append(nN(summary['resultpoints']))
-            liste.append(antworten)
+            liste.append(nN(antworten))
         rc.append(liste)
         i+=1
 
 
-def export(session, flg_id):
+from fernlehrgang.lib.emailer import send_mail
+from fernlehrgang.exports import q
+from fernlehrgang.exports.versandliste_fortbildung import UnicodeWriter
+def export(flg_id, mail):
     """This should be the "shared" export function.
     """
+    from z3c.saconfig import Session
+    session = Session()
     fn = "/tmp/statusliste_%s.xlsx" % flg_id
     book, adressen, rc = getXLSBases()
     createRows(rc, session, flg_id)
-    for z, line in enumerate(rc):
-        adressen.append([cell for cell in line])
-    print "Writing File %s" % fn
-    book.save(fn) 
+    with open(fn, 'wb') as csvfile:
+        writer = UnicodeWriter(csvfile)
+        for line in rc:
+            writer.writerow(line)
     fn = makeZipFile(fn)
+    text=u"Bitte öffen Sie die Datei im Anhang"
+    import transaction
+    with transaction.manager:
+        send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,])
     return fn
 
 
@@ -129,11 +138,9 @@ class XLSReport(grok.View):
     grok.title('Statusliste')
 
     def update(self):
-        from z3c.saconfig import Session
-        session = Session()
-        # mail = getUserEmail(self.request.principal.id)
-        fn = export(session, flg_id=self.context.id)
-        #fn = export_statusliste(flg_id=self.context.id, mail=mail)
+        mail = getUserEmail(self.request.principal.id)
+        #fn = export(self.context.id, mail)
+        fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=600)
         print fn
 
     def render(self):

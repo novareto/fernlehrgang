@@ -1,1 +1,2 @@
-<select placeholder_text_single="HANS" id="teilnehmer_id" name="form.field.id" style="width: 550px" />
+<select id="teilnehmer_id" name="form.field.id" style="width: 550px">
+</select>
