@@ -121,8 +121,14 @@ Trajects
 Ok nun haben wir alle unsere Objekte angelegt wir können jetzt prüfen ob wir diese über
 das traject System aufrufen können.
 
-   >>> from zope.testbrowser.testing import Browser
-   >>> browser = Browser()
+   >>> from zope.testbrowser.wsgi import Browser
+   >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
+   >>> from zope.app import wsgi
+   >>> db =  root._p_jar.db()
+   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> wsgi_app
+   <zope.app.wsgi.WSGIPublisherApplication object at 0...>  
+   >>> browser = Browser(wsgi_app=wsgi_app)
    >>> browser.addHeader('Authorization', 'Basic user:user')
    >>> browser.handleErrors = False
 
