@@ -58,7 +58,10 @@ setup(name='fernlehrgang',
                         'ukh.ibmdbsa',
                         'rq',
                         'kombu',
-                        'pyodbc',
+                        #'pyodbc',
+                        'robotsuite',
+                        'infrae.testbrowser',
+                        'gocept.httpserverlayer',
                         ],
       entry_points={
           'sqlalchemy.dialects': [

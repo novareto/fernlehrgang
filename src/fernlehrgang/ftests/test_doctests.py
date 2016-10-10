@@ -10,6 +10,15 @@ import os
 from zope.app.testing.functional import FunctionalDocFileSuite
 from zope.app.testing.functional import ZCMLLayer
 
+import gocept.httpserverlayer.wsgi
+import gocept.httpserverlayer.zopeappwsgi
+import zope.app.appsetup.testlayer
+
+from StringIO import StringIO
+import copy
+import plone.testing
+import zope.app.appsetup.product
+
 
 pc = """
 <product-config database>
@@ -35,7 +44,6 @@ ftesting_zcml = os.path.join(
 class FLGZCMLLayer(ZCMLLayer):
 
     def testSetUp(self):
-        #super(FLGZCMLLayer, self).testSetUp()
         from z3c.saconfig import Session
         session = Session()
         from fernlehrgang.models import Base
@@ -56,17 +64,85 @@ FunctionalLayer = FLGZCMLLayer(
 )
 
 
-def test_suite():
-    suite = unittest.TestSuite()
-    functional = FunctionalDocFileSuite(
-        'ftests/ablauf.txt', 'ftests/models.txt', 'ftests/vlw.txt',
-        package="fernlehrgang",
-        globs={'__name__': 'fernlehrgang'},
-        optionflags=doctest.ELLIPSIS |
-                    doctest.IGNORE_EXCEPTION_DETAIL |
-                    doctest.REPORT_NDIFF |
-                    doctest.NORMALIZE_WHITESPACE,
-    )
-    functional.layer = FunctionalLayer
-    suite.addTest(functional)
-    return suite
+class ProductConfigLayer(plone.testing.Layer):
+
+    def __init__(self, product_config, **kw):
+        super(ProductConfigLayer, self).__init__(**kw)
+        self.product_config = product_config
+
+    def setUp(self):
+        self['old_product_config'] = copy.deepcopy(
+            zope.app.appsetup.product.saveConfiguration())
+        self['product_config'] = zope.app.appsetup.product.loadConfiguration(
+            StringIO(self.product_config))
+        self.testSetUp()
+
+    def testSetUp(self):
+        # Create a copy so tests can modify it as they please.
+       zope.app.appsetup.product.restoreConfiguration(
+           copy.deepcopy(self['product_config']))
+
+    def tearDown(self):
+        del self['product_config']
+        zope.app.appsetup.product.restoreConfiguration(
+            self['old_product_config'])
+        del self['old_product_config']
+
+
+ZODB_LAYER = zope.app.appsetup.testlayer.ZODBLayer(
+   fernlehrgang, ftesting_zcml)
+
+
+class WSGILayer(gocept.httpserverlayer.zopeappwsgi.Layer):
+
+    defaultBases = (ZODB_LAYER,)
+
+    def get_current_zodb(self):
+        return ZODB_LAYER.db
+
+WSGI_LAYER = WSGILayer()
+
+HTTP_LAYER = gocept.httpserverlayer.wsgi.Layer(
+    name='HTTPLayer', bases=(WSGI_LAYER,))
+
+
+PRODUCT_LAYER = ProductConfigLayer(pc)
+
+
+class AppLayer(plone.testing.Layer):
+    defaultBases = (PRODUCT_LAYER, HTTP_LAYER)
+
+
+APP_LAYER = AppLayer()
+
+#def test_suite():
+#    suite = unittest.TestSuite()
+#    functional = FunctionalDocFileGSuite(
+#        'ftests/ablauf.txt', 'ftests/models.txt', 'ftests/vlw.txt', # 'ftests/accept.txt',
+#        package="fernlehrgang",
+#        globs={'__name__': 'fernlehrgang'},
+#        optionflags=doctest.ELLIPSIS |
+#                    doctest.IGNORE_EXCEPTION_DETAIL |
+#                    doctest.REPORT_NDIFF |
+#                    doctest.NORMALIZE_WHITESPACE,
+#    )
+#    functional.layer = APP_LAYER 
+#    suite.addTest(functional)
+#    return suite
+
+from zope.testing import doctestcase
+
+@doctestcase.doctestfiles('ablauf.txt', 'models.txt', optionflags=doctest.ELLIPSIS)
+class MoreTests(unittest.TestCase):
+    layer = APP_LAYER
+
+    def setUp(self):
+        self.globs = {'getRootFolder': ZODB_LAYER.getRootFolder }
+
+
+#@doctestcase.doctestfiles('vlw.txt', optionflags=doctest.ELLIPSIS)
+#class MoreTests11(unittest.TestCase):
+#    layer = APP_LAYER
+#    def setUp(self):
+#        self.globs = {'getRootFolder': ZODB_LAYER.getRootFolder }
+
