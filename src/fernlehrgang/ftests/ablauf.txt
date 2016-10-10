@@ -126,9 +126,9 @@ das traject System aufrufen können.
    >>> from zope.app import wsgi
    >>> db =  root._p_jar.db()
    >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
-   >>> wsgi_app
-   <zope.app.wsgi.WSGIPublisherApplication object at 0...>  
-   >>> browser = Browser(wsgi_app=wsgi_app)
+   >>> import zope.testbrowser.wsgi
+   >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
+   >>> browser = Browser(wsgi_app=app)
    >>> browser.addHeader('Authorization', 'Basic user:user')
    >>> browser.handleErrors = False
 

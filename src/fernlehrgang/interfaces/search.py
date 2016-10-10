@@ -65,8 +65,9 @@ def add_in_cache(obj, event):
     VOCABULARY.add(term)
     
 
-@grok.subscribe(IDatabaseOpened)
+#@grok.subscribe(IDatabaseOpened)
 def fill_cache_teilnehmer(*args):
+    #import pdb; pdb.set_trace() 
     session = Session()
     results = session.query(
         models.Teilnehmer.id, 
@@ -87,7 +88,7 @@ def fill_cache_teilnehmer(*args):
     log(u'Der Cache für die Teilnehmer ist gefüllt')
  
 
-@grok.subscribe(IDatabaseOpened)
+#@grok.subscribe(IDatabaseOpened)
 def fill_cache_unternehmen(*args):
     from fernlehrgang.browser.teilnehmer import voc_unternehmen 
     voc_unternehmen(None)

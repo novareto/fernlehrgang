@@ -7,7 +7,6 @@ import doctest
 import unittest
 import os
 
-from zope.app.testing.functional import FunctionalDocFileSuite
 from zope.app.testing.functional import ZCMLLayer
 
 import gocept.httpserverlayer.wsgi
@@ -63,7 +62,7 @@ FunctionalLayer = FLGZCMLLayer(
     product_config=pc,
 )
 
-
+from z3c.saconfig import Session
 class ProductConfigLayer(plone.testing.Layer):
 
     def __init__(self, product_config, **kw):
@@ -115,6 +114,8 @@ class AppLayer(plone.testing.Layer):
 
 APP_LAYER = AppLayer()
 
+APP_LAYER = plone.testing.Layer((PRODUCT_LAYER, HTTP_LAYER), name="app_layer")
+
 #def test_suite():
 #    suite = unittest.TestSuite()
 #    functional = FunctionalDocFileGSuite(
@@ -131,13 +132,41 @@ APP_LAYER = AppLayer()
 #    return suite
 
 from zope.testing import doctestcase
+from z3c.saconfig import Session
 
-@doctestcase.doctestfiles('ablauf.txt', 'models.txt', optionflags=doctest.ELLIPSIS)
+
+@doctestcase.doctestfiles('vlw.txt', 'ablauf.txt', 'models.txt', optionflags=doctest.ELLIPSIS)
 class MoreTests(unittest.TestCase):
     layer = APP_LAYER
 
     def setUp(self):
         self.globs = {'getRootFolder': ZODB_LAYER.getRootFolder }
+        self.session = Session()
+        from fernlehrgang.models import Base
+        mt = Base.metadata
+        mt.bind = self.session.connection().engine
+        mt.create_all(checkfirst=True)
+
+    def VVVVtestSetUp(self):
+        print "testSetUp"
+        from fernlehrgang.models import Base
+        mt = Base.metadata
+        mt.bind = self.session.connection().engine
+        mt.create_all(checkfirst=True)
+
+    def tearDown(self):
+        print "TEAR DOWN"
+        from fernlehrgang.models import Base
+        meta = Base.metadata
+        meta.bind = self.session.connection().engine
+        meta.drop_all()
+
+#        with contextlib.closing(self.session.connection()) as con:
+#            trans = con.begin()
+#            for table in reversed(meta.sorted_tables):
+#                con.execute(table.delete())
+#            trans.commit()
+
 
 
 #@doctestcase.doctestfiles('vlw.txt', optionflags=doctest.ELLIPSIS)
