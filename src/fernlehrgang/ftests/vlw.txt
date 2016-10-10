@@ -96,9 +96,14 @@ Create a browser and visit the instance you just created:
    >>> teil1.passwort
    'passwort'
 
-   >>> from zope.testbrowser.testing import Browser
-   >>> browser = Browser()
-   >>> browser.handleErrors = False
+   >>> from zope.testbrowser.wsgi import Browser
+   >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
+   >>> from zope.app import wsgi
+   >>> db =  root._p_jar.db()
+   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> import zope.testbrowser.wsgi
+   >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
+   >>> browser = Browser(wsgi_app=app)
    >>> data = {'teilnehmer_id': teil1.id, 'passwort': teil1.passwort}
    >>> data
    {'teilnehmer_id': 1, 'passwort': 'passwort'}
