@@ -64,8 +64,9 @@ def add_in_cache(obj, event):
     global VOCABULARY
     VOCABULARY.add(term)
     
-
-#@grok.subscribe(IDatabaseOpened)
+from z3c.saconfig.interfaces import IEngineCreatedEvent
+#@grok.subscribe(IEngineCreatedEvent)
+@grok.subscribe(IDatabaseOpened)
 def fill_cache_teilnehmer(*args):
     #import pdb; pdb.set_trace() 
     session = Session()
@@ -74,7 +75,6 @@ def fill_cache_teilnehmer(*args):
         models.Teilnehmer.name, 
         models.Teilnehmer.vorname, 
         models.Teilnehmer.unternehmen_mnr).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
-    print os.environ.get('DEBUG')
     if os.environ.get('DEBUG'):
         print "I FILTER IT NOW"
         results = results.filter(models.Teilnehmer.unternehmen_mnr == 995000221)
@@ -88,7 +88,8 @@ def fill_cache_teilnehmer(*args):
     log(u'Der Cache für die Teilnehmer ist gefüllt')
  
 
-#@grok.subscribe(IDatabaseOpened)
+@grok.subscribe(IDatabaseOpened)
+#@grok.subscribe(IEngineCreatedEvent)
 def fill_cache_unternehmen(*args):
     from fernlehrgang.browser.teilnehmer import voc_unternehmen 
     voc_unternehmen(None)
