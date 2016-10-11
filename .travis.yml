@@ -14,7 +14,7 @@ before_install:
   - bin/pip install --upgrade pip setuptools zc.buildout
 
 install:
-  - bin/buildout -N -t 20 -c conf/travis.cfg
+  - bin/buildout -N -t 20 -c buildout.cfg
 
 script:
   - bin/code-analysis
