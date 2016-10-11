@@ -136,7 +136,6 @@ Anmeldung Falsches PW
    Status: 200 Ok
    Content-Length: 4
    Content-Type: application/json
-   X-Powered-By: Zope (www.zope.org), Python (www.python.org)   
   
 Antwort  
 -------
