@@ -57,7 +57,8 @@ setup(name='fernlehrgang',
                         'ukh.ibmdbsa',
                         'rq',
                         'kombu',
-#                        'pyodbc',
+                        'pyodbc',
+                        'repoze.debug',
                         ],
       entry_points={
           'sqlalchemy.dialects': [
