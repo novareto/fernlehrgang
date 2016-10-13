@@ -1,0 +1,30 @@
+Do a functional doctest test on the app.
+========================================
+
+Let's first create an instance of Fernlehrgang at the top level:
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+   >>> import transaction; transaction.commit()
+
+   >>> from fernlehrgang.interfaces.app import IFernlehrgangApp
+   >>> IFernlehrgangApp.providedBy(app)
+   True
+
+Run tests in the testbrowser
+----------------------------
+
+Create a browser and visit the instance you just created:
+
+   >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
+   >>> from zope.app import wsgi
+   >>> db =  root._p_jar.db()
+   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> wsgi_app
+   <zope.app.wsgi.WSGIPublisherApplication object at 0...>
+
+   >>> from infrae.testbrowser.selenium.browser import Browser
+   >>> with Browser(wsgi_app) as browser:
+   ...     browser.open('app')
+

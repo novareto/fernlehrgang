@@ -3,6 +3,9 @@
 # cklinger@novareto.de 
 
 import grok
+import csv
+import codecs
+import cStringIO
 
 from fernlehrgang import Form
 from dolmen.menu import menuentry
@@ -20,6 +23,36 @@ from fernlehrgang.exports.versandliste_fernlehrgang import versandanschrift
 from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 from fernlehrgang.lib.emailer import send_mail
 from fernlehrgang.exports import q
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data)
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
 
 
 spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
@@ -40,8 +73,17 @@ spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERS
     'BZANZSDG', 'BZANZBD', 'BDANFANG', 'BDENDE',]
 
 
+def nN(value):
+    """ Not None"""
+    if value == None:
+        return ''
+    if isinstance(value, int):
+        return str(value)
+    return value
+
+
 def getXLSBases():
-    book = Workbook(optimized_write=True)
+    book = Workbook(optimized_write=True, encoding='utf-8')
     adressen = book.create_sheet()
     rc = [spalten]
     return book, adressen, rc
@@ -97,7 +139,7 @@ def createRows(session, rc, flg_ids, stichtag):
                     strasse = nN(unternehmen.str)
                 else:
                     if teilnehmer.adresszusatz:
-                        strasse = strasse + ' // ' + teilnehmer.adresszusatz
+                        strasse = nN(strasse) + ' // ' + nN(teilnehmer.adresszusatz)
                 liste.append(nN(strasse))
                 liste.append(nN(teilnehmer.ort or unternehmen.ort))
                 liste.append(nN(teilnehmer.passwort))
@@ -115,7 +157,7 @@ def createRows(session, rc, flg_ids, stichtag):
                         r=""
                         for antwort in ktn.antworten:
                             if frage.id == antwort.frage_id:
-                                r = "%s\r %s\n %s\r" %(
+                                r = "%s %s %s" %(
                                         frage.antwortschema.upper(),
                                         nN(antwort.antwortschema),
                                         cal_res.calculateResult(
@@ -137,11 +179,19 @@ def export(flg_ids, stichtag, mail):
     book, adressen, rc = getXLSBases()
     flg_ids = [x for x in flg_ids]
     createRows(session, rc, flg_ids, stichtag)
-    fn = "/tmp/fortbildung_%s.xlsx" % stichtag.strftime('%Y_%m_%d') 
-    for z, line in enumerate(rc):
-        adressen.append([cell for cell in line])
-    print "Writing File %s" % fn
-    book.save(fn)
+    fn = "/tmp/fortbildung_%s.csv" % stichtag.strftime('%Y_%m_%d') 
+    #for z, line in enumerate(rc):
+    #    tt= [unicode(cell).encode('utf-8') for cell in line]
+    #    print ';'.join(tt)
+    #    print line
+    #    adressen.append([cell for cell in line])
+    #print "Writing File %s" % fn
+    #book.save(fn)
+    import csv
+    with open(fn, 'wb') as csvfile:
+        writer = UnicodeWriter(csvfile)
+        for line in rc:
+            writer.writerow(line)
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
     import transaction
@@ -172,6 +222,6 @@ class XLSFortbildung(Form):
             mail = "ck@novareto.de"
         #export(flg_ids, data['stichtag'], mail)
         fn = q.enqueue_call(func=export,args=( flg_ids, data['stichtag'], mail), timeout=600)
-        # fn = export_versandliste_fortbildung(flg_ids, data['stichtag'], mail)
+        #fn = export_versandliste_fortbildung(flg_ids, data['stichtag'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

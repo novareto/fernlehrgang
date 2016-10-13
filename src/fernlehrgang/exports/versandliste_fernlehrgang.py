@@ -27,7 +27,7 @@ spalten = (
     'FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID',
     'VERSANDANSCHRIFT', 'PLZ', 'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE',
     'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM', 'STRASSE', 'WOHNORT',
-    'PASSWORT', 'STICHTAG', 'R_VORNAME', 'R_NAME')
+    'PASSWORT', 'R_VORNAME', 'R_NAME')
 
 
 def getXLSBases():
@@ -137,7 +137,7 @@ class XSLExportForm(Form):
         except:
             mail = "ck@novareto.de"
         #mail = "ck@novareto.de"
-        result = q.enqueue(export, flg_id, data['dateiname'], mail)
+        result = q.enqueue_call(func=export, args=(flg_id, data['dateiname'], mail), timeout=600)
         #result = export(flg_id, data['dateiname'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())
