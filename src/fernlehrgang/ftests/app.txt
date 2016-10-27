@@ -1,8 +1,6 @@
 Do a functional doctest test on the app.
 ========================================
 
-:Test-Layer: functional
-
 Let's first create an instance of Fernlehrgang at the top level:
 
    >>> from fernlehrgang.app import FernlehrgangApp
@@ -31,13 +29,14 @@ Bekommen wir den richtigen Status?
    '200 OK'
 
 Ist der Link für das anlegen eines Fernlehrgangs vorhanden?
+   >>> browser.open('http://localhost/app/fernlehrgang_listing')
 
-   >>> 'Fernlehrgang anlegen' in browser.contents
+   >>> 'Fernlehrgang' in browser.contents
    True
 
 Klicken wir auf den Link Fernlehrgang!
 
-   >>> anlegen = browser.getLink('Fernlehrgang anlegen')
+   >>> anlegen = browser.getLink('Fernlehrgang')
    >>> anlegen.url
    'http://localhost/app/add'
 

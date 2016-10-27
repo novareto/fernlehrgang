@@ -57,7 +57,7 @@ logger_name = wsgi
 use = egg:grokcore.startup
 
 [pipeline:main]
-pipeline = translogger gzip fanstatic grok
+pipeline = translogger gzip fanstatic ddbg grok
 
 
 [filter:gzip]
@@ -71,6 +71,8 @@ minified = true
 rollup = true
 recompute_hashes = true
 
+[filter:ddbg]
+use = egg:repoze.debug#threads
 
 [server:main]
 use = egg:Paste#http

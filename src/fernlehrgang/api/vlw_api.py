@@ -15,6 +15,7 @@ from tempfile import NamedTemporaryFile
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
+import zope.errorview.browser
 
 
 class IVLWSkinLayer(grok.IDefaultBrowserLayer):
@@ -23,6 +24,15 @@ class IVLWSkinLayer(grok.IDefaultBrowserLayer):
 
 class IVLWSkin(IVLWSkinLayer, IUVCSkin):
     grok.skin('vlw')
+
+
+class SystemError(grok.components.ExceptionView):
+    """Custom System Error for UVCSITE
+    """
+    grok.layer(IVLWSkinLayer)
+
+    def render(self):
+        return zope.errorview.browser.ExceptionView.render(self)
 
 
 class APILernwelten(grok.JSON):

@@ -41,10 +41,8 @@ from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
-
 SCHEMA = config['schema'] or None 
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
-
 Base = declarative_base()
 Base.metadata.schema = SCHEMA 
 

@@ -55,62 +55,6 @@ class TeilnehmerSuche(Form):
         field_id = self.fieldWidgets.get('form.field.id')
         field_id.template = ChameleonPageTemplateFile('templates/select.cpt')
 
-    def getResults(self):
-        root = grok.getSite()
-        lfs = lieferstopps(None)
-        for kursteilnehmer, item in self.results:
-            locate(root, item, DefaultModel)
-            results = {"comment": "Kein Fernlehrgang."}
-            if kursteilnehmer.fernlehrgang:
-                results = ICalculateResults(kursteilnehmer).summary()
-                locate(root, kursteilnehmer, DefaultModel)
-                name = '<a href="%s"> %s </a>' % (
-                    self.url(kursteilnehmer), item.name)
-                name = item.name
-                link_ktn = '<a href="%s"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>' % (
-                    self.url(kursteilnehmer))
-                link_tn = '<a href="%s"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>' % (
-                    self.url(kursteilnehmer.teilnehmer))
-                flg = kursteilnehmer.fernlehrgang
-                locate(root, flg, DefaultModel)
-                link_flg = '<a href="%s"> %s </a>' % (self.url(flg), flg.titel)
-            else:
-                name = '<a href="%s"> %s </a>' % (self.url(item), item.name)
-                link_flg = "Kein Fernlehrgang"
-            rcu = []
-            for unt in item.unternehmen:
-                locate(root, unt, DefaultModel)
-                res = ICalculateResults(
-                    kursteilnehmer).summary(unternehmen=unt)
-                rcu.append('<a href="%s"> %s (%s) </a>' % (
-                    self.url(unt), unt.name, res['comment']))
-            gebdat = ""
-            if item.geburtsdatum:
-                gebdat = fmtDate(item.geburtsdatum)
-            je = []
-            for j in item.journal_entries:
-                je.append(
-                    dict(
-                        status=j.status,
-                        datum=j.date.strftime("%d.%m.%Y"),
-                        info=j.type
-                        ))
-            d = dict(name=name,
-                     link_flg=link_flg,
-                     gebdat=gebdat,
-                     link_ktn=link_ktn,
-                     link_tn=link_tn,
-                     titel=ITeilnehmer.get('titel').source.getTermByToken(
-                         item.titel).title,
-                     anrede=ITeilnehmer.get('anrede').source.getTermByToken(
-                         item.anrede).title,
-                     unternehmen='<br>'.join(rcu),
-                     vorname=item.vorname,
-                     status=lfs.getTerm(kursteilnehmer.status).title,
-                     journal=je,
-                     bestanden=results['comment'])
-            yield d
-
     def gVt(self, value):
         if value:
             return ITeilnehmer.get('titel').source.getTermByToken(value).title
@@ -148,7 +92,7 @@ class TeilnehmerSuche(Form):
         root = grok.getSite()
         zs = self.getSession()
         if zs.get('tn'):
-            tn = zs['tn']
+            tn = zs.get('tn')
             locate(root, tn, DefaultModel)
             for unternehmen in tn.unternehmen:
                 locate(root, unternehmen, DefaultModel)

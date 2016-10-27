@@ -1,0 +1,168 @@
+======
+Ablauf
+======
+
+:Test-Layer: functional
+
+Dieser Doctest soll mal zeigen wie ein Ablauf eines Fernlehrgangs aussehen könnte...
+
+
+Setup
+-----
+
+Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
+uma alle Utilities zur Verfügung zu haben.
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> from z3c.saconfig import Session
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+   
+
+Einrichten des Fernlehrgangs
+----------------------------
+
+   >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
+
+   >>> import datetime
+   >>> beginn = datetime.date(2016, 01, 01)
+   >>> ende = datetime.date(2016, 12, 31)
+
+   >>> flg09 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="4",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+
+   >>> lheft1 = Lehrheft(nummer=1)
+   >>> lheft2 = Lehrheft(nummer=2)
+
+   >>> frage1 = Frage(frage=1, antwortschema="ab", gewichtung=1)
+
+   >>> lheft1.fragen.append(frage1) 
+
+   >>> flg09.lehrhefte.append(lheft1)
+
+   >>> session = Session()
+   >>> session.add(flg09)
+   >>> import transaction; transaction.commit()
+
+    
+
+Einrichten der Benutzer
+-----------------------
+
+   >>> from fernlehrgang.models import Unternehmen, Teilnehmer
+
+   >>> session = Session()
+   >>> unt1 = Unternehmen(mnr="0000-00025", name="Novareto")
+   >>> unt2 = Unternehmen(mnr="0000-00026", name="Econtec")
+
+   >>> teil1 = Teilnehmer(name="Lars Walther", passwort="passwort")
+   >>> teil2 = Teilnehmer(name="Bernd Probst")
+
+   >>> unt1.teilnehmer.append(teil1)
+   >>> unt2.teilnehmer.append(teil2)
+
+
+Einrichten von Kursteilnehmern und von Antwortbögen
+---------------------------------------------------
+
+   >>> from fernlehrgang.models import Kursteilnehmer, Antwort
+   >>> kt1 = Kursteilnehmer()
+   >>> kt2 = Kursteilnehmer()
+
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg.kursteilnehmer.append(kt1)
+   >>> flg.kursteilnehmer.append(kt2)
+
+   >>> import transaction; transaction.commit()
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> kut1, kut2 = flg.kursteilnehmer
+
+   >>> kut1.teilnehmer = teil1
+   >>> kut2.teilnehmer = teil2
+
+   >>> import transaction; transaction.commit()
+
+
+REST-Interface Teilnehmer
+-------------------------
+
+Create a browser and visit the instance you just created:
+
+   >>> teil1.id
+   1
+   
+   >>> teil1.passwort
+   'passwort'
+
+   >>> from zope.testbrowser.wsgi import Browser
+   >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
+   >>> from zope.app import wsgi
+   >>> db =  root._p_jar.db()
+   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> import zope.testbrowser.wsgi
+   >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
+   >>> browser = Browser(wsgi_app=app)
+   >>> data = {'teilnehmer_id': teil1.id, 'passwort': teil1.passwort}
+   >>> data
+   {'teilnehmer_id': 1, 'passwort': 'passwort'}
+
+Anmeldung OK 
+
+   >>> import simplejson
+   >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
+   >>> browser.contents
+   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "false"}'
+   
+Anmeldung Falsches PW
+   
+   >>> data['passwort']='WRONG'
+   >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
+   >>> browser.contents
+   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "false"}'
+   
+   >>> data = {'teilnehmer_id': teil1.id}
+   >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
+   >>> browser.contents
+   '{"geburtsdatum": "None", "teilnehmer_id": 1, "vorname": null, "name": "Lars Walther", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}]}'
+   
+   >>> data = {'teilnehmer_id': teil1.id, 'name': 'Klinger', 'vorname': 'Christian'}
+   >>> data
+   {'teilnehmer_id': 1, 'vorname': 'Christian', 'name': 'Klinger'}
+   
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data='teilnehmer_id=1&name=Klinger&vorname=Christian')
+   >>> print browser.headers
+   Status: 200 Ok
+   Content-Length: 4
+   Content-Type: application/json
+  
+Antwort  
+-------
+  
+   
+   >>> from fernlehrgang.interfaces.resultate import ICalculateResults
+   >>> from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
+   
+   >>> from z3c.saconfig import Session
+   >>> session = Session()
+   >>> from fernlehrgang import models
+   >>> ktn1 = session.query(models.Kursteilnehmer).get(kt1.id)   
+   
+   >>> IVLWKursteilnehmer.providedBy(ktn1)
+   True
+
+   >>> results = ICalculateResults(ktn1)
+   >>> results
+   <fernlehrgang.browser.ergebnisse.CalculateResultsVLW object at ...>
+   
+   >>> results.summary()
+   {'comment': 'Nicht Bestanden (Noch keine Antwort aus der VLW)', 'resultpoints': 0, 'points': 0}
+  
+   >>> antwort = models.Antwort(lehrheft_id=lheft1.id, frage_id=frage1.id, gbo="OK")
+   >>> ktn1.antworten.append(antwort) 
+
+   >>> antwort.datum
+   
+   >>> results.summary()
+   {'comment': 'VLW abgeschlossen', 'resultpoints': 0, 'points': 0}
