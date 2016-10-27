@@ -249,14 +249,11 @@ class AssignCompany(models.Edit):
             session = Session()
             return session.query(Unternehmen).get(mnr)
         data['unternehmen'] = [getUnternehmen(x) for x in list(data['unternehmen'])]
-        #un_klasse = data.pop('un_klasse')
-        #branche = data.pop('branche')
-        apply_data_event(self.fields, self.getContentData(), data)
-        #for ktn in self.context.kursteilnehmer:
-        #    ktn.un_klasse = un_klasse
-        #    ktn.branche = branche
+        teilnehmer = self.getContentData()
+        apply_data_event(self.fields, teilnehmer, data)
+        teilnehmer = teilnehmer.getContent()
         self.flash(_(u"Content updated"))
-        self.redirect(self.url(self.context))
+        self.redirect(self.application_url() + '?form.field.id=%s&form.action.suchen=Suchen' %teilnehmer.id)
 
     @action('Abbrechen')
     def handle_cancel(self):
