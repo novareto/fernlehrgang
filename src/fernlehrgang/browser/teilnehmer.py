@@ -256,7 +256,7 @@ class AssignCompany(models.Edit):
         #    ktn.un_klasse = un_klasse
         #    ktn.branche = branche
         self.flash(_(u"Content updated"))
-        self.redirect(self.url(self.context))
+        self.redirect(self.application_url())
 
     @action('Abbrechen')
     def handle_cancel(self):
