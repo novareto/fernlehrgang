@@ -43,6 +43,8 @@ class TeilnehmerSuche(Form):
     fields['id'].title = u"Teilnehmer"
     fields['id'].description = u"Hier können Sie einen Teilnehmer suchen."
 
+    ignoreRequest = False
+    postOnly = False
     results = None 
 
     def update(self):
