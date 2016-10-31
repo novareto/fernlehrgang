@@ -40,6 +40,7 @@ class AutoRegForm(Form):
         unternehmen = session.query(Unternehmen).get(data.get('mnr'))
         if not unternehmen:
             self.flash(u'Das Unternehmen mit der Mitgliedsnummer %s existiert nicht' % data.get('mnr'))
+            return 
         tn = Teilnehmer(
             name = data['name'],
             vorname = data['vorname'],

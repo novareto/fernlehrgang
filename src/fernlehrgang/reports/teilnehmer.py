@@ -95,6 +95,8 @@ class TeilnehmerSuche(Form):
         zs = self.getSession()
         if zs.get('tn'):
             tn = zs.get('tn')
+            session = Session()
+            tn = session.query(Teilnehmer).get(tn)
             locate(root, tn, DefaultModel)
             for unternehmen in tn.unternehmen:
                 locate(root, unternehmen, DefaultModel)
@@ -119,4 +121,4 @@ class TeilnehmerSuche(Form):
             self.flash(u'Bitte geben Sie Suchkriterien ein.')
             return
         zs = self.getSession()
-        zs['tn'] = sql.one()
+        zs['tn'] = data.get('id') 

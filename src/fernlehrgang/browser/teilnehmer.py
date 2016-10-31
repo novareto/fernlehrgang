@@ -131,6 +131,16 @@ class Index(models.DefaultView):
     fields = Fields(ITeilnehmer).omit(id, 'lehrgang')
 
 
+class SetDefaultMNR(grok.View):
+    grok.context(ITeilnehmer)
+
+    def render(self):
+        mnr = self.request.get('mnr')
+        if mnr:
+            self.context.unternehmen_mnr = mnr
+        self.redirect(self.application_url() + '?form.field.id=%s&form.action.suchen=Suchen' %self.context.id)
+
+
 class Edit(models.Edit):
     grok.context(ITeilnehmer)
     grok.name('edit')
@@ -230,13 +240,16 @@ class AssignCompany(models.Edit):
 
     def getDefaults(self):
         rc = []
+        i=True
         for unt in self.context.unternehmen:
             rc.append(
                 dict(
                     title="%s - %s" % (unt.mnr, unt.name),
-                    value=unt.mnr
+                    value=unt.mnr,
+                    disabled=i
                 )
             )
+            i=False
         return rc
 
     @action('Speichern')
@@ -312,6 +325,9 @@ class Register(Form):
         ktn.un_klasse = data.get('un_klasse')
         ktn.erstell_datum = data.get('erstell_datum')
         session.flush()
+
+
+
 
 
 class TeilnehmerJSONViews(grok.JSON):

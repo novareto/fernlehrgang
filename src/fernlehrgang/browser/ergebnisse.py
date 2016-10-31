@@ -116,7 +116,7 @@ class CalculateResults(grok.Adapter):
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
             comment = "Bestanden"
-        c_punkte = "; <b>Punktzahl (%s/%s)</b>" % (punkte, mindest_punktzahl)
+        c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         # Abschlussgespräch Seminar
         if not unternehmen:
             unternehmen = context.unternehmen
@@ -141,7 +141,7 @@ class CalculateResults(grok.Adapter):
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
                         elif context.gespraech == '0':
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
-        comment = "%s %s" %(comment, c_punkte)
+        comment = "<b> %s; </b> %s" %(comment, c_punkte)
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
 

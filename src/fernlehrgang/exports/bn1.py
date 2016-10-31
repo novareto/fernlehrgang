@@ -28,6 +28,7 @@ def time_ranges():
 
 class BN1(grok.View):
     grok.context(interface.Interface)
+    grok.require('zope.Public')
 
     def update(self):
         MAILS = [] 
@@ -152,7 +153,7 @@ class BN1(grok.View):
 
         for mail in MAILS:
             print mail['tid'], mail['_to'], mail['subject']
-                #send_mail('flg_app', (mail['_to'],), mail['subject'], mail['text'])
+            send_mail('fernlehrgang@bghw.de', (mail['_to'],), mail['subject'], mail['text'])
 
     def render(self):
         return u"HALLO WELT"
