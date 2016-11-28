@@ -57,7 +57,7 @@ class BN1(grok.View):
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     tid=ktn.teilnehmer.id,
                     subject=BETREFF,
-                    text=mt.TEXT1 % (
+                    text=mt.TEXT0 % (
                         titel,
                         ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
                         ktn.teilnehmer.name

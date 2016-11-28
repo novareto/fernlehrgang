@@ -106,7 +106,7 @@ class AddTeilnehmer(AddForm):
         if 'un_klasse' in data.keys():
             self.context.un_klasse = data.pop('un_klasse')
         teilnehmer = Teilnehmer(**data)
-        teilnehmer.unternehmen_mnr=int(self.context.mnr)
+        teilnehmer.unternehmen_mnr=self.context.mnr
         return teilnehmer
 
     def add(self, teilnehmer):

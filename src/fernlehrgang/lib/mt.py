@@ -2,6 +2,24 @@
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de 
 
+
+TEXT0 = u"""
+Sehr geehrte(r) %s %s %s,
+
+seit Ihrer Anmeldung sind schon einige Tage vergangen. Leider haben Sie noch kein Heft bearbeitet und die Testfragen beantwortet.
+Damit Sie das Lehrgangsziel erreichen, ist es notwendig, dass Sie alle 8 Hefte bearbeiten, die Testfragen beantworten und eine Mindestpunktzahl von 140 Punkten erreichen.
+Der Online-Fernlehrgang endet 12 Monate nach Ihrer Anmeldung.
+
+Für die Bearbeitung der Hefte ist es erforderlich, dass Sie sich unter https://online-fernlehrgang.bghw.de mit Ihrem Benutzernamen und Ihrem Passwort einloggen.
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in der Zeit Montag bis Freitag zwischen 8:30 Uhr und 15:30 Uhr zur Verfügung.
+
+Mit freundlichen Grüßen
+
+Ihre Fernlehrgangsbetreuung der BGHW
+"""
+
+
 TEXT1 = u"""
 Sehr geehrte(r) %s %s %s,
 
