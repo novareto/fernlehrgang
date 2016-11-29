@@ -38,6 +38,7 @@ class BN1(grok.View):
         session = Session()
         alle_ktns = session.query(models.Kursteilnehmer).filter(
             models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
+            models.Kursteilnehmer.status != 'Z1',
             models.Fernlehrgang.typ == '2')
         print alle_ktns.count()
         for ktn in alle_ktns.all():
