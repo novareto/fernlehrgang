@@ -137,7 +137,7 @@ class XSLExportForm(Form):
         except:
             mail = "ck@novareto.de"
         #mail = "ck@novareto.de"
-        result = q.enqueue_call(func=export, args=(flg_id, data['dateiname'], mail), timeout=600)
+        result = q.enqueue_call(func=export, args=(flg_id, data['dateiname'], mail), timeout=12000)
         #result = export(flg_id, data['dateiname'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())
