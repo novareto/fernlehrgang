@@ -154,7 +154,7 @@ class CalculateResultsVLW(grok.Adapter):
 
     def getResults(self):
         for antwort in self.context.antworten:
-            if antwort.gbo == "OK":
+            if antwort.gbo.upper().strip() == "OK":
                 return True
         return False
 
@@ -164,7 +164,7 @@ class CalculateResultsVLW(grok.Adapter):
         if context.status in POSTVERSANDSPERRE:
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif self.getResults():
-            comment = "VLW abgeschlossen"
+            comment = "Bestanden"
         unternehmen = context.unternehmen
         branche = context.branche
         un_klasse = context.un_klasse

@@ -61,7 +61,7 @@ setup(name='fernlehrgang',
                         ],
       extras_require={
           'oracle': ['cx_Oracle',],
-          'portgres': ['psycopg2',],
+          'postgres': ['psycopg2',],
           'odbc': ['pyodbc', 'ibm-db-sa'],
           'ibm': ['ibm_db', 'ibm-db-sa'],
           },
