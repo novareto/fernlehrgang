@@ -1,5 +1,5 @@
 <select id="unternehmen_mnr" multiple="" name="form.field.unternehmen" style="width: 550px" >
- <option selected tal:repeat="option widget.form.getDefaults()" tal:attributes="value option['value']" tal:content="option['title']"> </option>
+ <option selected tal:repeat="option widget.form.getDefaults()" tal:attributes="value option['value']; readonly option['disabled'] or None" tal:content="option['title']"> </option>
 </select>
 <input type="hidden" name="form.field.unternehmen.present" value=1>
 <script> $(document).ready(function() { 

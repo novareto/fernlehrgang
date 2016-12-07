@@ -153,7 +153,8 @@ class DateFieldDisplayWidget(DateFieldDisplayWidget):
 class NotFound(Page, grok.components.NotFoundView):
     """Not Found Error View
     """
-    pass
+    def application_url(self, *args, **kwargs):
+        return ""
 
 
 class SystemError(Page, grok.components.ExceptionView):

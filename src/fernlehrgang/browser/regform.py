@@ -40,6 +40,7 @@ class AutoRegForm(Form):
         unternehmen = session.query(Unternehmen).get(data.get('mnr'))
         if not unternehmen:
             self.flash(u'Das Unternehmen mit der Mitgliedsnummer %s existiert nicht' % data.get('mnr'))
+            return 
         tn = Teilnehmer(
             name = data['name'],
             vorname = data['vorname'],
@@ -54,6 +55,7 @@ class AutoRegForm(Form):
             anrede = data['anrede'],
             titel = data['titel'],
             telefon = data['telefon'],
+            unternehmen_mnr=unternehmen.mnr,
         )
         unternehmen.teilnehmer.append(tn)
         session.flush()
@@ -68,4 +70,7 @@ class AutoRegForm(Form):
         kursteilnehmer.teilnehmer = tn
         flg.kursteilnehmer.append(kursteilnehmer)
         session.flush()
+        from zope.event import notify
+        from zope.lifecycleevent import ObjectAddedEvent
+        notify(ObjectAddedEvent(tn))
         self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % tn.id )

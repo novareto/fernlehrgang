@@ -116,7 +116,7 @@ class CalculateResults(grok.Adapter):
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
             comment = "Bestanden"
-        c_punkte = "; <b>Punktzahl (%s/%s)</b>" % (punkte, mindest_punktzahl)
+        c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         # Abschlussgespräch Seminar
         if not unternehmen:
             unternehmen = context.unternehmen
@@ -128,20 +128,20 @@ class CalculateResults(grok.Adapter):
                     if un_klasse == 'G2':
                         if context.gespraech == '2':
                             comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
-                        elif context.gespraech == '0':
+                        elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.'
                     if un_klasse == 'G3':
                         if context.gespraech == '2':
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
-                        elif context.gespraech == '0':
+                        elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
                 elif branche == "nein":
                     if un_klasse == 'G2':
                         if context.gespraech == '2':
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
-                        elif context.gespraech == '0':
+                        elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
-        comment = "%s %s" %(comment, c_punkte)
+        comment = "<b> %s; </b> %s" %(comment, c_punkte)
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
 
@@ -154,7 +154,7 @@ class CalculateResultsVLW(grok.Adapter):
 
     def getResults(self):
         for antwort in self.context.antworten:
-            if antwort.gbo == "OK":
+            if antwort.gbo.upper().strip() == "OK":
                 return True
         return False
 
@@ -164,7 +164,7 @@ class CalculateResultsVLW(grok.Adapter):
         if context.status in POSTVERSANDSPERRE:
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif self.getResults():
-            comment = "VLW abgeschlossen"
+            comment = "Bestanden"
         unternehmen = context.unternehmen
         branche = context.branche
         un_klasse = context.un_klasse
@@ -173,17 +173,17 @@ class CalculateResultsVLW(grok.Adapter):
                 if un_klasse == 'G2':
                     if context.gespraech == '2':
                         comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
-                    elif context.gespraech == '0':
+                    elif context.gespraech == '0' or context.gespraech is None:
                         comment = u'Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.'
                 if un_klasse == 'G3':
                     if context.gespraech == '2':
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
-                    elif context.gespraech == '0':
+                    elif context.gespraech == '0' or context.gespraech is None:
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
             elif branche == "nein":
                 if un_klasse == 'G2':
                     if context.gespraech == '2':
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
-                    elif context.gespraech == '0':
+                    elif context.gespraech == '0' or context.gespraech is None:
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
         return dict(points=0, resultpoints=0, comment=comment)

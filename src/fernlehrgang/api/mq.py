@@ -2,26 +2,22 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+import simplejson
 import transaction
 import zope.app.wsgi
 
-from kombu import Connection
+from fernlehrgang import log
+from datetime import datetime
 from kombu.log import get_logger
-from zope.component import getUtility
+from z3c.saconfig import Session
+from zope.interface import implementer
 from kombu.mixins import ConsumerMixin
 from zope.component.hooks import setSite
+from kombu import Connection, Exchange, Queue
+from transaction.interfaces import IDataManager
 from fernlehrgang.interfaces.resultate import ICalculateResults
 
-
-from kombu import Connection, Exchange, Queue
-
-
-from fernlehrgang import log
-from kombu import Connection
-from zope.component import getUtility
-from zope.interface import implementer
-from transaction.interfaces import IDataManager
-
+from sqlalchemy.exc import IntegrityError
 
 
 class Message(object):
@@ -42,8 +38,12 @@ class Message(object):
     def publish(payload, connection, queue, routing_key):
         exchange = queue.exchange
         with connection.Producer(serializer='json') as producer:
-            producer.publish( payload, exchange=exchange, routing_key=routing_key, declare=[queue])
-
+            producer.publish(
+                payload,
+                exchange=exchange,
+                routing_key=routing_key,
+                declare=[queue]
+            )
 
 
 @implementer(IDataManager)
@@ -56,7 +56,7 @@ class MQDataManager(object):
 
     def createMessage(self, message):
         if message.__hash__() in self.messages.keys():
-            raise ValueError('%s MessageHash already there' %message.__hash__())
+            raise ValueError('%s MessageHash already there' % message.__hash__())
         self.messages[message.id] = message
 
     def commit(self, transaction):
@@ -67,7 +67,7 @@ class MQDataManager(object):
                 queue = self.queues.get(message.type)
                 if queue:
                     message.publish(payload, conn, queue, message.routing_key)
-                    log.debug('Sending Message to queue %s' %queue)
+                    print 'Sending Message to queue %s' % queue
 
     def abort(self, transaction):
         self.messages = {}
@@ -111,17 +111,15 @@ vlw_queue = Queue('vlwd.antwort', exchange=vlw_exchange)
 
 status_exchange = Exchange('vlwd.status', 'direct', durable=True)
 status_queue = Queue('vlwd.status', exchange=status_exchange)
+status_queue_error = Queue('vlwd.status.error', exchange=status_exchange)
+
+log_exchange = Exchange('vlwd.log', 'direct', durable=True)
+log_queue = Queue('vlwd.log', exchange=log_exchange)
+
 
 QUEUES = {'results': status_queue}
-
-
-
 logger = get_logger(__name__)
 
-import simplejson
-from z3c.saconfig import Session
-from fernlehrgang import models
-from datetime import datetime
 
 class Worker(ConsumerMixin):
 
@@ -129,47 +127,134 @@ class Worker(ConsumerMixin):
 
     def __init__(self, connection, db, url):
         self.connection = connection
-        self.zodb = db 
+        self.zodb = db
         self.url = url
 
     def get_consumers(self, Consumer, channel):
-        return [Consumer(queues=[vlw_queue, ],
-                         accept=['pickle', 'json'],
-                         callbacks=[self.run_task])]
+        return [
+            Consumer(queues=[vlw_queue, ], accept=['pickle', 'json'], callbacks=[self.run_task]),
+            Consumer(queues=[log_queue, ], accept=['pickle', 'json'], callbacks=[self.setLogEntry]),
+        ]
 
     def run_task(self, body, message):
         connection = self.zodb.open()
         root = connection.root()
         try:
             with transaction.manager as tm:
-                app = root['Application']['flg']
+                app = root['Application']['app']
                 setSite(app)
-                import pdb; pdb.set_trace() 
                 results = self.saveResult(body)
-                results['kursteilnehmer_id'] = 900000
-		newmessage = Message('results', data=results)
-		with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
-		    mqtm.createMessage(newmessage)
+                newmessage = Message('results', data=results)
+                with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
+                    mqtm.createMessage(newmessage)
                 message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
             print e
+        except IntegrityError:
+            message.ack()
+            logger.exception('IntegryError')
+        except:
+            logger.exception('Error')
 
+    def createGBODaten(self, ktn, orgas):
+        teilnehmer = ktn.teilnehmer
+        unternehmen = teilnehmer.unternehmen[0]
+        res = dict()
+        res['token'] = "772F0828-5EB3-4FAF-96C1-99A46A3D7F36"
+        res['client'] = dict(
+            number = teilnehmer.unternehmen_mnr,
+            mainnumber = teilnehmer.unternehmen_mnr,
+            name = unternehmen.name,
+            zip = unternehmen.plz,
+            city = unternehmen.ort,
+            street = unternehmen.str,
+            compcenter = 0, 
+        ) 
+        res['user'] = dict(
+            login = str(teilnehmer.id),
+            salutation=teilnehmer.anrede,
+            title=teilnehmer.titel,
+            firstname=teilnehmer.vorname,
+            lastname=teilnehmer.name,
+            phone=teilnehmer.telefon or '',
+            email=teilnehmer.email or ''
+        )
+        res['orgas'] = orgas
+        return res
+
+    def createStatusUpdate(self, data, gbo_status):
+        return data
+        
     def saveResult(self, body):
+        from fernlehrgang import models
+        session = Session()
         data = simplejson.loads(body)
+        teilnehmer_id = data.pop('teilnehmer_id')
+        ktn = session.query(models.Kursteilnehmer).get(data.get('kursteilnehmer_id'))
         data['datum'] = datetime.now()
         data['system'] = "Virtuelle Lernwelt"
-        session = Session()
-        ktn = session.query(models.Kursteilnehmer).get(data.get('kursteilnehmer_id'))
+        data['gbo'] = "OK"
+        orgas = data.pop('orgas')
+        gbo_daten = self.createGBODaten(ktn, orgas)
+        data['gbo_daten'] = simplejson.dumps(gbo_daten)
+        data['lehrheft_id'] = 1055
+        data['frage_id'] = 10550
+        gbo_u = data.pop('gbo_uebermittelung')
         antwort = models.Antwort(**data)
         ktn.antworten.append(antwort)
-        return ICalculateResults(ktn).summary()
+        je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="info", kursteilnehmer_id=ktn.id)
+        ktn.teilnehmer.journal_entries.append(je)
+        gbo_status=""
+        if gbo_u:
+            from fernlehrgang.api.gbo import GBOAPI
+            gbo_api = GBOAPI()
+            r = gbo_api.set_data(gbo_daten) 
+            gbo_status = r.status_code
+            print "TANSERFER DATA TO GBO"
+        result = ICalculateResults(ktn).summary()
+        result['kursteilnehmer_id'] = data.get('kursteilnehmer_id')
+        result['teilnehmer_id'] = teilnehmer_id
+        result['ist_gespeichert'] = True
+        result['an_gbo_uebermittelt'] = gbo_u
+        result['gbo_comment'] = gbo_status
+        print result 
+        return result
+
+    def setLogEntry(self, body, message):
+        log_entry = simplejson.loads(body)
+        from fernlehrgang import models
+        typ = log_entry.pop('typ')
+        if typ == "ausstattung":
+            log_entry['type'] = u"Ausstattung Büro %s, Lager %s, Verkauf %s" % (
+                log_entry.pop('buero'),
+                log_entry.pop('lager'),
+                log_entry.pop('verkauf'))
+        elif typ == "fortschritt":
+            log_entry.pop('position')
+            log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
+            log_entry['type'] = u"Level %s (%s) zu %s abgeschlossen." % (
+                log_entry.pop('title'),
+                log_entry.pop('key'),
+                log_entry.pop('progress'))
+            log_entry['type'] = log_entry['type'][:30]
+        try:
+            with transaction.manager as tm:
+                session = Session()
+                teilnehmer = session.query(models.Teilnehmer).get(int(log_entry.get('teilnehmer_id')))
+                if teilnehmer:
+                    je = models.JournalEntry(**log_entry)
+                    teilnehmer.journal_entries.append(je)
+                    message.ack()
+        except:
+            logger.exception('Error')
 
 
 
-ZOPE_CONF = "/home/vlw/fernlehrgang/parts/etc/zope.conf"
+ZOPE_CONF = "/Users/ck/work/bghw/new/fernlehrgang/parts/etc/zope.conf"
 def main(url, conf):
     db = zope.app.wsgi.config(conf)
+    print url
     with Connection(url) as conn:
         try:
             worker = Worker(conn, db, url)

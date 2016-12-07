@@ -10,7 +10,12 @@
    },
    {
       minLength: 3
-   });
+    },
+
+   {
+      search_contains: true,
+   }
+   );
 </script>
 
 <fieldset tal:condition="teilnehmer">
@@ -44,8 +49,11 @@
     <div class="panel-body">
       <ul tal:repeat="unt unternehmen">
         <li>
-          <a href="" tal:attributes="href view.url(unt)"> <span
-              tal:content="string: ${unt.mnr} - ${unt.name}"/> </a>
+          <a href="" tal:attributes="href view.url(unt)"> <span tal:content="string: ${unt.mnr} - ${unt.name}"/> 
+            <span tal:condition="repeat.unt.number == 1"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
+            <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
+          </a>
+          <a href="" tal:attributes="href view.url(teilnehmer, 'setdefaultmnr', {'mnr': unt.mnr})" tal:condition="teilnehmer.unternehmen_mnr != unt.mnr"> (+) </a>
         </li>
       </ul>
     </div> 

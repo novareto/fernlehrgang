@@ -9,7 +9,7 @@
       <ul>
         <li>Folgende Punktzahl ist nötig um den Kurs zu bestehen: <span tal:replace="summary.points"> </span></li> 
         <li>Erreichte Anzahl von Punkte: <span tal:replace="summary.resultpoints"> </span></li> 
-        <li>Bemerkung: <span tal:replace="summary.comment"> </span></li> 
+        <li>Bemerkung: <span tal:replace="structure summary.comment"> </span></li> 
       </ul>
     </div>
 

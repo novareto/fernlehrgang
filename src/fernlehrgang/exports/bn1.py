@@ -17,7 +17,8 @@ from fernlehrgang.lib.emailer import send_mail
 
 
 def time_ranges():
-    JETZT = datetime(2016, 10, 1)
+    #JETZT = datetime(2016, 10, 1)
+    JETZT = datetime.now()
     T30 = JETZT - timedelta(days=30)
     T180 = JETZT - timedelta(days=180)
     T300 = JETZT - timedelta(days=300)
@@ -28,6 +29,7 @@ def time_ranges():
 
 class BN1(grok.View):
     grok.context(interface.Interface)
+    grok.require('zope.Public')
 
     def update(self):
         MAILS = [] 
@@ -36,6 +38,7 @@ class BN1(grok.View):
         session = Session()
         alle_ktns = session.query(models.Kursteilnehmer).filter(
             models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
+            models.Kursteilnehmer.status != 'Z1',
             models.Fernlehrgang.typ == '2')
         print alle_ktns.count()
         for ktn in alle_ktns.all():
@@ -55,7 +58,7 @@ class BN1(grok.View):
                     _to=ktn.teilnehmer.email or 'ck@novareto.de',
                     tid=ktn.teilnehmer.id,
                     subject=BETREFF,
-                    text=mt.TEXT1 % (
+                    text=mt.TEXT0 % (
                         titel,
                         ITeilnehmer['anrede'].vocabulary.getTerm(ktn.teilnehmer.anrede).title,
                         ktn.teilnehmer.name
@@ -152,7 +155,7 @@ class BN1(grok.View):
 
         for mail in MAILS:
             print mail['tid'], mail['_to'], mail['subject']
-                #send_mail('flg_app', (mail['_to'],), mail['subject'], mail['text'])
+            send_mail('fernlehrgang@bghw.de', (mail['_to'], 'fernlehrgangemail@bghw.de'), mail['subject'], mail['text'])
 
     def render(self):
         return u"HALLO WELT"
