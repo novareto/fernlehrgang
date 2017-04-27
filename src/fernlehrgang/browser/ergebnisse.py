@@ -142,6 +142,8 @@ class CalculateResults(grok.Adapter):
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
         comment = "<b> %s; </b> %s" %(comment, c_punkte)
+        self.context.fixed_results = comment
+        #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
 

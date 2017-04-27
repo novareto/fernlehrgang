@@ -41,6 +41,9 @@ class FrageListing(TablePage):
         return u"Hier können Sie die Fragen zu\
                 Ihrem Lehrheft '%s' verwalten." % self.context.titel
 
+    def getSortOn(self):
+        return "table-Nummer-1"
+
     @property
     def values(self):
         root = grok.getSite()
@@ -114,6 +117,9 @@ class Nummer(GetAttrColumn):
     weight = 10
     header = "Nummer"
     attrName = "frage"
+
+    def getSortKey(self, item):
+        return int(super(Nummer, self).getSortKey(item))
 
 
 class Link(LinkColumn):

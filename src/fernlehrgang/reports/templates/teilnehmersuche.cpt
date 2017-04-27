@@ -25,7 +25,7 @@
     <div class="panel-heading">
       <h3>
         Teilnehmer
-        <a href="pull-right" tal:attributes="href view.url(teilnehmer)"> 
+        <a href="pull-right" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id)"> 
           <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ( <span tal:content="teilnehmer.id"/> ) 
         </a>
       </h3> 
@@ -49,11 +49,13 @@
     <div class="panel-body">
       <ul tal:repeat="unt unternehmen">
         <li>
-          <a href="" tal:attributes="href view.url(unt)"> <span tal:content="string: ${unt.mnr} - ${unt.name}"/> 
-            <span tal:condition="repeat.unt.number == 1"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
+          <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} - ${unt.name}"/> 
+            <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
+
             <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
           </a>
-          <a href="" tal:attributes="href view.url(teilnehmer, 'setdefaultmnr', {'mnr': unt.mnr})" tal:condition="teilnehmer.unternehmen_mnr != unt.mnr"> (+) </a>
+          <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/setdefaultmnr?mnr=%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id, unt.mnr)" tal:condition="unt.mnr != teilnehmer.unternehmen_mnr"> (+) </a>
+          
         </li>
       </ul>
     </div> 
@@ -77,11 +79,11 @@
       </thead>
       <tbody>
       <tr tal:repeat="ktn kursteilnehmer">
-        <td> <a tal:attributes="href view.url(ktn.fernlehrgang)" tal:content="string: ${ktn.fernlehrgang.titel}"> </a> </td>
-        <td> <a tal:attributes="href view.url(ktn)" tal:content="ktn.teilnehmer.name"> </a> </td>
+        <td> <a tal:attributes="href '%s/fernlehrgang/%s' %(view.application_url(), ktn.fernlehrgang.id)" tal:content="string: ${ktn.fernlehrgang.titel}"> </a> </td>
+        <td> <a tal:attributes="href '%s/fernlehrgang/%s/kursteilnehmer/%s' % (view.application_url(), ktn.fernlehrgang.id, ktn.id)" tal:content="ktn.teilnehmer.name"> </a> </td>
         <td> <span tal:content="view.gLS(ktn.status)"></span> </td>
         <td> <span tal:content="string: ${view.gU(ktn.un_klasse)}, ${view.gBR(ktn.branche)}"></span></td>
-        <td> <small tal:content="structure ktn.result['comment']"></small> </td>
+        <td> <small tal:content="structure ktn.fixed_results or ktn.result['comment']"></small> </td>
       </tr>
       </tbody>
     </table>

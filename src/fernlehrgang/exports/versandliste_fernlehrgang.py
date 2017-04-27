@@ -21,18 +21,19 @@ from fernlehrgang.lib import nN
 from z3c.saconfig import Session
 from fernlehrgang.lib.emailer import send_mail
 from fernlehrgang.exports import q
+from openpyxl.workbook import Workbook
 
 
-spalten = (
+spalten = [(
     'FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID',
     'VERSANDANSCHRIFT', 'PLZ', 'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE',
     'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM', 'STRASSE', 'WOHNORT',
-    'PASSWORT', 'R_VORNAME', 'R_NAME')
+    'PASSWORT', 'R_VORNAME', 'R_NAME')]
 
 
 def getXLSBases():
-    book = Workbook()
-    adressen = book.add_sheet('FLG-XLS Export')
+    book = Workbook(write_only=True)
+    adressen = book.create_sheet()
     return book, adressen
 
 
@@ -56,7 +57,8 @@ def createSpalten(adressen):
         adressen.write(0, i, spalte)
 
 
-def createRows(book, adressen, session, flg_id):
+def createRows(session, flg_id):
+    spalten = []
     ii = 0 
     FERNLEHRGANG_ID = flg_id
     lehrhefte = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen)).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).order_by(models.Lehrheft.nummer).all()
@@ -69,34 +71,36 @@ def createRows(book, adressen, session, flg_id):
     i=1
     for teilnehmer, unternehmen, ktn in page_query(result):
         if ktn.status in ('A1', 'A2'):
+            row = []
             cal_res = CalculateResults(ktn)
             summary = cal_res.summary(lehrhefte)
-            row = adressen.row(ii+1)
-            row.write(0, nN(flg_id))
-            row.write(1, nN(ktn.fernlehrgang.titel))
-            row.write(2, nN(teilnehmer.id))
-            row.write(3, versandanschrift(teilnehmer))
-            row.write(4, nN(teilnehmer.plz or unternehmen.plz))
-            row.write(5, nN(unternehmen.mnr))
-            row.write(6, nN(unternehmen.name))
-            row.write(7, nN(unternehmen.name2))
-            row.write(8, nN(teilnehmer.anrede))
-            row.write(9, nN(teilnehmer.titel))
-            row.write(10, nN(teilnehmer.vorname))
-            row.write(11, nN(teilnehmer.name))
-            row.write(12, fd(teilnehmer.geburtsdatum))
+            row.append(nN(flg_id))
+            row.append(nN(ktn.fernlehrgang.titel))
+            row.append(nN(teilnehmer.id))
+            row.append(versandanschrift(teilnehmer))
+            row.append(nN(teilnehmer.plz or unternehmen.plz))
+            row.append(nN(unternehmen.mnr))
+            row.append(nN(unternehmen.name))
+            row.append(nN(unternehmen.name2))
+            row.append(nN(teilnehmer.anrede))
+            row.append(nN(teilnehmer.titel))
+            row.append(nN(teilnehmer.vorname))
+            row.append(nN(teilnehmer.name))
+            row.append(fd(teilnehmer.geburtsdatum))
             strasse = nN(teilnehmer.strasse) + ' ' + nN(teilnehmer.nr)
             if strasse == " ":
                 strasse = nN(unternehmen.str)
             else:
                 if teilnehmer.adresszusatz:
                     strasse = strasse + ' // ' + teilnehmer.adresszusatz
-            row.write(13, strasse)
-            row.write(14, nN(teilnehmer.ort or unternehmen.ort))
-            row.write(15, nN(teilnehmer.passwort))
-            row.write(16, nN(teilnehmer.vorname))
-            row.write(17, nN(teilnehmer.name))
+            row.append(strasse)
+            row.append(nN(teilnehmer.ort or unternehmen.ort))
+            row.append(nN(teilnehmer.passwort))
+            row.append(nN(teilnehmer.vorname))
+            row.append(nN(teilnehmer.name))
             ii += 1
+        spalten.append(row)
+    return spalten
 
 
 def export(flg_id, dateiname, mail):
@@ -104,12 +108,13 @@ def export(flg_id, dateiname, mail):
     """
     session = Session()
     book, adressen = getXLSBases()
-    createSpalten(adressen)
-    createRows(book, adressen, session, flg_id)
+    mspalten = spalten + createRows(session, flg_id)
+    if not dateiname.endswith('.xlsx'):
+        dateiname += '.xlsx'
+    for i, zeile in enumerate(mspalten):
+        adressen.append(zeile)
     fn = "/tmp/%s" % dateiname
-    xls_file = open(fn, 'w+')
-    book.save(xls_file)
-    xls_file.close()
+    book.save(fn)
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
     import transaction

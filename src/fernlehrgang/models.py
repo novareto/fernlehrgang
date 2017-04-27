@@ -176,6 +176,7 @@ class Teilnehmer(Base, RDBMixin):
     passwort = Column(String(8))
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
+    stamm_mnr = Column(String(20))
 
     unternehmen_mnr = Column(String(11), ForeignKey(Unternehmen.mnr))
 
@@ -291,9 +292,10 @@ class Kursteilnehmer(Base, RDBMixin):
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
     branche = Column(String(20))
+    fixed_results = Column(String(100))
 
-    fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
-    teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
+    fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
+    teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
     unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     @property

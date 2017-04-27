@@ -11,7 +11,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer, lieferstopps
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
-from fernlehrgang.models import Teilnehmer, Kursteilnehmer
+from fernlehrgang.models import Teilnehmer, Kursteilnehmer, JournalEntry
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
@@ -163,6 +163,13 @@ class ExtendDate(Form):
             return 
         self.context.status = u'A1'
         self.context.erstell_datum = data['erstell_datum'] - datetime.timedelta(days=365)
+	self.context.teilnehmer.journal_entries.append(
+            JournalEntry(
+                status="info",
+                type=u"Fristverlängerung %s - %s" % (self.context.fernlehrgang.titel, data['erstell_datum'].strftime('%d.%m.%Y')),
+                kursteilnehmer_id=self.context.id,
+                teilnehmer_id=self.context.teilnehmer.id)
+        )
         self.flash(u'Die Frist für die Fertigstellung des Online-Fernlehrgangs wurde bis zum %s verlängert' % data['erstell_datum'].strftime('%d.%m.%Y'))
 
 

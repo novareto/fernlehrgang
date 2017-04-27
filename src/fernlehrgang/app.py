@@ -206,3 +206,23 @@ class TestSystem(grok.Viewlet):
 
     def render(self):
         return ""
+
+
+from SocketServer import BaseServer
+
+def my_handle_error(self, request, client_address):
+    return
+
+BaseServer.handle_error = my_handle_error
+
+
+class HAProxyCheck(grok.View):
+    grok.context(Interface)
+    grok.require('zope.Public')
+
+    def render(self):
+        from fernlehrgang import models
+        session = Session()
+        ret = session.query(models.Teilnehmer).get(101032)
+        return "OK %s" % ret.id
+

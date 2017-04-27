@@ -16,6 +16,13 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import log
 from profilehooks import profile
+import timeout_decorator
+
+
+#import logging
+#logging.basicConfig()
+#logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
+#logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 
 #
@@ -29,7 +36,8 @@ class HelperAPI(grok.XMLRPC):
         #log('getFlgIds %s' % teilnehmer_id, 'performance_analyse')
         session = Session()
         ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
-                Kursteilnehmer.teilnehmer_id == teilnehmer_id)
+                Kursteilnehmer.teilnehmer_id == teilnehmer_id,
+                Kursteilnehmer.status != 'Z1')
         return ret.all()
 
     def getFrageIds(self, lehrheft_id):
@@ -61,10 +69,24 @@ class HelperAPI(grok.XMLRPC):
 
     def canLogin(self, teilnehmer_id, passwort):
         log('canLogin %s' %(teilnehmer_id), 'performance_analyse')
-        session = Session()
         if teilnehmer_id == "admin":
-            return 0 
+            return 0
+        session = Session()
         ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
+
+        #@timeout_decorator.timeout(8, use_signals=False)
+        #def q():
+        #    import time
+        #    time.sleep(9)
+        #    session = Session()
+        #    return session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
+        #try:
+        #    ret = q()
+        #except timeout_decorator.TimeoutError as e:
+        #    # log timeout
+        #    log('canLogin time out')
+        #    return 0
+            
         if ret.count() != 1:
             return 0 
         ret = ret.one()
@@ -162,7 +184,6 @@ class KursteilnehmerAPI(grok.REST):
     grok.layer(RestLayer)
     grok.context(IKursteilnehmer)
 
-    @profile
     def GET(self):
         log('KursteilTEILNEHMER_GET %s ' %(self.context.id), 'performance_analyse')
         adapter = ICalculateResults(self.context)

@@ -7,6 +7,7 @@
         <th>Vollstaendiger Name</th>
         <th>EMail</th>
         <th>Benutzerrolle</th>
+        <th>Passwort</th>
     </tr>
     <tr tal:repeat="user view.users">
         <td tal:define="curl view.url(context)">
@@ -17,5 +18,6 @@
         <td tal:content="user.real_name">type</td>
         <td tal:content="user.getEmail()">type</td>
         <td tal:content="user.role">type</td>
+        <td tal:content="user.password">type</td>
     </tr>
 </table>

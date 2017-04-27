@@ -2,7 +2,7 @@ from ibm_db_sa import reflection as ibm_reflection
 from ibm_db_sa.base import DB2Compiler 
 from ibm_db_sa.pyodbc import AS400Dialect_pyodbc, DB2ExecutionContext_pyodbc
 from sqlalchemy.engine import default
-
+from sqlalchemy.connectors.mxodbc import MxODBCConnector
 
 class MyDB2Compiler(DB2Compiler):
 
@@ -14,6 +14,7 @@ class MyDB2Compiler(DB2Compiler):
         return "NEXT VALUE FOR %s" % nn
 
 
+#class AS400Dialect_pyodbc(MxODBCConnector, AS400Dialect_pyodbc):
 class AS400Dialect_pyodbc(AS400Dialect_pyodbc):
 
     _reflector_cls = ibm_reflection.AS400Reflector

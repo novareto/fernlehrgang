@@ -44,7 +44,7 @@ spalten = ['TEILNEHMER_ID', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum'
 
 
 def getXLSBases():
-    book = Workbook(optimized_write=True)
+    book = Workbook(write_only=True)
     adressen = book.create_sheet()
     rc = [spalten]
     return book, adressen, rc
@@ -110,7 +110,6 @@ def createRows(rc, session, flg_id):
 
 from fernlehrgang.lib.emailer import send_mail
 from fernlehrgang.exports import q
-from fernlehrgang.exports.versandliste_fortbildung import UnicodeWriter
 def export(flg_id, mail):
     """This should be the "shared" export function.
     """
@@ -119,10 +118,10 @@ def export(flg_id, mail):
     fn = "/tmp/statusliste_%s.xlsx" % flg_id
     book, adressen, rc = getXLSBases()
     createRows(rc, session, flg_id)
-    with open(fn, 'wb') as csvfile:
-        writer = UnicodeWriter(csvfile)
-        for line in rc:
-            writer.writerow(line)
+    ws = adressen 
+    for i, zeile in enumerate(rc):
+       ws.append(zeile)
+    book.save(fn)
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
     import transaction

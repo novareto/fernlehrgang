@@ -24,35 +24,6 @@ from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 from fernlehrgang.lib.emailer import send_mail
 from fernlehrgang.exports import q
 
-class UnicodeWriter:
-    """
-    A CSV writer which will write rows to CSV file "f",
-    which is encoded in the given encoding.
-    """
-
-    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
-        # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
-        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
-        self.stream = f
-        self.encoder = codecs.getincrementalencoder(encoding)()
-
-    def writerow(self, row):
-        self.writer.writerow([s.encode("utf-8") for s in row])
-        # Fetch UTF-8 output from the queue ...
-        data = self.queue.getvalue()
-        data = data.decode("utf-8")
-        # ... and reencode it into the target encoding
-        data = self.encoder.encode(data)
-        # write to the target stream
-        self.stream.write(data)
-        # empty queue
-        self.queue.truncate(0)
-
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)
-
 
 
 spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
@@ -83,7 +54,7 @@ def nN(value):
 
 
 def getXLSBases():
-    book = Workbook(optimized_write=True, encoding='utf-8')
+    book = Workbook(write_only=True)
     adressen = book.create_sheet()
     rc = [spalten]
     return book, adressen, rc
@@ -179,19 +150,10 @@ def export(flg_ids, stichtag, mail):
     book, adressen, rc = getXLSBases()
     flg_ids = [x for x in flg_ids]
     createRows(session, rc, flg_ids, stichtag)
-    fn = "/tmp/fortbildung_%s.csv" % stichtag.strftime('%Y_%m_%d') 
-    #for z, line in enumerate(rc):
-    #    tt= [unicode(cell).encode('utf-8') for cell in line]
-    #    print ';'.join(tt)
-    #    print line
-    #    adressen.append([cell for cell in line])
-    #print "Writing File %s" % fn
-    #book.save(fn)
-    import csv
-    with open(fn, 'wb') as csvfile:
-        writer = UnicodeWriter(csvfile)
-        for line in rc:
-            writer.writerow(line)
+    fn = "/tmp/fortbildung_%s.xlsx" % stichtag.strftime('%Y_%m_%d') 
+    for x in rc:
+        adressen.append(x)
+    book.save(fn)
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
     import transaction
