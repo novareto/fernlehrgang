@@ -21,6 +21,7 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
+from fernlehrgang.interfaces.kursteilnehmer import IFortbildungKursteilnehmer
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
@@ -195,6 +196,11 @@ class Teilnehmer(Base, RDBMixin):
     def __repr__(self):
         return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.id)
 
+    def getVLWKTN(self):
+        for ktn in self.kursteilnehmer:
+            if ktn.fernlehrgang.typ == '4':
+                return ktn
+
     def factory(id, unternehmen_mnr):
         session = Session()
         return session.query(Teilnehmer).filter(
@@ -326,6 +332,8 @@ class Kursteilnehmer(Base, RDBMixin):
 def receive_load(target, context):
     if target.fernlehrgang.typ == "4":
         alsoProvides(target, IVLWKursteilnehmer)
+    elif target.fernlehrgang.typ in ("3", "5"):
+        alsoProvides(target, IFortbildungKursteilnehmer)
 
 
 class Antwort(Base, RDBMixin):

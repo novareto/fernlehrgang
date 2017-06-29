@@ -392,7 +392,10 @@ class SearchTeilnehmer(grok.View):
                       ).like("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
         terms = []
         for x in res:
-            terms.append({'id': x.id, 'text': "%s - %s %s - %s" %(x.id, x.name, x.vorname, x.unternehmen_mnr)})
+            gebdat = ""
+            if x.geburtsdatum:
+                gebdat = "(%s)" % x.geburtsdatum.strftime('%d.%m.%Y')
+            terms.append({'id': x.id, 'text': "%s - %s %s %s - %s" %(x.id, x.name, x.vorname, gebdat, x.unternehmen_mnr)})
         return json.dumps({'q': self.term, 'results': terms})
 
 

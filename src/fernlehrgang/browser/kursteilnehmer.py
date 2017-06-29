@@ -166,7 +166,7 @@ class ExtendDate(Form):
 	self.context.teilnehmer.journal_entries.append(
             JournalEntry(
                 status="info",
-                type=u"Fristverlängerung %s - %s" % (self.context.fernlehrgang.titel, data['erstell_datum'].strftime('%d.%m.%Y')),
+                type=u"FL %s %s - %s" % (self.context.fernlehrgang.titel, self.context.fernlehrgang.jahr, data['erstell_datum'].strftime('%d.%m.%Y')),
                 kursteilnehmer_id=self.context.id,
                 teilnehmer_id=self.context.teilnehmer.id)
         )
