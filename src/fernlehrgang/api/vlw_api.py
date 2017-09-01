@@ -48,7 +48,6 @@ class APILernwelten(grok.JSON):
 
     def checkAuth(self):
         ret = {}
-        print self.body
         data = simplejson.loads(self.body)
         teilnehmer_id = data.get('teilnehmer_id')
         ret['teilnehmer_id'] = teilnehmer_id
@@ -56,7 +55,6 @@ class APILernwelten(grok.JSON):
         if teilnehmer_id:
             teilnehmer = self.session.query(
                 models.Teilnehmer).get(teilnehmer_id)
-            
             if teilnehmer.passwort == data['passwort']:
                 ret['erfolgreich'] = 'true'
             else:
@@ -69,13 +67,11 @@ class APILernwelten(grok.JSON):
             info = self.gbo.get_info(str(mnr))
             if info.status_code == 200:
                 ret['gbo'] = True
-        print ret
         return ret
 
     def getTeilnehmer(self):
         ret = dict()
         ktns = []
-        print self.body
         data = simplejson.loads(self.body)
         teilnehmer_id = data.get('teilnehmer_id')
         if teilnehmer_id:
