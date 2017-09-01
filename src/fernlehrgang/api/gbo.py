@@ -242,14 +242,11 @@ class GBOAPI(object):
 
     def get_info(self, mnr):
         url = "%s/import/clients/%s/info" % (self.url, mnr)
-        print url
         r = requests.get(url, headers=self.headers)
         return r
 
     def set_data(self, data):
         url = "%s/import/clients" % self.url
-        print url
-        print data
         r = requests.post(
             url,
             json=data,

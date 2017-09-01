@@ -394,7 +394,7 @@ class JournalEntry(Base, RDBMixin):
     teilnehmer_id = Column(Integer, ForeignKey(Teilnehmer.id))
     creation_date = Column(DateTime, default=datetime.datetime.now)
     status = Column(String(50))
-    type = Column(String(50))
+    type = Column(String(500))
     kursteilnehmer_id = Column(Integer, ForeignKey(Kursteilnehmer.id))
     teilnehmer = relationship(Teilnehmer, backref="journal_entries")
 

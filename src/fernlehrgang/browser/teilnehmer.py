@@ -376,14 +376,11 @@ class SearchTeilnehmer(grok.View):
         self.term = self.request.form['data[q]']
         self.vocabulary = getTeilnehmerId(None)
 
-    @profile
     def render(self):
         self.request.response.setHeader('Content-Type', 'application/json')
         session = Session()
         from fernlehrgang import models
         from sqlalchemy import func, or_, cast, String
-        print "*" * 20
-        print self.term
         res = session.query(models.Teilnehmer).filter(or_(
             cast(models.Teilnehmer.id, String).like(self.term+"%"),
             cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term+"%"),
@@ -394,7 +391,10 @@ class SearchTeilnehmer(grok.View):
         for x in res:
             gebdat = ""
             if x.geburtsdatum:
-                gebdat = "(%s)" % x.geburtsdatum.strftime('%d.%m.%Y')
+                try:
+                    gebdat = "(%s)" % x.geburtsdatum.strftime('%d.%m.%Y')
+                except:
+                    gebdat = ""
             terms.append({'id': x.id, 'text': "%s - %s %s %s - %s" %(x.id, x.name, x.vorname, gebdat, x.unternehmen_mnr)})
         return json.dumps({'q': self.term, 'results': terms})
 

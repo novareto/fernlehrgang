@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import json
 
 from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
@@ -43,6 +44,36 @@ class Resultate(Page):
     def getSummary(self):
         results = ICalculateResults(self.context)
         return results.summary()
+
+
+
+class ResultateVLW(Page):
+    grok.context(IVLWKursteilnehmer)
+    grok.title('Ergebnisse')
+    grok.name('resultate')
+
+    title = u"Resultate"
+
+    @property
+    def description(self):
+        teilnehmer = self.context.teilnehmer
+        return u"Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen." % (
+                teilnehmer.name, teilnehmer.vorname, self.context.id)
+
+    @property
+    def getSummary(self):
+        results = ICalculateResults(self.context)
+        return results.summary()
+
+    def getAntwort(self):
+        for antwort in self.context.antworten:
+            if antwort.gbo.upper().strip() == "OK":
+                return antwort
+        return None
+
+    def fmtJson(self, daten):
+        return json.dumps(json.loads(daten), indent=4)
+
 
 
 def checkDate(date):

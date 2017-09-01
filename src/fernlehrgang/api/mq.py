@@ -117,9 +117,18 @@ log_exchange = Exchange('vlwd.log', 'direct', durable=True)
 log_queue = Queue('vlwd.log', exchange=log_exchange)
 
 
-QUEUES = {'results': status_queue}
-logger = get_logger(__name__)
+import logging
+import sys
+#root = logging.getLogger()
+ch = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+#root.addHandler(ch)
 
+QUEUES = {'results': status_queue}
+#logger = get_logger(__name__)
+from fernlehrgang import logger
+logger.addHandler(ch)
 
 class Worker(ConsumerMixin):
 
@@ -137,6 +146,7 @@ class Worker(ConsumerMixin):
         ]
 
     def run_task(self, body, message):
+        logger.info('START ADDING RESULTS')
         connection = self.zodb.open()
         root = connection.root()
         try:
@@ -147,10 +157,9 @@ class Worker(ConsumerMixin):
                 newmessage = Message('results', data=results)
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
                     mqtm.createMessage(newmessage)
-                message.ack()
+                #message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
-            print e
         except IntegrityError:
             message.ack()
             logger.exception('IntegryError')
@@ -173,7 +182,7 @@ class Worker(ConsumerMixin):
         ) 
         res['user'] = dict(
             login = str(teilnehmer.id),
-            salutation=teilnehmer.anrede,
+            salutation=int(teilnehmer.anrede),
             title=teilnehmer.titel,
             firstname=teilnehmer.vorname,
             lastname=teilnehmer.name,
@@ -191,27 +200,28 @@ class Worker(ConsumerMixin):
         session = Session()
         data = simplejson.loads(body)
         teilnehmer_id = data.pop('teilnehmer_id')
-        ktn = session.query(models.Kursteilnehmer).get(data.get('kursteilnehmer_id'))
+        ktn = session.query(models.Kursteilnehmer).get(int(data.get('kursteilnehmer_id')))
         data['datum'] = datetime.now()
         data['system'] = "Virtuelle Lernwelt"
         data['gbo'] = "OK"
         orgas = data.pop('orgas')
         gbo_daten = self.createGBODaten(ktn, orgas)
         data['gbo_daten'] = simplejson.dumps(gbo_daten)
-        data['lehrheft_id'] = 1055
-        data['frage_id'] = 10550
-        gbo_u = data.pop('gbo_uebermittelung')
+        data['lehrheft_id'] = 1076 
+        data['frage_id'] = 10571 
+        gbo_u = data.pop('gbo_uebermittlung')
+        data.pop('status')
         antwort = models.Antwort(**data)
         ktn.antworten.append(antwort)
+        
         je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="info", kursteilnehmer_id=ktn.id)
         ktn.teilnehmer.journal_entries.append(je)
         gbo_status=""
         if gbo_u:
             from fernlehrgang.api.gbo import GBOAPI
             gbo_api = GBOAPI()
-            r = gbo_api.set_data(gbo_daten) 
+            r = gbo_api.set_data(gbo_daten)
             gbo_status = r.status_code
-            print "TANSERFER DATA TO GBO"
         result = ICalculateResults(ktn).summary()
         result['kursteilnehmer_id'] = data.get('kursteilnehmer_id')
         result['teilnehmer_id'] = teilnehmer_id
@@ -222,17 +232,24 @@ class Worker(ConsumerMixin):
         return result
 
     def setLogEntry(self, body, message):
+        logger.info('GET A NEW LOG ENTRY')
         log_entry = simplejson.loads(body)
+        logger.info(log_entry)
         from fernlehrgang import models
         typ = log_entry.pop('typ')
         if typ == "ausstattung":
-            log_entry['type'] = u"Ausstattung Büro %s, Lager %s, Verkauf %s" % (
+            log_entry['type'] = u"B %s, L %s, V %s" % (
                 log_entry.pop('buero'),
                 log_entry.pop('lager'),
                 log_entry.pop('verkauf'))
         elif typ == "fortschritt":
-            log_entry.pop('position')
-            log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
+            if 'position' in log_entry.keys():
+                log_entry.pop('position')
+            if 'title' not in log_entry:
+                log_entry['title'] = ''
+            if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
+                log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
+    
             log_entry['type'] = u"Level %s (%s) zu %s abgeschlossen." % (
                 log_entry.pop('title'),
                 log_entry.pop('key'),
@@ -248,13 +265,13 @@ class Worker(ConsumerMixin):
                     message.ack()
         except:
             logger.exception('Error')
+            message.ack()
 
 
 
 ZOPE_CONF = "/Users/ck/work/bghw/new/fernlehrgang/parts/etc/zope.conf"
 def main(url, conf):
     db = zope.app.wsgi.config(conf)
-    print url
     with Connection(url) as conn:
         try:
             worker = Worker(conn, db, url)
