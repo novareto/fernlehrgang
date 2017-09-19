@@ -154,12 +154,14 @@ class Worker(ConsumerMixin):
                 app = root['Application']['app']
                 setSite(app)
                 results = self.saveResult(body)
-                newmessage = Message('results', data=results)
+                newmessage = Message('results', routing_key="vlwd.status", data=results)
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
                     mqtm.createMessage(newmessage)
                 #message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
+            message.ack()
+            logger.exception('ERRROR')
         except IntegrityError:
             message.ack()
             logger.exception('IntegryError')
@@ -242,6 +244,7 @@ class Worker(ConsumerMixin):
                 log_entry.pop('buero'),
                 log_entry.pop('lager'),
                 log_entry.pop('verkauf'))
+            log_entry['type'] = log_entry['type'][:50] 
         elif typ == "fortschritt":
             if 'position' in log_entry.keys():
                 log_entry.pop('position')
