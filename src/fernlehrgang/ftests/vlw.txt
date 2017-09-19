@@ -92,7 +92,7 @@ Create a browser and visit the instance you just created:
 
    >>> teil1.id
    1
-   
+
    >>> teil1.passwort
    'passwort'
 
@@ -130,14 +130,24 @@ Anmeldung Falsches PW
    >>> data = {'teilnehmer_id': teil1.id, 'name': 'Klinger', 'vorname': 'Christian'}
    >>> data
    {'teilnehmer_id': 1, 'vorname': 'Christian', 'name': 'Klinger'}
-   
-   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data='teilnehmer_id=1&name=Klinger&vorname=Christian')
+  
+   >>> import json 
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(data))
    >>> print browser.headers['Status']
    200 Ok
    >>> print browser.contents
    {"muss_stammdaten_ergaenzen": "true"}
-  
-   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data='teilnehmer_id=1&name=Klinger&vorname=Christian&email=ck@novareto.de&telefon=09841322&un_klasse=G3&branche=nein')
+ 
+   >>> daten = {
+   ...   'teilnehmer_id': '1',
+   ...    'name': 'Klinger', 
+   ...    'vorname': 'Christian', 
+   ...    'email': 'ck@novareto.de', 
+   ...    'telefon': '09841/3644', 
+   ...    'un_klasse': 'G3', 
+   ...    'branche': 'nein'}
+ 
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(daten))
    >>> print browser.headers['Status']
    200 Ok
    >>> print browser.contents
@@ -145,7 +155,7 @@ Anmeldung Falsches PW
 
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
-   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Klinger", "un_klasse": "G3", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}], "telefon": "09841322", "branche": "nein", "vorname": "Christian", "unternehmen": "Novareto", "email": "ck@novareto.de"}'
+   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Klinger", "un_klasse": "G3", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}], "telefon": "09841/3644", "branche": "nein", "vorname": "Christian", "unternehmen": "Novareto", "email": "ck@novareto.de"}'
 
 Antwort  
 -------

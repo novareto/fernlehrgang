@@ -28,6 +28,8 @@ from uvc.layout import MenuItem
 from zeam.form.ztk import customize
 from zope.schema.interfaces import IDate
 from fernlehrgang import fmtDate
+from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
+from zeam.form.base.markers import NO_VALUE
 
 
 grok.templatedir('templates')
@@ -130,12 +132,6 @@ class KPTZLayer(grok.IRESTLayer):
 @customize(origin=IDate)
 def customize_size(field):
     field.valueLength = 'medium'
-
-
-
-
-from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
-from zeam.form.base.markers import NO_VALUE
 
 
 class DateFieldWidget(DateFieldWidget):
