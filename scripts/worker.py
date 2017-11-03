@@ -5,14 +5,17 @@
 
 from zope import component
 from z3c.saconfig import Session
-from fernlehrgang.tasks import notifications_for_ofg
+from fernlehrgang import models
 
 
 def worker():
-    flg = root['flg']
+    flg = root['app']
     component.hooks.setSite(flg)
     session = Session()
-    notifications_for_ofg()
+    teilnehmer = session.query(models.Teilnehmer).get(101032)
+    je = models.JournalEntry(type="kk", status="HH")
+    teilnehmer.journal_entries.append(je)
+    import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":

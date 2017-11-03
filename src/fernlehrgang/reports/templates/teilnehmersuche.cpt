@@ -106,7 +106,7 @@
       <tbody>
       <tr tal:repeat="result teilnehmer.journal_entries">
         <td tal:content="result.status"> </td>
-        <td tal:content="result.creation_date.strftime('%d.%m.%Y')"> </td>
+        <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
         <td tal:content="result.type"> </td>
       </tr>
       </tbody>

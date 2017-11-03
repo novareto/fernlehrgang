@@ -3,12 +3,24 @@ import json
 
 
 results = dict(
-    teilnehmer_id=100000,
+    teilnehmer_id=443194,
     status="INFO",
-    type="I AM AN INFO MESSAGE FROM MQ!",
-    kursteilnehmer_id=900010
+    kursteilnehmer_id=1251557,
+    typ="ausstattung",
+    buero=True, 
+    lager=False, 
+    verkauf=False, 
     )
 
+results = dict(
+    teilnehmer_id=443194,
+    status="INFO",
+    kursteilnehmer_id=1251557,
+    typ="fortschritt",
+    key="3.18", 
+    title="Minigame1", 
+    progress=80, 
+    )
 
 with Connection('amqp://guest:guest@localhost:5672//') as conn:
     simple_queue = conn.SimpleQueue('vlwd.log')

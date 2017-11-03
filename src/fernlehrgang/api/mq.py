@@ -110,12 +110,15 @@ vlw_exchange = Exchange('vlwd.antwort', 'direct', durable=True)
 vlw_queue = Queue('vlwd.antwort', exchange=vlw_exchange)
 
 status_exchange = Exchange('vlwd.status', 'direct', durable=True)
+status_exchange_e = Exchange('vlwd.status.error', 'direct', durable=True)
 status_queue = Queue('vlwd.status', exchange=status_exchange)
-status_queue_error = Queue('vlwd.status.error', exchange=status_exchange)
+status_queue_error = Queue('vlwd.status.error', exchange=status_exchange_e)
 
 log_exchange = Exchange('vlwd.log', 'direct', durable=True)
 log_queue = Queue('vlwd.log', exchange=log_exchange)
 
+log_exchange_e = Exchange('vlwd.log', 'direct', durable=True)
+log_queue_e = Queue('vlwd.log', exchange=log_exchange)
 
 import logging
 import sys
@@ -125,7 +128,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 #root.addHandler(ch)
 
-QUEUES = {'results': status_queue}
+QUEUES = {'results': status_queue, 'results_error': status_queue_error}
 #logger = get_logger(__name__)
 from fernlehrgang import logger
 logger.addHandler(ch)
@@ -154,10 +157,10 @@ class Worker(ConsumerMixin):
                 app = root['Application']['app']
                 setSite(app)
                 results = self.saveResult(body)
-                newmessage = Message('results', routing_key="vlwd.status", data=results)
+                newmessage = Message('results', data=results)
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
                     mqtm.createMessage(newmessage)
-                #message.ack()
+                message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
             message.ack()
@@ -224,6 +227,8 @@ class Worker(ConsumerMixin):
             gbo_api = GBOAPI()
             r = gbo_api.set_data(gbo_daten)
             gbo_status = r.status_code
+            je = models.JournalEntry(type="Daten nach GBO gesendet; (%s)" % gbo_status, status="info", kursteilnehmer_id=ktn.id)
+            ktn.teilnehmer.journal_entries.append(je)
         result = ICalculateResults(ktn).summary()
         result['kursteilnehmer_id'] = data.get('kursteilnehmer_id')
         result['teilnehmer_id'] = teilnehmer_id

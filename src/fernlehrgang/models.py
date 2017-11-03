@@ -41,8 +41,9 @@ from zope.interface import alsoProvides
 from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
-config = getProductConfiguration('database')
-SCHEMA = config['schema'] or None 
+#config = getProductConfiguration('database')
+#SCHEMA = config['schema'] or None 
+SCHEMA = "FLGUTF8"
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 Base = declarative_base()
 Base.metadata.schema = SCHEMA 
@@ -128,6 +129,7 @@ class Unternehmen(Base, RDBMixin):
     betriebsart = Column("BETRIEBSART", String(1))
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
+    aktiv = Column("aktiv", Boolean())
 
     @property
     def title(self):

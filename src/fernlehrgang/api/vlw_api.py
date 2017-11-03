@@ -127,8 +127,21 @@ class APILernwelten(grok.JSON):
         return ret
 
     def getCertificate(self):
+        teilnehmer_id = self.request.form.get('teilnehmer_id')
+        teilnehmer = self.session.query(models.Teilnehmer).get(int(teilnehmer_id))
+        ktn = teilnehmer.getVLWKTN()
+        je = models.JournalEntry(type="Zertifikat gedrukt", status="info", kursteilnehmer_id=ktn.id)
+        teilnehmer.journal_entries.append(je)
         ftf = NamedTemporaryFile()
-        fh = createpdf(ftf, {'druckdatum': '01.01.2015'})
+        from datetime import datetime
+        fh = createpdf(ftf, {
+            'druckdatum': datetime.now().strftime('%d.%m.%Y'), 
+            'flg_titel': ktn.fernlehrgang.titel, 
+            'teilnehmer_id': teilnehmer_id,
+            'mnr': teilnehmer.stamm_mnr or '',
+            'anrede': teilnehmer.anrede,
+            'vorname': teilnehmer.vorname,
+            'name': teilnehmer.name})
         fh.seek(0)
         return encodestring(fh.read())
 

@@ -95,8 +95,8 @@ def main(argv=None):
     session = Session()
     fernlehrgang = session.query(Fernlehrgang).get(options.fernlehrgang)
     z = 0
-    #import pdb; pdb.set_trace() 
-    for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=";")):
+    import pdb; pdb.set_trace() 
+    for i, line in enumerate(DictReader(open(options.file, 'r'), delimiter=",")):
         if z < 18186:
             MNR = line['MNR'].strip().replace('-', '')
             if len(MNR) == 8:
