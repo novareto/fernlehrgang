@@ -235,6 +235,7 @@ TESTJSON = u"""{
 class GBOAPI(object):
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/beta/flg"
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/flg"
+    url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

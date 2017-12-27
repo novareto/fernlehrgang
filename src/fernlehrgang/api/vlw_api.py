@@ -67,6 +67,7 @@ class APILernwelten(grok.JSON):
             info = self.gbo.get_info(str(mnr))
             if info.status_code == 200:
                 ret['gbo'] = True
+        print ret
         return ret
 
     def getTeilnehmer(self):
@@ -130,7 +131,7 @@ class APILernwelten(grok.JSON):
         teilnehmer_id = self.request.form.get('teilnehmer_id')
         teilnehmer = self.session.query(models.Teilnehmer).get(int(teilnehmer_id))
         ktn = teilnehmer.getVLWKTN()
-        je = models.JournalEntry(type="Zertifikat gedrukt", status="info", kursteilnehmer_id=ktn.id)
+        je = models.JournalEntry(type="Zertifikat gedrukt", status="1", kursteilnehmer_id=ktn.id)
         teilnehmer.journal_entries.append(je)
         ftf = NamedTemporaryFile()
         from datetime import datetime
@@ -140,6 +141,8 @@ class APILernwelten(grok.JSON):
             'teilnehmer_id': teilnehmer_id,
             'mnr': teilnehmer.stamm_mnr or '',
             'anrede': teilnehmer.anrede,
+            'flg_id': str(ktn.fernlehrgang.id),
+            'mnr': teilnehmer.unternehmen[0].mnr,
             'vorname': teilnehmer.vorname,
             'name': teilnehmer.name})
         fh.seek(0)

@@ -157,6 +157,7 @@ class Worker(ConsumerMixin):
                 app = root['Application']['app']
                 setSite(app)
                 results = self.saveResult(body)
+                logger.info(results)
                 newmessage = Message('results', data=results)
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
                     mqtm.createMessage(newmessage)
@@ -219,15 +220,16 @@ class Worker(ConsumerMixin):
         antwort = models.Antwort(**data)
         ktn.antworten.append(antwort)
         
-        je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="info", kursteilnehmer_id=ktn.id)
+        je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="1", kursteilnehmer_id=ktn.id)
         ktn.teilnehmer.journal_entries.append(je)
         gbo_status=""
         if gbo_u:
             from fernlehrgang.api.gbo import GBOAPI
             gbo_api = GBOAPI()
             r = gbo_api.set_data(gbo_daten)
+            logger.info(r.text)
             gbo_status = r.status_code
-            je = models.JournalEntry(type="Daten nach GBO gesendet; (%s)" % gbo_status, status="info", kursteilnehmer_id=ktn.id)
+            je = models.JournalEntry(type="Daten nach GBO gesendet", status=gbo_status, kursteilnehmer_id=ktn.id)
             ktn.teilnehmer.journal_entries.append(je)
         result = ICalculateResults(ktn).summary()
         result['kursteilnehmer_id'] = data.get('kursteilnehmer_id')
@@ -235,7 +237,11 @@ class Worker(ConsumerMixin):
         result['ist_gespeichert'] = True
         result['an_gbo_uebermittelt'] = gbo_u
         result['gbo_comment'] = gbo_status
-        print result 
+        status = "1"
+        if result['comment'] == u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.':
+            status = "4"
+        je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status=status, kursteilnehmer_id=ktn.id)
+        ktn.teilnehmer.journal_entries.append(je)
         return result
 
     def setLogEntry(self, body, message):
@@ -268,6 +274,7 @@ class Worker(ConsumerMixin):
                 session = Session()
                 teilnehmer = session.query(models.Teilnehmer).get(int(log_entry.get('teilnehmer_id')))
                 if teilnehmer:
+                    log_entry['status'] = "2" 
                     je = models.JournalEntry(**log_entry)
                     teilnehmer.journal_entries.append(je)
                     message.ack()

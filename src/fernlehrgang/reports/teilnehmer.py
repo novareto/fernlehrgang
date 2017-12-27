@@ -10,6 +10,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer 
+from fernlehrgang.interfaces.journal import IJournalEntry
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
@@ -80,6 +81,13 @@ class TeilnehmerSuche(Form):
     def gBR(self, value):
         if value:
             return IKursteilnehmer.get('branche').source(None).getTermByToken(value).title
+
+    def getStatus(self, value):
+        if value:
+            try:
+                return IJournalEntry.get('status').source(None).getTerm(value).title
+            except:
+                return u"--> %s" % value
 
     def getSession(self):
         key = "fernlehrgang.teilnehmer"

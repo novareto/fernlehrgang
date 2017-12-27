@@ -32,10 +32,33 @@ def getKursteilnehmer(context):
     return SimpleVocabulary(rc)
 
 
+class TolerantVocabulary(SimpleVocabulary):
+
+    def getTerm(self, v):
+        try:
+            return super(TolerantVocabulary, self).getTerm(v)
+        except LookupError:
+            return SimpleTerm(v, v, v)
+
+
+
+@grok.provider(IContextSourceBinder)
+def get_status(context):
+    rc = [
+        SimpleTerm('1', 'Info', u'Info'),
+        SimpleTerm('2', 'Lernfortschritt', u'Lernfortschritt'),
+        SimpleTerm('4', 'Abschluss Gespräch', u'Abschluss Gespräch'),
+        SimpleTerm('5', 'Erinnerungsmail', u'Erinnerungsmail'),
+        SimpleTerm('409', 'GBO nicht angelegt', u'GBO nicht angelegt. Eintrag schon vorhanden'),
+    ]
+    return TolerantVocabulary(rc)
+
+
 class IJournalEntry(Interface):
 
-    status = TextLine(
+    status = Choice(
         title=u'Status',
+        source=get_status,
         required=True,
     )
 
