@@ -137,6 +137,7 @@ class TeilnehmerAPI(grok.REST):
             nr = context.nr,
             plz = context.plz,
             ort = context.ort,
+            telefon = context.telefon,
             email = context.email,
             un_klasse = un_klasse,
             branche = branche,

@@ -12,6 +12,7 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang import Form
+from datetime import date, timedelta
 
 from zeam.form.base import Fields
 from zeam.form.base import action
@@ -30,6 +31,7 @@ class AutoRegForm(Form):
     def updateForm(self):
         super(AutoRegForm, self).updateForm()
         self.fields['passwort'].defaultValue = generatePassword()
+        self.fields['erstell_datum'].defaultValue = date.today() 
 
     @action('Teilnehmer anlegen')
     def handle_save(self):

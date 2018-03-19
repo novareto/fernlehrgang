@@ -114,9 +114,8 @@ class Unternehmen(Base, RDBMixin):
     traject.pattern("unternehmen/:unternehmen_mnr")
     #grok.traversable(attr='god_data')
 
-    #__tablename__ = 'unternehmen'
-
     __tablename__ = 'adr'
+    #__tablename__ = 'adr_transfer'
 
     #id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", String(11), primary_key=True, index=True)
@@ -130,6 +129,7 @@ class Unternehmen(Base, RDBMixin):
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
     aktiv = Column("aktiv", Boolean())
+    #b_groesse = Column('BETRIEBSGROESSE', String(240))
 
     @property
     def title(self):
@@ -151,6 +151,7 @@ class Unternehmen(Base, RDBMixin):
 unternehmen_teilnehmer = Table(
     'unternehmen_teilnehmer', Base.metadata,
     Column('unternehmen_id', String(11), ForeignKey('adr.MNR')),
+    #Column('unternehmen_id', String(11), ForeignKey('adr_transfer.MNR')),
     Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
 )
 
@@ -295,6 +296,7 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
+    #unternehmen_mnr = Column(String(11), ForeignKey('adr_transfer.MNR',))
     unternehmen_mnr = Column(String(11), ForeignKey('adr.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))

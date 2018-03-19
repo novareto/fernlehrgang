@@ -93,7 +93,7 @@ class APILernwelten(grok.JSON):
                 ret['geburtsdatum'] = str(teilnehmer.geburtsdatum)
                 ret['email'] = str(teilnehmer.email)
                 ret['telefon'] = str(teilnehmer.telefon)
-                ret['unternehmen'] = str(teilnehmer.unternehmen[0].name)
+                ret['unternehmen'] = teilnehmer.unternehmen[0].name
                 ret['kurse'] = ktns
                 ret['un_klasse'] = oktn.un_klasse
                 ret['branche'] = oktn.branche

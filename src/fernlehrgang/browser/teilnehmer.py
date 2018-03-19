@@ -386,7 +386,7 @@ class SearchTeilnehmer(grok.View):
             cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term+"%"),
             func.concat(func.concat(models.Teilnehmer.name, " "),
                        models.Teilnehmer.vorname
-                      ).like("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
+                      ).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
         terms = []
         for x in res:
             gebdat = ""
