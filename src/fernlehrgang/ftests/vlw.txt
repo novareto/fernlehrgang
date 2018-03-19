@@ -186,3 +186,24 @@ Antwort
    
    >>> results.summary()
    {'comment': 'Bestanden', 'resultpoints': 0, 'points': 0}
+
+Passwort Ändern
+---------------
+
+   >>> session = Session()
+   >>> tn = session.query(models.Teilnehmer).get(1)
+   >>> tn.passwort
+   u'passwort'
+
+   >>> daten = {
+   ...   'teilnehmer_id': '1',
+   ...    'passwort': 'NeuesPasswort'}
+ 
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(daten))
+   >>> print browser.headers['Status']
+   200 Ok
+
+   >>> session = Session()
+   >>> tn = session.query(models.Teilnehmer).get(1)
+   >>> tn.passwort
+   u'NeuesPasswort'

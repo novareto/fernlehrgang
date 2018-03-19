@@ -67,7 +67,6 @@ class APILernwelten(grok.JSON):
             info = self.gbo.get_info(str(mnr))
             if info.status_code == 200:
                 ret['gbo'] = True
-        print ret
         return ret
 
     def getTeilnehmer(self):
