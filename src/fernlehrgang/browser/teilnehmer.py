@@ -176,22 +176,44 @@ def default_marshaller(func, *args, **kwargs):
     return repr((func.__name__,))
 
 
-cache = GenericCache()
+#cache = GenericCache()
+#
+#@provider(IContextSourceBinder)
+#@cached(cache, marshaller=default_marshaller)
+#def voc_unternehmen(context):
+#    session = Session()
+#    items = []
+#    from sqlalchemy.sql.expression import func
+#    results = session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9)
+#    if os.environ.get('DEBUG'):
+#        print "I FILTER IT NOW"
+#        results = results.filter(Unternehmen.mnr == 995000221)
+#    for mnr, name in results.all():
+#        items.append(SimpleTerm(
+#            mnr, mnr, "%s - %s" % (mnr, name)))
+#    return SimpleVocabulary(items)
+
+class MyVoc(SimpleVocabulary):
+
+    def __init__(self):
+        self.session = Session()
+
+    def getTerm(self, term):
+        mnr = term.mnr
+        name = term.name
+        return SimpleTerm(mnr, mnr, "%s - %s" % (mnr, name))
+
+    def getTermByToken(self, token):
+        unternehmen = self.session.query(Unternehmen).get(token)
+        mnr = unternehmen.mnr
+        name = unternehmen.name
+        return SimpleTerm(mnr, mnr, "%s - %s" % (mnr, name))
+
 
 @provider(IContextSourceBinder)
-@cached(cache, marshaller=default_marshaller)
 def voc_unternehmen(context):
-    session = Session()
-    items = []
-    from sqlalchemy.sql.expression import func
-    results = session.query(Unternehmen.mnr, Unternehmen.name).filter(func.length(Unternehmen.mnr) == 9)
-    if os.environ.get('DEBUG'):
-        print "I FILTER IT NOW"
-        results = results.filter(Unternehmen.mnr == 995000221)
-    for mnr, name in results.all():
-        items.append(SimpleTerm(
-            mnr, mnr, "%s - %s" % (mnr, name)))
-    return SimpleVocabulary(items)
+    return MyVoc()
+
 
 
 class ICompany(Interface):
@@ -355,12 +377,31 @@ class SearchTeilnehmer(grok.View):
 
     def render(self):
         self.request.response.setHeader('Content-Type', 'application/json')
+        session = Session()
+        from fernlehrgang import models
+        from sqlalchemy import func, or_, cast, String
+        print "*" * 20
+        print self.term
+        res = session.query(models.Teilnehmer).filter(or_(
+            cast(models.Teilnehmer.id, String).like(self.term+"%"),
+            cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term+"%"),
+            func.concat(func.concat(models.Teilnehmer.name, " "),
+                       models.Teilnehmer.vorname
+                      ).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
         terms = []
-        matcher = self.term.lower()
-        for item in self.vocabulary:
-            if matcher in item.title.lower():
-                terms.append({'id': item.token, 'text': item.title})
+        for x in res:
+            terms.append({'id': x.id, 'text': "%s - %s %s - %s" %(x.id, x.name, x.vorname, x.unternehmen_mnr)})
         return json.dumps({'q': self.term, 'results': terms})
+
+
+#    def render(self):
+#        self.request.response.setHeader('Content-Type', 'application/json')
+#        terms = []
+#        matcher = self.term.lower()
+#        for item in self.vocabulary:
+#            if matcher in item.title.lower():
+#                terms.append({'id': item.token, 'text': item.title})
+#        return json.dumps({'q': self.term, 'results': terms})
 
 
 class SearchUnternehmen(grok.View):
@@ -375,10 +416,32 @@ class SearchUnternehmen(grok.View):
         self.request.response.setHeader('Content-Type', 'application/json')
         terms = []
         matcher = self.term.lower()
-        for item in self.vocabulary:
-            if matcher in item.title.lower():
-                terms.append({'id': item.token, 'text': item.title})
+        session = Session()
+        from fernlehrgang import models
+        from sqlalchemy import func, or_, cast, String
+        print "*" * 20
+        print self.term
+        res = session.query(models.Unternehmen).filter(or_(
+            cast(models.Unternehmen.mnr, String).like(self.term+"%"),
+            models.Unternehmen.name.like(self.term+"%")
+        ))
+        for x in res:
+            terms.append({'id': x.mnr, 'text': "%s - %s" %(x.mnr, x.name)})
+        print terms
+        #for item in self.vocabulary:
+        #    if matcher in item.title.lower():
+        #        terms.append({'id': item.token, 'text': item.title})
         return json.dumps({'q': self.term, 'results': terms})
+
+
+#    def render(self):
+#        self.request.response.setHeader('Content-Type', 'application/json')
+#        terms = []
+#        matcher = self.term.lower()
+#        for item in self.vocabulary:
+#            if matcher in item.title.lower():
+#                terms.append({'id': item.token, 'text': item.title})
+#        return json.dumps({'q': self.term, 'results': terms})
 
 
 class OverviewKurse(grok.Viewlet):

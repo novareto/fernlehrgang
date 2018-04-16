@@ -49,14 +49,14 @@ def getTeilnehmerId(context):
     return VOCABULARY
 
 
-@grok.subscribe(ITeilnehmer, IObjectModifiedEvent)
+#@grok.subscribe(ITeilnehmer, IObjectModifiedEvent)
 def update_cache(obj, event):
     term = VOCABULARY.getTermByToken(str(obj.id))
     term.title = u'%s - %s %s - %s' % (
         obj.id, obj.name, obj.vorname, obj.unternehmen_mnr)
     
 
-@grok.subscribe(ITeilnehmer, IObjectAddedEvent)
+#@grok.subscribe(ITeilnehmer, IObjectAddedEvent)
 def add_in_cache(obj, event):
     title = u'%s - %s %s - %s' % (
         obj.id, obj.name, obj.vorname, obj.unternehmen_mnr)
@@ -66,7 +66,7 @@ def add_in_cache(obj, event):
     
 from z3c.saconfig.interfaces import IEngineCreatedEvent
 #@grok.subscribe(IEngineCreatedEvent)
-@grok.subscribe(IDatabaseOpened)
+#@grok.subscribe(IDatabaseOpened)
 def fill_cache_teilnehmer(*args):
     #import pdb; pdb.set_trace() 
     session = Session()
@@ -88,7 +88,7 @@ def fill_cache_teilnehmer(*args):
     log(u'Der Cache für die Teilnehmer ist gefüllt')
  
 
-@grok.subscribe(IDatabaseOpened)
+#@grok.subscribe(IDatabaseOpened)
 #@grok.subscribe(IEngineCreatedEvent)
 def fill_cache_unternehmen(*args):
     from fernlehrgang.browser.teilnehmer import voc_unternehmen 
@@ -98,7 +98,7 @@ def fill_cache_unternehmen(*args):
     
 class ISearch(interface.Interface):
 
-    id = schema.Choice(
+    id = schema.TextLine(
         title=u"Teilnehmer ID",
-        source=getTeilnehmerId
+        #source=getTeilnehmerId
         )

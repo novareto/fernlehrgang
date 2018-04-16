@@ -23,7 +23,7 @@ def vocabulary(*terms):
 # DEFAULTS
 def generatePassword():
     pool = string.ascii_letters + string.digits
-    for c in ['o', 'O', '0', 'l', 'I', 'q', 'g']:
+    for c in ['o', 'O', '0', 'L', 'i', 'l', 'I', 'q', 'g']:
         pool = pool.replace(c, '')
     return unicode(''.join([choice(pool) for i in range(8)]))
 

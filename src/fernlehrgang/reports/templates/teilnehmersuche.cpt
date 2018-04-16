@@ -10,7 +10,11 @@
    },
    {
       minLength: 3
-   });
+   },
+   {
+      search_contains: true,
+   }
+);
 </script>
 
 <fieldset tal:condition="teilnehmer">

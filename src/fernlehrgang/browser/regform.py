@@ -4,7 +4,7 @@
 
 
 import grok
-
+import datetime
 from z3c.saconfig import Session
 from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
@@ -63,7 +63,8 @@ class AutoRegForm(Form):
         kursteilnehmer = Kursteilnehmer(
             fernlehrgang_id=data.get('fernlehrgang_id'),
             status=data.get('status'),
-            erstell_datum=data.get('erstell_datum'),
+            #erstell_datum=data.get('erstell_datum'),
+            erstell_datum=datetime.date.today(),
             un_klasse = data.get('un_klasse'),
             branche = data.get('branche'),
             unternehmen_mnr=data['mnr'])

@@ -71,7 +71,8 @@ class CalculateResults(grok.Adapter):
             lehrheft_id = lehrheft.id
             fragen = []
             punkte = 0
-            for antwort in context.antworten:
+            #import pdb; pdb.set_trace()
+            for antwort in sorted(context.antworten, key=lambda antwort: int(antwort.frage.frage)):
                 if antwort.frage.lehrheft_id == lehrheft_id:
                     titel = "%s - %s" %(antwort.frage.frage, antwort.frage.titel)
                     ergebnis = self.calculateResult(antwort.antwortschema,

@@ -127,6 +127,7 @@ class Unternehmen(Base, RDBMixin):
     betriebsart = Column("BETRIEBSART", String(1))
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
+    aktiv = Column("aktiv", Boolean())
 
     @property
     def title(self):

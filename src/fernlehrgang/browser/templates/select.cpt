@@ -9,7 +9,7 @@
      url: '<tal:url replace="'%s/search_unternehmen' % widget.form.application_url()" />'
    },
    {
-      minLength: 3
+      minLength: 5 
    });
    })
 </script>

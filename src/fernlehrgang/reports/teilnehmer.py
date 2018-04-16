@@ -96,7 +96,7 @@ class TeilnehmerSuche(Form):
         if zs.get('tn'):
             tn = zs.get('tn')
             session = Session()
-            tn = session.query(Teilnehmer).get(tn)
+            tn = session.query(Teilnehmer).get(int(tn))
             locate(root, tn, DefaultModel)
             for unternehmen in tn.unternehmen:
                 locate(root, unternehmen, DefaultModel)
