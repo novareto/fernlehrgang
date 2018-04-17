@@ -105,6 +105,7 @@ class TeilnehmerSuche(Form):
             tn = zs.get('tn')
             session = Session()
             tn = session.query(Teilnehmer).get(int(tn))
+            locate(root, tn, DefaultModel)
             for unternehmen in tn.unternehmen:
                 unternehmenl.append(unternehmen)
             for ktn in tn.kursteilnehmer:

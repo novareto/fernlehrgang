@@ -4,7 +4,7 @@
 
 
 import grok
-
+import datetime
 from z3c.saconfig import Session
 from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
@@ -12,6 +12,7 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang import Form
+from datetime import date, timedelta
 
 from zeam.form.base import Fields
 from zeam.form.base import action
@@ -30,6 +31,7 @@ class AutoRegForm(Form):
     def updateForm(self):
         super(AutoRegForm, self).updateForm()
         self.fields['passwort'].defaultValue = generatePassword()
+        self.fields['erstell_datum'].defaultValue = date.today() 
 
     @action('Teilnehmer anlegen')
     def handle_save(self):
@@ -63,7 +65,8 @@ class AutoRegForm(Form):
         kursteilnehmer = Kursteilnehmer(
             fernlehrgang_id=data.get('fernlehrgang_id'),
             status=data.get('status'),
-            erstell_datum=data.get('erstell_datum'),
+            #erstell_datum=data.get('erstell_datum'),
+            erstell_datum=datetime.date.today(),
             un_klasse = data.get('un_klasse'),
             branche = data.get('branche'),
             unternehmen_mnr=data['mnr'])

@@ -255,7 +255,7 @@ class Worker(ConsumerMixin):
                 log_entry.pop('buero'),
                 log_entry.pop('lager'),
                 log_entry.pop('verkauf'))
-            log_entry['type'] = log_entry['type'][:50] 
+            log_entry['type'] = log_entry['type'][:400] 
         elif typ == "fortschritt":
             if 'position' in log_entry.keys():
                 log_entry.pop('position')
@@ -268,7 +268,7 @@ class Worker(ConsumerMixin):
                 log_entry.pop('title'),
                 log_entry.pop('key'),
                 log_entry.pop('progress'))
-            log_entry['type'] = log_entry['type'][:30]
+            log_entry['type'] = log_entry['type'][:400]
         try:
             with transaction.manager as tm:
                 session = Session()

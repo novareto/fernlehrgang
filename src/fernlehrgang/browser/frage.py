@@ -49,7 +49,8 @@ class FrageListing(TablePage):
         root = grok.getSite()
         for x in self.context.fragen:
             locate(root, x, DefaultModel)
-        return self.context.fragen
+        dd = sorted(self.context.fragen, key=lambda x: int(x.frage))
+        return dd 
 
 
 @menuentry(AddMenu)

@@ -16,7 +16,6 @@ from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import log
 from profilehooks import profile
-import timeout_decorator
 
 
 #import logging
@@ -137,6 +136,7 @@ class TeilnehmerAPI(grok.REST):
             nr = context.nr,
             plz = context.plz,
             ort = context.ort,
+            telefon = context.telefon,
             email = context.email,
             un_klasse = un_klasse,
             branche = branche,

@@ -162,6 +162,10 @@ class SystemError(Page, grok.components.ExceptionView):
         self.context = grok.getSite()
         self.origin_context = context
 
+    def update(self):
+        RESPONSE = self.request.response
+        RESPONSE.setHeader('content-type', 'text/html')
+
 
 class FaviconIco(grok.View):
     """ Helper for Favicon.ico Errors Request
@@ -211,14 +215,4 @@ def my_handle_error(self, request, client_address):
 
 BaseServer.handle_error = my_handle_error
 
-
-class HAProxyCheck(grok.View):
-    grok.context(Interface)
-    grok.require('zope.Public')
-
-    def render(self):
-        from fernlehrgang import models
-        session = Session()
-        ret = session.query(models.Teilnehmer).get(101032)
-        return "OK %s" % ret.id
 

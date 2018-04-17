@@ -59,6 +59,15 @@ class FernlehrgangStatistik(Page):
 
     def getAntworten(self):
         session = saconfig.Session()
+        i = 0
+        if self.context.typ == '5':
+            for ktn in self.context.kursteilnehmer:
+                if len(ktn.antworten) > 0:
+                    i+=1
+                if len(ktn.antworten) > 10:
+                    print "FUCK OFF", ktn.teilnehmer_id
+            return [[self.context.lehrhefte[0].nummer, i]]
+
         return session.query(models.Lehrheft.nummer, func.count()).filter(
             and_(models.Kursteilnehmer.fernlehrgang_id==self.context.id,
                  models.Lehrheft.fernlehrgang_id == self.context.id,

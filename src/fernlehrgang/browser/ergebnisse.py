@@ -103,7 +103,8 @@ class CalculateResults(grok.Adapter):
             lehrheft_id = lehrheft.id
             fragen = []
             punkte = 0
-            for antwort in context.antworten:
+            #import pdb; pdb.set_trace()
+            for antwort in sorted(context.antworten, key=lambda antwort: int(antwort.frage.frage)):
                 if antwort.frage.lehrheft_id == lehrheft_id:
                     titel = "%s - %s" %(antwort.frage.frage, antwort.frage.titel)
                     ergebnis = self.calculateResult(antwort.antwortschema,
@@ -174,7 +175,7 @@ class CalculateResults(grok.Adapter):
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
         comment = "<b> %s; </b> %s" %(comment, c_punkte)
-        self.context.fixed_results = comment
+        #self.context.fixed_results = comment
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
@@ -197,7 +198,7 @@ class CalculateResultsFortbildung(CalculateResults):
             comment = "Bestanden"
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         comment = "<b> %s; </b> %s" %(comment, c_punkte)
-        self.context.fixed_results = comment
+        #self.context.fixed_results = comment
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
