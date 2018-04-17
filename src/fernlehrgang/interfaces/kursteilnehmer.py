@@ -169,3 +169,7 @@ class IKursteilnehmer(Interface):
 
 class IVLWKursteilnehmer(IKursteilnehmer):
     """ Marker Interface for Kursteilnehmer regsitered on VLW's """
+
+
+class IFortbildungKursteilnehmer(IKursteilnehmer):
+    """ Marker Interface for Kursteilnehmer regsitered on Fortbildung """

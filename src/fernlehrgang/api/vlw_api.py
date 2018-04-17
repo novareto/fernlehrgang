@@ -14,6 +14,7 @@ from uvc.layout.layout import IUVCSkin
 from tempfile import NamedTemporaryFile
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 import zope.errorview.browser
 
@@ -58,7 +59,7 @@ class APILernwelten(grok.JSON):
                 ret['erfolgreich'] = 'true'
             else:
                 ret['erfolgreich'] = 'false'
-            if not teilnehmer.name:
+            if not teilnehmer.name or not teilnehmer.email or not teilnehmer.telefon:
                 ret['muss_stammdaten_ergaenzen'] = 'true'
             else:
                 ret['muss_stammdaten_ergaenzen'] = 'false'
@@ -84,27 +85,65 @@ class APILernwelten(grok.JSON):
                             )
                     )
             if teilnehmer:
+                oktn = teilnehmer.getVLWKTN()
                 ret['teilnehmer_id'] = teilnehmer.id
                 ret['name'] = teilnehmer.name
                 ret['vorname'] = teilnehmer.vorname
                 ret['geburtsdatum'] = str(teilnehmer.geburtsdatum)
+                ret['email'] = str(teilnehmer.email)
+                ret['telefon'] = str(teilnehmer.telefon)
+                ret['unternehmen'] = teilnehmer.unternehmen[0].name
                 ret['kurse'] = ktns
+                ret['un_klasse'] = oktn.un_klasse
+                ret['branche'] = oktn.branche
         return ret
 
     def setTeilnehmer(self):
-        request = self.request
+        ret = {}
+        request = simplejson.loads(self.body)
+        #request = self.request
         teilnehmer_id = request.get('teilnehmer_id')
         teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
+        
         if teilnehmer:
             for field in ITeilnehmer:
                 value = request.get(field)
                 if value:
                     iField = ITeilnehmer[field]
                     iField.set(teilnehmer, value)
+            oktn = teilnehmer.getVLWKTN()
+            un_klasse = request.get('un_klasse')
+            if un_klasse:
+                IKursteilnehmer.get('un_klasse').set(oktn, un_klasse)
+            branche = request.get('branche')
+            if branche:
+                IKursteilnehmer.get('branche').set(oktn, branche)
+            if not teilnehmer.name or not teilnehmer.email or not teilnehmer.telefon:
+                ret['muss_stammdaten_ergaenzen'] = 'true'
+            else:
+                ret['muss_stammdaten_ergaenzen'] = 'false'
+        else:
+            ret = u"Kein Teilnehmer gefunden"
+        return ret
 
     def getCertificate(self):
+        teilnehmer_id = self.request.form.get('teilnehmer_id')
+        teilnehmer = self.session.query(models.Teilnehmer).get(int(teilnehmer_id))
+        ktn = teilnehmer.getVLWKTN()
+        je = models.JournalEntry(type="Zertifikat gedrukt", status="1", kursteilnehmer_id=ktn.id)
+        teilnehmer.journal_entries.append(je)
         ftf = NamedTemporaryFile()
-        fh = createpdf(ftf, {'druckdatum': '01.01.2015'})
+        from datetime import datetime
+        fh = createpdf(ftf, {
+            'druckdatum': datetime.now().strftime('%d.%m.%Y'), 
+            'flg_titel': ktn.fernlehrgang.titel, 
+            'teilnehmer_id': teilnehmer_id,
+            'mnr': teilnehmer.stamm_mnr or '',
+            'anrede': teilnehmer.anrede,
+            'flg_id': str(ktn.fernlehrgang.id),
+            'mnr': teilnehmer.unternehmen[0].mnr,
+            'vorname': teilnehmer.vorname,
+            'name': teilnehmer.name})
         fh.seek(0)
         return encodestring(fh.read())
 

@@ -1,0 +1,59 @@
+<html>
+<body>
+<div metal:use-macro="path: context/@@formmacros/template/macros/editform"> </div>
+
+<script language="Javascript">
+  $('select#teilnehmer_id').ajaxChosen({
+     dataType: 'json',
+     type: 'POST',
+     url: '<tal:url replace="'%s/search_teilnehmer' % view.application_url()" />'
+   },
+   {
+      minLength: 3
+    },
+
+   {
+      search_contains: true,
+   }
+   );
+</script>
+
+<fieldset>
+  <legend> Journal </legend>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3> Journal </h3>
+    </div>
+    <div class="panel-body">
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th> Teilnehmer </th>
+            <th> Typ </th>
+            <th> Datum</th>
+            <th> Info </th>
+            <th> Aktion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="result view.results">
+            <td> <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/sachbearbeitung?jid=%s' % (view.application_url(), result.teilnehmer.unternehmen_mnr, result.teilnehmer_id, result.id)" tal:content="'%s' % result.teilnehmer_id"> </a> </td>
+            <td tal:content="view.getStatus(result.status)"> </td>
+            <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
+            <td tal:content="result.type"> </td>
+            <td>  
+              <div class="btn-group" tal:define="aktionen view.getAktionen(result)" tal:condition="aktionen">
+                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Aktion <span class="caret"></span> </button>
+                 <ul class="dropdown-menu" tal:repeat="aktion aktionen">
+                   <li> <a href="#" tal:attributes="href aktion['href']"><span tal:content="aktion['title']"/></a></li>
+                 </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </fieldset>
+</body>
+</html>

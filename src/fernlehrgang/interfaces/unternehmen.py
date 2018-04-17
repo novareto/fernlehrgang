@@ -85,3 +85,9 @@ class IUnternehmen(Interface):
         description = u'Alte Mitgliedsnummern der Sparte G',
         required = False, 
         )
+
+#    b_groesse = TextLine(
+#        title = u'Betriebsgröße',
+#        description = u'Betriebsgröße (Zahlen von CUSA)',
+#        required = False,
+#        )

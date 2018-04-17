@@ -49,7 +49,7 @@ class FernlehrgangStatistik(Page):
     def update(self):
         session = saconfig.Session()
         lfs = lieferstopps(None)
-        self.alle_kursteilnehmer = len(self.context.kursteilnehmer)
+        self.alle_kursteilnehmer = session.query(func.count(models.Kursteilnehmer.id)).filter(models.Kursteilnehmer.fernlehrgang_id == self.context.id).one()[0] 
         sql = session.query(models.Kursteilnehmer)
         kursteilnehmer_status = session.query(models.Kursteilnehmer.status, func.count()).filter(
             models.Kursteilnehmer.fernlehrgang_id == self.context.id).group_by(

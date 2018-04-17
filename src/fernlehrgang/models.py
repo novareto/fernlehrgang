@@ -21,6 +21,7 @@ from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.frage import IFrage
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
+from fernlehrgang.interfaces.kursteilnehmer import IFortbildungKursteilnehmer
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
@@ -42,6 +43,7 @@ from zope.app.appsetup.product import getProductConfiguration
 
 config = getProductConfiguration('database')
 SCHEMA = config['schema'] or None 
+#SCHEMA = "FLGUTF8"
 log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
 Base = declarative_base()
 Base.metadata.schema = SCHEMA 
@@ -112,9 +114,8 @@ class Unternehmen(Base, RDBMixin):
     traject.pattern("unternehmen/:unternehmen_mnr")
     #grok.traversable(attr='god_data')
 
-    #__tablename__ = 'unternehmen'
-
     __tablename__ = 'adr'
+    #__tablename__ = 'adr_transfer'
 
     #id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", String(11), primary_key=True, index=True)
@@ -128,6 +129,7 @@ class Unternehmen(Base, RDBMixin):
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
     aktiv = Column("aktiv", Boolean())
+    #b_groesse = Column('BETRIEBSGROESSE', String(240))
 
     @property
     def title(self):
@@ -149,6 +151,7 @@ class Unternehmen(Base, RDBMixin):
 unternehmen_teilnehmer = Table(
     'unternehmen_teilnehmer', Base.metadata,
     Column('unternehmen_id', String(11), ForeignKey('adr.MNR')),
+    #Column('unternehmen_id', String(11), ForeignKey('adr_transfer.MNR')),
     Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
 )
 
@@ -177,7 +180,8 @@ class Teilnehmer(Base, RDBMixin):
     passwort = Column(String(8))
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
-
+    stamm_mnr = Column(String(20))
+    
     unternehmen_mnr = Column(String(11), ForeignKey(Unternehmen.mnr))
 
     #unternehmen = relation(Unternehmen,
@@ -194,6 +198,11 @@ class Teilnehmer(Base, RDBMixin):
 
     def __repr__(self):
         return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.id)
+
+    def getVLWKTN(self):
+        for ktn in self.kursteilnehmer:
+            if ktn.fernlehrgang.typ == '4':
+                return ktn
 
     def factory(id, unternehmen_mnr):
         session = Session()
@@ -287,14 +296,17 @@ class Kursteilnehmer(Base, RDBMixin):
     status = Column(String(50))
     fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
     teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
+    #unternehmen_mnr = Column(String(11), ForeignKey('adr_transfer.MNR',))
     unternehmen_mnr = Column(String(11), ForeignKey('adr.MNR',))
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
     branche = Column(String(20))
+    #fixed_results = Column(String(100))
+    fixed_results = None
 
-    fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id))
-    teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id))
+    fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
+    teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
     unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
 
     @property
@@ -325,6 +337,8 @@ class Kursteilnehmer(Base, RDBMixin):
 def receive_load(target, context):
     if target.fernlehrgang.typ == "4":
         alsoProvides(target, IVLWKursteilnehmer)
+    elif target.fernlehrgang.typ in ("3", "5"):
+        alsoProvides(target, IFortbildungKursteilnehmer)
 
 
 class Antwort(Base, RDBMixin):
@@ -385,7 +399,7 @@ class JournalEntry(Base, RDBMixin):
     teilnehmer_id = Column(Integer, ForeignKey(Teilnehmer.id))
     creation_date = Column(DateTime, default=datetime.datetime.now)
     status = Column(String(50))
-    type = Column(String(50))
+    type = Column(String(500))
     kursteilnehmer_id = Column(Integer, ForeignKey(Kursteilnehmer.id))
     teilnehmer = relationship(Teilnehmer, backref="journal_entries")
 

@@ -92,7 +92,7 @@ Create a browser and visit the instance you just created:
 
    >>> teil1.id
    1
-   
+
    >>> teil1.passwort
    'passwort'
 
@@ -113,30 +113,50 @@ Anmeldung OK
    >>> import simplejson
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
-   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "false"}'
+   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "true"}'
    
 Anmeldung Falsches PW
    
    >>> data['passwort']='WRONG'
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
-   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "false"}'
+   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
    
    >>> data = {'teilnehmer_id': teil1.id}
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
-   '{"geburtsdatum": "None", "teilnehmer_id": 1, "vorname": null, "name": "Lars Walther", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}]}'
+   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Lars Walther", "un_klasse": null, "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}], "telefon": "None", "branche": null, "vorname": null, "unternehmen": "Novareto", "email": "None"}'
    
    >>> data = {'teilnehmer_id': teil1.id, 'name': 'Klinger', 'vorname': 'Christian'}
    >>> data
    {'teilnehmer_id': 1, 'vorname': 'Christian', 'name': 'Klinger'}
-   
-   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data='teilnehmer_id=1&name=Klinger&vorname=Christian')
-   >>> print browser.headers
-   Status: 200 Ok
-   Content-Length: 4
-   Content-Type: application/json
   
+   >>> import json 
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(data))
+   >>> print browser.headers['Status']
+   200 Ok
+   >>> print browser.contents
+   {"muss_stammdaten_ergaenzen": "true"}
+ 
+   >>> daten = {
+   ...   'teilnehmer_id': '1',
+   ...    'name': 'Klinger', 
+   ...    'vorname': 'Christian', 
+   ...    'email': 'ck@novareto.de', 
+   ...    'telefon': '09841/3644', 
+   ...    'un_klasse': 'G3', 
+   ...    'branche': 'nein'}
+ 
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(daten))
+   >>> print browser.headers['Status']
+   200 Ok
+   >>> print browser.contents
+   {"muss_stammdaten_ergaenzen": "false"}
+
+   >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
+   >>> browser.contents
+   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Klinger", "un_klasse": "G3", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}], "telefon": "09841/3644", "branche": "nein", "vorname": "Christian", "unternehmen": "Novareto", "email": "ck@novareto.de"}'
+
 Antwort  
 -------
   
@@ -165,4 +185,25 @@ Antwort
    >>> antwort.datum
    
    >>> results.summary()
-   {'comment': 'VLW abgeschlossen', 'resultpoints': 0, 'points': 0}
+   {'comment': 'Bestanden', 'resultpoints': 0, 'points': 0}
+
+Passwort Ändern
+---------------
+
+   >>> session = Session()
+   >>> tn = session.query(models.Teilnehmer).get(1)
+   >>> tn.passwort
+   u'passwort'
+
+   >>> daten = {
+   ...   'teilnehmer_id': '1',
+   ...    'passwort': 'NeuesPasswort'}
+ 
+   >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(daten))
+   >>> print browser.headers['Status']
+   200 Ok
+
+   >>> session = Session()
+   >>> tn = session.query(models.Teilnehmer).get(1)
+   >>> tn.passwort
+   u'NeuesPasswort'

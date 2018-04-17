@@ -103,6 +103,9 @@ class IAntwort(Interface):
         title = u'Eingabesystem',
         description = u'Bitte geben Sie an wie diese Antwort ins System gekommen ist.',
         required = True,
-        vocabulary=vocabulary(('FernlehrgangApp', 'FernlehrgangApp', 'FernlehrgangApp'),
-                              ('Extranet', 'Extranet', 'Extranet'),),
+        vocabulary=vocabulary(
+            ('FernlehrgangApp', 'FernlehrgangApp', 'FernlehrgangApp'),
+            ('Extranet', 'Extranet', 'Extranet'),
+            ('Virtuelle Lernwelt', 'Virtuelle Lernwelt', 'Virtuelle Lernwelt')
+        )
         )

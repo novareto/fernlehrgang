@@ -10,6 +10,7 @@ from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer 
+from fernlehrgang.interfaces.journal import IJournalEntry
 from fernlehrgang.models import Teilnehmer, Kursteilnehmer
 from fernlehrgang.viewlets import NavigationMenu
 from megrok.traject import locate
@@ -81,6 +82,13 @@ class TeilnehmerSuche(Form):
         if value:
             return IKursteilnehmer.get('branche').source(None).getTermByToken(value).title
 
+    def getStatus(self, value):
+        if value:
+            try:
+                return IJournalEntry.get('status').source(None).getTerm(value).title
+            except:
+                return u"--> %s" % value
+
     def getSession(self):
         key = "fernlehrgang.teilnehmer"
         from zope.session.interfaces import ISession
@@ -99,10 +107,8 @@ class TeilnehmerSuche(Form):
             tn = session.query(Teilnehmer).get(int(tn))
             locate(root, tn, DefaultModel)
             for unternehmen in tn.unternehmen:
-                locate(root, unternehmen, DefaultModel)
                 unternehmenl.append(unternehmen)
             for ktn in tn.kursteilnehmer:
-                locate(root, ktn, DefaultModel)
                 ktns.append(ktn)
         return {'teilnehmer': tn, 'unternehmen': unternehmenl, 'kursteilnehmer': ktns}
 

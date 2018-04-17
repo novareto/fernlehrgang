@@ -28,6 +28,8 @@ from uvc.layout import MenuItem
 from zeam.form.ztk import customize
 from zope.schema.interfaces import IDate
 from fernlehrgang import fmtDate
+from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
+from zeam.form.base.markers import NO_VALUE
 
 
 grok.templatedir('templates')
@@ -132,12 +134,6 @@ def customize_size(field):
     field.valueLength = 'medium'
 
 
-
-
-from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
-from zeam.form.base.markers import NO_VALUE
-
-
 class DateFieldWidget(DateFieldWidget):
 
     def valueToUnicode(self, value):
@@ -165,6 +161,10 @@ class SystemError(Page, grok.components.ExceptionView):
         super(SystemError, self).__init__(context, request)
         self.context = grok.getSite()
         self.origin_context = context
+
+    def update(self):
+        RESPONSE = self.request.response
+        RESPONSE.setHeader('content-type', 'text/html')
 
 
 class FaviconIco(grok.View):
@@ -206,3 +206,13 @@ class TestSystem(grok.Viewlet):
 
     def render(self):
         return ""
+
+
+from SocketServer import BaseServer
+
+def my_handle_error(self, request, client_address):
+    return
+
+BaseServer.handle_error = my_handle_error
+
+

@@ -99,3 +99,10 @@ class EditUser(Form):
         for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
             role_manager.removeRoleFromPrincipal(role_id, data['login'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
+
+
+from dolmen.app.authentication.browser.login import Login
+
+
+class Login(Login):
+    pass

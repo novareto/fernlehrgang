@@ -182,8 +182,8 @@ class XLSFortbildung(Form):
             mail = getUserEmail(self.request.principal.id)
         except:
             mail = "ck@novareto.de"
-        #export(flg_ids, data['stichtag'], mail)
-        fn = q.enqueue_call(func=export,args=( flg_ids, data['stichtag'], mail), timeout=600)
+        export(flg_ids, data['stichtag'], mail)
+        #fn = q.enqueue_call(func=export,args=( flg_ids, data['stichtag'], mail), timeout=600)
         #fn = export_versandliste_fortbildung(flg_ids, data['stichtag'], mail)
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
         self.redirect(self.application_url())

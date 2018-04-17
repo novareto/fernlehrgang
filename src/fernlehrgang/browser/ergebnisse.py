@@ -3,12 +3,14 @@
 # cklinger@novareto.de
 
 import grok
+import json
 
 from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
 from fernlehrgang.config import POSTVERSANDSPERRE
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
+from fernlehrgang.interfaces.kursteilnehmer import IFortbildungKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.viewlets import NavigationMenu
 from uvc.layout import Page
@@ -42,6 +44,36 @@ class Resultate(Page):
     def getSummary(self):
         results = ICalculateResults(self.context)
         return results.summary()
+
+
+
+class ResultateVLW(Page):
+    grok.context(IVLWKursteilnehmer)
+    grok.title('Ergebnisse')
+    grok.name('resultate')
+
+    title = u"Resultate"
+
+    @property
+    def description(self):
+        teilnehmer = self.context.teilnehmer
+        return u"Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen." % (
+                teilnehmer.name, teilnehmer.vorname, self.context.id)
+
+    @property
+    def getSummary(self):
+        results = ICalculateResults(self.context)
+        return results.summary()
+
+    def getAntwort(self):
+        for antwort in self.context.antworten:
+            if antwort.gbo.upper().strip() == "OK":
+                return antwort
+        return None
+
+    def fmtJson(self, daten):
+        return json.dumps(json.loads(daten), indent=4)
+
 
 
 def checkDate(date):
@@ -143,6 +175,31 @@ class CalculateResults(grok.Adapter):
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
         comment = "<b> %s; </b> %s" %(comment, c_punkte)
+        #self.context.fixed_results = comment
+        #self.context._result = comment
+        return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
+
+
+class CalculateResultsFortbildung(CalculateResults):
+    grok.implements(ICalculateResults)
+    grok.context(IFortbildungKursteilnehmer)
+
+    def summary(self, lehrhefte=None, session=None, unternehmen=None):
+        punkte = 0
+        comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
+        context = self.context
+        mindest_punktzahl = context.fernlehrgang.punktzahl
+        lehrhefte = self.lehrhefte(lehrhefte, session)
+        for lehrheft in lehrhefte:
+            punkte += lehrheft['punkte']
+        if context.status in POSTVERSANDSPERRE:
+            comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
+        elif punkte >= mindest_punktzahl:
+            comment = "Bestanden"
+        c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
+        comment = "<b> %s; </b> %s" %(comment, c_punkte)
+        #self.context.fixed_results = comment
+        #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
 
@@ -155,7 +212,7 @@ class CalculateResultsVLW(grok.Adapter):
 
     def getResults(self):
         for antwort in self.context.antworten:
-            if antwort.gbo == "OK":
+            if antwort.gbo.upper().strip() == "OK":
                 return True
         return False
 
@@ -165,7 +222,7 @@ class CalculateResultsVLW(grok.Adapter):
         if context.status in POSTVERSANDSPERRE:
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif self.getResults():
-            comment = "VLW abgeschlossen"
+            comment = "Bestanden"
         unternehmen = context.unternehmen
         branche = context.branche
         un_klasse = context.un_klasse

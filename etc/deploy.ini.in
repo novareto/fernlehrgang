@@ -76,6 +76,7 @@ use = egg:repoze.debug#threads
 
 [server:main]
 use = egg:Paste#http
+;use = egg:gunicorn#main
 host = ${settings:host}
 port = ${:port}
 

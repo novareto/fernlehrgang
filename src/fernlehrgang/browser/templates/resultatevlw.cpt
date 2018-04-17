@@ -1,0 +1,13 @@
+<div tal:define="summary view.getSummary">
+  <h1 tal:content="view.title"></h1>
+  <p class="description" tal:content="view.description"/>
+
+
+  <div tal:define="antwort view.getAntwort()">
+     Status: <span tal:content="summary['comment']"/> <br/>
+     Datum: <span tal:content="antwort.datum.strftime('%d.%m.%Y %H:%M')"/> <br/>
+     Daten: <pre tal:content="view.fmtJson(antwort.gbo_daten)"> </pre>
+  </div>
+
+</div>
+

@@ -15,6 +15,13 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang import log
+from profilehooks import profile
+
+
+#import logging
+#logging.basicConfig()
+#logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
+#logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 
 #
@@ -25,7 +32,7 @@ class HelperAPI(grok.XMLRPC):
     grok.context(IFernlehrgangApp)
 
     def getFlgIds(self, teilnehmer_id):
-        log('getFlgIds %s' % teilnehmer_id, 'performance_analyse')
+        #log('getFlgIds %s' % teilnehmer_id, 'performance_analyse')
         session = Session()
         ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
                 Kursteilnehmer.teilnehmer_id == teilnehmer_id,
@@ -33,7 +40,7 @@ class HelperAPI(grok.XMLRPC):
         return ret.all()
 
     def getFrageIds(self, lehrheft_id):
-        log('getFrageIds %s' % lehrheft_id, 'performance_analyse')
+        #log('getFrageIds %s' % lehrheft_id, 'performance_analyse')
         session = Session()
         d = dict()
         ret = session.query(Frage).filter(Frage.lehrheft_id==lehrheft_id)
@@ -42,16 +49,15 @@ class HelperAPI(grok.XMLRPC):
         return d
 
     def getMNRFromTeilnehmerID(self, teilnehmer_id):
-        log('getMNRFromTeilnehmerID %s' % teilnehmer_id, 'performance_analyse')
+        #log('getMNRFromTeilnehmerID %s' % teilnehmer_id, 'performance_analyse')
         session = Session()
-        ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
+        ret = session.query(Teilnehmer.unternehmen_mnr).filter(Teilnehmer.id==teilnehmer_id)
         if ret.count() != 1:
             return False
-        return str(ret.one().unternehmen_mnr)
+        return str(ret.one()[0])
 
     def getKursteilnehmerID(self, teilnehmer_id, lehrgang_id):
         log('getKursteilnehmerTeilnehmerID %s %s' %(teilnehmer_id, lehrgang_id), 'performance_analyse')
-        session = Session()
         session = Session()
         ret = session.query(Kursteilnehmer).filter(
             and_(Kursteilnehmer.teilnehmer_id == teilnehmer_id,
@@ -62,10 +68,24 @@ class HelperAPI(grok.XMLRPC):
 
     def canLogin(self, teilnehmer_id, passwort):
         log('canLogin %s' %(teilnehmer_id), 'performance_analyse')
-        session = Session()
         if teilnehmer_id == "admin":
-            return 0 
+            return 0
+        session = Session()
         ret = session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
+
+        #@timeout_decorator.timeout(8, use_signals=False)
+        #def q():
+        #    import time
+        #    time.sleep(9)
+        #    session = Session()
+        #    return session.query(Teilnehmer).filter(Teilnehmer.id==teilnehmer_id)
+        #try:
+        #    ret = q()
+        #except timeout_decorator.TimeoutError as e:
+        #    # log timeout
+        #    log('canLogin time out')
+        #    return 0
+            
         if ret.count() != 1:
             return 0 
         ret = ret.one()
@@ -116,8 +136,8 @@ class TeilnehmerAPI(grok.REST):
             nr = context.nr,
             plz = context.plz,
             ort = context.ort,
-            email = context.email,
             telefon = context.telefon,
+            email = context.email,
             un_klasse = un_klasse,
             branche = branche,
             kompetenzzentrum = context.kompetenzzentrum,
@@ -158,6 +178,8 @@ class KPTZTeilnehmerAPI(grok.REST):
         return "1"
 
 
+
+from profilehooks import profile
 class KursteilnehmerAPI(grok.REST):
     grok.layer(RestLayer)
     grok.context(IKursteilnehmer)

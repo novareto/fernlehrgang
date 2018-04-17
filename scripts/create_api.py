@@ -7,9 +7,9 @@ import simplejson
 from base64 import b64decode
 
 
-data = {'teilnehmer_id': 100000}
+data = {'teilnehmer_id': '443194'}
 
-URL = "http://localhost:8080/++skin++vlw/flg/%s"
+URL = "http://localhost:8080/++skin++vlw/app/%s"
 
 result = requests.post(URL % 'getTeilnehmer', data=simplejson.dumps(data))
 print result.json()
@@ -17,7 +17,7 @@ print result.status_code
 
 
 data = {'teilnehmer_id': 100000, 'passwort': 'DW5Casvh'}
-data = {'teilnehmer_id': 100001, 'passwort': 'passwort'}
+data = {'teilnehmer_id': 443194, 'passwort': 'passwort'}
 result = requests.post(URL % 'checkAuth', data=simplejson.dumps(data))
 print result.json()
 

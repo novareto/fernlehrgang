@@ -81,7 +81,10 @@ class Status(Column):
     attrName = "status"
 
     def renderCell(self, item):
-        return getattr(item, 'status', '')
+        from fernlehrgang.interfaces.journal import get_status
+        source = get_status(None)
+        import pdb; pdb.set_trace()
+        return source.getTerm(getattr(item, 'status', '1')).title
 
 
 class Type(Column):
