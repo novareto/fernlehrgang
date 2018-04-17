@@ -20,7 +20,6 @@ setup(name='fernlehrgang',
       zip_safe=False,
       install_requires=[
           'GenericCache',
-          'cairosvg',
           'dolmen.app.authentication',
           'dolmen.app.viewselector',
           'dolmen.content',
