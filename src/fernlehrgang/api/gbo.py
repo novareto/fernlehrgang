@@ -395,8 +395,6 @@ class GBOAPI(object):
 
     def set_data(self, data):
         url = "%simport/clients" % self.url
-        print url
-        import pdb; pdb.set_trace()
         r = requests.post(
             url,
             json=data,
