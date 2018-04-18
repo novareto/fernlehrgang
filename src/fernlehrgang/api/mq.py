@@ -184,8 +184,8 @@ class Worker(ConsumerMixin):
             zip = unternehmen.plz,
             city = unternehmen.ort,
             street = unternehmen.str,
-            compcenter = 0, 
-        ) 
+            compcenter = 0,
+        )
         res['user'] = dict(
             login = str(teilnehmer.id),
             salutation=int(teilnehmer.anrede),
@@ -200,7 +200,7 @@ class Worker(ConsumerMixin):
 
     def createStatusUpdate(self, data, gbo_status):
         return data
-        
+
     def saveResult(self, body):
         from fernlehrgang import models
         session = Session()
@@ -213,13 +213,13 @@ class Worker(ConsumerMixin):
         orgas = data.pop('orgas')
         gbo_daten = self.createGBODaten(ktn, orgas)
         data['gbo_daten'] = simplejson.dumps(gbo_daten)
-        data['lehrheft_id'] = 1076 
-        data['frage_id'] = 10571 
+        data['lehrheft_id'] = 1076
+        data['frage_id'] = 10571
         gbo_u = data.pop('gbo_uebermittlung')
         data.pop('status')
         antwort = models.Antwort(**data)
         ktn.antworten.append(antwort)
-        
+
         je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="1", kursteilnehmer_id=ktn.id)
         ktn.teilnehmer.journal_entries.append(je)
         gbo_status=""
@@ -255,7 +255,7 @@ class Worker(ConsumerMixin):
                 log_entry.pop('buero'),
                 log_entry.pop('lager'),
                 log_entry.pop('verkauf'))
-            log_entry['type'] = log_entry['type'][:400] 
+            log_entry['type'] = log_entry['type'][:400]
         elif typ == "fortschritt":
             if 'position' in log_entry.keys():
                 log_entry.pop('position')
@@ -263,7 +263,7 @@ class Worker(ConsumerMixin):
                 log_entry['title'] = ''
             if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
                 log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
-    
+
             log_entry['type'] = u"Level %s (%s) zu %s abgeschlossen." % (
                 log_entry.pop('title'),
                 log_entry.pop('key'),
@@ -274,7 +274,7 @@ class Worker(ConsumerMixin):
                 session = Session()
                 teilnehmer = session.query(models.Teilnehmer).get(int(log_entry.get('teilnehmer_id')))
                 if teilnehmer:
-                    log_entry['status'] = "2" 
+                    log_entry['status'] = "2"
                     je = models.JournalEntry(**log_entry)
                     teilnehmer.journal_entries.append(je)
                     message.ack()
