@@ -302,8 +302,8 @@ class Kursteilnehmer(Base, RDBMixin):
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
     branche = Column(String(20))
-    #fixed_results = Column(String(100))
-    fixed_results = None
+    fixed_results = Column(String(100))
+    #fixed_results = None
 
     fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
     teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id), lazy="joined")

@@ -175,7 +175,7 @@ class CalculateResults(grok.Adapter):
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
         comment = "<b> %s; </b> %s" %(comment, c_punkte)
-        #self.context.fixed_results = comment
+        self.context.fixed_results = comment
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
@@ -198,7 +198,7 @@ class CalculateResultsFortbildung(CalculateResults):
             comment = "Bestanden"
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         comment = "<b> %s; </b> %s" %(comment, c_punkte)
-        #self.context.fixed_results = comment
+        self.context.fixed_results = comment
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
@@ -244,4 +244,5 @@ class CalculateResultsVLW(grok.Adapter):
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
                     elif context.gespraech == '0' or context.gespraech is None:
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
+        self.context.fixed_results = comment
         return dict(points=0, resultpoints=0, comment=comment)
