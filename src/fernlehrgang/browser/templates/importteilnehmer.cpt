@@ -1,0 +1,14 @@
+<h1 tal:content="view.title"> </h1>
+<p class="lead" tal:content="view.description"> </p>
+
+<form action="." tal:attributes="action view.url()">
+  <div class="row highlight" tal:repeat="flg view.getFernlehrgaenge()">
+    <div class="col-md-8">
+      <p tal:content="flg['value']"> </p>
+      <p tal:content="flg['tn']"> </p>
+    </div>
+    <div class="col-md-4">
+      <input class="btn btn-primary" type="submit" value="Importieren" tal:attributes="name 'import_%s' % flg['key']">
+    </div>
+  </div>
+</form>

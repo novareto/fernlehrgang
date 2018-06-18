@@ -19,6 +19,7 @@ setup(name='fernlehrgang',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'simplejson',
           'GenericCache',
           'dolmen.app.authentication',
           'dolmen.app.viewselector',
