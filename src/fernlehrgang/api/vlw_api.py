@@ -47,6 +47,11 @@ class APILernwelten(grok.JSON):
         return Session()
 
     def checkAuth(self):
+        def isVLWTeilnehmer(teilnehmer):
+            for ktn in teilnehmer.kursteilnehmer:
+                if ktn.fernlehrgang.typ == "4":
+                    return True
+            return False
         ret = {}
         data = simplejson.loads(self.body)
         teilnehmer_id = data.get('teilnehmer_id')
@@ -55,7 +60,8 @@ class APILernwelten(grok.JSON):
         if teilnehmer_id:
             teilnehmer = self.session.query(
                 models.Teilnehmer).get(teilnehmer_id)
-            if teilnehmer.passwort == data['passwort']:
+            vlwtn = isVLWTeilnehmer(teilnehmer)
+            if teilnehmer.passwort == data['passwort'] and vlwtn:
                 ret['erfolgreich'] = 'true'
             else:
                 ret['erfolgreich'] = 'false'
