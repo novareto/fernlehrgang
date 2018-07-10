@@ -59,6 +59,7 @@ setup(name='fernlehrgang',
           'zope.app.testing',
           'zope.pluggableauth',
           'zope.sendmail',
+          'simplejson',
       ],
       extras_require={
           'oracle': ['cx_Oracle',],
