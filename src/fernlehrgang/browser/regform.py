@@ -70,8 +70,9 @@ class AutoRegForm(Form):
             un_klasse = data.get('un_klasse'),
             branche = data.get('branche'),
             unternehmen_mnr=data['mnr'])
-        kursteilnehmer.teilnehmer = tn
-        flg.kursteilnehmer.append(kursteilnehmer)
+        kursteilnehmer.teilnehmer_id = tn.id
+        kursteilnehmer.fernlehrgang_id = flg.id
+        session.add(kursteilnehmer)
         session.flush()
         from zope.event import notify
         from zope.lifecycleevent import ObjectAddedEvent

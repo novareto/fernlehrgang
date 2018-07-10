@@ -31,6 +31,9 @@ Einrichten des Fernlehrgangs
    >>> flg09 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="4",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
 
+   >>> flg10 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="1",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+
    >>> lheft1 = Lehrheft(nummer=1)
    >>> lheft2 = Lehrheft(nummer=2)
 
@@ -42,6 +45,7 @@ Einrichten des Fernlehrgangs
 
    >>> session = Session()
    >>> session.add(flg09)
+   >>> session.add(flg10)
    >>> import transaction; transaction.commit()
 
     
@@ -57,9 +61,11 @@ Einrichten der Benutzer
 
    >>> teil1 = Teilnehmer(name="Lars Walther", passwort="passwort")
    >>> teil2 = Teilnehmer(name="Bernd Probst")
+   >>> teil3 = Teilnehmer(name="MaxMustermann", passwort="MMPasswort")
 
    >>> unt1.teilnehmer.append(teil1)
    >>> unt2.teilnehmer.append(teil2)
+   >>> unt1.teilnehmer.append(teil3)
 
 
 Einrichten von Kursteilnehmern und von Antwortbögen
@@ -68,19 +74,26 @@ Einrichten von Kursteilnehmern und von Antwortbögen
    >>> from fernlehrgang.models import Kursteilnehmer, Antwort
    >>> kt1 = Kursteilnehmer()
    >>> kt2 = Kursteilnehmer()
+   >>> kt3 = Kursteilnehmer()
 
    >>> flg = session.query(Fernlehrgang).get(1)
    >>> flg.kursteilnehmer.append(kt1)
    >>> flg.kursteilnehmer.append(kt2)
 
+   >>> flg = session.query(Fernlehrgang).get(2)
+   >>> flg.kursteilnehmer.append(kt3)
    >>> import transaction; transaction.commit()
 
    >>> session = Session()
    >>> flg = session.query(Fernlehrgang).get(1)
    >>> kut1, kut2 = flg.kursteilnehmer
 
+   >>> flg = session.query(Fernlehrgang).get(2)
+   >>> kut3 = flg.kursteilnehmer
+
    >>> kut1.teilnehmer = teil1
    >>> kut2.teilnehmer = teil2
+   >>> kut3.teilnehmer = teil3
 
    >>> import transaction; transaction.commit()
 
@@ -114,9 +127,23 @@ Anmeldung OK
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
    '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "true"}'
-   
+  
+
+Anmeldung kein VLW
+
+   >>> data = {'teilnehmer_id': teil3.id, 'passwort': teil3.passwort}
+   >>> data
+   {'teilnehmer_id': 2, 'passwort': 'MMPasswort'}
+   >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
+   >>> browser.contents
+   '{"gbo": false, "teilnehmer_id": 2, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+
+ 
 Anmeldung Falsches PW
    
+   >>> data = {'teilnehmer_id': teil1.id, 'passwort': teil1.passwort}
+   >>> data
+   {'teilnehmer_id': 1, 'passwort': 'passwort'}
    >>> data['passwort']='WRONG'
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents

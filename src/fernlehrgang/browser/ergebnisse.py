@@ -158,7 +158,7 @@ class CalculateResults(grok.Adapter):
             #if comment == "Bestanden":
             if True:
                 if branche == "ja":
-                    if un_klasse == 'G2':
+                    if un_klasse == 'G2' or un_klasse == "G":
                         if context.gespraech == '2':
                             comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
                         elif context.gespraech == '0' or context.gespraech is None:
@@ -169,7 +169,7 @@ class CalculateResults(grok.Adapter):
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
                 elif branche == "nein":
-                    if un_klasse == 'G2':
+                    if un_klasse == 'G2' or un_klasse == "G":
                         if context.gespraech == '2':
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
                         elif context.gespraech == '0' or context.gespraech is None:
@@ -228,7 +228,7 @@ class CalculateResultsVLW(grok.Adapter):
         un_klasse = context.un_klasse
         if comment == "Bestanden":
             if branche == "ja":
-                if un_klasse == 'G2':
+                if un_klasse == 'G2' or un_klasse == 'G':
                     if context.gespraech == '2':
                         comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
                     elif context.gespraech == '0' or context.gespraech is None:
@@ -239,7 +239,7 @@ class CalculateResultsVLW(grok.Adapter):
                     elif context.gespraech == '0' or context.gespraech is None:
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
             elif branche == "nein":
-                if un_klasse == 'G2':
+                if un_klasse == 'G2' or un_klasse == 'G':
                     if context.gespraech == '2':
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
                     elif context.gespraech == '0' or context.gespraech is None:

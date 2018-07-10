@@ -130,7 +130,7 @@ HTTP_LAYER = gocept.httpserverlayer.wsgi.Layer(
 
 
 @doctestcase.doctestfiles(
-    'models.txt', 'vlw.txt', 'ablauf.txt', optionflags=doctest.ELLIPSIS)
+    'models.txt', 'vlw.txt', 'ablauf.txt', 'results.txt', 'importcheck.txt', optionflags=doctest.ELLIPSIS)
 class MoreTests(unittest.TestCase):
     layer = HTTP_LAYER
 
