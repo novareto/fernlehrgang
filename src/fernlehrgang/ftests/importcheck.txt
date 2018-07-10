@@ -1,0 +1,159 @@
+======
+Ablauf
+======
+
+:Test-Layer: functional
+
+Dieser Doctest soll mal zeigen wie ein Ablauf eines Fernlehrgangs aussehen könnte...
+
+
+Setup
+-----
+
+Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
+uma alle Utilities zur Verfügung zu haben.
+
+   >>> from fernlehrgang.app import FernlehrgangApp
+   >>> from z3c.saconfig import Session
+   >>> root = getRootFolder()
+   >>> root['app'] = app = FernlehrgangApp()
+   
+
+Einrichten des Fernlehrgangs
+----------------------------
+
+   >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
+
+   >>> import datetime
+   >>> beginn = datetime.date(2016, 01, 01)
+   >>> ende = datetime.date(2016, 12, 31)
+
+   >>> flg09 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="1",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+
+   >>> flg10 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="1",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+
+   >>> session = Session()
+   >>> session.add(flg09)
+   >>> session.add(flg10)
+   >>> import transaction; transaction.commit()
+
+    
+
+Einrichten der Benutzer
+-----------------------
+
+   >>> from fernlehrgang.models import Unternehmen, Teilnehmer
+
+   >>> session = Session()
+   >>> unt1 = Unternehmen(mnr="0000-00025", name="Novareto")
+   >>> unt2 = Unternehmen(mnr="0000-00026", name="Econtec")
+
+   >>> teil1 = Teilnehmer(name="Lars Walther", passwort="passwort")
+   >>> teil2 = Teilnehmer(name="Bernd Probst")
+   >>> teil3 = Teilnehmer(name="MaxMustermann", passwort="MMPasswort")
+   >>> teil4 = Teilnehmer(name="Christian Klinger", passwort="MMPasswort")
+
+   >>> unt1.teilnehmer.append(teil1)
+   >>> unt2.teilnehmer.append(teil2)
+   >>> unt1.teilnehmer.append(teil3)
+   >>> unt1.teilnehmer.append(teil4)
+
+
+   >>> session.add(unt1)
+   >>> session.add(unt2)
+
+   >>> import transaction; transaction.commit()
+
+
+Einrichten von Kursteilnehmern und von Antwortbögen
+---------------------------------------------------
+
+   >>> from fernlehrgang.models import Kursteilnehmer, Antwort
+   >>> kt1 = Kursteilnehmer(status="A1")
+   >>> kt2 = Kursteilnehmer(status="A1")
+   >>> kt3 = Kursteilnehmer(status="A1")
+   >>> kt4 = Kursteilnehmer(status="Z1")
+
+   >>> session.add(kt1)
+   >>> session.add(kt2)
+   >>> session.add(kt3)
+   >>> session.add(kt4)
+
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg
+   <Fernlehrgang(id='1', jahr='2016', titel='Fernlehrgang')>
+
+   >>> flg.kursteilnehmer.append(kt1)
+   >>> flg.kursteilnehmer.append(kt2)
+   >>> flg.kursteilnehmer.append(kt4)
+
+   >>> flg = session.query(Fernlehrgang).get(2)
+   >>> flg.kursteilnehmer.append(kt3)
+   >>> import transaction; transaction.commit()
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> kut1, kut2, kut4 = flg.kursteilnehmer
+
+   >>> flg = session.query(Fernlehrgang).get(2)
+   >>> kut3 = flg.kursteilnehmer[0]
+
+   >>> teil1, teil2, teil3, teil4 = session.query(Teilnehmer).all()
+
+   >>> kut1.teilnehmer = teil1
+   >>> kut2.teilnehmer = teil2
+   >>> kut3.teilnehmer = teil3
+   >>> kut4.teilnehmer = teil4
+
+   >>> import transaction; transaction.commit()
+
+
+Importcheck
+-----------
+
+   >>> flg1, flg2 = session.query(Fernlehrgang).all()
+   >>> flg1
+   <Fernlehrgang(id='1', jahr='2016', titel='Fernlehrgang')>
+
+   >>> flg2
+   <Fernlehrgang(id='2', jahr='2016', titel='Fernlehrgang')>
+
+   >>> [x.teilnehmer_id for x in flg2.kursteilnehmer]
+   [3]
+
+   >>> from zope.component import getMultiAdapter
+   >>> from zope.publisher.browser import TestRequest
+   >>> request = TestRequest(form = {'import_1': 'flg1'})
+   >>> importer = getMultiAdapter((flg2, request), name='importteilnehmer')
+   >>> importer
+   <fernlehrgang.browser.import_teilnehmer.ImportTeilnehmer object at 0...>
+
+   >>> importer.getFernlehrgaenge()
+   [{'tn': 3, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 1}, {'tn': 1, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 2}]
+
+   >>> flg11 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="2",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)
+
+   >>> session.add(flg11)
+   >>> import transaction; transaction.commit()
+
+   >>> importer.getFernlehrgaenge()
+   [{'tn': 3, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 1}, {'tn': 1, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 2}]
+
+   >>> len(flg2.kursteilnehmer)
+   1
+
+   >>> len(flg1.kursteilnehmer)
+   3
+
+   >>> importer.update()
+   >>> len(flg2.kursteilnehmer)
+   3
+
+Teilnehmer dürfen nicht doppelt importiert werden
+
+   >>> importer.update()
+   >>> len(flg2.kursteilnehmer)
+   3
