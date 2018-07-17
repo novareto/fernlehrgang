@@ -12,10 +12,11 @@ def worker():
     flg = root['app']
     component.hooks.setSite(flg)
     session = Session()
-    teilnehmer = session.query(models.Teilnehmer).get(101032)
-    je = models.JournalEntry(type="kk", status="HH")
-    teilnehmer.journal_entries.append(je)
-    import pdb; pdb.set_trace()
+    fernlehrgang = session.query(models.Fernlehrgang).get(114)
+    for i, ktn in enumerate(fernlehrgang.kursteilnehmer):
+        print "%s, %s, %s" %(i, ktn.id, ktn.result)
+    import transaction; transaction.commit()
+
 
 
 if __name__ == "__main__":

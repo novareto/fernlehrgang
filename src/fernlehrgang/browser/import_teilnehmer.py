@@ -20,15 +20,18 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 from fernlehrgang.browser.ergebnisse import CalculateResults
+from fernlehrgang.exports.statusliste import getXLSBases, nN, un_helper, ges_helper
 
 
 grok.templatedir('templates')
 
 
 def createStatusliste(data):
+    rc = []
     for teilnehmer, unternehmen, ktn in data:
-        cal_res = CalculateResults(ktn)
-        summary = cal_res.summary(lehrhefte)
+        #cal_res = CalculateResults(ktn)
+        unternehmen = unternehmen[0]
+        summary = ktn.result # cal_res.summary(lehrhefte)
         liste = []
         teilnehmer = ktn.teilnehmer
         ss = set([x.rlhid for x in ktn.antworten])
@@ -71,15 +74,12 @@ def createStatusliste(data):
             liste.append(nN(summary['resultpoints']))
             liste.append(nN(antworten))
         rc.append(liste)
-        i+=1
-    from fernlehrgang.exports.statusliste import getXLSBases
     book, adressen, rc = getXLSBases()
     for i, zeile in enumerate(rc):
-       ws.append(zeile)
-    fn = "/tmp/hans.xlsx"
+       adressen.append(zeile)
+    fn = "/tmp/hans.xls"
     book.save(fn)
-
-
+    return fn
 
 
 @menu.menuentry(NavigationMenu, order=300)
@@ -122,7 +122,7 @@ class ImportTeilnehmer(Page):
             return
 
         session = saconfig.Session()
-        flg = session.query(models.Fernlehrgang).get(key)
+        flg = session.query(models.Fernlehrgang).get(int(key))
         tids = [x.teilnehmer_id for x in self.context.kursteilnehmer]
 
         def check(ktn):
@@ -151,10 +151,13 @@ class ImportTeilnehmer(Page):
                     i += 1
         elif action == "statusliste":
             rc = []
-            for ktn in flg.kursteilnehmer:
+            for ktn in flg.kursteilnehmer[:10]:
+                print ktn
                 if check(ktn):
                     rc.append((ktn.teilnehmer, ktn.teilnehmer.unternehmen, ktn))
-            createStatusliste(rc)
             print rc
-
+            fn = createStatusliste(rc)
+            self.request.response.setHeader('content-disposition', 'attachment; filename=%s' % 'Statusliste.xls')
+            with open(fn, 'rb') as xlsx:
+                return xlsx
         #self.flash('Es wurden %s Teilnehmer erfolgreich registriert.' % i)

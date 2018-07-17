@@ -197,8 +197,9 @@ class CalculateResultsFortbildung(CalculateResults):
         elif punkte >= mindest_punktzahl:
             comment = "Bestanden"
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
-        comment = "<b> %s; </b> %s" %(comment, c_punkte)
+        comment = "%s; %s" %(comment, c_punkte)
         self.context.fixed_results = comment
+        comment = "<b> %s; </b> %s" %(comment, c_punkte)
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
