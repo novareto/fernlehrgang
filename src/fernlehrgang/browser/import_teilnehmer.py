@@ -27,7 +27,7 @@ grok.templatedir('templates')
 
 
 def createStatusliste(data):
-    rc = []
+    rcc = []
     for teilnehmer, unternehmen, ktn in data:
         #cal_res = CalculateResults(ktn)
         unternehmen = unternehmen[0]
@@ -73,11 +73,13 @@ def createStatusliste(data):
             liste.append(nN(summary['comment']))
             liste.append(nN(summary['resultpoints']))
             liste.append(nN(antworten))
-        rc.append(liste)
+        rcc.append(liste)
     book, adressen, rc = getXLSBases()
-    for i, zeile in enumerate(rc):
+    r = rc + rcc
+    print r
+    for i, zeile in enumerate(r):
        adressen.append(zeile)
-    fn = "/tmp/hans.xls"
+    fn = "/tmp/hans.xlsx"
     book.save(fn)
     return fn
 
@@ -116,7 +118,6 @@ class ImportTeilnehmer(Page):
             elif k.startswith('statusliste_'):
                 key = k.replace('statusliste_', '')
                 action = "statusliste"
-
 
         if not key:
             return
@@ -157,7 +158,7 @@ class ImportTeilnehmer(Page):
                     rc.append((ktn.teilnehmer, ktn.teilnehmer.unternehmen, ktn))
             print rc
             fn = createStatusliste(rc)
-            self.request.response.setHeader('content-disposition', 'attachment; filename=%s' % 'Statusliste.xls')
+            self.request.response.setHeader('content-disposition', 'attachment; filename=%s' % 'Statusliste.xlsx')
             with open(fn, 'rb') as xlsx:
                 return xlsx
         #self.flash('Es wurden %s Teilnehmer erfolgreich registriert.' % i)
