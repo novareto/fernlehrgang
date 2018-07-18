@@ -3,7 +3,7 @@
 # cklinger@novareto.de 
 
 import grok
-
+import os
 from z3c import saconfig
 from zope import component
 from dolmen import menu
@@ -11,7 +11,7 @@ from grokcore import layout
 from sqlalchemy import func, and_
 from fernlehrgang import models
 from uvc.layout import Page
-
+from grokcore.chameleon.components import ChameleonPageTemplateFile as PageTemplate
 
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.kursteilnehmer import lieferstopps
@@ -109,7 +109,14 @@ class ImportTeilnehmer(Page):
             )
         return rc
 
-    def update(self):
+    def render(self):
+        filename = os.path.join(os.path.dirname(__file__),
+                                'templates', 'import_teilnehmer.cpt')
+        template = PageTemplate(filename)
+        return template.render(self)
+
+    def __call__(self):
+        self.update()
         key = None
         for k, v in self.request.form.items():
             if k.startswith('import_'):
@@ -120,7 +127,7 @@ class ImportTeilnehmer(Page):
                 action = "statusliste"
 
         if not key:
-            return
+            return Page.__call__(self)
 
         session = saconfig.Session()
         flg = session.query(models.Fernlehrgang).get(int(key))
@@ -158,7 +165,13 @@ class ImportTeilnehmer(Page):
                     rc.append((ktn.teilnehmer, ktn.teilnehmer.unternehmen, ktn))
             print rc
             fn = createStatusliste(rc)
-            self.request.response.setHeader('content-disposition', 'attachment; filename=%s' % 'Statusliste.xlsx')
+            self.request.response.setHeader(
+                'content-disposition',
+                'attachment; filename=%s' % 'Statusliste.xlsx')
+            self.request.response.setHeader(
+                'content-type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             with open(fn, 'rb') as xlsx:
-                return xlsx
+                return xlsx.read()
         #self.flash('Es wurden %s Teilnehmer erfolgreich registriert.' % i)
+        return Page.__call__(self)
