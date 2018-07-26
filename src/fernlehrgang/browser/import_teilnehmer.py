@@ -132,9 +132,11 @@ class ImportTeilnehmer(Page):
         session = saconfig.Session()
         flg = session.query(models.Fernlehrgang).get(int(key))
         tids = [x.teilnehmer_id for x in self.context.kursteilnehmer]
+        flgids = [x[0] for x in  session.query(models.Fernlehrgang.id).filter(models.Fernlehrgang.typ == self.context.typ).all() if x[0] != int(key) and x[0] != self.context.id]
 
         def check(ktn):
-            return True
+            if ktn.fernlehrgang_id in flgids:
+                return False
             if ktn.teilnehmer.id in tids:
                 return False
             if not 'Bestanden' in ktn.result['comment']:
@@ -160,10 +162,8 @@ class ImportTeilnehmer(Page):
         elif action == "statusliste":
             rc = []
             for ktn in flg.kursteilnehmer[:10]:
-                print ktn
                 if check(ktn):
                     rc.append((ktn.teilnehmer, ktn.teilnehmer.unternehmen, ktn))
-            print rc
             fn = createStatusliste(rc)
             self.request.response.setHeader(
                 'content-disposition',
