@@ -11,6 +11,7 @@ from z3c.saconfig import Session
 from fernlehrgang.models import Frage, Teilnehmer, Antwort, Kursteilnehmer
 from fernlehrgang.app import RestLayer, KPTZLayer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
@@ -107,6 +108,21 @@ class HelperAPI(grok.XMLRPC):
 #
 ### REST
 #
+
+class UnternehmenAPI(grok.REST):
+    grok.layer(RestLayer)
+    grok.context(IUnternehmen)
+
+    def GET(self):
+        log('UNTERNEHMEN_GET %s ' %(self.context.mnr), 'performance_analyse')
+        unternehmen = dict(
+            NAME1=self.context.name,
+            NAME2=self.context.name2,
+            NAME3=self.context.name3,
+            STRASSE=self.context.str,
+            PLZ=self.context.plz,
+            ORT=self.context.ort,)
+        return json.dumps(unternehmen)
 
 class TeilnehmerAPI(grok.REST):
     grok.layer(RestLayer)
