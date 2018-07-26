@@ -74,6 +74,7 @@
           <th> Status </th>
           <th> Mitarbeiter, Branche </th>
           <th> Ergebnis </th>
+          <th> Ergebnis (fixed) </th>
         </tr>
       </thead>
       <tbody>
@@ -82,6 +83,7 @@
         <td> <a tal:attributes="href '%s/fernlehrgang/%s/kursteilnehmer/%s' % (view.application_url(), ktn.fernlehrgang.id, ktn.id)" tal:content="ktn.teilnehmer.name"> </a> </td>
         <td> <span tal:content="view.gLS(ktn.status)"></span> </td>
         <td> <span tal:content="string: ${view.gU(ktn.un_klasse)}, ${view.gBR(ktn.branche)}"></span></td>
+        <td> <small tal:content="structure ktn.result['comment']"></small> </td>
         <td> <small tal:content="structure ktn.fixed_results or ktn.result['comment']"></small> </td>
       </tr>
       </tbody>

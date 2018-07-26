@@ -36,7 +36,7 @@ def un_helper(term):
     return ''
 
 
-spalten = ['TEILNEHMER_ID', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT',
+spalten = ['TEILNEHMER_ID', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT', 'EMail',
     'Mitgliedsnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Registriert', 'Kategorie', 'Lieferstopps',
     'Mitarbeiteranzahl', 'Branche (Schrotthandel etc..)', u'Abschlussgespräch', 'Status', 'Punktzahl',
     u'Antwortbögen'
@@ -85,6 +85,7 @@ def createRows(rc, session, flg_id):
             liste.append(nN(teilnehmer.nr))
             liste.append(nN(teilnehmer.plz))
             liste.append(nN(teilnehmer.ort))
+            liste.append(nN(teilnehmer.email))
             liste.append(nN(unternehmen.mnr))
             liste.append(nN(unternehmen.name))
             liste.append(nN(unternehmen.name2))
@@ -92,6 +93,7 @@ def createRows(rc, session, flg_id):
             liste.append(nN(unternehmen.str))
             liste.append(nN(unternehmen.plz))
             liste.append(nN(unternehmen.ort))
+ 
             if teilnehmer.name:
                 liste.append('ja')
             else:

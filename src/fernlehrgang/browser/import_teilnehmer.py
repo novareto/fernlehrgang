@@ -98,7 +98,7 @@ class ImportTeilnehmer(Page):
     def getFernlehrgaenge(self):
         rc = []
         session = saconfig.Session()
-        sql = session.query(models.Fernlehrgang).filter(models.Fernlehrgang.typ == self.context.typ)
+        sql = session.query(models.Fernlehrgang) #.filter(models.Fernlehrgang.typ == self.context.typ)
         for flg in sql.all():
             rc.append(
                 dict(
