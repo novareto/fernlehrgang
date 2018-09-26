@@ -5,6 +5,7 @@
       <thead>
       <tr>
         <th> Mitgliedsnummer </th>
+        <th> Hauptbetriebsst. Nr </th>
         <th> Name </th>
         <th> Strasse </th>
         <th> Plz </th>
@@ -14,6 +15,7 @@
       <tbody>
       <tr tal:repeat="result results">
         <td tal:content="result.mnr" />
+        <td tal:content="result.hbst" />
         <td>
            <a href="#" tal:attributes="href view.url(result)">
              <span tal:content="result.name" />

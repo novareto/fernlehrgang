@@ -31,3 +31,15 @@ def page_query(q):
         print offset
         if not r:
             break
+
+def page_query_ktn(q):
+    offset = 0
+    while True:
+        r = False
+        for a in q.limit(1000).offset(offset):
+           r = True
+           yield a 
+        offset += 1000
+        print offset
+        if not r:
+            break
