@@ -6,16 +6,25 @@
 from zope import component
 from z3c.saconfig import Session
 from fernlehrgang import models
+from datetime import datetime
+
+
+dt = datetime(2016,1,1)
+#dt = datetime.now()
+print dt.date()
 
 
 def worker():
     flg = root['app']
     component.hooks.setSite(flg)
     session = Session()
-    fernlehrgang = session.query(models.Fernlehrgang).get(114)
-    for i, ktn in enumerate(fernlehrgang.kursteilnehmer):
-        print "%s, %s, %s" %(i, ktn.id, ktn.result)
-    import transaction; transaction.commit()
+    ktns = session.query(models.Kursteilnehmer).filter(
+            models.Kursteilnehmer.fernlehrgang_id == 103,
+            models.Antwort.kursteilnehmer_id == models.Kursteilnehmer.id,
+            models.Antwort.datum > dt )
+    print ktns 
+    for x in ktns.all():
+        print x
 
 
 
