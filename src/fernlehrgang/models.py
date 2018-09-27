@@ -129,7 +129,8 @@ class Unternehmen(Base, RDBMixin):
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
     aktiv = Column("aktiv", Boolean())
-    #b_groesse = Column('BETRIEBSGROESSE', String(240))
+    b_groesse = Column('BETRIEBSGROESSE', String(240))
+    hbst = Column('HBST', String(9))
 
     @property
     def title(self):

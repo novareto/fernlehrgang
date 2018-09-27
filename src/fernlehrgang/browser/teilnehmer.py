@@ -363,21 +363,36 @@ class SearchTeilnehmer(grok.View):
         session = Session()
         from fernlehrgang import models
         from sqlalchemy import func, or_, cast, String
-        res = session.query(models.Teilnehmer).filter(or_(
-            cast(models.Teilnehmer.id, String).like(self.term+"%"),
-            cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term+"%"),
-            func.concat(func.concat(models.Teilnehmer.name, " "),
-                       models.Teilnehmer.vorname
-                      ).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
+        #res = session.query(models.Teilnehmer, models.Unternehmen).filter(
+        #    models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr,
+        #    or_(
+        #    cast(models.Teilnehmer.id, String).like(self.term+"%"),
+        #    cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term+"%"),
+        #    models.Unternehmen.hbst.like(self.term+"%s"),
+        #    func.concat(func.concat(models.Teilnehmer.name, " "),
+        #               models.Teilnehmer.vorname
+        #              ).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
+
+        sql = session.query(models.Teilnehmer, models.Unternehmen).filter(
+            models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr, 
+            or_(
+                cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term +"%"),
+                cast(models.Teilnehmer.id, String).like(self.term+"%"), 
+                models.Unternehmen.hbst.like(self.term + "%"), 
+                func.concat(func.concat(models.Teilnehmer.name, " "),
+                    models.Teilnehmer.vorname).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
+        #print sql
+        print sql.count()
         terms = []
-        for x in res:
+        for x, unternehmen in sql:
+            print unternehmen.hbst, unternehmen.mnr
             gebdat = ""
             if x.geburtsdatum:
                 try:
                     gebdat = "(%s)" % x.geburtsdatum.strftime('%d.%m.%Y')
                 except:
                     gebdat = ""
-            terms.append({'id': x.id, 'text': "%s - %s %s %s - %s" %(x.id, x.name, x.vorname, gebdat, x.unternehmen_mnr)})
+            terms.append({'id': x.id, 'text': "%s - %s %s %s - %s (%s)" %(x.id, x.name, x.vorname, gebdat, x.unternehmen_mnr, unternehmen.hbst)})
         return json.dumps({'q': self.term, 'results': terms})
 
 

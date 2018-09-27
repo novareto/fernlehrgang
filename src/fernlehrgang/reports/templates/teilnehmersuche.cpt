@@ -48,9 +48,8 @@
     <div class="panel-body">
       <ul tal:repeat="unt unternehmen">
         <li>
-          <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} - ${unt.name}"/> 
+          <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} [${unt.hbst}]- ${unt.name}"/> 
             <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
-
             <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
           </a>
           <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/setdefaultmnr?mnr=%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id, unt.mnr)" tal:condition="unt.mnr != teilnehmer.unternehmen_mnr"> (+) </a>
@@ -74,6 +73,7 @@
           <th> Status </th>
           <th> Mitarbeiter, Branche </th>
           <th> Ergebnis </th>
+          <th> Ergebnis (fixed) </th>
         </tr>
       </thead>
       <tbody>
@@ -82,6 +82,7 @@
         <td> <a tal:attributes="href '%s/fernlehrgang/%s/kursteilnehmer/%s' % (view.application_url(), ktn.fernlehrgang.id, ktn.id)" tal:content="ktn.teilnehmer.name"> </a> </td>
         <td> <span tal:content="view.gLS(ktn.status)"></span> </td>
         <td> <span tal:content="string: ${view.gU(ktn.un_klasse)}, ${view.gBR(ktn.branche)}"></span></td>
+        <td> <small tal:content="structure ktn.result['comment']"></small> </td>
         <td> <small tal:content="structure ktn.fixed_results or ktn.result['comment']"></small> </td>
       </tr>
       </tbody>

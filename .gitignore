@@ -36,3 +36,16 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# BUILDOUT
+.Python
+.installed.cfg
+.mr.developer.cfg
+bin/
+develop-eggs/
+include/
+lib/
+parts/
+pip-selfcheck.json
+src/fernlehrgang.egg-info/
+var/

@@ -86,8 +86,14 @@ class IUnternehmen(Interface):
         required = False, 
         )
 
-#    b_groesse = TextLine(
-#        title = u'Betriebsgröße',
-#        description = u'Betriebsgröße (Zahlen von CUSA)',
-#        required = False,
-#        )
+    b_groesse = TextLine(
+        title = u'Betriebsgröße',
+        description = u'Betriebsgröße (Zahlen von CUSA)',
+        required = False,
+        )
+
+    hbst = TextLine(
+        title = u'Hauptbetriebsstätte',
+        description = u'Hauptbetriebsstätte (ID der Hauptbetriebsstätte)',
+        required = False,
+        )

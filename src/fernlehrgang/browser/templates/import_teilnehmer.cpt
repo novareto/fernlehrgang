@@ -11,7 +11,7 @@
       </div>
       <div class="col-md-4">
         <input class="btn btn-primary" type="submit" value="Importieren" tal:attributes="name 'import_%s' % flg['key']">
-        <input class="btn btn-primary" type="submit" value="Statusliste" tal:attributes="name 'statusliste_%s' % flg['key']">
+        <input class="btn btn-primary" type="submit" value="Vorschau" tal:attributes="name 'statusliste_%s' % flg['key']">
       </div>
     </div>
   </fieldset>

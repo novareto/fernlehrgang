@@ -162,12 +162,12 @@ def export(flg_ids, stichtag, mail):
     return fn
 
 
-@menuentry(ExportItems)
+#@menuentry(ExportItems)
 class XLSFortbildung(Form):
     grok.context(IFernlehrgang)
     grok.name('xlsfortbildung')
     grok.title(u'Versandliste Fortbildung')
-    
+    #grok.baseclass()
 
     fields = Fields(IXLSFortbildung)
 

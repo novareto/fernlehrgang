@@ -1,0 +1,16 @@
+<html> 
+  <body>
+    <div metal:use-macro="path: context/@@formmacros/template/macros/editform" />
+    <table class="table table-striped table-bordered table-condensed"
+           tal:define="results view.results" tal:condition="results">
+      <tr>
+        <th> Teilnehmer </th>
+        <th> RESULT </th>
+      </tr>
+      <tr tal:repeat="result results">
+        <td tal:content="result.id"> </td>
+        <td tal:content="structure result.result['comment']"> </td>
+      </tr>
+    </table>
+  </body>
+</html>
