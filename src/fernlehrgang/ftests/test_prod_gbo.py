@@ -1,13 +1,18 @@
 from unittest import TestCase
 from os import path
 import json
-from fernlehrgang.api.gbo import GBOAPI
+from zope.app.appsetup import product
 
-
-gboapi = GBOAPI()
+TOKEN = "772F0828-5EB3-4FAF-96C1-99A46A3D7F36"
+URL = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
 
 
 class GBO_TEST(TestCase):
+
+    def setUp(self):
+        product.setProductConfiguration("gbo", {"gbo_url": TOKEN, "gbo_token": URL})
+        from fernlehrgang.api.gbo import GBOAPI
+        self.gboapi = GBOAPI()
 
     def get_file(self, name):
         myfile = "%s/gbo_prod_files/%s" % (path.dirname(__file__), name)
@@ -18,7 +23,7 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('neusta_referenz.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 201)
 
     def test_error_wrong_question_id(self):
@@ -26,7 +31,7 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('error_wrong_question_id.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 201)
 
     def test_double_answer(self):
@@ -34,7 +39,7 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('double_answer.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 201)
 
     def test_ablauf(self):
@@ -44,17 +49,17 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('basedoc_reduced.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 201)
             import time
             time.sleep(20)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 409)
         # Doppelter Benuztername
         myfile = self.get_file('existenter_benutzername.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 201)
 
     def test_data_error_orgaids(self):
@@ -62,7 +67,7 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('error_orgaids.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 400)
 
     def test_data_error_json(self):
@@ -70,7 +75,7 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('error.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 400)
 
     def test_fehler_in_mnr(self):
@@ -78,12 +83,12 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('error_mnr.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 400)
         myfile = self.get_file('error_mnrg9.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 400)
 
     def test_fehler_in_email(self):
@@ -91,5 +96,5 @@ class GBO_TEST(TestCase):
         myfile = self.get_file('error_noemail.json')
         with open(myfile, 'r') as fd:
             daten = json.load(fd)
-            response = gboapi.set_data(daten)
+            response = self.gboapi.set_data(daten)
             self.assertEqual(response.status_code, 400)

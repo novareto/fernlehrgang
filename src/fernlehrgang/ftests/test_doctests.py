@@ -33,6 +33,11 @@ pc = """
     username
     password
 </product-config>
+
+<product-config gbo>
+    GBO_TOKEN 772F0828-5EB3-4FAF-96C1-99A46A3D7F36
+    GBO_URL https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/
+</product-config>
 """
 
 ftesting_zcml = os.path.join(
