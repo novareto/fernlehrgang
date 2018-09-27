@@ -5,7 +5,6 @@
            xmlns:grok="http://namespaces.zope.org/grok">
   <include package="grok" />
   <includeDependencies package="." />
-
   <include package="zope.i18n" />
   <include package="zope.session" />
   <include package="zope.dublincore" />

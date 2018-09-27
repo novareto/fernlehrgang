@@ -28,10 +28,10 @@ Einrichten des Fernlehrgangs
    >>> beginn = datetime.date(2016, 01, 01)
    >>> ende = datetime.date(2016, 12, 31)
 
-   >>> flg09 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="1",
+   >>> flg09 = Fernlehrgang(jahr="2010", titel="Fernlehrgang", typ="1",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
 
-   >>> flg10 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="1",
+   >>> flg10 = Fernlehrgang(jahr="2010", titel="Fernlehrgang", typ="1",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
 
    >>> session = Session()
@@ -83,7 +83,7 @@ Einrichten von Kursteilnehmern und von Antwortbögen
 
    >>> flg = session.query(Fernlehrgang).get(1)
    >>> flg
-   <Fernlehrgang(id='1', jahr='2016', titel='Fernlehrgang')>
+   <Fernlehrgang(id='1', jahr='2010', titel='Fernlehrgang')>
 
    >>> flg.kursteilnehmer.append(kt1)
    >>> flg.kursteilnehmer.append(kt2)
@@ -115,10 +115,10 @@ Importcheck
 
    >>> flg1, flg2 = session.query(Fernlehrgang).all()
    >>> flg1
-   <Fernlehrgang(id='1', jahr='2016', titel='Fernlehrgang')>
+   <Fernlehrgang(id='1', jahr='2010', titel='Fernlehrgang')>
 
    >>> flg2
-   <Fernlehrgang(id='2', jahr='2016', titel='Fernlehrgang')>
+   <Fernlehrgang(id='2', jahr='2010', titel='Fernlehrgang')>
 
    >>> [x.teilnehmer_id for x in flg2.kursteilnehmer]
    [3]
@@ -131,7 +131,7 @@ Importcheck
    <fernlehrgang.browser.import_teilnehmer.ImportTeilnehmer object at 0...>
 
    >>> importer.getFernlehrgaenge()
-   [{'tn': 3, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 1}, {'tn': 1, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 2}]
+   [{'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(1)', 'description': u'Beschreibung', 'key': 1}, {'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(2)', 'description': u'Beschreibung', 'key': 2}]
 
    >>> flg11 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="2",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)
@@ -140,20 +140,21 @@ Importcheck
    >>> import transaction; transaction.commit()
 
    >>> importer.getFernlehrgaenge()
-   [{'tn': 3, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 1}, {'tn': 1, 'value': u'Fernlehrgang 2016 ', 'description': u'Beschreibung', 'key': 2}]
+   [{'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(1)', 'description': u'Beschreibung', 'key': 1}, {'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(2)', 'description': u'Beschreibung', 'key': 2}]
 
    >>> len(flg2.kursteilnehmer)
    1
 
+   >>> flg1, flg2, flg3 = session.query(Fernlehrgang).all()
    >>> len(flg1.kursteilnehmer)
    3
 
    >>> importer.update()
    >>> len(flg2.kursteilnehmer)
-   3
+   1
 
 Teilnehmer dürfen nicht doppelt importiert werden
 
    >>> importer.update()
    >>> len(flg2.kursteilnehmer)
-   3
+   1

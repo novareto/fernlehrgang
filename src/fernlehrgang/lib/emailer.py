@@ -7,6 +7,7 @@ import grok
 import zope.component
 import smtplib
 import zope.sendmail
+from zope.sendmail.delivery import QueuedMailDelivery
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
@@ -33,7 +34,7 @@ def mailer():
 
 
 def delivery():
-    return zope.sendmail.delivery.QueuedMailDelivery(queue_path)
+    return QueuedMailDelivery(queue_path)
 
 
 def start_processor_thread():
