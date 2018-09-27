@@ -3,6 +3,11 @@
 # cklinger@novareto.de
 import json
 import requests
+from zope.app.appsetup.product import getProductConfiguration
+
+config = getProductConfiguration('gbo')
+GBO_URL = config.get('gbo_url')
+
 PRODJSON = u"""{
   "token": "218FD67F-1B71-48D0-9254-FF97E4091264",
   "client": {
@@ -383,6 +388,7 @@ class GBOAPI(object):
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/flg"
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
     url = "https://gefaehrdungsbeurteilung.bghw.de/data/flg/"
+    url = GBO_URL
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

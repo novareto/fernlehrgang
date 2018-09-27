@@ -19,6 +19,10 @@ from fernlehrgang.interfaces.resultate import ICalculateResults
 
 from sqlalchemy.exc import IntegrityError
 
+from zope.app.appsetup.product import getProductConfiguration
+config = getProductConfiguration('gbo')
+GBO_TOKEN = config.get('gbo_token')
+
 
 class Message(object):
 
@@ -176,7 +180,7 @@ class Worker(ConsumerMixin):
         teilnehmer = ktn.teilnehmer
         unternehmen = teilnehmer.unternehmen[0]
         res = dict()
-        res['token'] = "772F0828-5EB3-4FAF-96C1-99A46A3D7F36"
+        res['token'] = GBO_TOKEN 
         res['client'] = dict(
             number = teilnehmer.unternehmen_mnr,
             mainnumber = teilnehmer.unternehmen_mnr,

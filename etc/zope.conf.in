@@ -66,3 +66,8 @@ ${zope_conf:extra}
     username ${settings:mailer_username}
     password ${settings:mailer_password}
 </product-config>
+
+<product-config gbo>
+    GBO_TOKEN ${settings:gbo_token}
+    GBO_URL ${settings:gbo_url}
+</product-config>

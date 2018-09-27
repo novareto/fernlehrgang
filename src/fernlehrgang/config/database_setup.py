@@ -11,10 +11,6 @@ from zope.app.appsetup.product import getProductConfiguration
 
 import logging
 
-
-
-
-
 config = getProductConfiguration('database')
 try:
     DSN = config['dsn']
