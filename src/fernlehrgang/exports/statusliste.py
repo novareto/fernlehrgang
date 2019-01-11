@@ -20,6 +20,14 @@ from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 v_un_klasse = un_klasse(None)
 v_gespraech = gespraech(None)
 
+def nN(value):
+    """ Not None"""
+    if value == None:
+        return ''
+    if isinstance(value, int):
+        return str(value)
+    return value.replace('\x1a', '')
+
 
 def ges_helper(term):
     try:
@@ -59,8 +67,11 @@ def createRows(rc, session, flg_id):
             models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
             models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
             models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
+    print result.count()
     i=1
     for teilnehmer, unternehmen, ktn in page_query(result):
+        if i in range(0,100000, 1000):
+            print i
         cal_res = CalculateResults(ktn)
         summary = cal_res.summary(lehrhefte)
         liste = []
@@ -122,7 +133,7 @@ def export(flg_id, mail):
     createRows(rc, session, flg_id)
     ws = adressen 
     for i, zeile in enumerate(rc):
-       ws.append(zeile)
+        ws.append(zeile)
     book.save(fn)
     fn = makeZipFile(fn)
     text=u"Bitte öffen Sie die Datei im Anhang"
@@ -141,7 +152,7 @@ class XLSReport(grok.View):
     def update(self):
         mail = getUserEmail(self.request.principal.id)
         #fn = export(self.context.id, mail)
-        fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=600)
+        fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=6000)
         print fn
 
     def render(self):

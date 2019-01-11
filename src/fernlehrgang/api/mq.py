@@ -21,7 +21,10 @@ from sqlalchemy.exc import IntegrityError
 
 from zope.app.appsetup.product import getProductConfiguration
 config = getProductConfiguration('gbo')
-GBO_TOKEN = config.get('gbo_token')
+try:
+    GBO_TOKEN = config.get('gbo_token')
+except:
+    GBO_TOKEN = "218FD67F-1B71-48D0-9254-FF97E4091264"
 
 
 class Message(object):

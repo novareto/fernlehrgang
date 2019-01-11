@@ -381,11 +381,8 @@ class SearchTeilnehmer(grok.View):
                 models.Unternehmen.hbst.like(self.term + "%"), 
                 func.concat(func.concat(models.Teilnehmer.name, " "),
                     models.Teilnehmer.vorname).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
-        #print sql
-        print sql.count()
         terms = []
         for x, unternehmen in sql:
-            print unternehmen.hbst, unternehmen.mnr
             gebdat = ""
             if x.geburtsdatum:
                 try:
