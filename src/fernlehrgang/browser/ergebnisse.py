@@ -148,7 +148,7 @@ class CalculateResults(grok.Adapter):
         if context.status in POSTVERSANDSPERRE:
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
-            comment = "Bestanden"
+            comment = '<span class="text-success"> Bestanden </span>'
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         # Abschlussgespräch Seminar
         if not unternehmen:
@@ -185,9 +185,12 @@ class CalculateResultsFortbildung(CalculateResults):
     grok.context(IFortbildungKursteilnehmer)
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
+        POSTVERSANDSPERRE = ('L2', 'Z1', 'A2', 'L7')
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context
+        if context.status in POSTVERSANDSPERRE:
+            comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         mindest_punktzahl = context.fernlehrgang.punktzahl
         lehrhefte = self.lehrhefte(lehrhefte, session)
         for lehrheft in lehrhefte:

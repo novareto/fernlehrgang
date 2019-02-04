@@ -216,3 +216,10 @@ def my_handle_error(self, request, client_address):
 BaseServer.handle_error = my_handle_error
 
 
+class HAProxyStatus(grok.View):
+    grok.context(Interface)
+    grok.name('haproxycheck')
+    grok.require('zope.Public')
+
+    def render(self):
+        return "OK"

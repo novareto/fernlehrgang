@@ -81,7 +81,7 @@ def fernlehrgang_vocab(context):
     rc = [SimpleTerm('', '', u'Fernlehrgang auswählen')]
     session = Session()
     from fernlehrgang.models import Fernlehrgang
-    sql = session.query(Fernlehrgang)
+    sql = session.query(Fernlehrgang).order_by(Fernlehrgang.id.desc())
 
     def getKTN(context, flg_id):
         if IFernlehrgangApp.providedBy(context):

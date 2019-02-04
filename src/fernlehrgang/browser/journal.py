@@ -36,6 +36,7 @@ from grokcore.component import provider
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from uvc.layout import TablePage
+from dolmen.app.layout.models import DefaultView
 
 
 @menuentry(NavigationMenu, order=20)
@@ -83,7 +84,6 @@ class Status(Column):
     def renderCell(self, item):
         from fernlehrgang.interfaces.journal import get_status
         source = get_status(None)
-        import pdb; pdb.set_trace()
         return source.getTerm(getattr(item, 'status', '1')).title
 
 
@@ -108,6 +108,17 @@ class Date(Column):
         if item.date is not None:
             return fmtDate(item.date)
         return ""
+
+
+
+#menuentry(NavigationMenu, order=10)
+class Index(DefaultView):
+    grok.context(IJournalEntry)
+    title = label = u"Nachricht"
+    description = u"Details zu Ihrem Nachricht"
+    __name__ = "index"
+
+    fields = Fields(IJournalEntry)
 
 
 @menuentry(AddMenu)
@@ -136,8 +147,8 @@ class AddJournalEntry(AddForm):
 class EditJournalEntry(models.Edit):
     grok.name('edit')
     grok.context(IJournalEntry)
-    grok.title(u'Journal')
-    label = u'Journal entry'
+    grok.title(u'Neue Nachricht anlegen')
+    label = u'Neue Nachricht anlegen'
 
     fields = Fields(IJournalEntry).omit('id', 'teilnehmer_id', 'date')
 
@@ -158,8 +169,8 @@ class EditJournalEntry(models.Edit):
 class DeleteJournalEntry(models.Form):
     grok.name('delete')
     grok.context(IJournalEntry)
-    grok.title(u'Journal entry')
-    label = u'Journal entry'
+    grok.title(u'Nachricht löschen')
+    label = u'Nachricht aus dem Journal löschen.'
 
     fields = Fields()
 

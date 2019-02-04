@@ -117,3 +117,17 @@ class Jahr(GetAttrColumn):
     weight = 20
     header = u"Jahr"
     attrName = u"jahr"
+
+
+class Typ(GetAttrColumn):
+    grok.name('Typ')
+    grok.context(IFernlehrgangApp)
+    weight = 15 
+    header = u"Typ"
+
+    def renderCell(self, item):
+        from fernlehrgang.interfaces.flg import typ
+        if item.typ:
+            return typ(None).getTerm(item.typ).title
+        return "N/A"
+            

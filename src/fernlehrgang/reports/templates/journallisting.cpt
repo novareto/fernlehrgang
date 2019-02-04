@@ -38,7 +38,7 @@
         </thead>
         <tbody>
           <tr tal:repeat="result view.results">
-            <td> <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/sachbearbeitung?jid=%s' % (view.application_url(), result.teilnehmer.unternehmen_mnr, result.teilnehmer_id, result.id)" tal:content="'%s' % result.teilnehmer_id"> </a> </td>
+            <td> <a href="" tal:attributes="href '%s?form.field.id=%s&form.action.suchen=Suche' % (view.application_url(), result.teilnehmer_id)" tal:content="'%s' % result.teilnehmer_id"> </a> </td>
             <td tal:content="view.getStatus(result.status)"> </td>
             <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
             <td tal:content="result.type"> </td>

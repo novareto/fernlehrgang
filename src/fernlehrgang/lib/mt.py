@@ -161,3 +161,84 @@ Mit freundlichen Grüßen
 
 BGHW Fernlehrgangsbetreuung
 """
+
+
+TEXTVLW01 = u"""
+Sehr geehrte(r) %s %s %s,
+
+vielen Dank, dass sie sich vor kurzem zum Fernlehrgang Arbeitssicherheit und Gesundheitsschutz
+angemeldet haben.
+
+Gerne möchten wir Sie darauf hinweisen, dass Sie sich mit Hilfe des Fernlehrgangs für die alternative
+bedarfsorientierte Betreuung, als eine Form der betrieblichen Betreuung, qualifizieren können.
+
+Die Unternehmerpflicht für eine betriebliche Betreuung Ihrer Beschäftigten zu sorgen, lässt sich so
+einfach und kostengünstig erfüllen.
+
+
+Diese Informationen unterstützen Sie bei Ihren nächsten Schritten:
+ - Für die Bearbeitung ist es erforderlich, dass Sie sich unter https://vlw.bghw.de mit Ihrem Benutzernamen und Ihrem Passwort einloggen.
+ - Ihr Benutzername: Benutzername: %s 
+ - Das Passwort ist Ihnen mit separatem Schreiben zugegangen. Ein neues Passwort bekommen Sie unter: Passwort vergessen
+ - Informationen zum Fernlehrgang und zur alternativen bedarfsorientierten Betreuung finden Sie unter: https://www.bghw.de/seminare/fernlehrgang
+
+Der Fernlehrgang ist erfolgreich absolviert, wenn Sie alle Lernbücher bearbeiten und alle Fragen zu
+Ihrer Gefährdungsermittlung beantworten. Der Bearbeitungsaufwand beträgt circa 8 Stunden.
+
+Die maximale Bearbeitungszeit für den Fernlehrgang beträgt 12 Monate.
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in
+der Zeit Montag bis Freitag zwischen 8:30 Uhr und 15:30 Uhr zur Verfügung.
+
+Mit freundlichen Grüßen
+Ihre Fernlehrgangsbetreuung der BGHW
+"""
+
+
+TEXTVLW02 = u"""
+Sehr geehrte(r) %s %s %s,
+
+vielen Dank, dass sie sich zum Fernlehrgang Arbeitssicherheit und Gesundheitsschutz
+angemeldet haben.
+
+Gerne möchten wir Sie darauf hinweisen, dass Sie sich mit Hilfe des Fernlehrgangs für die alternative
+bedarfsorientierte Betreuung, als eine Form der betrieblichen Betreuung, qualifizieren können.
+
+Die Unternehmerpflicht für eine betriebliche Betreuung Ihrer Beschäftigten zu sorgen, lässt sich so
+einfach und kostengünstig erfüllen.
+
+
+Diese Informationen unterstützen Sie bei Ihren nächsten Schritten:
+ - Für die Bearbeitung ist es erforderlich, dass Sie sich unter https://vlw.bghw.de mit Ihrem Benutzernamen und Ihrem Passwort einloggen.
+ - Ihr Benutzername: Benutzername: %s 
+ - Das Passwort ist Ihnen mit separatem Schreiben zugegangen. Ein neues Passwort bekommen Sie unter: Passwort vergessen
+ - Informationen zum Fernlehrgang und zur alternativen bedarfsorientierten Betreuung finden Sie unter: https://www.bghw.de/seminare/fernlehrgang
+
+Der Fernlehrgang ist erfolgreich absolviert, wenn Sie alle Lernbücher bearbeiten und alle Fragen zu
+Ihrer Gefährdungsermittlung beantworten. Der Bearbeitungsaufwand beträgt circa 8 Stunden.
+
+Die maximale Bearbeitungszeit für den Fernlehrgang beträgt 12 Monate.
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in
+der Zeit Montag bis Freitag zwischen 8:30 Uhr und 15:30 Uhr zur Verfügung.
+
+Mit freundlichen Grüßen
+Ihre Fernlehrgangsbetreuung der BGHW
+"""
+
+TEXTVLW03 = u"""
+Sehr geehrte(r) %s %s %s,
+
+die Bearbeitungszeit von 12 Monaten für den Fernlehrgang ist abgelaufen.
+Ihr Zugang wurde gesperrt.
+Eine Teilnahme an der alternativen bedarfsorientierten Betreuung ist leider nicht möglich.
+Bitte setzen Sie sich mit der Fernlehrgangsbetreuung in Verbindung.
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in
+der Zeit Montag bis Freitag zwischen 8:30 Uhr und 15:30 Uhr zur Verfügung.
+
+Mit freundlichen Grüßen
+
+BGHW Fernlehrgangsbetreuung
+"""
+
