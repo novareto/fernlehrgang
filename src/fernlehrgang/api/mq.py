@@ -182,6 +182,9 @@ class Worker(ConsumerMixin):
     def createGBODaten(self, ktn, orgas):
         teilnehmer = ktn.teilnehmer
         unternehmen = teilnehmer.unternehmen[0]
+        ftitel = teilnehmer.titel
+        if ftitel == '0':
+            ftitel = ''
         res = dict()
         res['token'] = GBO_TOKEN 
         res['client'] = dict(
@@ -196,7 +199,7 @@ class Worker(ConsumerMixin):
         res['user'] = dict(
             login = str(teilnehmer.id),
             salutation=int(teilnehmer.anrede),
-            title=teilnehmer.titel,
+            title=ftitel,
             firstname=teilnehmer.vorname,
             lastname=teilnehmer.name,
             phone=teilnehmer.telefon or '',
@@ -220,8 +223,8 @@ class Worker(ConsumerMixin):
         orgas = data.pop('orgas')
         gbo_daten = self.createGBODaten(ktn, orgas)
         data['gbo_daten'] = simplejson.dumps(gbo_daten)
-        data['lehrheft_id'] = 1076
-        data['frage_id'] = 10571
+        data['lehrheft_id'] = 1137 
+        data['frage_id'] = 10720
         gbo_u = data.pop('gbo_uebermittlung')
         data.pop('status')
         antwort = models.Antwort(**data)
@@ -268,14 +271,14 @@ class Worker(ConsumerMixin):
                 log_entry.pop('position')
             if 'title' not in log_entry:
                 log_entry['title'] = ''
-            if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
-                log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
 
             log_entry['type'] = u"Level %s (%s) zu %s abgeschlossen." % (
                 log_entry.pop('title'),
                 log_entry.pop('key'),
                 log_entry.pop('progress'))
             log_entry['type'] = log_entry['type'][:400]
+        if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
+            log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
         try:
             with transaction.manager as tm:
                 session = Session()

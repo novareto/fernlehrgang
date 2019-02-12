@@ -17,7 +17,7 @@
 				throttle = false,
 				requestQueue = [],
 				typing = false,
-				loadingImg = '/img/loading.gif',
+				loadingImg = '/fanstatic/fernlehrgang/loading.gif',
 				minLength = 1;
 
 		if ($('option', select).length === 0) {

@@ -58,7 +58,7 @@ class HelperAPI(grok.XMLRPC):
         return str(ret.one()[0])
 
     def getKursteilnehmerID(self, teilnehmer_id, lehrgang_id):
-        log('getKursteilnehmerTeilnehmerID %s %s' %(teilnehmer_id, lehrgang_id), 'performance_analyse')
+        #log('getKursteilnehmerTeilnehmerID %s %s' %(teilnehmer_id, lehrgang_id), 'performance_analyse')
         session = Session()
         ret = session.query(Kursteilnehmer).filter(
             and_(Kursteilnehmer.teilnehmer_id == teilnehmer_id,
@@ -68,7 +68,7 @@ class HelperAPI(grok.XMLRPC):
         return str(ret.one().id)
 
     def canLogin(self, teilnehmer_id, passwort):
-        log('canLogin %s' %(teilnehmer_id), 'performance_analyse')
+        #log('canLogin %s' %(teilnehmer_id), 'performance_analyse')
         if teilnehmer_id == "admin":
             return 0
         session = Session()
@@ -114,7 +114,7 @@ class UnternehmenAPI(grok.REST):
     grok.context(IUnternehmen)
 
     def GET(self):
-        log('UNTERNEHMEN_GET %s ' %(self.context.mnr), 'performance_analyse')
+        #log('UNTERNEHMEN_GET %s ' %(self.context.mnr), 'performance_analyse')
         unternehmen = dict(
             NAME1=self.context.name,
             NAME2=self.context.name2,
@@ -129,7 +129,7 @@ class TeilnehmerAPI(grok.REST):
     grok.context(ITeilnehmer)
 
     def GET(self):
-        log('TEILNEHMER_GET %s ' %(self.context.id), 'performance_analyse')
+        #log('TEILNEHMER_GET %s ' %(self.context.id), 'performance_analyse')
         context = self.context
         kt_id = self.request.get('kt', None)
         branche = ""
@@ -162,7 +162,7 @@ class TeilnehmerAPI(grok.REST):
 
 
     def PUT(self):
-        log('TEILNEHMER_PUT %s ' %(self.context.id), 'performance_analyse')
+        #log('TEILNEHMER_PUT %s ' %(self.context.id), 'performance_analyse')
         teilnehmer = self.context
         data = json.loads(self.body)
         un_klasse = data.pop('un_klasse')
@@ -201,14 +201,14 @@ class KursteilnehmerAPI(grok.REST):
     grok.context(IKursteilnehmer)
 
     def GET(self):
-        log('KursteilTEILNEHMER_GET %s ' %(self.context.id), 'performance_analyse')
+        #log('KursteilTEILNEHMER_GET %s ' %(self.context.id), 'performance_analyse')
         adapter = ICalculateResults(self.context)
         li = [adapter.summary(), adapter.lehrhefte()]
         return json.dumps(li)
 
 
     def PUT(self):
-        log('KursteilTEILNEHMER_PUT %s ' %(self.context.id), 'performance_analyse')
+        #log('KursteilTEILNEHMER_PUT %s ' %(self.context.id), 'performance_analyse')
         kursteilnehmer = self.context
         data = json.loads(self.body)
         data['datum'] = datetime.datetime.strptime(data['datum'], "%d.%m.%Y").date()
