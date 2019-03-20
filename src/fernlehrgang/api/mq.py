@@ -2,11 +2,14 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+import sys
+import logging
 import simplejson
 import transaction
 import zope.app.wsgi
 
 from fernlehrgang import log
+from fernlehrgang import logger
 from datetime import datetime
 from kombu.log import get_logger
 from z3c.saconfig import Session
@@ -124,21 +127,15 @@ status_queue_error = Queue('vlwd.status.error', exchange=status_exchange_e)
 log_exchange = Exchange('vlwd.log', 'direct', durable=True)
 log_queue = Queue('vlwd.log', exchange=log_exchange)
 
-log_exchange_e = Exchange('vlwd.log', 'direct', durable=True)
-log_queue_e = Queue('vlwd.log', exchange=log_exchange)
 
-import logging
-import sys
-#root = logging.getLogger()
 ch = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
-#root.addHandler(ch)
+logger.addHandler(ch)
+
 
 QUEUES = {'results': status_queue, 'results_error': status_queue_error}
-#logger = get_logger(__name__)
-from fernlehrgang import logger
-logger.addHandler(ch)
+
 
 class Worker(ConsumerMixin):
 
@@ -171,10 +168,10 @@ class Worker(ConsumerMixin):
                 message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
-            message.ack()
+            #message.ack()
             logger.exception('ERRROR')
         except IntegrityError:
-            message.ack()
+            #message.ack()
             logger.exception('IntegryError')
         except:
             logger.exception('Error')
@@ -288,13 +285,11 @@ class Worker(ConsumerMixin):
                     je = models.JournalEntry(**log_entry)
                     teilnehmer.journal_entries.append(je)
                     message.ack()
-        except:
+        except StandardError, e:
+            logger.error('Error in Logging %r', e)
             logger.exception('Error')
-            message.ack()
 
 
-
-ZOPE_CONF = "/Users/ck/work/bghw/new/fernlehrgang/parts/etc/zope.conf"
 def main(url, conf):
     db = zope.app.wsgi.config(conf)
     with Connection(url) as conn:
@@ -303,4 +298,3 @@ def main(url, conf):
             worker.run()
         except KeyboardInterrupt:
             print('bye bye')
-

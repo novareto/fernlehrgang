@@ -7,7 +7,6 @@ import json
 
 from sqlalchemy.orm import joinedload
 from dolmen.menu import menuentry
-from fernlehrgang.config import POSTVERSANDSPERRE
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IFortbildungKursteilnehmer
@@ -16,6 +15,9 @@ from fernlehrgang.viewlets import NavigationMenu
 from uvc.layout import Page
 from z3c.saconfig import Session
 from fernlehrgang.models import Lehrheft
+
+
+POSTVERSANDSPERRE = "L2", "L3", "L4", "L5", "L6", "L7", "L8", "S1", "Z1"
 
 
 grok.templatedir('templates')
@@ -155,27 +157,30 @@ class CalculateResults(grok.Adapter):
             unternehmen = context.unternehmen
             branche = context.branche
             un_klasse = context.un_klasse
-            #if comment == "Bestanden":
-            if True:
+            if "Bestanden" in comment:
                 if branche == "ja":
                     if un_klasse == 'G2' or un_klasse == "G":
                         if context.gespraech == '2':
-                            comment = u'Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde.'
+                            comment = u'Nicht Bestanden, da das Abschlussseminar nicht erfolgreich abgeschlossen wurde.'
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.'
                     if un_klasse == 'G3':
                         if context.gespraech == '2':
-                            comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                            comment = u'Nicht Bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde.'
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
                 elif branche == "nein":
                     if un_klasse == 'G2' or un_klasse == "G":
                         if context.gespraech == '2':
-                            comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde.'
+                            comment = u'Nicht Bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde.'
                         elif context.gespraech == '0' or context.gespraech is None:
                             comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
-        comment = "<b> %s; </b> %s" %(comment, c_punkte)
         self.context.fixed_results = comment
+        if comment == "Bestanden":
+            klass="text-success"
+        else:
+            klass="text-danger"
+        comment = "<b> <span class='%s'> %s;  </span> </b> %s" %(klass, comment, c_punkte)
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
@@ -185,12 +190,9 @@ class CalculateResultsFortbildung(CalculateResults):
     grok.context(IFortbildungKursteilnehmer)
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
-        POSTVERSANDSPERRE = ('L2', 'Z1', 'A2', 'L7')
         punkte = 0
         comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
         context = self.context
-        if context.status in POSTVERSANDSPERRE:
-            comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         mindest_punktzahl = context.fernlehrgang.punktzahl
         lehrhefte = self.lehrhefte(lehrhefte, session)
         for lehrheft in lehrhefte:
@@ -202,7 +204,11 @@ class CalculateResultsFortbildung(CalculateResults):
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         comment = "%s; %s" %(comment, c_punkte)
         self.context.fixed_results = comment
-        comment = "<b> %s; </b> %s" %(comment, c_punkte)
+        if comment == "Bestanden":
+            klass="text-success"
+        else:
+            klass="text-danger"
+        comment = "<b> <span class='%s'> %s; </span> </b> %s" %(klass, comment, c_punkte)
         #self.context._result = comment
         return dict(points=mindest_punktzahl, resultpoints=punkte, comment=comment)
 
@@ -249,4 +255,9 @@ class CalculateResultsVLW(grok.Adapter):
                     elif context.gespraech == '0' or context.gespraech is None:
                         comment = u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.'
         self.context.fixed_results = comment
+        if comment == "Bestanden":
+            klass="text-success"
+        else:
+            klass="text-danger"
+        comment = "<b> <span class='%s'> %s; </span> </b> " %(klass, comment)
         return dict(points=0, resultpoints=0, comment=comment)
