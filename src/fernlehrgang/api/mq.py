@@ -2,11 +2,14 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+import sys
+import logging
 import simplejson
 import transaction
 import zope.app.wsgi
 
 from fernlehrgang import log
+from fernlehrgang import logger
 from datetime import datetime
 from kombu.log import get_logger
 from z3c.saconfig import Session
@@ -124,21 +127,15 @@ status_queue_error = Queue('vlwd.status.error', exchange=status_exchange_e)
 log_exchange = Exchange('vlwd.log', 'direct', durable=True)
 log_queue = Queue('vlwd.log', exchange=log_exchange)
 
-log_exchange_e = Exchange('vlwd.log', 'direct', durable=True)
-log_queue_e = Queue('vlwd.log', exchange=log_exchange)
 
-import logging
-import sys
-#root = logging.getLogger()
 ch = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
-#root.addHandler(ch)
+logger.addHandler(ch)
+
 
 QUEUES = {'results': status_queue, 'results_error': status_queue_error}
-#logger = get_logger(__name__)
-from fernlehrgang import logger
-logger.addHandler(ch)
+
 
 class Worker(ConsumerMixin):
 
@@ -171,10 +168,10 @@ class Worker(ConsumerMixin):
                 message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
-            message.ack()
+            #message.ack()
             logger.exception('ERRROR')
         except IntegrityError:
-            message.ack()
+            #message.ack()
             logger.exception('IntegryError')
         except:
             logger.exception('Error')
@@ -182,6 +179,9 @@ class Worker(ConsumerMixin):
     def createGBODaten(self, ktn, orgas):
         teilnehmer = ktn.teilnehmer
         unternehmen = teilnehmer.unternehmen[0]
+        ftitel = teilnehmer.titel
+        if ftitel == '0':
+            ftitel = ''
         res = dict()
         res['token'] = GBO_TOKEN 
         res['client'] = dict(
@@ -196,7 +196,7 @@ class Worker(ConsumerMixin):
         res['user'] = dict(
             login = str(teilnehmer.id),
             salutation=int(teilnehmer.anrede),
-            title=teilnehmer.titel,
+            title=ftitel,
             firstname=teilnehmer.vorname,
             lastname=teilnehmer.name,
             phone=teilnehmer.telefon or '',
@@ -220,15 +220,15 @@ class Worker(ConsumerMixin):
         orgas = data.pop('orgas')
         gbo_daten = self.createGBODaten(ktn, orgas)
         data['gbo_daten'] = simplejson.dumps(gbo_daten)
-        data['lehrheft_id'] = 1076
-        data['frage_id'] = 10571
+        data['lehrheft_id'] = 1137 
+        data['frage_id'] = 10720
         gbo_u = data.pop('gbo_uebermittlung')
         data.pop('status')
         antwort = models.Antwort(**data)
         ktn.antworten.append(antwort)
 
         je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="1", kursteilnehmer_id=ktn.id)
-        ktn.teilnehmer.journal_entries.append(je)
+        #ktn.teilnehmer.journal_entries.append(je)
         gbo_status=""
         if gbo_u:
             from fernlehrgang.api.gbo import GBOAPI
@@ -268,14 +268,14 @@ class Worker(ConsumerMixin):
                 log_entry.pop('position')
             if 'title' not in log_entry:
                 log_entry['title'] = ''
-            if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
-                log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
 
             log_entry['type'] = u"Level %s (%s) zu %s abgeschlossen." % (
                 log_entry.pop('title'),
                 log_entry.pop('key'),
                 log_entry.pop('progress'))
             log_entry['type'] = log_entry['type'][:400]
+        if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
+            log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
         try:
             with transaction.manager as tm:
                 session = Session()
@@ -285,13 +285,11 @@ class Worker(ConsumerMixin):
                     je = models.JournalEntry(**log_entry)
                     teilnehmer.journal_entries.append(je)
                     message.ack()
-        except:
+        except StandardError, e:
+            logger.error('Error in Logging %r', e)
             logger.exception('Error')
-            message.ack()
 
 
-
-ZOPE_CONF = "/Users/ck/work/bghw/new/fernlehrgang/parts/etc/zope.conf"
 def main(url, conf):
     db = zope.app.wsgi.config(conf)
     with Connection(url) as conn:
@@ -300,4 +298,3 @@ def main(url, conf):
             worker.run()
         except KeyboardInterrupt:
             print('bye bye')
-
