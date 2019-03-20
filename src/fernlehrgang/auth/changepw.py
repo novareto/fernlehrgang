@@ -19,6 +19,7 @@ bitte öffnen Sie nachfolgenden Link um Ihr Passwort zurückzusetzen und ein neu
 
 https://online-fernlehrgang-weblogin.bghw.de/resetpassword?form.field.username=%s&form.field.challenge=%s
 
+Sie haben kein neues Passwort angefordert? In diesem Fall ignorieren Sie diese Email.
 
 Mit freundlichen Grüßen
 Ihre Fernlehrgangsbetreuung
@@ -52,7 +53,7 @@ class PasswordActions(grok.JSON):
 
     def get_user(self):
         mnr = self.request.form.get('username', None)
-        if mnr:
+        if mnr and mnr.isdigit():
             user = getUser(mnr)
             if user:
                 return dict(mnr=str(user.id), passwort=user.passwort, email=user.email)
@@ -63,7 +64,7 @@ class PasswordActions(grok.JSON):
         mail = self.request.form.get('email')
         hash = self.request.form.get('hash_value')
         text = TEXT % (user, hash)
-        send_mail('fernlehrgang@bghw.de', (mail, 'ck@novareto.de'), u"Fernlehrgang Passwortänderung", text)
+        send_mail('fernlehrgang@bghw.de', (mail, ), u"Fernlehrgang Passwortänderung", text)
         return {'success': 'true'}
 
     def set_user(self):
@@ -80,6 +81,6 @@ class PasswordActions(grok.JSON):
         mail = self.request.form.get('email')
         text = TEXT_CONFIRM % (user)
         userobject = getUser(user)
-        send_mail('fernlehrgang@bghw.de', (userobject.email, 'ck@novareto.de'), u"Fernlehrgang Passwortänderung", text)
+        send_mail('fernlehrgang@bghw.de', (userobject.email, ), u"Fernlehrgang Passwortänderung", text)
         return {'success': 'true'}
 

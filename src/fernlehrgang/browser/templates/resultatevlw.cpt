@@ -5,8 +5,10 @@
 
   <div tal:define="antwort view.getAntwort()">
      Status: <span tal:content="summary['comment']"/> <br/>
-     Datum: <span tal:content="antwort.datum.strftime('%d.%m.%Y %H:%M')"/> <br/>
+     <div tal:condition="antwort">
+     Datum: <span tal:content="antwort.datum"/> <br/>
      Daten: <pre tal:content="view.fmtJson(antwort.gbo_daten)"> </pre>
+     </div>
   </div>
 
 </div>
