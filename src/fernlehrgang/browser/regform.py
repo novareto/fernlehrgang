@@ -16,6 +16,9 @@ from datetime import date, timedelta
 
 from zeam.form.base import Fields
 from zeam.form.base import action
+from fernlehrgang.api.gbo import GBOAPI
+
+gboapi = GBOAPI()
 
 
 class AutoRegForm(Form):
@@ -32,6 +35,11 @@ class AutoRegForm(Form):
         super(AutoRegForm, self).updateForm()
         self.fields['passwort'].defaultValue = generatePassword()
         self.fields['erstell_datum'].defaultValue = date.today() 
+        mnr = self.request.get('form.field.mnr')
+        if mnr:
+            r = gboapi.get_info(mnr)
+            if r.status_code == 200:
+                self.flash(u'Das Unternehmen dieses Teilnehmers ist bereits in der GBO registriert.')
 
     @action('Teilnehmer anlegen')
     def handle_save(self):

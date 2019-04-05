@@ -3,6 +3,22 @@
 <div metal:use-macro="path: context/@@formmacros/template/macros/editform"> </div>
 
 <script language="Javascript">
+
+        function copy()
+        {
+            try
+            {
+                var copyText = document.getElementById("hbst_neu");
+                copyText.select()
+                document.execCommand('copy');
+            }
+            catch(e)
+            {
+                alert(e);
+            }
+        }
+
+
   $('select#teilnehmer_id').ajaxChosen({
      dataType: 'json',
      type: 'POST',
@@ -53,7 +69,8 @@
             <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
           </a>
           <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/setdefaultmnr?mnr=%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id, unt.mnr)" tal:condition="unt.mnr != teilnehmer.unternehmen_mnr"> (+) </a>
-          
+         <a onclick="copy();"> <span class="glyphicon glyphicon-copy" aria-hidden="true"> </span></a>
+         <input type="hidden" name="hbsit" id="hbst_neu" tal:attributes="value string:${unt.hbst}"/> 
         </li>
       </ul>
     </div> 
@@ -99,6 +116,7 @@
       <thead>
         <tr>
           <th> Typ </th>
+          <th> Lehrgang </th>
           <th> Datum</th>
           <th> Info </th>
         </tr>
@@ -106,6 +124,7 @@
       <tbody>
       <tr tal:repeat="result teilnehmer.journal_entries">
         <td tal:content="view.getStatus(result.status)"> </td>
+        <td tal:content="result.kursteilnehmer.fernlehrgang.titel"> </td>
         <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
         <td tal:content="result.type"> </td>
       </tr>

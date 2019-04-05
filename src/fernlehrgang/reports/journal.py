@@ -67,7 +67,7 @@ class JournalListing(Form):
         else:
             status = [u"4", u"409"]
         session = Session()
-        self.results = session.query(models.JournalEntry).filter(models.JournalEntry.status.in_(status)).all()
+        self.results = session.query(models.JournalEntry).filter(models.JournalEntry.status.in_(status)).order_by(models.JournalEntry.id.desc()).all()
 
     def getStatus(self, v):
         return source.getTerm(v).title

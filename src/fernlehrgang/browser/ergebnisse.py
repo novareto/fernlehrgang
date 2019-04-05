@@ -17,7 +17,7 @@ from z3c.saconfig import Session
 from fernlehrgang.models import Lehrheft
 
 
-POSTVERSANDSPERRE = "L2", "L3", "L4", "L5", "L6", "L7", "L8", "S1", "Z1"
+POSTVERSANDSPERRE = "L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "S1", "Z1"
 
 
 grok.templatedir('templates')
@@ -150,14 +150,14 @@ class CalculateResults(grok.Adapter):
         if context.status in POSTVERSANDSPERRE:
             comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
-            comment = '<span class="text-success"> Bestanden </span>'
+            comment = 'Bestanden'
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         # Abschlussgespräch Seminar
         if not unternehmen:
             unternehmen = context.unternehmen
             branche = context.branche
             un_klasse = context.un_klasse
-            if "Bestanden" in comment:
+            if "Nicht Bestanden" not in comment:
                 if branche == "ja":
                     if un_klasse == 'G2' or un_klasse == "G":
                         if context.gespraech == '2':
@@ -202,9 +202,9 @@ class CalculateResultsFortbildung(CalculateResults):
         elif punkte >= mindest_punktzahl:
             comment = "Bestanden"
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
-        comment = "%s; %s" %(comment, c_punkte)
+        #comment = "%s" %(comment, c_punkte)
         self.context.fixed_results = comment
-        if comment == "Bestanden":
+        if comment.startswith('Bestanden'):
             klass="text-success"
         else:
             klass="text-danger"

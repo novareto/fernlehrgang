@@ -16,6 +16,13 @@ from sqlalchemy.orm import sessionmaker, joinedload
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, gespraech
 from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
 
+import re
+cleanr = re.compile('<.*?>')
+
+def cleanhtml(raw_html):
+    cleantext = re.sub(cleanr, '', raw_html)
+    return cleantext.strip()
+
 
 v_un_klasse = un_klasse(None)
 v_gespraech = gespraech(None)
@@ -114,7 +121,7 @@ def createRows(rc, session, flg_id):
             liste.append(un_helper(ktn.un_klasse))
             liste.append(nN(ktn.branche))
             liste.append(ges_helper(ktn.gespraech))
-            liste.append(nN(summary['comment']))
+            liste.append(cleanhtml(nN(summary['comment'])))
             liste.append(nN(summary['resultpoints']))
             liste.append(nN(antworten))
         rc.append(liste)
