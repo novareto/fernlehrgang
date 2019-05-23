@@ -252,16 +252,21 @@ class Worker(ConsumerMixin):
         return result
 
     def setLogEntry(self, body, message):
+        def true_false(v):
+            if v:
+                return "ja"
+            else:
+                return "nein"
         logger.info('GET A NEW LOG ENTRY')
         log_entry = simplejson.loads(body)
         logger.info(log_entry)
         from fernlehrgang import models
         typ = log_entry.pop('typ')
         if typ == "ausstattung":
-            log_entry['type'] = u"B %s, L %s, V %s" % (
-                log_entry.pop('buero'),
-                log_entry.pop('lager'),
-                log_entry.pop('verkauf'))
+            log_entry['type'] = u"Büro %s, Lager %s, Verwaltung %s" % (
+                true_false(log_entry.pop('buero')),
+                true_false(log_entry.pop('lager')),
+                true_false(log_entry.pop('verkauf')))
             log_entry['type'] = log_entry['type'][:400]
         elif typ == "fortschritt":
             if 'position' in log_entry.keys():
@@ -269,11 +274,13 @@ class Worker(ConsumerMixin):
             if 'title' not in log_entry:
                 log_entry['title'] = ''
 
-            log_entry['type'] = u"Level %s (%s) zu %s abgeschlossen." % (
+            log_entry['type'] = u"Lernfortschritt: %s (%s) zu %s % abgeschlossen." % (
                 log_entry.pop('title'),
                 log_entry.pop('key'),
-                log_entry.pop('progress'))
+                int(log_entry.pop('progress')))
             log_entry['type'] = log_entry['type'][:400]
+        elif typ == "druck":
+             log_entry['type'] = u"Das Abschluss-Zertifkat wurde gedruckt."
         if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
             log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
         try:

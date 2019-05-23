@@ -115,8 +115,10 @@ Create a browser and visit the instance you just created:
    >>> db =  root._p_jar.db()
    >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
    >>> import zope.testbrowser.wsgi
+   
    >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
    >>> browser = Browser(wsgi_app=app)
+   >>> browser.handleErrors = False
    >>> data = {'teilnehmer_id': teil1.id, 'passwort': teil1.passwort}
    >>> data
    {'teilnehmer_id': 1, 'passwort': 'passwort'}
@@ -204,7 +206,7 @@ Antwort
    <fernlehrgang.browser.ergebnisse.CalculateResultsVLW object at ...>
    
    >>> results.summary()
-   {'comment': 'Nicht Bestanden (Noch keine Antwort aus der VLW)', 'resultpoints': 0, 'points': 0}
+   {'comment': "<b> <span class='text-danger'> Nicht Bestanden (Noch keine Antwort aus der VLW); </span> </b> ", 'resultpoints': 0, 'points': 0}
   
    >>> antwort = models.Antwort(lehrheft_id=lheft1.id, frage_id=frage1.id, gbo="OK")
    >>> ktn1.antworten.append(antwort) 
@@ -212,7 +214,7 @@ Antwort
    >>> antwort.datum
    
    >>> results.summary()
-   {'comment': 'Bestanden', 'resultpoints': 0, 'points': 0}
+   {'comment': "<b> <span class='text-success'> Bestanden; </span> </b> ", 'resultpoints': 0, 'points': 0}
 
 Passwort Ändern
 ---------------
@@ -234,3 +236,14 @@ Passwort Ändern
    >>> tn = session.query(models.Teilnehmer).get(1)
    >>> tn.passwort
    u'NeuesPasswort'
+
+
+Teilnehmer hat einen Eintrag in der GBO?
+
+   >>> data
+   {'teilnehmer_id': 1, 'vorname': 'Christian', 'name': 'Klinger'}
+
+   >>> import simplejson
+   >>> browser.open('http://localhost/++skin++vlw/app/hasGBO', data=simplejson.dumps(data))   
+   >>> simplejson.loads(browser.contents)
+   {'gbo': False, 'teilnehmer_id': 1}

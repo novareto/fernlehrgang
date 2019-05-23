@@ -46,6 +46,20 @@ class APILernwelten(grok.JSON):
     def session(self):
         return Session()
 
+    def hasGBO(self):
+        data = simplejson.loads(self.body)
+        teilnehmer_id = data.get('teilnehmer_id')
+        ret = {}
+        ret['teilnehmer_id'] = teilnehmer_id
+        ret['gbo'] = False
+        if teilnehmer_id:
+            teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
+            mnr = teilnehmer.unternehmen_mnr
+            info = self.gbo.get_info(str(mnr))
+            if info.status_code == 200:
+                ret['gbo'] = True
+        return ret
+
     def checkAuth(self):
         def isVLWTeilnehmer(teilnehmer):
             for ktn in teilnehmer.kursteilnehmer:
@@ -84,12 +98,13 @@ class APILernwelten(grok.JSON):
             teilnehmer = self.session.query(
                 models.Teilnehmer).get(teilnehmer_id)
             for ktn in teilnehmer.kursteilnehmer:
-                ktns.append(
+                if ktn.fernlehrgang.typ == "4":
+                    ktns.append(
                         dict(
                             kursteilnehmer_id=ktn.id,
                             fernlehrgang_id=ktn.fernlehrgang_id
                             )
-                    )
+                        )
             if teilnehmer:
                 oktn = teilnehmer.getVLWKTN()
                 ret['teilnehmer_id'] = teilnehmer.id
