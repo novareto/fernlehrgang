@@ -102,7 +102,9 @@ class APILernwelten(grok.JSON):
                     ktns.append(
                         dict(
                             kursteilnehmer_id=ktn.id,
-                            fernlehrgang_id=ktn.fernlehrgang_id
+                            fernlehrgang_id=ktn.fernlehrgang_id,
+                            titel=ktn.fernlehrgang.titel,
+                            jahr=ktn.fernlehrgang.jahr
                             )
                         )
             if teilnehmer:

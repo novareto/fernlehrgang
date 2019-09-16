@@ -132,10 +132,7 @@ def createXLS(mail, flg_id, tids, flgids):
         models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr).order_by(models.Teilnehmer.id)
     print result.count()
     for tn, unternehmen, ktn in page_query(result):
-        print i
         i += 1
-	#if check(ktn, tids, flgids):
-	#    rc.append((ktn.teilnehmer, ktn.teilnehmer.unternehmen, ktn))
 	rc.append((tn, unternehmen, ktn, check(ktn, tids, flgids, unternehmen.aktiv)))
     fn = createStatusliste(rc, flg_id)
     import transaction
@@ -176,6 +173,7 @@ def importUsers(mail, flg_id, tids, flgids, context_id):
         print "MAIL RAUS"
         send_mail('flgapp@bghw.de', (mail,), "Import Erfolgreich", "Import Erfolgreich %s Teilnehmer importiert, Von %s  --> Nach %s" %(i, flg_id, context_id))
 
+
 @menu.menuentry(NavigationMenu, order=300)
 class ImportTeilnehmer(Page):
     grok.context(IFernlehrgang)
@@ -212,6 +210,12 @@ class ImportTeilnehmer(Page):
 
     def __call__(self):
         self.update()
+        # Special Security BELT
+        if self.request.principal.id not in ('cklinger', 'bniedzwetzki'):
+            self.flash(u'Sie haben für diese Funktion keine Berechtigung')
+            self.redirect(self.url(self.context))
+            return Page.__call__(self)
+        
         key = None
         for k, v in self.request.form.items():
             if k.startswith('import_'):
@@ -249,14 +253,15 @@ class ImportTeilnehmer(Page):
         if action == "import":
             mail = getUserEmail(self.request.principal.id)
             flg_id = flg.id
-            #importUsers(mail, flg_id, tids, flgids)
+            import pdb; pdb.set_trace()
+            importUsers(mail, flg_id, tids, flgids, self.context.id)
             print "ADD STUFF TO THE QUEUEU"
-            q.enqueue_call(func=importUsers, args=(mail, flg_id, tids, flgids, self.context.id), timeout=19800)
+            #q.enqueue_call(func=importUsers, args=(mail, flg_id, tids, flgids, self.context.id), timeout=19800)
         elif action == "statusliste":
             mail = getUserEmail(self.request.principal.id)
             flg_id = flg.id
             #createXLS(mail, flg_id, tids, flgids)
-            print "ADD STUFF TO THE QUEUEU"
+            print "ADD STUFF TO THE QUEUEU "
             q.enqueue_call(func=createXLS, args=(mail, flg_id, tids, flgids), timeout=19800)
 
         #self.flash('Es wurden %s Teilnehmer erfolgreich registriert.' % i)

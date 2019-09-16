@@ -154,7 +154,7 @@ Anmeldung Falsches PW
    >>> data = {'teilnehmer_id': teil1.id}
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
-   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Lars Walther", "un_klasse": null, "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}], "telefon": "None", "branche": null, "vorname": null, "unternehmen": "Novareto", "email": "None"}'
+   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Lars Walther", "un_klasse": null, "kurse": [{"jahr": "2016", "fernlehrgang_id": 1, "titel": "Fernlehrgang", "kursteilnehmer_id": 1}], "telefon": "None", "branche": null, "vorname": null, "unternehmen": "Novareto", "email": "None"}'
    
    >>> data = {'teilnehmer_id': teil1.id, 'name': 'Klinger', 'vorname': 'Christian'}
    >>> data
@@ -184,7 +184,7 @@ Anmeldung Falsches PW
 
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
-   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Klinger", "un_klasse": "G3", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 1}], "telefon": "09841/3644", "branche": "nein", "vorname": "Christian", "unternehmen": "Novareto", "email": "ck@novareto.de"}'
+   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Klinger", "un_klasse": "G3", "kurse": [{"jahr": "2016", "fernlehrgang_id": 1, "titel": "Fernlehrgang", "kursteilnehmer_id": 1}], "telefon": "09841/3644", "branche": "nein", "vorname": "Christian", "unternehmen": "Novareto", "email": "ck@novareto.de"}'
 
 Antwort  
 -------
