@@ -6,30 +6,24 @@ import csv
 from z3c.saconfig import Session
 from fernlehrgang import models
 import collections
+from profilehooks import profile, timecall
+from memory_profiler import profile
+
 
 #@timecall
+@profile
+#@mprofile
 def worker():
     y=[]
     session = Session()
-    query = session.query(models.Kursteilnehmer.teilnehmer_id).filter(models.Kursteilnehmer.fernlehrgang_id==115)
+    query = session.query(models.Kursteilnehmer, models.Teilnehmer, models.Unternehmen).filter(
+        models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr,
+        models.Kursteilnehmer.fernlehrgang_id == 115,
+        models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id).yield_per(1000).enable_eagerloads(False)
     alle = query.all()
-    print len(alle)
-    for x in alle:
-        y.append(x[0])
-    counter=collections.Counter(y)
-    i=0
-    for x, y in counter.items():
-        if y > 1:
-            i+=1
-            ktns = session.query(models.Kursteilnehmer).filter(
-                models.Kursteilnehmer.teilnehmer_id == x, models.Kursteilnehmer.fernlehrgang_id==115).order_by(models.Kursteilnehmer.id).all()
-            alt, neu = ktns
-            print alt.id, neu.id
-            if alt.id > neu.id:
-                print "FUCK WHATS UP"
-            session.delete(neu)
-    import transaction; transaction.commit()
-    
+    for x, y, z in alle:
+        print x.id
+    print len(alle) 
 
 
 

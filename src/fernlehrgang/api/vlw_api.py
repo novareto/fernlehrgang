@@ -74,6 +74,9 @@ class APILernwelten(grok.JSON):
         if teilnehmer_id:
             teilnehmer = self.session.query(
                 models.Teilnehmer).get(teilnehmer_id)
+            if not teilnehmer:
+                self.response.setStatus(404)
+                return 
             vlwtn = isVLWTeilnehmer(teilnehmer)
             if teilnehmer.passwort == data['passwort'] and vlwtn:
                 ret['erfolgreich'] = 'true'
@@ -97,6 +100,9 @@ class APILernwelten(grok.JSON):
         if teilnehmer_id:
             teilnehmer = self.session.query(
                 models.Teilnehmer).get(teilnehmer_id)
+            if not teilnehmer:
+                self.response.setStatus(404)
+                return 
             for ktn in teilnehmer.kursteilnehmer:
                 if ktn.fernlehrgang.typ == "4":
                     ktns.append(

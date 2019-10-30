@@ -140,6 +140,15 @@ Anmeldung kein VLW
    >>> browser.contents
    '{"gbo": false, "teilnehmer_id": 2, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
 
+Anmeldung kein VLW
+
+   >>> data = {'teilnehmer_id': '98989898', 'passwort': 'passwort'}
+   >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
+   Traceback (most recent call last):
+   ...
+   HTTPError: HTTP Error 404: Not Found
+   >>> browser.headers['status']
+   '404 Not Found'
  
 Anmeldung Falsches PW
    
@@ -150,7 +159,18 @@ Anmeldung Falsches PW
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
    '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+
+Get Teilneher --> Teilnehmer nicht vorhanden
    
+   >>> data = {'teilnehmer_id': 9898989}
+   >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
+   Traceback (most recent call last):
+   ...
+   HTTPError: HTTP Error 404: Not Found
+
+   >>> browser.headers['status']
+   '404 Not Found'
+
    >>> data = {'teilnehmer_id': teil1.id}
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
