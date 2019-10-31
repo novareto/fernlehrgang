@@ -373,6 +373,12 @@ class SearchTeilnehmer(grok.View):
         #               models.Teilnehmer.vorname
         #              ).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
 
+
+        sql = session.query(models.Teilnehmer, models.Unternehmen).filter(
+            models.Teilnehmer.unternehmen_mnr == self.term
+        )
+        import pdb; pdb.set_trace()
+
         sql = session.query(models.Teilnehmer, models.Unternehmen).filter(
             models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr, 
             or_(

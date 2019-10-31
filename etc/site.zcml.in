@@ -1,4 +1,5 @@
 <configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="fernlehrgang">
 
   <include package="fernlehrgang" />
@@ -33,4 +34,8 @@
       <grant role="zope.Manager"
              principal="zope.manager" />
    </configure>
+  <!-- session -->
+  <browser:beakerSession
+      secret="Test"
+      validate_key="Some key" />
 </configure>

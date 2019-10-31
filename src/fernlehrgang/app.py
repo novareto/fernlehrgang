@@ -35,29 +35,31 @@ from zeam.form.base.markers import NO_VALUE
 grok.templatedir('templates')
 
 
-def setup_pau(PAU):
-    PAU.authenticatorPlugins = ('principals', )
-    PAU.credentialsPlugins = ("cookies", "No Challenge if Authenticated")
 
-
-class FernlehrgangApp(grok.Application, grok.Container):
+from megrok.nozodb import ApplicationRoot
+class FernlehrgangApp(ApplicationRoot):
     grok.implements(IFernlehrgangApp)
     grok.traversable(attr='benutzer')
 
-    grok.local_utility(
-        UserAuthenticatorPlugin, provides=IAuthenticatorPlugin,
-        name='principals',
-        )
-
-    grok.local_utility(
-        PluggableAuthentication,
-        provides=IAuthentication,
-        public=True,
-        setup=setup_pau,
-        )
 
     def benutzer(self):
         return getUtility(IAuthenticatorPlugin, 'principals').user_folder
+
+    def get(self, key):
+        return None
+
+grok.global_utility(
+    UserAuthenticatorPlugin, provides=IAuthenticatorPlugin,
+    name='principals',
+    )
+
+class PAU(PluggableAuthentication, grok.GlobalUtility):
+    grok.provides(IAuthentication)
+    grok.name('pau')
+    def __init__(self, *args, **kwargs):
+        super(PAU, self).__init__(*args, **kwargs)
+        self.authenticatorPlugins = ('principals', )
+        self.credentialsPlugins = ("cookies", "No Challenge if Authenticated")
 
 
 class Index(Page):
