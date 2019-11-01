@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
 
@@ -9,7 +9,7 @@ from zope.password.interfaces import IPasswordManager
 from zope.securitypolicy.interfaces import IPrincipalRoleManager
 from zope.securitypolicy.interfaces import IPrincipalPermissionManager
 from zope.pluggableauth.interfaces import IPrincipalInfo, IAuthenticatorPlugin
-
+from fernlehrgang.models import Account
 
 
 class PrincipalInfo(object):
@@ -23,68 +23,84 @@ class PrincipalInfo(object):
         self.authenticatorPlugin = None
 
 
-class UserAuthenticatorPlugin(grok.LocalUtility):
+class UserAuthenticatorPlugin(object):
     grok.implements(IAuthenticatorPlugin)
-    grok.name('principals')
+    grok.name("principals")
 
     def __init__(self):
         self.user_folder = UserFolder()
-        
+
     def authenticateCredentials(self, credentials):
         if not isinstance(credentials, dict):
             return None
-        if not ('login' in credentials and 'password' in credentials):
+        if not ("login" in credentials and "password" in credentials):
             return None
-        account = self.getAccount(credentials['login'])
+        account = self.getAccount(credentials["login"])
         if account is None:
             return None
-        if not account.checkPassword(credentials['password']):
+        if not account.checkPassword(credentials["password"]):
             return None
-        return PrincipalInfo(id=account.login,
-                             title=account.real_name,
-                             description=account.real_name)
+        return PrincipalInfo(
+            id=account.login, title=account.real_name, description=account.real_name
+        )
 
     def principalInfo(self, id):
         account = self.getAccount(id)
         if account is None:
             return None
-        return PrincipalInfo(id=account.login,
-                             title=account.real_name,
-                             description=account.real_name)
+        return PrincipalInfo(
+            id=account.login, title=account.real_name, description=account.real_name
+        )
 
     def getAccount(self, login):
         return login in self.user_folder and self.user_folder[login] or None
-    
+
     def addUser(self, username, email, password, real_name, role):
-        if username not in self.user_folder:
-            user = Account(username, email, password, real_name, role)
-            self.user_folder[username] = user
+        import pdb; pdb.set_trace()
+        if not username in self.user_folder:
+            user = models.Account(
+                username=username,
+                login=username,
+                email=email,
+                password=password,
+                real_name=real_name,
+                role=role,
+            )
+            self.user_folder.add(user)
             role_manager = IPrincipalRoleManager(grok.getSite())
-            print role, username
             role_manager.assignRoleToPrincipal(role, username)
-            
+
     def listUsers(self):
         return self.user_folder.values()
 
 
-class UserFolder(grok.Container):
-    pass
+from z3c.saconfig import Session
+from grokcore.content import IContext
+from zope.interface import implementer
+from fernlehrgang import models
 
 
-class Account(grok.Model):
-    def __init__(self, name, email, password, real_name, role):
-        self.login = name
-        self.email = email
-        self.real_name = real_name
-        self.role = role
-        self.password = password
+@implementer(IContext)
+class UserFolder(object):
+    @property
+    def session(self):
+        return Session()
 
-    def checkPassword(self, password):
-        if password == self.password:
-            return True
-        return False
+    def values(self):
+        return self.session.query(models.Account)
 
-    def getEmail(self):
-        if hasattr(self, 'email'):
-            return self.email
-        return ''
+    def __getitem__(self, key):
+        model = self.session.query(models.Account).get(str(key))
+        if not model:
+            return None 
+        return model
+
+    def add(self, item):
+        try:
+            self.session.add(item)
+        except Exception as e:
+            # This might be a bit too generic
+            return e
+
+    def delete(self, item):
+        self.session.delete(item)

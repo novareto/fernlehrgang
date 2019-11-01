@@ -74,6 +74,29 @@ class RDBMixin(traject.Model, Contained):
             setattr(self, key, value)
 
 
+class Account(Base):
+    __tablename__ = 'accounts'
+
+    login = Column(String(50), primary_key=True)
+    email = Column(String(50))
+    real_name = Column(String(50))
+    role = Column(String(150))
+    password = Column(String(50))
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def checkPassword(self, password):
+        if password == self.password:
+            return True
+        return False
+
+    def getEmail(self):
+        if hasattr(self, 'email'):
+            return self.email
+        return ''
+
 class Fernlehrgang(Base, RDBMixin):
     grok.implements(IFernlehrgang, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
