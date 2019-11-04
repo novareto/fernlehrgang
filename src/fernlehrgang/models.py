@@ -74,7 +74,7 @@ class RDBMixin(traject.Model, Contained):
             setattr(self, key, value)
 
 
-class Account(Base):
+class Account(Base, Contained):
     __tablename__ = 'accounts'
 
     login = Column(String(50), primary_key=True)
@@ -84,6 +84,7 @@ class Account(Base):
     password = Column(String(50))
 
     def __init__(self, **kwargs):
+        print "CREATED CREATED"
         for key, value in kwargs.items():
             setattr(self, key, value)
 

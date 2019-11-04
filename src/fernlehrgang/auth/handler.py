@@ -4,12 +4,14 @@
 
 import grok
 
-from zope import component, interface, schema
-from zope.password.interfaces import IPasswordManager
+
+from fernlehrgang import models
+from z3c.saconfig import Session
+from zope.interface import implementer
+from grokcore.content import IContainer
 from zope.securitypolicy.interfaces import IPrincipalRoleManager
-from zope.securitypolicy.interfaces import IPrincipalPermissionManager
 from zope.pluggableauth.interfaces import IPrincipalInfo, IAuthenticatorPlugin
-from fernlehrgang.models import Account
+from zope.location import ILocation, Location, LocationProxy, locate
 
 
 class PrincipalInfo(object):
@@ -56,8 +58,7 @@ class UserAuthenticatorPlugin(object):
         return login in self.user_folder and self.user_folder[login] or None
 
     def addUser(self, username, email, password, real_name, role):
-        import pdb; pdb.set_trace()
-        if not username in self.user_folder:
+        if username not in self.user_folder:
             user = models.Account(
                 username=username,
                 login=username,
@@ -74,14 +75,15 @@ class UserAuthenticatorPlugin(object):
         return self.user_folder.values()
 
 
-from z3c.saconfig import Session
-from grokcore.content import IContext
-from zope.interface import implementer
-from fernlehrgang import models
+@implementer(IContainer)
+class UserFolder(Location):
 
+    __name__ = "benutzer"
 
-@implementer(IContext)
-class UserFolder(object):
+    @property
+    def __parent__(self):
+        return grok.getApplication()
+
     @property
     def session(self):
         return Session()
@@ -89,10 +91,14 @@ class UserFolder(object):
     def values(self):
         return self.session.query(models.Account)
 
+    def get(self, key):
+        return self.__getitem__(key)
+
     def __getitem__(self, key):
         model = self.session.query(models.Account).get(str(key))
         if not model:
-            return None 
+            return None
+        locate(model, self, model.login)
         return model
 
     def add(self, item):
