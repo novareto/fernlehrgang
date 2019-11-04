@@ -5,7 +5,7 @@
 import grok
 import logging
 
-from uvc.layout.forms.components import AddForm, Form
+from zeam.form.base import Form
 from zeam.form.ztk.widgets.date import DateField
 
 DateField.valueLength = "medium"
@@ -16,7 +16,7 @@ class Form(Form):
     grok.baseclass()
 
 
-class AddForm(AddForm):
+class AddForm(Form):
     grok.require('dolmen.content.Add')
     grok.baseclass()
 
@@ -39,7 +39,6 @@ def fmtDate(d):
 from ibm_db_sa.base import DB2Compiler
 
 def visit_sequence(self, sequence):
-    print "MPATCH"
     nn = sequence.name
     if sequence.metadata.schema:
         nn = "%s.%s" %(sequence.metadata.schema, nn)
