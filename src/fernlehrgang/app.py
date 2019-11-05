@@ -8,10 +8,8 @@ from z3c.saconfig import Session
 from megrok.traject import locate
 from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.interfaces.app import IFernlehrgangApp
-from dolmen.app.layout import models
 from zope.interface import Interface
-from dolmen.menu import menuentry
-from uvc.layout.interfaces import IFooter, IExtraInfo, IPersonalPreferences
+#from uvc.layout.interfaces import IFooter, IPersonalPreferences
 from uvc.layout import Page
 #from megrok import navigation
 
@@ -204,7 +202,7 @@ class TestSystem(grok.Viewlet):
             if hasattr(self.view, 'flash'):
                 self.view.flash(u"Test - System", type="info")
             else:
-                print self.view
+                print(self.view)
 
     def render(self):
         return ""

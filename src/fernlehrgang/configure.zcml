@@ -14,18 +14,17 @@
   <include package="megrok.z3ctable" />
   <include package="megrok.z3ctable" file="meta.zcml" />
 
-  <include package="uvc.layout" />
-  <include package="uvc.tbskin" />
-
+  <include package="uvc.siguvtheme" />
+<!--
   <include package="dolmen.menu" />
   <include package="dolmen.app.authentication" />
   <include package="dolmen.app.security" />
   <include package="dolmen.app.breadcrumbs" />
   <include package="dolmen.forms.crud" />
-
+-->
   <include package="grokcore.chameleon" />
   <include package="megrok.pagetemplate" file="meta.zcml" />
 
-  <browser:defaultSkin name="tbskin" />
+  <browser:defaultSkin name="siguvtheme" />
   <grok:grok package="." />
 </configure>

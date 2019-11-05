@@ -13,7 +13,6 @@ from sqlalchemy import *
 from sqlalchemy.orm import relation, backref
 from sqlalchemy.ext.declarative import declarative_base
 
-from dolmen.content import IContent, schema
 from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.journal import IJournalEntry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
@@ -37,9 +36,14 @@ from z3c.saconfig.interfaces import IEngineCreatedEvent
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 from sqlalchemy import event
-from zope.interface import alsoProvides
+from zope.interface import alsoProvides, Interface
 from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
+
+
+class IContent(Interface):
+    pass
+
 
 config = getProductConfiguration('database')
 SCHEMA = config['schema'] or None 
@@ -77,7 +81,6 @@ class RDBMixin(traject.Model, Contained):
 class Fernlehrgang(Base, RDBMixin):
     grok.implements(IFernlehrgang, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
-    schema(IFernlehrgang)
     traject.pattern("fernlehrgang/:fernlehrgang_id")
 
     __tablename__ = 'fernlehrgang'
