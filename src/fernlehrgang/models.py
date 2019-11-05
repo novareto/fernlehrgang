@@ -36,7 +36,7 @@ from z3c.saconfig.interfaces import IEngineCreatedEvent
 from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 from sqlalchemy import event
-from zope.interface import alsoProvides, Interface
+from zope.interface import alsoProvides, Interface, implementer
 from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
@@ -68,9 +68,9 @@ def setUpDatabase(event):
     metadata.create_all(event.engine, checkfirst=True)
 
 
+@implementer(IContent)
 class RDBMixin(traject.Model, Contained):
     """ Base Mixin for RDB-Base Classes """
-    grok.implements(IContent)
     grok.baseclass()
 
     def __init__(self, **kwargs):
@@ -78,8 +78,8 @@ class RDBMixin(traject.Model, Contained):
             setattr(self, key, value)
 
 
+@implementer(IFernlehrgang, IDCDescriptiveProperties)
 class Fernlehrgang(Base, RDBMixin):
-    grok.implements(IFernlehrgang, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id")
 
@@ -110,9 +110,8 @@ class Fernlehrgang(Base, RDBMixin):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
-
+@implementer(IUnternehmen, IDCDescriptiveProperties)
 class Unternehmen(Base, RDBMixin):
-    grok.implements(IUnternehmen, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr")
     #grok.traversable(attr='god_data')
@@ -160,8 +159,8 @@ unternehmen_teilnehmer = Table(
 )
 
 
+@implementer(ITeilnehmer, IDCDescriptiveProperties)
 class Teilnehmer(Base, RDBMixin):
-    grok.implements(ITeilnehmer, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr/teilnehmer/:id")
 
@@ -217,8 +216,8 @@ class Teilnehmer(Base, RDBMixin):
         return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
 
 
+@implementer(ILehrheft, IDCDescriptiveProperties)
 class Lehrheft(Base, RDBMixin):
-    grok.implements(ILehrheft, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id")
 
@@ -251,9 +250,8 @@ class Lehrheft(Base, RDBMixin):
                     lehrheft_id = lehrheft.id)
 
 
-
+@implementer(IFrage, IDCDescriptiveProperties)
 class Frage(Base, RDBMixin):
-    grok.implements(IFrage, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/frage/:frage_id")
 
@@ -289,8 +287,8 @@ class Frage(Base, RDBMixin):
                     fernlehrgang_id = frage.lehrheft.fernlehrgang.id)
 
 
+@implementer(IKursteilnehmer, IDCDescriptiveProperties)
 class Kursteilnehmer(Base, RDBMixin):
-    grok.implements(IKursteilnehmer, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id")
 
@@ -345,8 +343,8 @@ def receive_load(target, context):
         alsoProvides(target, IFortbildungKursteilnehmer)
 
 
+@implementer(IAntwort, IDCDescriptiveProperties)
 class Antwort(Base, RDBMixin):
-    grok.implements(IAntwort, IDCDescriptiveProperties)
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id")
 
@@ -392,8 +390,8 @@ class Antwort(Base, RDBMixin):
                     fernlehrgang_id = antwort.kursteilnehmer.fernlehrgang.id)
 
 
+@implementer(IJournalEntry)
 class JournalEntry(Base, RDBMixin):
-    grok.implements(IJournalEntry)
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr/teilnehmer/:id/journal/:jid")
 

@@ -3,34 +3,34 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
-
-from fernlehrgang.interfaces import IListing
-from dolmen.app.layout import IDisplayView
-from dolmen.app.layout import models
-from dolmen.menu import menuentry
-from fernlehrgang.interfaces.antwort import IAntwort
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.models import Antwort, Frage
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from datetime import datetime
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable.components import TablePage, GetAttrColumn, LinkColumn, Column
 from sqlalchemy import not_, and_
 from z3c.saconfig import Session
+from zeam.form.base import Action, SUCCESS, Actions
 from zeam.form.base import Fields, action
-from uvc.layout.interfaces import IExtraInfo
-from uvc.layout import Page
-from grokcore.chameleon.components import ChameleonPageTemplateFile
+from zeam.form.composed import ComposedForm
+from zeam.form.table import SubTableForm, TableActions
+from zope.interface import implementer
+
 from fernlehrgang import AddForm, Form
-from uvc.layout import TablePage
+from fernlehrgang.browser import TablePage, Page
+from fernlehrgang.interfaces import IListing
+from fernlehrgang.interfaces.antwort import IAntwort
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
+from fernlehrgang.models import Antwort, Frage
+from fernlehrgang.viewlets import AddMenu, NavigationMenu
+
 
 grok.templatedir('templates')
 
 
 #@menuentry(NavigationMenu)
+@implementer(IListing)
 class AntwortListing(TablePage):
-    grok.implements(IDisplayView, IListing)
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
@@ -55,8 +55,8 @@ class AntwortListing(TablePage):
 class AddAntwort(AddForm):
     grok.context(IKursteilnehmer)
     grok.title(u'Antwort')
-    label = u'Antwort anlegen'
 
+    label = u'Antwort anlegen'
     fields = Fields(IAntwort).omit('id', 'gbo', 'gbo_daten')
 
     def create(self, data):
@@ -70,10 +70,7 @@ class AddAntwort(AddForm):
         return self.url(self.context, 'antwort_listing')
 
 
-from zeam.form.table import SubTableForm, TableActions
-from zeam.form.composed import ComposedForm
-from zeam.form.base import Action, SUCCESS, Actions
-from datetime import datetime
+
 
 
 class SaveTableAction(Action):
@@ -235,9 +232,9 @@ class Antworten(GetAttrColumn):
 
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
+@implementer(IListing)
 class OverviewAntworten(Page):
-    grok.implements(IDisplayView, IListing)
     grok.context(IKursteilnehmer)
     grok.name('antwort_listing')
     grok.title(u'Antworten verwalten')
