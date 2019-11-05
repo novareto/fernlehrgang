@@ -8,14 +8,14 @@ import zope.component
 import smtplib
 import zope.sendmail
 from zope.sendmail.delivery import QueuedMailDelivery
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
-from email.MIMEText import MIMEText
-from email.Utils import COMMASPACE, formatdate
-from email import Encoders
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.utils import formatdate
+from email import encoders
 from email.header import Header
 from zope.sendmail.mailer import SMTPMailer
-
+COMMASPACE = ', '
 import zope.app.appsetup.product
 
 config = zope.app.appsetup.product.getProductConfiguration('mailer')
@@ -67,7 +67,7 @@ def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"
         part = MIMEBase('application', "octet-stream")
         with open(f, 'rb') as fd:
             part.set_payload(fd.read())
-        Encoders.encode_base64(part)
+        encoders.encode_base64(part)
         part.add_header(
             'Content-Disposition',
             'attachment; filename="%s"' % os.path.basename(f))
@@ -77,7 +77,6 @@ def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"
         zope.sendmail.interfaces.IMailDelivery,
         name=u'flg.maildelivery'
         )
-    print "I SEND THE MAIL VIA THE MAILER"
     mailer.send(send_from, send_to, msg.as_string())
 
 

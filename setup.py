@@ -58,6 +58,8 @@ setup(name='fernlehrgang',
           'simplejson',
           'js.bootstrap',
           'uvc.siguvtheme',
+          'uvc.menus',
+          'profilehooks',
       ],
       extras_require={
           'oracle': ['cx_Oracle',],

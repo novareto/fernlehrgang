@@ -10,8 +10,9 @@ from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from zope.interface import Interface
 #from uvc.layout.interfaces import IFooter, IPersonalPreferences
-from uvc.layout import Page
+from grokcore.layout import Page
 #from megrok import navigation
+#from uvc.entities.interfaces import IFooter
 
 from fernlehrgang.auth.handler import UserAuthenticatorPlugin
 from zope.pluggableauth import PluggableAuthentication
@@ -22,7 +23,7 @@ from zope.i18n.format import DateTimeParseError
 from zeam.form.base import NO_VALUE
 from zope.component import getUtility
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
-from uvc.layout import MenuItem
+from uvc.menus.components import MenuItem
 from zeam.form.ztk import customize
 from zope.schema.interfaces import IDate
 from fernlehrgang import fmtDate
@@ -68,15 +69,15 @@ class Index(Page):
     grok.require('zope.View')
 
 
-class KontaktMI(MenuItem):
-    grok.context(Interface)
-    grok.title(u"Kontakt")
-    grok.viewletmanager(IFooter)
-
-    @property
-    def action(self):
-        return "/kontakt"
-        return self.view.application_url() + '/kontakt'
+#class KontaktMI(MenuItem):
+#    grok.context(Interface)
+#    grok.title(u"Kontakt")
+#    grok.viewletmanager(IFooter)
+#
+#    @property
+#    def action(self):
+#        return "/kontakt"
+#        return self.view.application_url() + '/kontakt'
 
 
 class Kontakt(Page):
@@ -87,14 +88,14 @@ class Kontakt(Page):
         return "KONTAKT"
 
 
-class LogoutMI(MenuItem):
-    grok.context(Interface)
-    grok.title(u"Abmelden")
-    grok.viewletmanager(IPersonalPreferences)
-
-    @property
-    def action(self):
-        return self.view.application_url() + '/logout'
+#class LogoutMI(MenuItem):
+#    grok.context(Interface)
+#    grok.title(u"Abmelden")
+#    grok.viewletmanager(IPersonalPreferences)
+#
+#    @property
+#    def action(self):
+#        return self.view.application_url() + '/logout'
 
 
 class Logout(Page):
@@ -129,9 +130,9 @@ class KPTZLayer(grok.IRESTLayer):
 
 
 
-@customize(origin=IDate)
-def customize_size(field):
-    field.valueLength = 'medium'
+#@customize(origin=IDate)
+#def customize_size(field):
+#    field.valueLength = 'medium'
 
 
 class DateFieldWidget(DateFieldWidget):
@@ -189,31 +190,7 @@ class GermanBrowserLangugage(grok.Adapter):
         return ['de', 'de-de']
 
 
-from uvc.layout.interfaces import IHeaders
-class TestSystem(grok.Viewlet):
-    grok.viewletmanager(IHeaders)
-    grok.context(Interface)
 
-    def update(self):
-        from zope.app.appsetup.product import getProductConfiguration
-        config = getProductConfiguration('database')
-        DSN = config['dsn']
-        if DSN.startswith('oracle://novareto:retonova@10.30.131.206/BGETest'):
-            if hasattr(self.view, 'flash'):
-                self.view.flash(u"Test - System", type="info")
-            else:
-                print(self.view)
-
-    def render(self):
-        return ""
-
-
-from SocketServer import BaseServer
-
-def my_handle_error(self, request, client_address):
-    return
-
-BaseServer.handle_error = my_handle_error
 
 
 class HAProxyStatus(grok.View):

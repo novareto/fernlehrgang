@@ -77,7 +77,7 @@ class MQDataManager(object):
                 queue = self.queues.get(message.type)
                 if queue:
                     message.publish(payload, conn, queue, message.routing_key)
-                    print 'Sending Message to queue %s' % queue
+                    print('Sending Message to queue %s' % queue)
 
     def abort(self, transaction):
         self.messages = {}
@@ -166,7 +166,7 @@ class Worker(ConsumerMixin):
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
                     mqtm.createMessage(newmessage)
                 message.ack()
-        except StandardError, e:
+        except StandardError:
             logger.error('task raised exception: %r', e)
             #message.ack()
             logger.exception('ERRROR')
@@ -292,7 +292,7 @@ class Worker(ConsumerMixin):
                     je = models.JournalEntry(**log_entry)
                     teilnehmer.journal_entries.append(je)
                     message.ack()
-        except StandardError, e:
+        except StandardError:
             logger.error('Error in Logging %r', e)
             logger.exception('Error')
 

@@ -10,7 +10,7 @@ from .certpdf import createpdf
 from base64 import encodestring
 from fernlehrgang import models
 from z3c.saconfig import Session
-from uvc.layout.layout import IUVCSkin
+from uvc.siguvtheme.skin import ISiguvThemeLayer
 from tempfile import NamedTemporaryFile
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
@@ -23,7 +23,7 @@ class IVLWSkinLayer(grok.IDefaultBrowserLayer):
     pass
 
 
-class IVLWSkin(IVLWSkinLayer, IUVCSkin):
+class IVLWSkin(IVLWSkinLayer, ISiguvThemeLayer):
     grok.skin('vlw')
 
 

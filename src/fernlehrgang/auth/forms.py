@@ -5,17 +5,17 @@
 import grok
 
 
-from dolmen.forms.base import apply_data_event
-from handler import Account, UserFolder
-from interfaces import IAddUserForm
-from uvc.layout import Page
-from uvc.layout import MenuItem
-from uvc.layout.interfaces import IFooter
-from uvc.layout.forms.components import Form
+#from dolmen.forms.base import apply_data_event
+from .handler import Account, UserFolder
+from .interfaces import IAddUserForm
+from grokcore.layout import Page
+from uvc.menus.components import MenuItem
+#from uvc.layout.interfaces import IFooter
+from zeam.form.base import Form
 from zeam.form.base import Fields, action
 from zope import interface, component
 from zope.pluggableauth.interfaces import IAuthenticatorPlugin
-from dolmen.menu import menuentry
+#from dolmen.menu import menuentry
 from zope.securitypolicy.interfaces import IPrincipalRoleManager
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 
@@ -26,7 +26,7 @@ class BenutzerMI(MenuItem):
     grok.context(interface.Interface)
     grok.require('zope.ManageApplication')
     grok.title(u'Benutzerverwaltung')
-    grok.viewletmanager(IFooter)
+    #grok.viewletmanager(IFooter)
 
     @property
     def action(self):
@@ -88,7 +88,6 @@ class EditUser(Form):
         for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
             role_manager.removeRoleFromPrincipal(role_id, data['login'])
         role_manager.assignRoleToPrincipal(data['role'], data['login'])
-        print role_manager.getRolesForPrincipal(data['login'])
         self.redirect(self.url(grok.getSite(), '/benutzer'))
 
     @action(u'Entfernen')

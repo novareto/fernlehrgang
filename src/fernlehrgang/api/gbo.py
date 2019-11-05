@@ -416,7 +416,6 @@ if __name__ == '__main__':
 
     t = gboapi.get_info('995000102')
     #t = gboapi.get_info('100000020')
-    print t
 
     import logging
 
@@ -431,7 +430,4 @@ if __name__ == '__main__':
     requests_log.propagate = True
 
     t= gboapi.set_data(json.loads(PRODJSON))
-    print t
-    print t.text
-    import pdb; pdb.set_trace()
 
