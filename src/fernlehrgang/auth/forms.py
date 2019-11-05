@@ -1,107 +1,84 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
-
 import grok
+import zope.schema
+import zope.interface
+import zope.component
+
+from zope.authentication.interfaces import (
+    ILogout, IUnauthenticatedPrincipal, IAuthentication)
+from zope.traversing.browser.absoluteurl import absoluteURL
+from zope.location.interfaces import ILocation
+
+from zeam.form.base import action, Fields
+from fernlehrgang import Form
+from zeam.form.base.markers import SUCCESS, FAILURE
 
 
-#from dolmen.forms.base import apply_data_event
-from .handler import Account, UserFolder
-from .interfaces import IAddUserForm
-from grokcore.layout import Page
-from uvc.menus.components import MenuItem
-#from uvc.layout.interfaces import IFooter
-from zeam.form.base import Form
-from zeam.form.base import Fields, action
-from zope import interface, component
-from zope.pluggableauth.interfaces import IAuthenticatorPlugin
-#from dolmen.menu import menuentry
-from zope.securitypolicy.interfaces import IPrincipalRoleManager
-from grokcore.chameleon.components import ChameleonPageTemplateFile
+class ILoginForm(zope.interface.Interface):
+    """A simple login form interface.
+    """
 
-grok.templatedir('templates')
+    login = zope.schema.TextLine(
+        title=("Username"),
+        required=True)
 
+    password = zope.schema.Password(
+        title=("Password"),
+        required=True)
 
-class BenutzerMI(MenuItem):
-    grok.context(interface.Interface)
-    grok.require('zope.ManageApplication')
-    grok.title(u'Benutzerverwaltung')
-    #grok.viewletmanager(IFooter)
-
-    @property
-    def action(self):
-        return self.view.application_url() + '/benutzer'
+    camefrom = zope.schema.TextLine(
+        title=("TextLine"),
+        required=False)
 
 
-class UserList(Page):
-    grok.name('index')
-    grok.context(UserFolder)
-    grok.require('zope.ManageApplication')
+class Login(Form):
+    """A very basic implementation of a login form.
+    """
+    grok.title("Log in")
+    grok.require("zope.Public")
+    grok.context(zope.interface.Interface)
+
+    prefix = ""
+    label = "Identify yourself"
+    form_name = "Login form"
+
+    fields = Fields(ILoginForm)
+    fields['camefrom'].mode = 'hidden'
+    for field in fields:
+        field.prefix = ""
+
+    @action("Log in")
+    def login(self):
+        data, errors = self.extractData()
+        if errors:
+            return FAILURE
+        principal = self.request.principal
+        if IUnauthenticatedPrincipal.providedBy(principal):
+            self.status = "Login failed"
+            return FAILURE
+
+        self.flash(
+            "You are now logged in as ${name}",
+              mapping={"name": principal.id})
+
+        #grok.notify(UserLoggedInEvent(principal))
+        camefrom = self.request.get("camefrom", None)
+        if not camefrom:
+            if ILocation.providedBy(principal):
+                camefrom = absoluteURL(principal, self.request)
+            else:
+                camefrom = absoluteURL(self.context, self.request)
+
+        self.redirect(camefrom)
+        return SUCCESS
+
+
+class Logout(grok.View):
+    grok.context(zope.interface.Interface)
+    grok.require('zope.Public')
     
     def update(self):
-        users = component.getUtility(IAuthenticatorPlugin, 'principals')
-        self.users = users.listUsers()
-   
+        auth = zope.component.queryUtility(IAuthentication)
+        ILogout(auth).logout(self.request)
 
-class AddUser(Form): 
-    grok.context(UserFolder)
-    grok.require('zope.ManageApplication')
-    label = u"Benutzer anlegen"
-
-    fields = Fields(IAddUserForm)
-
-    @action(u'Anlegen')
-    def handle_add(self):
-        data, errors = self.extractData()
-        if errors:
-            self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
-            return
-        users = component.getUtility(IAuthenticatorPlugin, 'principals')
-        users.addUser(data['login'], data['email'], data['password'], data['real_name'], data['role'])
-        self.redirect(self.url(grok.getSite(), '/benutzer'))
-
-
-class EditUser(Form): 
-    grok.name('edit')
-    grok.context(Account)
-    grok.require('zope.ManageApplication')
-    label = u"Benutzer bearbeiten"
-
-    fields = Fields(IAddUserForm)
-    ignoreContent = False
-
-    def updateForm(self):                                                       
-        super(EditUser, self).updateForm()                                
-        pw = self.fieldWidgets.get('form.field.password')                       
-        confirm = self.fieldWidgets.get('form.field.confirm_password')                   
-        pw.template = ChameleonPageTemplateFile('templates/password.cpt')          
-        confirm.template = ChameleonPageTemplateFile('templates/password.cpt') 
-
-    @action(u'Bearbeiten')
-    def handle_add(self):
-        data, errors = self.extractData()
-        if errors:
-            self.flash(u'Es ist ein Fehler aufgetreten', 'warning')
-            return
-        changes = apply_data_event(self.fields, self.context, data)
-        role_manager = IPrincipalRoleManager(grok.getSite())
-        for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
-            role_manager.removeRoleFromPrincipal(role_id, data['login'])
-        role_manager.assignRoleToPrincipal(data['role'], data['login'])
-        self.redirect(self.url(grok.getSite(), '/benutzer'))
-
-    @action(u'Entfernen')
-    def handle_delete(self):
-        data, errors = self.extractData()
-        del self.context.__parent__[self.context.__name__]
-        role_manager = IPrincipalRoleManager(grok.getSite())
-        for role_id, setting in role_manager.getRolesForPrincipal(data['login']):
-            role_manager.removeRoleFromPrincipal(role_id, data['login'])
-        self.redirect(self.url(grok.getSite(), '/benutzer'))
-
-
-from dolmen.app.authentication.browser.login import Login
-
-
-class Login(Login):
-    pass
+    def render(self):
+        self.redirect(self.url(self.context))
