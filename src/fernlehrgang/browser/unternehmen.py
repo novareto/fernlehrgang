@@ -3,11 +3,9 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
-from dolmen.app.layout import models
-from dolmen.menu import menuentry
-from fernlehrgang import Form, AddForm, fmtDate
+from fernlehrgang import fmtDate
+from fernlehrgang.browser import Display, Form, AddForm, EditForm
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
@@ -18,7 +16,7 @@ from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from sqlalchemy import func
-from uvc.layout import Page
+from fernlehrgang.browser import Page
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
@@ -31,7 +29,7 @@ NO_VALUE = ""
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
 class UnternehmenListing(Form):
     grok.context(IFernlehrgangApp)
     grok.name('unternehmen_listing')
@@ -93,8 +91,8 @@ class UnternehmenListing(Form):
         self.results = sql.order_by(Unternehmen.name).all()
 
 
-@menuentry(NavigationMenu, order=1)
-class Index(models.DefaultView):
+#@menuentry(NavigationMenu, order=1)
+class Index(Display):
     grok.context(IUnternehmen)
     grok.name('index')
     grok.title('Unternehmen')
@@ -124,7 +122,7 @@ class Index(models.DefaultView):
         return sorted(rc, key=lambda v: v.get('name'))
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddUnternehmen(AddForm):
     grok.context(IFernlehrgangApp)
     grok.title(u'Unternehmen')
@@ -145,7 +143,7 @@ class AddUnternehmen(AddForm):
         return self.url(self.context, 'unternehmen_listing')
 
 
-class Edit(models.Edit):
+class Edit(EditForm):
     grok.context(IUnternehmen)
     grok.implements(IListing)
     template = grok.PageTemplateFile('templates/unternehmen_edit.cpt')

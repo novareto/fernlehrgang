@@ -17,7 +17,7 @@ from megrok.traject.components import DefaultModel
 from z3c.saconfig import Session
 from zeam.form.base import action, Fields
 from fernlehrgang.interfaces.resultate import ICalculateResults
-from fernlehrgang import Form
+from fernlehrgang.browser import Form
 from fernlehrgang import fmtDate
 from fernlehrgang.interfaces.search import ISearch
 from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax

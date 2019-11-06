@@ -23,7 +23,6 @@ from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import Column, GetAttrColumn, LinkColumn
-from profilestats import profile
 from fernlehrgang.browser import TablePage
 from fernlehrgang.slots.interfaces import IExtraInfo
 from z3c.saconfig import Session
@@ -36,15 +35,12 @@ from zope.schema import Set, Choice
 from grokcore.component import provider
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from uvc.layout import TablePage
-from GenericCache.GenericCache import GenericCache
+from fernlehrgang.browser import TablePage, EditForm, Display 
 from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, janein
 from zope.event import notify
 from grok import ObjectAddedEvent
-from GenericCache import GenericCache
 from plone.memoize import ram
-from GenericCache.decorators import cached
 
 
 grok.templatedir('templates')
@@ -57,9 +53,9 @@ def no_value(d):
     return d
 
 
-@menuentry(NavigationMenu, order=20)
+#@menuentry(NavigationMenu, order=20)
 class TeilnehmerListing(TablePage):
-    grok.implements(IDisplayView, IListing)
+    grok.implements(IListing)
     grok.context(IUnternehmen)
     grok.name('teilnehmer_listing')
     grok.title(u'Teilnehmer verwalten')
@@ -82,7 +78,7 @@ class TeilnehmerListing(TablePage):
         return vv
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddTeilnehmer(AddForm):
     grok.context(IUnternehmen)
     grok.title(u'Teilnehmer')
@@ -117,8 +113,8 @@ class AddTeilnehmer(AddForm):
         return "%s/teilnehmer/%s" %(self.url(), self.tn.id)
 
 
-menuentry(NavigationMenu, order=10)
-class Index(models.DefaultView):
+#menuentry(NavigationMenu, order=10)
+class Index(Display):
     grok.context(ITeilnehmer)
     title = label = u"Teilnehmer"
     description = u"Details zu Ihrem Unternehmen"
@@ -137,7 +133,7 @@ class SetDefaultMNR(grok.View):
         self.redirect(self.application_url())
 
 
-class Edit(models.Edit):
+class Edit(EditForm):
     grok.context(ITeilnehmer)
     grok.name('edit')
     label = u"Teilnehmer"
@@ -217,8 +213,8 @@ class ICompany(Interface):
         )
 
 
-@menuentry(NavigationMenu, order=40)
-class AssignCompany(models.Edit):
+#@menuentry(NavigationMenu, order=40)
+class AssignCompany(EditForm):
     grok.context(ITeilnehmer)
     grok.name('assign_company')
     grok.title(u'Unternehmen des Teilnehmers')
@@ -274,7 +270,7 @@ class AssignCompany(models.Edit):
         self.redirect(self.url(self.context))
 
 
-@menuentry(NavigationMenu, order=200)
+#@menuentry(NavigationMenu, order=200)
 class Register(Form):
     grok.context(ITeilnehmer)
     grok.name('register')
@@ -446,12 +442,12 @@ class OverviewKurse(grok.Viewlet):
         self.res = sql.all()
 
 
-class HelperEntry(Entry):
-    grok.name('index')
-    grok.context(ITeilnehmer)
-    grok.order(1)
-    grok.title('Teilnehmer')
-    menu(NavigationMenu)
+#class HelperEntry(Entry):
+#    grok.name('index')
+#    grok.context(ITeilnehmer)
+#    grok.order(1)
+#    grok.title('Teilnehmer')
+#    menu(NavigationMenu)
 
 
 ## Spalten
