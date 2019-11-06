@@ -105,6 +105,23 @@ class AddForm(Form):
         return super(AddForm, self).render()
 
 
+from zeam.form.base import DISPLAY
+class Display(Form):
+    grok.baseclass()
+    grok.title(u"View")
+    title=u""
+
+    mode = DISPLAY
+    ignoreRequest = True
+    ignoreContent = False
+
+    @property
+    def label(self):
+        dc = IDCDescriptiveProperties(self.context, None)
+        if dc is not None and dc.title:
+            return dc.title
+        return getattr(self.context, '__name__', u'')
+
 
 
 
