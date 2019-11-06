@@ -4,16 +4,21 @@
 
 
 import grok
+import collections
 
 from time import time
 from plone.memoize import ram
-from uvc.menus.components import Menu
+
+import uvc.menus.components
+import uvc.menus.directives
+
 #from dolmen import menu
 from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.models import Fernlehrgang
+from fernlehrgang.slots.managers import AboveContent
 #from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
 #from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
 #from uvc.layout import IPersonalPreferences, MenuItem
@@ -102,7 +107,7 @@ grok.templatedir('templates')
 ## Add Menu
 #
 
-class AddMenu(Menu):
+class AddMenu(uvc.menus.components.Menu):
     grok.name('uvcsite-addmenu')
     grok.context(Interface)
 #    grok.view(IDisplayView)
@@ -129,26 +134,38 @@ class AddMenu(Menu):
 ## Navigation
 #
 
-class NavigationMenu(Menu):
+class NavigationMenu(uvc.menus.components.Menu):
     grok.name('navigation')
     grok.title('Navigation')
     grok.context(Interface)
-    menu_class = u'nav nav-tabs'
+
+
+class DummyNavEntry(uvc.menus.components.MenuItem):
+    grok.name('dummy')
+    grok.context(Interface)
+    uvc.menus.directives.menu(NavigationMenu)
+
+    title = "Dummy"
+    
+
+class NavigationMenuRenderer(grok.Viewlet):
+    grok.context(Interface)
+    grok.template('navigation')
+    grok.viewletmanager(AboveContent)
+
+    bound_menus = ('navigation',)
+
+    def update(self):
+        self.menus = collections.OrderedDict(
+            uvc.menus.components.menus_iterator(
+                self.context, self.request, self.view, *self.bound_menus))
 
 
 #class NavigationMenuTemplate(pagetemplate.PageTemplate):
 #    grok.view(NavigationMenu)
 
 
-#class NavigationMenuViewlet(grok.Viewlet):
-#    grok.context(Interface)
-#    grok.viewletmanager(IAboveContent)
-#    grok.order(100)
 
-#    def render(self):
-#        menu = NavigationMenu(self.context, self.request, self.view)
-#        menu.update()
-#        return menu.render()
 
 
 #
