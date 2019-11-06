@@ -11,13 +11,14 @@ from grokcore.layout.components import LayoutAware
 
 
 from zeam.form.layout import Form
+from zeam.form import base
 from zeam.form.ztk.widgets.date import DateField
+from megrok.z3ctable import TablePage
 
 DateField.valueLength = "medium"
 
 
 class Form(Form, LayoutAware):
-    grok.require('dolmen.content.Add')
     grok.baseclass()
 
 
@@ -64,9 +65,64 @@ class EditForm(Form):
 class DefaultView(Form):
     grok.baseclass()
 
+import zope.lifecycleevent
+
 class AddForm(Form):
-    grok.require('dolmen.content.Add')
     grok.baseclass()
+    _finishedAdd = False
+
+    @base.action(u'Speichern', identifier="uvcsite.add")
+    def handleAdd(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash('Es sind Fehler aufgetreten')
+            return
+        obj = self.createAndAdd(data)
+        if obj is not None:
+            # mark only as finished if we get the new object
+            self._finishedAdd = True
+            #grok.notify(AfterSaveEvent(obj, self.request))
+
+    def createAndAdd(self, data):
+        obj = self.create(data)
+        grok.notify(zope.lifecycleevent.ObjectCreatedEvent(obj))
+        self.add(obj)
+        return obj
+
+    def create(self, data):
+        raise NotImplementedError
+
+    def add(self, object):
+        raise NotImplementedError
+
+    def nextURL(self):
+        raise NotImplementedError
+
+    def render(self):
+        if self._finishedAdd:
+            self.request.response.redirect(self.nextURL())
+            return ""
+        return super(AddForm, self).render()
+
+
+from zeam.form.base import DISPLAY
+class Display(Form):
+    grok.baseclass()
+    grok.title(u"View")
+    title=u""
+
+    mode = DISPLAY
+    ignoreRequest = True
+    ignoreContent = False
+
+    @property
+    def label(self):
+        dc = IDCDescriptiveProperties(self.context, None)
+        if dc is not None and dc.title:
+            return dc.title
+        return getattr(self.context, '__name__', u'')
+
+
 
 
 logger = logging.getLogger('fernlehrgang')
