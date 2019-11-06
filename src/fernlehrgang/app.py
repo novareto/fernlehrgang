@@ -29,6 +29,12 @@ from zope.schema.interfaces import IDate
 from fernlehrgang import fmtDate
 from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
 from zeam.form.base.markers import NO_VALUE
+from zope.error.error import RootErrorReportingUtility
+from zope.error.interfaces import IErrorReportingUtility
+
+
+class ErrorUtility(RootErrorReportingUtility, grok.GlobalUtility):
+    grok.provides(IErrorReportingUtility)
 
 
 grok.templatedir('templates')
@@ -86,37 +92,6 @@ class Kontakt(Page):
 
     def render(self):
         return "KONTAKT"
-
-
-#class LogoutMI(MenuItem):
-#    grok.context(Interface)
-#    grok.title(u"Abmelden")
-#    grok.viewletmanager(IPersonalPreferences)
-#
-#    @property
-#    def action(self):
-#        return self.view.application_url() + '/logout'
-
-
-class Logout(Page):
-    grok.title('Abmelden')
-    grok.context(Interface)
-    grok.require('zope.Public')
-    grok.order(200)
-
-    KEYS = ("beaker.session.id", "dolmen.authcookie", "auth_pubtkt")
-
-    def update(self):
-        if not IUnauthenticatedPrincipal.providedBy(self.request.principal):
-            for key in self.KEYS:
-                self.request.response.expireCookie(key,
-                path='/', domain="bg-kooperation.de")
-        else:
-            self.request.response.expireCookie("auth_pubtkt",
-                path='/', domain="bg-kooperation.de")
-
-    def render(self):
-        return self.redirect(self.application_url() + '/login')
 
 
 class RestLayer(grok.IRESTLayer):

@@ -7,43 +7,44 @@ import grok
 
 from time import time
 from plone.memoize import ram
-from dolmen import menu
+from uvc.menus.components import Menu
+#from dolmen import menu
 from megrok import pagetemplate
 from z3c.saconfig import Session
 from zope.interface import Interface
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.models import Fernlehrgang
-from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
-from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
-from uvc.layout import IPersonalPreferences, MenuItem
+#from dolmen.app.layout import master, viewlets, IDisplayView, MenuViewlet
+#from uvc.layout.interfaces import IAboveContent, IFooter, IPageTop
+#from uvc.layout import IPersonalPreferences, MenuItem
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from uvc.layout.slots import managers
-from uvc.layout.slots.menuviewlets import PersonalPreferencesViewlet, PersonalPreferencesTemplate
-from uvc.tbskin.skin import ITBSkinLayer
+#from uvc.layout.slots import managers
+#from uvc.layout.slots.menuviewlets import PersonalPreferencesViewlet, PersonalPreferencesTemplate
+#from uvc.tbskin.skin import ITBSkinLayer
 
 grok.templatedir('templates')
 
 
-class PersonalPreferencesTemplate(PersonalPreferencesTemplate):
-    grok.view(PersonalPreferencesViewlet)
-    grok.layer(ITBSkinLayer)
-#    template = None
+#class PersonalPreferencesTemplate(PersonalPreferencesTemplate):
+#    grok.view(PersonalPreferencesViewlet)
+#    grok.layer(ITBSkinLayer)
+##    template = None
+#
+#    def render(self):
+#        return u"HALLLO"
 
-    def render(self):
-        return u"HALLLO"
 
+#class UserName(MenuItem):
+#    """ User Viewlet"""
+#    grok.name('myname')
+#    grok.context(Interface)
+#    grok.viewletmanager(IPersonalPreferences)
+#    grok.order(300)
+#    action =""
 
-class UserName(MenuItem):
-    """ User Viewlet"""
-    grok.name('myname')
-    grok.context(Interface)
-    grok.viewletmanager(IPersonalPreferences)
-    grok.order(300)
-    action =""
-
-    @property
-    def title(self):
-        return self.request.principal.description or self.request.principal.id
+#    @property
+#    def title(self):
+#        return self.request.principal.description or self.request.principal.id
 
 
 #
@@ -51,28 +52,28 @@ class UserName(MenuItem):
 #
 
 
-class GlobalMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.viewletmanager(IPageTop)
-    template = ChameleonPageTemplateFile('templates/globalmenu.cpt')
-    grok.order(11)
-    flgs = []
+#class GlobalMenuViewlet(grok.Viewlet):
+#    grok.context(Interface)
+#    grok.viewletmanager(IPageTop)
+#    template = ChameleonPageTemplateFile('templates/globalmenu.cpt')
+#    grok.order(11)
+#    flgs = []
 
-    @ram.cache(lambda *args: time() // (60 * 60))
-    def getContent(self):
-        session = Session()
-        d = {}
-        for fernlehrgang in session.query(Fernlehrgang).all():
-            url = "%s/fernlehrgang/%s" % (
-                self.view.application_url(), fernlehrgang.id)
-            titel = fernlehrgang.titel
-            if not fernlehrgang.jahr in d.keys():
-                d[fernlehrgang.jahr] = []
-            d[fernlehrgang.jahr].append(dict(url=url, title=titel))
-        return d
+#    @ram.cache(lambda *args: time() // (60 * 60))
+#    def getContent(self):
+#        session = Session()
+#        d = {}
+#        for fernlehrgang in session.query(Fernlehrgang).all():
+#            url = "%s/fernlehrgang/%s" % (
+ #               self.view.application_url(), fernlehrgang.id)
+ #           titel = fernlehrgang.titel
+ #           if not fernlehrgang.jahr in d.keys():
+ #               d[fernlehrgang.jahr] = []
+ #           d[fernlehrgang.jahr].append(dict(url=url, title=titel))
+ #       return d
 
-    def update(self):
-        self.flgs = self.getContent()
+ #   def update(self):
+ #       self.flgs = self.getContent()
 
 
 #
@@ -80,98 +81,80 @@ class GlobalMenuViewlet(grok.Viewlet):
 #
 
 
-class ObjectActionMenu(viewlets.ContextualActions):
-    grok.name('contextualactions')
-    grok.title('Actions')
-    grok.viewletmanager(IAboveContent)
-    grok.order(119)
-
-    menu_template = ChameleonPageTemplateFile('templates/objectmenu.cpt')
-
-    id = "uvcobjectmenu"
-    menu_class = u"foldable menu"
-    title = "Menu"
-
-    def available(self):
-        if IListing.providedBy(self.view):
-            return False
-        return True
+#class ObjectActionMenu(viewlets.ContextualActions):
+#    grok.name('contextualactions')
+#    grok.title('Actions')
+#    grok.viewletmanager(IAboveContent)
+#    grok.order(119)
+#
+#    menu_template = ChameleonPageTemplateFile('templates/objectmenu.cpt')
+#
+#    id = "uvcobjectmenu"
+#    menu_class = u"foldable menu"
+#    title = "Menu"
+#
+#    def available(self):
+#        if IListing.providedBy(self.view):
+#            return False
+#        return True
 
 #
 ## Add Menu
 #
 
-class AddMenu(menu.Menu):
+class AddMenu(Menu):
     grok.name('uvcsite-addmenu')
     grok.context(Interface)
-    grok.view(IDisplayView)
-    grok.title(u'Hinzufügen')
+#    grok.view(IDisplayView)
+    grok.title('Hinzufgen')
     menu_class = u'nav nav-pills'
+#
 
+#class AddMenuTemplate(pagetemplate.PageTemplate):
+#    grok.view(AddMenu)
+#
 
-class AddMenuTemplate(pagetemplate.PageTemplate):
-    grok.view(AddMenu)
-
-
-class AddMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.view(IDisplayView)
-    grok.viewletmanager(IAboveContent)
-    grok.order(120)
-
-    def render(self):
-        menu = AddMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
+#class AddMenuViewlet(grok.Viewlet):
+#    grok.context(Interface)
+#    grok.view(IDisplayView)
+#    grok.viewletmanager(IAboveContent)
+#    grok.order(120)
+#
+#    def render(self):
+#        menu = AddMenu(self.context, self.request, self.view)
+#        menu.update()
+#        return menu.render()
 
 #
 ## Navigation
 #
 
-class NavigationMenu(menu.Menu):
+class NavigationMenu(Menu):
     grok.name('navigation')
     grok.title('Navigation')
     grok.context(Interface)
     menu_class = u'nav nav-tabs'
 
-    @property
-    def selected(self):
-        url = self.request.getURL()
-        for viewlet in self.viewlets:
-            if url.startswith(viewlet.url):
-                return viewlet
-        return None
 
-    def entries(self):
-        selected = self.selected
-        for idx, viewlet in enumerate(self.viewlets, 1):
-            if selected is None and idx == 1:
-                yield viewlet, 'active'
-            elif viewlet == selected:
-                yield viewlet, 'active'
-            else:
-                yield viewlet, ''
+#class NavigationMenuTemplate(pagetemplate.PageTemplate):
+#    grok.view(NavigationMenu)
 
 
-class NavigationMenuTemplate(pagetemplate.PageTemplate):
-    grok.view(NavigationMenu)
+#class NavigationMenuViewlet(grok.Viewlet):
+#    grok.context(Interface)
+#    grok.viewletmanager(IAboveContent)
+#    grok.order(100)
 
-
-class NavigationMenuViewlet(grok.Viewlet):
-    grok.context(Interface)
-    grok.viewletmanager(IAboveContent)
-    grok.order(100)
-
-    def render(self):
-        menu = NavigationMenu(self.context, self.request, self.view)
-        menu.update()
-        return menu.render()
+#    def render(self):
+#        menu = NavigationMenu(self.context, self.request, self.view)
+#        menu.update()
+#        return menu.render()
 
 
 #
 ## FavIcon
 #
 
-class FavIcon(grok.Viewlet):
-    grok.viewletmanager(managers.Headers)
-    grok.context(Interface)
+#class FavIcon(grok.Viewlet):
+#    grok.viewletmanager(managers.Headers)
+#    grok.context(Interface)

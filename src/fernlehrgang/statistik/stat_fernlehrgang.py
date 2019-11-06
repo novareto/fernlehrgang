@@ -6,7 +6,6 @@ import grok
 
 from z3c import saconfig
 from zope import component
-from dolmen import menu
 from grokcore import layout
 from sqlalchemy import func, and_
 from fernlehrgang import models
@@ -24,7 +23,6 @@ from zope.pluggableauth.interfaces import IAuthenticatorPlugin
 grok.templatedir('templates')
 
 
-@menu.menuentry(NavigationMenu, order=300)
 class FernlehrgangStatistik(Page):
     grok.context(IFernlehrgang)
     grok.title(u"Statistik")
@@ -55,7 +53,6 @@ class FernlehrgangStatistik(Page):
             models.Kursteilnehmer.fernlehrgang_id == self.context.id).group_by(
             models.Kursteilnehmer.status).all()
         self.kursteilnehmer_detail = [(lfs.getTermByToken(x[0]).title, x[1]) for x in kursteilnehmer_status]     
-        print self.kursteilnehmer_detail
 
     def getAntworten(self):
         session = saconfig.Session()
@@ -64,8 +61,6 @@ class FernlehrgangStatistik(Page):
             for ktn in self.context.kursteilnehmer:
                 if len(ktn.antworten) > 0:
                     i+=1
-                if len(ktn.antworten) > 10:
-                    print "FUCK OFF", ktn.teilnehmer_id
             return [[self.context.lehrhefte[0].nummer, i]]
 
         return session.query(models.Lehrheft.nummer, func.count()).filter(

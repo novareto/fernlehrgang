@@ -19,8 +19,6 @@ except:
 log(DSN)
 
 
-print DSN
-
 import logging
 logging.basicConfig()
 #logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)

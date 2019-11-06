@@ -23,6 +23,7 @@ from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Antwort, Frage
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from fernlehrgang import DefaultView, Edit
 
 
 grok.templatedir('templates')
@@ -51,7 +52,7 @@ class AntwortListing(TablePage):
         return sorted(rc, key=lambda antwort: antwort.frage.frage)
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddAntwort(AddForm):
     grok.context(IKursteilnehmer)
     grok.title(u'Antwort')
@@ -81,7 +82,7 @@ class SaveTableAction(Action):
            form.redirect(form.url() + '/addantworten')
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddAntworten(ComposedForm, Form):
     grok.context(IKursteilnehmer)
     grok.title(u'Alle Antworten eingeben')
@@ -140,7 +141,7 @@ class AddAntwortenTable(SubTableForm):
         return "<script> var base_url = '%s/addantworten'; </script>" % self.url()
 
 
-class Index(models.DefaultView):
+class Index(DefaultView):
     grok.context(IAntwort)
     grok.title(u'Index')
     title = label = u"Antwort"
@@ -149,7 +150,7 @@ class Index(models.DefaultView):
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(models.Edit):
+class Edit(Edit):
     grok.context(IAntwort)
     grok.title(u'Edit')
     grok.name('edit')
@@ -166,17 +167,17 @@ class Edit(models.Edit):
 
 ### ExtraInfo
 
-class MoireInfoOnKursteilnehmer(grok.Viewlet):
-    grok.viewletmanager(IExtraInfo)
-    grok.context(IAntwort)
-    script = ""
-
-    def update(self):
-        url = grok.url(self.request, self.context.kursteilnehmer)
-        self.script = "<script> var base_url = '%s'; </script>" % url
-
-    def render(self):
-        return self.script
+#class MoireInfoOnKursteilnehmer(grok.Viewlet):
+#    grok.viewletmanager(IExtraInfo)
+#    grok.context(IAntwort)
+#    script = ""
+#
+#    def update(self):
+#        url = grok.url(self.request, self.context.kursteilnehmer)
+#        self.script = "<script> var base_url = '%s'; </script>" % url
+#
+#    def render(self):
+#        return self.script
 
 
 class JSON_Views(grok.JSON):

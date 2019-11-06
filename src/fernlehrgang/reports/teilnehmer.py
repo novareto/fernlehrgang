@@ -6,7 +6,6 @@ import grok
 
 # from profilehooks import profile
 from sqlalchemy.orm import joinedload
-from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer 
@@ -28,7 +27,6 @@ from grokcore.chameleon.components import ChameleonPageTemplateFile
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu, order=-100)
 class TeilnehmerSuche(Form):
     grok.name('index')
     grok.context(IFernlehrgangApp)
@@ -90,8 +88,6 @@ class TeilnehmerSuche(Form):
                 return u"--> %s" % value
 
     def getLG(self, je):
-        if je.id == 5086:
-            import pdb; pdb.set_trace()
         return je.id
 
     def getSession(self):

@@ -1,0 +1,8 @@
+<ul class="list-unstyled">
+  <li tal:repeat="viewlet provider.menus['personal_menu']">
+  <a href="" tal:attributes="href viewlet.url();">
+    <i class="fas fa-bullseye" tal:attributes="class viewlet.icon"></i>
+    <span tal:content="viewlet.title"> </span>
+  </a>
+  </li>
+</ul>
