@@ -4,6 +4,7 @@
 
 from zope.interface import Interface
 
+
 class IListing(Interface):
     """ Marker for Listings
     """

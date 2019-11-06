@@ -4,28 +4,26 @@
 
 import grok
 
-from megrok.traject import locate
-from dolmen.menu import menuentry
-from fernlehrgang.models import Lehrheft
-from megrok.traject.components import DefaultModel
+from fernlehrgang.browser import AddForm, TablePage, EditForm, DefaultView
+from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.lehrheft import ILehrheft
-from megrok.z3ctable import LinkColumn, GetAttrColumn
+from fernlehrgang.models import Lehrheft
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from dolmen.app.layout import models, IDisplayView
-from zeam.form.base import Fields
-from fernlehrgang.interfaces import IListing
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm
-from uvc.layout import TablePage
+from megrok.traject import locate
+from megrok.traject.components import DefaultModel
+from megrok.z3ctable import LinkColumn, GetAttrColumn
+from zeam.form.base import Fields
+from zope.interface import implementer
 
 
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
+@implementer(IListing)
 class LehrheftListing(TablePage):
-    grok.implements(IDisplayView, IListing)
     grok.context(IFernlehrgang)
     grok.name('lehrheft_listing')
     grok.title(u'Lehrhefte verwalten')
@@ -48,10 +46,11 @@ class LehrheftListing(TablePage):
         return self.context.lehrhefte
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddLehrheft(AddForm):
     grok.context(IFernlehrgang)
     grok.title(u'Lehrheft')
+
     title = u'Lehrheft'
     label = u'Lehrhefte'
     description = u'Hier können Sie die Lehrhefte für den Fernlehrgang anlegen.'
@@ -70,18 +69,19 @@ class AddLehrheft(AddForm):
         return self.url(self.context, 'lehrheft_listing')
 
 
-@menuentry(NavigationMenu, order=1)
-class Index(models.DefaultView):
+#@menuentry(NavigationMenu, order=1)
+class Index(DefaultView):
     grok.context(ILehrheft)
     grok.name('index')
     grok.title(u'Lehrheft')
     grok.order(51)
+
     title = label = u"Lehrheft"
     description = u"Details zu Ihrem Lehrheft"
     fields = Fields(ILehrheft).omit(id)
 
 
-class Edit(models.Edit):
+class Edit(EditForm):
     grok.context(ILehrheft)
     grok.title(u'Edit')
     grok.name('edit')
@@ -101,6 +101,7 @@ class Edit(models.Edit):
 class Id(GetAttrColumn):
     grok.name('id')
     grok.context(IFernlehrgang)
+
     weight = 5
     attrName = "id"
     header = "Id"
@@ -109,6 +110,7 @@ class Id(GetAttrColumn):
 class Nummer(GetAttrColumn):
     grok.name('nummer')
     grok.context(IFernlehrgang)
+
     weight = 10
     attrName = "nummer"
     header = "Nummer"
@@ -117,6 +119,7 @@ class Nummer(GetAttrColumn):
 class Name(LinkColumn):
     grok.name('Nummer')
     grok.context(IFernlehrgang)
+
     weight = 99
     linkContent = "edit"
 

@@ -4,10 +4,7 @@
 
 import grok
 import datetime
-import uvc.layout
 
-from dolmen.app.layout import models, IDisplayView
-from dolmen.menu import menuentry
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer, lieferstopps
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
@@ -16,14 +13,14 @@ from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from sqlalchemy import and_
-from uvc.layout.interfaces import IExtraInfo
+from fernlehrgang.slots.interfaces import IExtraInfo
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
 from zeam.form.base.errors import Error
 from zope.i18nmessageid import MessageFactory
-from fernlehrgang import Form, AddForm
+from fernlehrgang.browser import Form, AddForm, DefaultView, EditForm
 
 
 _ = MessageFactory('zeam.form.base')
@@ -34,7 +31,6 @@ grok.templatedir('templates')
 #@menuentry(NavigationMenu)
 class KursteilnehmerListing(Form):
     grok.context(IFernlehrgang)
-    grok.implements(IDisplayView)
     grok.name('kursteilnehmer_listing')
     grok.title("Kursteilnehmer verwalten")
     grok.order(10)
@@ -94,7 +90,7 @@ class KursteilnehmerListing(Form):
 
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddKursteilnehmer(Form):
     grok.context(IFernlehrgang)
     grok.title(u'Kursteilnehmer')
@@ -117,7 +113,7 @@ class AddKursteilnehmer(Form):
         self.redirect(self.url(teilnehmer, 'register'))
 
 
-class Index(models.DefaultView):
+class Index(DefaultView):
     grok.context(IKursteilnehmer)
     grok.title(u'View')
     title = label = u"Kursteilnehmer"
@@ -126,7 +122,7 @@ class Index(models.DefaultView):
     fields = Fields(IKursteilnehmer).omit(id)
 
 
-class Edit(models.Edit):
+class Edit(EditForm):
     grok.context(IKursteilnehmer)
     grok.name('edit')
     grok.title(u'Edit')
@@ -136,7 +132,7 @@ class Edit(models.Edit):
     fields['fernlehrgang_id'].mode = 'hiddendisplay'
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
 class ExtendDate(Form):
     grok.context(IKursteilnehmer)
     grok.title(u'Fristverlängerung')
@@ -163,7 +159,7 @@ class ExtendDate(Form):
             return 
         self.context.status = u'A1'
         self.context.erstell_datum = data['erstell_datum'] - datetime.timedelta(days=365)
-	self.context.teilnehmer.journal_entries.append(
+        self.context.teilnehmer.journal_entries.append(
             JournalEntry(
                 status="info",
                 type=u"FL %s %s - %s" % (self.context.fernlehrgang.titel, self.context.fernlehrgang.jahr, data['erstell_datum'].strftime('%d.%m.%Y')),

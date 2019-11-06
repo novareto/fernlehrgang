@@ -8,7 +8,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from fernlehrgang.browser import EditForm, DefaultView
+from fernlehrgang.browser import AddForm, EditForm, DefaultView
 
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
@@ -17,7 +17,7 @@ from fernlehrgang.browser import TablePage
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm
+
 
 grok.templatedir('templates')
 

@@ -3,6 +3,8 @@
 # cklinger@novareto.de
 
 from zope import interface, schema
+
+
 class ISearch(interface.Interface):
 
     id = schema.TextLine(

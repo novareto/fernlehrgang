@@ -4,27 +4,25 @@
 
 import grok
 
+from uvc.menus.components import MenuItem
+from uvc.menus.directives import menu
 from megrok.traject import locate
 from fernlehrgang.models import Frage
 from fernlehrgang.interfaces.frage import IFrage
 from megrok.traject.components import DefaultModel
 from fernlehrgang.interfaces.lehrheft import ILehrheft
 from megrok.z3ctable import GetAttrColumn, LinkColumn
-from dolmen.app.layout import models, IDisplayView
-from dolmen.menu import menuentry, Entry, menu
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang import AddForm
-from uvc.layout import TablePage
+from fernlehrgang.browser import AddForm, TablePage, DefaultView, EditForm
 
 
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu, order=20)
+#@menuentry(NavigationMenu, order=20)
 class FrageListing(TablePage):
-    grok.implements(IDisplayView)
     grok.context(ILehrheft)
     grok.name('frage_listing')
     grok.title(u'Fragen verwalten')
@@ -53,7 +51,7 @@ class FrageListing(TablePage):
         return dd 
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddFrage(AddForm):
     grok.context(ILehrheft)
     grok.title(u'Frage')
@@ -72,7 +70,7 @@ class AddFrage(AddForm):
         return self.url(self.context, 'frage_listing')
 
 
-class HelperEntry(Entry):
+class HelperEntry(MenuItem):
     grok.context(IFrage)
     grok.name('index')
     grok.title('Frage')
@@ -80,8 +78,8 @@ class HelperEntry(Entry):
     menu(NavigationMenu)
 
 
-@menuentry(NavigationMenu)
-class Index(models.DefaultView):
+#@menuentry(NavigationMenu)
+class Index(DefaultView):
     grok.context(IFrage)
     grok.title(u'Ansicht')
     grok.order(10)
@@ -91,13 +89,13 @@ class Index(models.DefaultView):
     fields = Fields(IFrage).omit('id')
 
 
-class Edit(models.Edit):
+class Edit(EditForm):
     grok.context(IFrage)
     grok.title(u'Bearbeiten')
     grok.name('edit')
+
     title = u"Fragen"
     description = u"Hier können Sie die Frage bearbeiten."
-
     fields = Fields(IFrage).omit('id')
     fields['frage'].mode = 'hiddendisplay'
 

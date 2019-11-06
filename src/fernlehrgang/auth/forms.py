@@ -9,7 +9,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.location.interfaces import ILocation
 
 from zeam.form.base import action, Fields
-from fernlehrgang import Form
+from fernlehrgang.browser import Form
 from zeam.form.base.markers import SUCCESS, FAILURE
 
 

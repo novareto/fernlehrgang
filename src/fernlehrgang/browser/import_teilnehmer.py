@@ -5,14 +5,14 @@
 import os
 import grok
 import datetime
+import transaction
 
 from z3c import saconfig
 from zope import component
-from dolmen import menu
 from grokcore import layout
 from sqlalchemy import func, and_
 from fernlehrgang import models
-from uvc.layout import Page
+from fernlehrgang.browser import Page
 from grokcore.chameleon.components import ChameleonPageTemplateFile as PageTemplate
 
 from fernlehrgang.interfaces.flg import IFernlehrgang
@@ -38,8 +38,8 @@ def createStatusliste(data, flg_id):
     for teilnehmer, unternehmen, ktn, check in data:
         cal_res = ICalculateResults(ktn)
         i += 1
-        print "CREATE STATUSLISTE"
-        print i
+        print("CREATE STATUSLISTE")
+        print(i)
         unternehmen = unternehmen
         summary = cal_res.summary()
         liste = []
@@ -130,14 +130,13 @@ def createXLS(mail, flg_id, tids, flgids):
         models.Kursteilnehmer.fernlehrgang_id == flg_id,
         models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
         models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr).order_by(models.Teilnehmer.id)
-    print result.count()
+    print(result.count())
     for tn, unternehmen, ktn in page_query(result):
         i += 1
-	rc.append((tn, unternehmen, ktn, check(ktn, tids, flgids, unternehmen.aktiv)))
+        rc.append((tn, unternehmen, ktn, check(ktn, tids, flgids, unternehmen.aktiv)))
     fn = createStatusliste(rc, flg_id)
-    import transaction
     with transaction.manager:
-        print "MAIL RAUS"
+        print("MAIL RAUS")
         send_mail('flgapp@bghw.de', (mail,), "Vorschau", "Vorschau", [fn,])
 
 
@@ -147,7 +146,7 @@ def importUsers(mail, flg_id, tids, flgids, context_id):
     with transaction.manager:
         session = Session()
         flg = session.query(models.Fernlehrgang).get(int(context_id))
-        print flg
+        print(flg)
         rc = []
         i = 0
         y = 0
@@ -155,26 +154,26 @@ def importUsers(mail, flg_id, tids, flgids, context_id):
             models.Kursteilnehmer.fernlehrgang_id == flg_id)
         alle = result.count()
         for ktn in result:
-            print "%s von %s" % (y, alle)
+            print("%s von %s" % (y, alle))
             
             cc = check(ktn, tids, flgids, ktn.teilnehmer.unternehmen[0].aktiv)
-   	    if cc == "OK, Teilnher kann importiert werden":
-	        ktnn = models.Kursteilnehmer(
-		        status = ktn.status,
-		        gespraech = ktn.gespraech,
-		        un_klasse = ktn.un_klasse,
-		        branche = ktn.branche,
-		        teilnehmer_id = ktn.teilnehmer_id,
-		        unternehmen_mnr = ktn.unternehmen_mnr
-		    )
-	        flg.kursteilnehmer.append(ktnn)
-	        i += 1
-            y += 1
-        print "MAIL RAUS"
+            if cc == "OK, Teilnher kann importiert werden":
+                ktnn = models.Kursteilnehmer(
+                    status = ktn.status,
+                    gespraech = ktn.gespraech,
+                    un_klasse = ktn.un_klasse,
+                    branche = ktn.branche,
+                    teilnehmer_id = ktn.teilnehmer_id,
+                    unternehmen_mnr = ktn.unternehmen_mnr
+                )
+                flg.kursteilnehmer.append(ktnn)
+                i += 1
+                y += 1
+        print("MAIL RAUS")
         send_mail('flgapp@bghw.de', (mail,), "Import Erfolgreich", "Import Erfolgreich %s Teilnehmer importiert, Von %s  --> Nach %s" %(i, flg_id, context_id))
 
 
-@menu.menuentry(NavigationMenu, order=300)
+#@menu.menuentry(NavigationMenu, order=300)
 class ImportTeilnehmer(Page):
     grok.context(IFernlehrgang)
     grok.title(u"Import Teilnehmer")
@@ -255,13 +254,13 @@ class ImportTeilnehmer(Page):
             flg_id = flg.id
             import pdb; pdb.set_trace()
             importUsers(mail, flg_id, tids, flgids, self.context.id)
-            print "ADD STUFF TO THE QUEUEU"
+            print("ADD STUFF TO THE QUEUE")
             #q.enqueue_call(func=importUsers, args=(mail, flg_id, tids, flgids, self.context.id), timeout=19800)
         elif action == "statusliste":
             mail = getUserEmail(self.request.principal.id)
             flg_id = flg.id
             #createXLS(mail, flg_id, tids, flgids)
-            print "ADD STUFF TO THE QUEUEU "
+            print("ADD STUFF TO THE QUEUE")
             q.enqueue_call(func=createXLS, args=(mail, flg_id, tids, flgids), timeout=19800)
 
         #self.flash('Es wurden %s Teilnehmer erfolgreich registriert.' % i)

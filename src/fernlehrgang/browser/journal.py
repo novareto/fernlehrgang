@@ -3,13 +3,10 @@
 # cklinger@novareto.de
 
 import grok
-import uvc.layout
 
-from dolmen.app.layout import models, IDisplayView
-from dolmen.forms.base.utils import set_fields_data, apply_data_event
-from dolmen.forms.crud import i18n as _
-from dolmen.menu import menuentry, Entry, menu
-from fernlehrgang import Form, AddForm
+from fernlehrgang.browser.utils import set_fields_data, apply_data_event
+
+from fernlehrgang.browser import Form, AddForm, DefaultView, TablePage, EditForm
 from fernlehrgang import fmtDate
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.journal import IJournalEntry
@@ -22,26 +19,22 @@ from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import Column, GetAttrColumn, LinkColumn
-from profilestats import profile
-from uvc.layout import TablePage
-from uvc.layout.interfaces import IExtraInfo
+from fernlehrgang.slots.interfaces import IExtraInfo
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
 from zeam.form.base.markers import SUCCESS, FAILURE
 from zope.component import getMultiAdapter
-from zope.interface import Interface
+from zope.interface import Interface, implementer
 from zope.schema import Set, Choice
 from grokcore.component import provider
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from uvc.layout import TablePage
-from dolmen.app.layout.models import DefaultView
 
 
-@menuentry(NavigationMenu, order=20)
+@implementer(IListing)
+#@menuentry(NavigationMenu, order=20)
 class JournalListing(TablePage):
-    grok.implements(IDisplayView, IListing)
     grok.context(ITeilnehmer)
     grok.name('journal_listing')
     grok.title(u'Journal')
@@ -121,7 +114,7 @@ class Index(DefaultView):
     fields = Fields(IJournalEntry)
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddJournalEntry(AddForm):
     grok.context(ITeilnehmer)
     grok.title(u'Journal Eintrag')
@@ -143,8 +136,8 @@ class AddJournalEntry(AddForm):
         return "%s/journal_listing" % self.url()
 
 
-@menuentry(NavigationMenu, order=40)
-class EditJournalEntry(models.Edit):
+#@menuentry(NavigationMenu, order=40)
+class EditJournalEntry(EditForm):
     grok.name('edit')
     grok.context(IJournalEntry)
     grok.title(u'Neue Nachricht anlegen')
@@ -165,8 +158,8 @@ class EditJournalEntry(models.Edit):
         self.redirect(self.url(self.context))
 
 
-@menuentry(NavigationMenu, order=40)
-class DeleteJournalEntry(models.Form):
+#@menuentry(NavigationMenu, order=40)
+class DeleteJournalEntry(Form):
     grok.name('delete')
     grok.context(IJournalEntry)
     grok.title(u'Nachricht löschen')

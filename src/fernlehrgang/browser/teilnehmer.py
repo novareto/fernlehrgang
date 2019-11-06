@@ -4,13 +4,9 @@
 
 import grok
 import os
-import uvc.layout
 
-from dolmen.app.layout import models, IDisplayView
-from dolmen.forms.base.utils import set_fields_data, apply_data_event
-from dolmen.forms.crud import i18n as _
-from dolmen.menu import menuentry, Entry, menu
-from fernlehrgang import Form, AddForm 
+from fernlehrgang.browser import Form, AddForm
+from fernlehrgang.browser.utils import set_fields_data, apply_data_event
 from fernlehrgang import fmtDate
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.search import getTeilnehmerId
@@ -28,8 +24,8 @@ from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import Column, GetAttrColumn, LinkColumn
 from profilestats import profile
-from uvc.layout import TablePage
-from uvc.layout.interfaces import IExtraInfo
+from fernlehrgang.browser import TablePage
+from fernlehrgang.slots.interfaces import IExtraInfo
 from z3c.saconfig import Session
 from zeam.form.base import Fields, NO_VALUE, action
 from zeam.form.base import NO_VALUE, DictDataManager
@@ -307,7 +303,7 @@ class Register(Form):
                 unternehmen_mnr=self.context.unternehmen_mnr)
             kursteilnehmer.teilnehmer = self.context
             fernlehrgang = session.query(Fernlehrgang).filter( Fernlehrgang.id == kursteilnehmer.fernlehrgang_id).one()
-            print "ADD Kursteilnehmer to Fernlehrgang"
+            print("ADD Kursteilnehmer to Fernlehrgang")
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
             self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % kursteilnehmer.id )
         else:
@@ -342,7 +338,7 @@ class TeilnehmerJSONViews(grok.JSON):
         from fernlehrgang.models import Kursteilnehmer
         ktn_id, flg_id = ktn_id.split(',')
         ktn = session.query(Kursteilnehmer).get(ktn_id)
-        print {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
+        print({'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech})
         return {'status': ktn.status, 'un_klasse': ktn.un_klasse, 'branche': ktn.branche, 'gespraech': ktn.gespraech}
 
 
@@ -414,15 +410,15 @@ class SearchUnternehmen(grok.View):
         session = Session()
         from fernlehrgang import models
         from sqlalchemy import func, or_, cast, String
-        print "*" * 20
-        print self.term
+        print("*" * 20)
+        print(self.term)
         res = session.query(models.Unternehmen).filter(or_(
             cast(models.Unternehmen.mnr, String).like(self.term+"%"),
             models.Unternehmen.name.like(self.term+"%")
         ))
         for x in res:
             terms.append({'id': x.mnr, 'text': "%s - %s" %(x.mnr, x.name)})
-        print terms
+        print(terms)
         #for item in self.vocabulary:
         #    if matcher in item.title.lower():
         #        terms.append({'id': item.token, 'text': item.title})

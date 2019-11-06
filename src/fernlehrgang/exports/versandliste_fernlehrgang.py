@@ -4,8 +4,7 @@
 
 import grok
 
-from fernlehrgang import Form
-from dolmen.menu import menuentry
+from fernlehrgang.browser import Form
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.exports.menus import ExportItems
 from fernlehrgang.lib.interfaces import IXLSExport
@@ -123,7 +122,7 @@ def export(flg_id, dateiname, mail):
     return fn
 
 
-@menuentry(ExportItems)
+#@menuentry(ExportItems)
 class XSLExportForm(Form):
     grok.context(IFernlehrgang)
     grok.title('Fortbildung - Einladungsschreiben')

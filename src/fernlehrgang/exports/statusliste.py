@@ -4,7 +4,6 @@
 
 import grok
 
-from dolmen.menu import menuentry
 from fernlehrgang import models
 from fernlehrgang.browser.ergebnisse import CalculateResults
 from fernlehrgang.exports.menus import ExportItems
@@ -74,11 +73,11 @@ def createRows(rc, session, flg_id):
             models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
             models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
             models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
-    print result.count()
+    print(result.count())
     i=1
     for teilnehmer, unternehmen, ktn in page_query(result):
         if i in range(0,100000, 1000):
-            print i
+            print(i)
         cal_res = CalculateResults(ktn)
         summary = cal_res.summary(lehrhefte)
         liste = []
@@ -160,7 +159,7 @@ class XLSReport(grok.View):
         mail = getUserEmail(self.request.principal.id)
         #fn = export(self.context.id, mail)
         fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=6000)
-        print fn
+        print(fn)
 
     def render(self):
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')

@@ -28,7 +28,7 @@ def page_query(q):
            r = True
            yield a,b,c 
         offset += 1000
-        print offset
+        print(offset)
         if not r:
             break
 
@@ -40,6 +40,6 @@ def page_query_ktn(q):
            r = True
            yield a 
         offset += 1000
-        print offset
+        print(offset)
         if not r:
             break

@@ -5,18 +5,18 @@
 
 import grok
 import datetime
-from z3c.saconfig import Session
-from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
-from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
-from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
-from fernlehrgang.interfaces.app import IFernlehrgangApp
-from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang import Form
 from datetime import date, timedelta
 
-from zeam.form.base import Fields
-from zeam.form.base import action
 from fernlehrgang.api.gbo import GBOAPI
+from fernlehrgang.browser import Form
+from fernlehrgang.interfaces.app import IFernlehrgangApp
+from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
+from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
+from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
+from z3c.saconfig import Session
+from zeam.form.base import action, Fields
+
 
 gboapi = GBOAPI()
 

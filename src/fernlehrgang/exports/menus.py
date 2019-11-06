@@ -5,16 +5,16 @@
 import grok
 
 from zope.interface import Interface
-from dolmen.menu import menuentry, Menu
+from uvc.menus.components import Menu
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.viewlets import NavigationMenu
-from uvc.layout import Page
+from fernlehrgang.browser import Page
 
 
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu, order=200)
+#@menuentry(NavigationMenu, order=200)
 class Exporte(Page):
     grok.context(IFernlehrgang)
     grok.title(u'Versandlisten')

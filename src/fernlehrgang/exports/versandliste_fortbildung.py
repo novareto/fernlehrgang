@@ -5,10 +5,8 @@
 import grok
 import csv
 import codecs
-import cStringIO
 
-from fernlehrgang import Form
-from dolmen.menu import menuentry
+from fernlehrgang.browser import Form
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.exports.menus import ExportItems
 from fernlehrgang.lib.interfaces import IXLSFortbildung
@@ -138,7 +136,7 @@ def createRows(session, rc, flg_ids, stichtag):
                         liste.append(r)
                 rc.append(liste)
             i+=1
-            print i
+            print(i)
 
 
 
