@@ -1,0 +1,8 @@
+<ul class="list-unstyled" id="navigation">
+  <li tal:repeat="entry viewlet.menus['navigation']">
+  <a href="" tal:attributes="href entry.url();">
+    <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
+    <span tal:content="entry.title"> </span>
+  </a>
+  </li>
+</ul>

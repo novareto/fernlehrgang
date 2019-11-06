@@ -13,7 +13,7 @@ from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import GetAttrColumn, LinkColumn
-from uvc.layout import TablePage
+from fernlehrgang.browser import TablePage
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile

@@ -6,13 +6,13 @@ import grok
 import json
 
 from sqlalchemy.orm import joinedload
-from dolmen.menu import menuentry
+#from dolmen.menu import menuentry
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IVLWKursteilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IFortbildungKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 from fernlehrgang.viewlets import NavigationMenu
-from uvc.layout import Page
+from fernlehrgang.browser import Page
 from z3c.saconfig import Session
 from fernlehrgang.models import Lehrheft
 
@@ -23,7 +23,7 @@ POSTVERSANDSPERRE = "L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "S1", "Z1"
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+ #@menuentry(NavigationMenu)
 class Resultate(Page):
     grok.context(IKursteilnehmer)
     grok.title('Ergebnisse')
