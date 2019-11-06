@@ -4,12 +4,12 @@
 
 import grok
 
-from dolmen.app.layout import models, IDisplayView
-from dolmen.menu import menuentry
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
+from fernlehrgang.browser import EditForm, DefaultView
+
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import GetAttrColumn, LinkColumn
@@ -22,9 +22,8 @@ from fernlehrgang import AddForm
 grok.templatedir('templates')
 
 
-@menuentry(NavigationMenu)
+#@menuentry(NavigationMenu)
 class FernlehrgangListing(TablePage):
-    grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
     grok.title(u"Fernlehrgänge")
@@ -47,9 +46,8 @@ class FernlehrgangListing(TablePage):
             yield fernlehrgang
 
 
-@menuentry(AddMenu)
+#@menuentry(AddMenu)
 class AddFernlehrgang(AddForm):
-    grok.implements(IDisplayView)
     grok.context(IFernlehrgangApp)
     grok.title(u'Fernlehrgang')
     title = u'Fernlehrgang'
@@ -71,10 +69,11 @@ class AddFernlehrgang(AddForm):
         return url
 
 
-@menuentry(NavigationMenu)
-class Index(models.DefaultView):
+#@menuentry(NavigationMenu)
+class Index(DefaultView):
     grok.title('Fernlehrgang')
     grok.context(IFernlehrgang)
+
     fields = Fields(IFernlehrgang).omit('id')
 
     @property
@@ -83,8 +82,9 @@ class Index(models.DefaultView):
             self.context.titel, self.context.id)
 
 
-class Edit(models.Edit):
+class Edit(EditForm):
     grok.context(IFernlehrgang)
+
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
     fields = Fields(IFernlehrgang).omit('id')

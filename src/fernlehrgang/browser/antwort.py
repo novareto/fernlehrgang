@@ -16,14 +16,12 @@ from zeam.form.composed import ComposedForm
 from zeam.form.table import SubTableForm, TableActions
 from zope.interface import implementer
 
-from fernlehrgang import AddForm, Form
-from fernlehrgang.browser import TablePage, Page
+from fernlehrgang.browser import AddForm, Form, TablePage, Page, DefaultView, EditForm
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Antwort, Frage
 from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from fernlehrgang import DefaultView, Edit
 
 
 grok.templatedir('templates')
@@ -39,8 +37,8 @@ class AntwortListing(TablePage):
 
     template = ChameleonPageTemplateFile('templates/base_listing.cpt')
 
-    label = u"Antworten"
-    description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
+    label = "Antworten"
+    description = "Hier können Sie die Antworten des Kursteilnehmers korrigieren."
 
     @property
     def values(self):
@@ -72,12 +70,12 @@ class AddAntwort(AddForm):
 
 
 
-
-
 class SaveTableAction(Action):
 
        def __call__(self, form, content, line):
-           setattr(content, 'antwortschema', line.extractData(form.tableFields)[0].get('antwortschema', ''))
+           setattr(
+               content, 'antwortschema',
+               line.extractData(form.tableFields)[0].get('antwortschema', ''))
            form.context.antworten.append(content)
            form.redirect(form.url() + '/addantworten')
 
@@ -85,7 +83,7 @@ class SaveTableAction(Action):
 #@menuentry(AddMenu)
 class AddAntworten(ComposedForm, Form):
     grok.context(IKursteilnehmer)
-    grok.title(u'Alle Antworten eingeben')
+    grok.title('Alle Antworten eingeben')
     label = u"Alle Antworten eingeben"
 
 
@@ -103,7 +101,8 @@ class AddAntwortenTable(SubTableForm):
     template = ChameleonPageTemplateFile('templates/alleantworten.cpt')
 
     ignoreContent = False
-    tableFields = Fields(IAntwort).omit('id', 'datum', 'system', 'gbo', 'gbo_daten')
+    tableFields = Fields(IAntwort).omit(
+        'id', 'datum', 'system', 'gbo', 'gbo_daten')
     tableActions = TableActions(SaveTableAction('Speichern'))
 
     def checkAntwort(self, lehrheft_id, frage_id):
@@ -143,17 +142,18 @@ class AddAntwortenTable(SubTableForm):
 
 class Index(DefaultView):
     grok.context(IAntwort)
-    grok.title(u'Index')
+    grok.title('Index')
     title = label = u"Antwort"
     description = u"" #Hier können Sie Deteils zu Ihren Antworten ansehen."
 
     fields = Fields(IAntwort).omit('id')
 
 
-class Edit(Edit):
+class Edit(EditForm):
     grok.context(IAntwort)
-    grok.title(u'Edit')
+    grok.title('Edit')
     grok.name('edit')
+
     title = u"Antworten"
     description = u"Hier können Sie die Antwort bearbeiten."
 
@@ -191,9 +191,10 @@ class JSON_Views(grok.JSON):
         i=0
         for antwort in [x for x in self.context.antworten]:
             li.append(antwort.frage.id)
-        for id, nr, titel in session.query(Frage.id, Frage.frage, Frage.titel).filter(
-                                           and_(Frage.lehrheft_id == int(lehrheft_id),
-                                                not_(Frage.id.in_(li)))).all():
+        for id, nr, titel in session.query(
+                Frage.id, Frage.frage, Frage.titel).filter(
+                    and_(Frage.lehrheft_id == int(lehrheft_id),
+                         not_(Frage.id.in_(li)))).all():
             rc.append('<option id="form-widgets-frage_id-%s" value=%s> %s - %s </option>' %(i, id, nr, titel))
             i+=1
         return {'fragen': ''.join(rc)}

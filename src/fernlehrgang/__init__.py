@@ -58,7 +58,7 @@ class Form(Form, LayoutAware):
         grokcore.message.send(message, type=type, name='session')
 
 
-class Edit(Form):
+class EditForm(Form):
     grok.baseclass()
 
 class DefaultView(Form):
