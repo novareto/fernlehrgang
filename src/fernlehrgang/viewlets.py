@@ -108,31 +108,33 @@ grok.templatedir('templates')
 #
 
 class AddMenu(uvc.menus.components.Menu):
-    grok.name('uvcsite-addmenu')
+    grok.name('addmenu')
     grok.context(Interface)
-#    grok.view(IDisplayView)
     grok.title('Hinzufgen')
-    menu_class = u'nav nav-pills'
-#
 
-#class AddMenuTemplate(pagetemplate.PageTemplate):
-#    grok.view(AddMenu)
-#
 
-#class AddMenuViewlet(grok.Viewlet):
-#    grok.context(Interface)
-#    grok.view(IDisplayView)
-#    grok.viewletmanager(IAboveContent)
-#    grok.order(120)
-#
-#    def render(self):
-#        menu = AddMenu(self.context, self.request, self.view)
-#        menu.update()
-#        return menu.render()
+class AddEntry(uvc.menus.components.MenuItem):
+    grok.name('dummy')
+    grok.context(Interface)
+    uvc.menus.directives.menu(AddMenu)
+    #grok.baseclass()
 
-#
-## Navigation
-#
+    title = "Fernlehrgang"
+    
+
+class AddMenuRenderer(grok.Viewlet):
+    grok.context(Interface)
+    grok.template('addmenu')
+    grok.viewletmanager(AboveContent)
+    grok.order(10)
+
+    bound_menus = ('addmenu',)
+
+    def update(self):
+        self.menus = collections.OrderedDict(
+            uvc.menus.components.menus_iterator(
+                self.context, self.request, self.view, *self.bound_menus))
+
 
 class NavigationMenu(uvc.menus.components.Menu):
     grok.name('navigation')
@@ -153,6 +155,7 @@ class NavigationMenuRenderer(grok.Viewlet):
     grok.context(Interface)
     grok.template('navigation')
     grok.viewletmanager(AboveContent)
+    grok.order(00)
 
     bound_menus = ('navigation',)
 
@@ -160,14 +163,6 @@ class NavigationMenuRenderer(grok.Viewlet):
         self.menus = collections.OrderedDict(
             uvc.menus.components.menus_iterator(
                 self.context, self.request, self.view, *self.bound_menus))
-
-
-#class NavigationMenuTemplate(pagetemplate.PageTemplate):
-#    grok.view(NavigationMenu)
-
-
-
-
 
 #
 ## FavIcon
