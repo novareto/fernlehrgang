@@ -15,13 +15,32 @@ from grokcore.layout import Page as BasePage
 from grokcore.layout.components import LayoutAware
 from megrok.z3ctable import TablePage
 from zeam.form import base
-from zeam.form.base import DISPLAY
+from zeam.form.base import DISPLAY, Action, Actions, FAILURE, SUCCESS
 from zeam.form.layout import Form
 from zeam.form.ztk.widgets.date import DateField
+from zeam.form.ztk.actions import CancelAction
 from zope.interface import implementer
+from .utils import apply_data_event
 
 
 DateField.valueLength = "medium"
+
+
+class UpdateAction(Action):
+    """Update action for any locatable object.
+    """
+
+    def __call__(self, form):
+        data, errors = form.extractData()
+        if errors:
+            form.submissionError = errors
+            return FAILURE
+
+        apply_data_event(form.fields, form.getContentData(), data)
+        form.flash(u"Content updated")
+        form.redirect(form.url(form.context))
+
+        return SUCCESS
 
 
 class Form(Form, LayoutAware):
@@ -66,7 +85,15 @@ class Form(Form, LayoutAware):
 
 class EditForm(Form):
     grok.baseclass()
+    grok.name('edit')
+    grok.title(u"Edit")
 
+    label = ""
+    ignoreContent = False
+    ignoreRequest = False
+    actions = Actions(UpdateAction(("Update")),
+                      CancelAction(("Cancel")))
+    
 
 class DefaultView(Form):
     grok.baseclass()
