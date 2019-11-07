@@ -10,21 +10,14 @@
   <include package="zope.dublincore" />
   <include package="zope.authentication" />
 
+  <include package="megrok.pagetemplate" file="meta.zcml" />
   <include package="grokcore.layout" />
   <include package="megrok.z3ctable" />
   <include package="megrok.z3ctable" file="meta.zcml" />
 
   <include package="uvc.siguvtheme" />
   <include package="uvc.menus" file="meta.zcml" />
-<!--
-  <include package="dolmen.menu" />
-  <include package="dolmen.app.authentication" />
-  <include package="dolmen.app.security" />
-  <include package="dolmen.app.breadcrumbs" />
-  <include package="dolmen.forms.crud" />
--->
   <include package="grokcore.chameleon" />
-  <include package="megrok.pagetemplate" file="meta.zcml" />
 
   <browser:defaultSkin name="siguvtheme" />
   <grok:grok package="." />

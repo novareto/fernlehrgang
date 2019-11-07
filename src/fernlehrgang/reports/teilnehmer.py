@@ -22,9 +22,19 @@ from fernlehrgang import fmtDate
 from fernlehrgang.interfaces.search import ISearch
 from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
 from grokcore.chameleon.components import ChameleonPageTemplateFile
+from fernlehrgang.viewlets import NavEntry
 
 
 grok.templatedir('templates')
+
+
+class NaviEntryHome(NavEntry):
+    grok.context(IFernlehrgangApp)
+    grok.name('navi_entry_home')
+    title = u"Teilnehmer"
+
+    def url(self):
+        return self.view.url(self.context)
 
 
 class TeilnehmerSuche(Form):

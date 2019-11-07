@@ -140,10 +140,11 @@ class NavigationMenu(uvc.menus.components.Menu):
     grok.context(Interface)
 
 
-class DummyNavEntry(uvc.menus.components.MenuItem):
+class NavEntry(uvc.menus.components.MenuItem):
     grok.name('dummy')
     grok.context(Interface)
     uvc.menus.directives.menu(NavigationMenu)
+    grok.baseclass()
 
     title = "Dummy"
     
