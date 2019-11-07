@@ -114,10 +114,9 @@ class ObjectMenu(uvc.menus.components.Menu):
 
 
 class ObjectEntry(uvc.menus.components.MenuItem):
-    grok.name('dummy')
     grok.context(Interface)
     uvc.menus.directives.menu(ObjectMenu)
-    #grok.baseclass()
+    grok.baseclass()
 
     title = "Dummy"
 

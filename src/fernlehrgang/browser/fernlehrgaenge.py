@@ -94,6 +94,16 @@ class DisplayEntryFlg(ObjectEntry):
     def url(self):
         return self.view.url(self.context)
 
+
+class EditEntryFlg(ObjectEntry):
+    grok.context(IFernlehrgang)
+    grok.name('edit_entry_flg')
+    title = u"Bearbeiten"
+
+    def url(self):
+        return self.view.url(self.context, 'edit')
+
+
 #@menuentry(NavigationMenu)
 class Index(DefaultView):
     grok.title('Fernlehrgang')
@@ -105,16 +115,6 @@ class Index(DefaultView):
     def label(self):
         return u"Fernlehrgang: %s (%s)" % (
             self.context.titel, self.context.id)
-
-
-class EditEntryFlg(ObjectEntry):
-    grok.context(IFernlehrgang)
-    grok.name('edit_entry_flg')
-    title = u"Bearbeiten"
-
-    def url(self):
-        return self.view.url(self.context, 'edit')
-
 
 class Edit(EditForm):
     grok.context(IFernlehrgang)
