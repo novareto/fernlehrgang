@@ -17,7 +17,7 @@ from fernlehrgang.browser import TablePage
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang.viewlets import NavEntry, AddEntry
+from fernlehrgang.viewlets import NavEntry, AddEntry, ObjectEntry
 
 grok.templatedir('templates')
 
@@ -86,6 +86,14 @@ class AddFernlehrgang(AddForm):
         return url
 
 
+class DisplayEntryFlg(ObjectEntry):
+    grok.context(IFernlehrgang)
+    grok.name('displayflg')
+    title = u"Anzeigen"
+
+    def url(self):
+        return self.view.url(self.context)
+
 #@menuentry(NavigationMenu)
 class Index(DefaultView):
     grok.title('Fernlehrgang')
@@ -97,6 +105,15 @@ class Index(DefaultView):
     def label(self):
         return u"Fernlehrgang: %s (%s)" % (
             self.context.titel, self.context.id)
+
+
+class EditEntryFlg(ObjectEntry):
+    grok.context(IFernlehrgang)
+    grok.name('edit_entry_flg')
+    title = u"Bearbeiten"
+
+    def url(self):
+        return self.view.url(self.context, 'edit')
 
 
 class Edit(EditForm):

@@ -107,6 +107,21 @@ grok.templatedir('templates')
 ## Add Menu
 #
 
+class ObjectMenu(uvc.menus.components.Menu):
+    grok.name('objectmenu')
+    grok.context(Interface)
+    grok.title('Object')
+
+
+class ObjectEntry(uvc.menus.components.MenuItem):
+    grok.name('dummy')
+    grok.context(Interface)
+    uvc.menus.directives.menu(ObjectMenu)
+    #grok.baseclass()
+
+    title = "Dummy"
+
+
 class AddMenu(uvc.menus.components.Menu):
     grok.name('addmenu')
     grok.context(Interface)
@@ -128,7 +143,7 @@ class AddMenuRenderer(grok.Viewlet):
     grok.viewletmanager(AboveContent)
     grok.order(10)
 
-    bound_menus = ('addmenu',)
+    bound_menus = ('addmenu', 'objectmenu')
 
     def update(self):
         self.menus = collections.OrderedDict(
