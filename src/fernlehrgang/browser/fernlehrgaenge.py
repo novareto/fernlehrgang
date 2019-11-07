@@ -17,7 +17,7 @@ from fernlehrgang.browser import TablePage
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
-from fernlehrgang.viewlets import NavEntry
+from fernlehrgang.viewlets import NavEntry, AddEntry
 
 grok.templatedir('templates')
 
@@ -31,7 +31,6 @@ class NaviEntryFlg(NavEntry):
         return self.view.url(self.context, 'fernlehrgang_listing')
 
 
-#@menuentry(NavigationMenu)
 class FernlehrgangListing(TablePage):
     grok.context(IFernlehrgangApp)
     grok.name('fernlehrgang_listing')
@@ -53,6 +52,15 @@ class FernlehrgangListing(TablePage):
         for fernlehrgang in session.query(Fernlehrgang).all():
             locate(root, fernlehrgang, DefaultModel)
             yield fernlehrgang
+
+
+class AddEntryFlg(AddEntry):
+    grok.context(IFernlehrgangApp)
+    grok.name('addentryflg')
+    title = u"Fernlehrgang"
+
+    def url(self):
+        return self.view.url(self.context, 'addfernlehrgang')
 
 
 #@menuentry(AddMenu)
