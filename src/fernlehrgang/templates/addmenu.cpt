@@ -1,22 +1,26 @@
 <div class="btn-group">
-	<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		Hinzufügen 
-	</button>
-	<div class="dropdown-menu" tal:repeat="entry viewlet.menus['addmenu']">
-		<a class="dropdown-item" href="" tal:attributes="href entry.url();">
-			<i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
-			<span tal:content="entry.title"> </span>
-		</a>
-	</div>
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Hinzufügen 
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item"
+       tal:repeat="entry viewlet.menus['addmenu']"
+       href="" tal:attributes="href entry.url();">
+      <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
+      <span tal:content="entry.title"> </span>
+    </a>
+  </div>
 </div>
 <div class="btn-group">
-	<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		Aktionen 
-	</button>
-	<div class="dropdown-menu" tal:repeat="entry viewlet.menus['objectmenu']">
-		<a class="dropdown-item" href="" tal:attributes="href entry.url();">
-			<i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
-			<span tal:content="entry.title"> </span>
-		</a>
-	</div>
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Aktionen 
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item"
+       tal:repeat="entry viewlet.menus['objectmenu']"
+       tal:attributes="href entry.url();">
+      <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
+      <span tal:content="entry.title"> </span>
+    </a>
+  </div>
 </div>

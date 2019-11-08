@@ -120,9 +120,6 @@ class Edit(EditForm):
     fields = Fields(IFernlehrgang).omit("id")
 
 
-# Spalten
-
-
 class ID(GetAttrColumn):
     grok.name("Id")
     grok.context(IFernlehrgangApp)
