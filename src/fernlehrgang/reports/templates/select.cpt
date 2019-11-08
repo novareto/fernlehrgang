@@ -1,2 +1,2 @@
-<select id="teilnehmer_id" name="form.field.id" style="width: 550px">
+<select class="form-group" id="teilnehmer_id" name="form.field.id" style="width: 100%">
 </select>

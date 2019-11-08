@@ -48,7 +48,7 @@ class IContent(Interface):
 config = getProductConfiguration('database')
 SCHEMA = config['schema'] or None 
 #SCHEMA = "FLGUTF8"
-log('USING THE FOLLOWING SCHEMA --> %s' % SCHEMA)
+log('Database SCHEMA --> %s' % SCHEMA)
 Base = declarative_base()
 Base.metadata.schema = SCHEMA 
 

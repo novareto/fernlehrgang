@@ -1,136 +1,147 @@
 <html>
-<body>
-<div metal:use-macro="path: context/@@formmacros/template/macros/editform"> </div>
+  <body>
+    <div metal:use-macro="path: context/@@formmacros/template/macros/editform"> </div>
 
-<script language="Javascript">
+    <script language="Javascript">
 
-        function copy()
-        {
-            try
-            {
-                var copyText = document.getElementById("hbst_neu");
-                copyText.select()
-                document.execCommand('copy');
-            }
-            catch(e)
-            {
-                alert(e);
-            }
-        }
+      function copy()
+{
+  try
+  {
+    var copyText = document.getElementById("hbst_neu");
+    copyText.select()
+    document.execCommand('copy');
+  }
+  catch(e)
+  {
+    alert(e);
+  }
+}
 
 
-  $('select#teilnehmer_id').ajaxChosen({
-     dataType: 'json',
-     type: 'POST',
-     url: '<tal:url replace="'%s/search_teilnehmer' % view.application_url()" />'
-   },
-   {
-      minLength: 3
-   },
-   {
-      search_contains: true,
-   }
+$('select#teilnehmer_id').ajaxChosen({
+  dataType: 'json',
+  type: 'POST',
+  url: '<tal:url replace="'%s/search_teilnehmer' % view.application_url()" />'
+},
+  {
+    minLength: 3
+  },
+  {
+    search_contains: true,
+  }
 );
 </script>
 
 <fieldset tal:condition="teilnehmer">
   <legend> Ergebnisse </legend>
   <div class="row">
-  <div class="panel col-sm panel-default">
-    <div class="panel-heading">
-      <h3>
-        Teilnehmer
-        <a href="pull-right" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id)"> 
-          <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ( <span tal:content="teilnehmer.id"/> ) 
-        </a>
-      </h3> 
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-header">
+          <h3>
+            Teilnehmer
+            <a href="pull-right" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id)"> 
+              <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ( <span tal:content="teilnehmer.id"/> ) 
+            </a>
+          </h3> 
+        </div>
+        <div class="card-body">
+          <p tal:content="view.gVa(teilnehmer.anrede)"> </p>
+          <p tal:content="view.gVt(teilnehmer.titel)"> </p>
+          <p tal:content="teilnehmer.name"> </p>
+          <p tal:content="teilnehmer.vorname"> </p> 
+          <p tal:condition="teilnehmer.geburtsdatum" tal:content="teilnehmer.geburtsdatum.strftime('%d.%m.%Y')"> </p> 
+          <p tal:content="teilnehmer.email"> </p> 
+          <p tal:content="view.gKV(teilnehmer.kategorie)"> </p> 
+        </div> 
+      </div>
     </div>
-    <div class="panel-body">
-      <p tal:content="view.gVa(teilnehmer.anrede)"> </p>
-      <p tal:content="view.gVt(teilnehmer.titel)"> </p>
-      <p tal:content="teilnehmer.name"> </p>
-      <p tal:content="teilnehmer.vorname"> </p> 
-      <p tal:condition="teilnehmer.geburtsdatum" tal:content="teilnehmer.geburtsdatum.strftime('%d.%m.%Y')"> </p> 
-      <p tal:content="teilnehmer.email"> </p> 
-      <p tal:content="view.gKV(teilnehmer.kategorie)"> </p> 
-    </div> 
-  </div>
-  </div>
-  <div class="">
-  <div class="col-smpanel panel-default">
-    <div class="panel-heading">
-      <h3> Unternehmen </h3>
-    </div>
-    <div class="panel-body">
-      <ul tal:repeat="unt unternehmen">
-        <li>
-          <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} [${unt.hbst}]- ${unt.name}"/> 
-            <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
-            <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
-          </a>
-          <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/setdefaultmnr?mnr=%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id, unt.mnr)" tal:condition="unt.mnr != teilnehmer.unternehmen_mnr"> (+) </a>
-         <a onclick="copy();"> <span class="glyphicon glyphicon-copy" aria-hidden="true"> </span></a>
-         <input type="hidden" name="hbsit" id="hbst_neu" tal:attributes="value string:${unt.hbst}"/> 
-        </li>
-      </ul>
-    </div> 
-  </div>
-  </div>
-  <div class="row col-md-12">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3> Lehrgänge </h3>
-    </div>
-    <div class="panel-body">
-    <table class="table">
-      <thead>
-        <tr>
-          <th> Lehrgang </th>
-          <th> Teilnehmer </th>
-          <th> Status </th>
-          <th> Mitarbeiter, Branche </th>
-          <th> Ergebnis </th>
-<!--          <th> Ergebnis (fixed) </th> -->
-        </tr>
-      </thead>
-      <tbody>
-      <tr tal:repeat="ktn kursteilnehmer">
-        <td> <a tal:attributes="href '%s/fernlehrgang/%s' %(view.application_url(), ktn.fernlehrgang.id)" tal:content="string: ${ktn.fernlehrgang.titel}"> </a> </td>
-        <td> <a tal:attributes="href '%s/fernlehrgang/%s/kursteilnehmer/%s' % (view.application_url(), ktn.fernlehrgang.id, ktn.id)" tal:content="ktn.teilnehmer.name"> </a> </td>
-        <td> <span tal:content="view.gLS(ktn.status)"></span> </td>
-        <td> <span tal:content="string: ${view.gU(ktn.un_klasse)}, ${view.gBR(ktn.branche)}"></span></td>
-        <td> <small tal:content="structure ktn.result['comment']"></small> </td>
-<!--        <td> <small tal:content="structure ktn.fixed_results or ktn.result['comment']"></small> </td> -->
-      </tr>
-      </tbody>
-    </table>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-header">
+          <h3> Unternehmen </h3>
+        </div>
+        <div class="card-body">
+          <ul tal:repeat="unt unternehmen">
+            <li>
+              <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} [${unt.hbst}]- ${unt.name}"/> 
+                <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
+                <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
+              </a>
+              <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/setdefaultmnr?mnr=%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id, unt.mnr)" tal:condition="unt.mnr != teilnehmer.unternehmen_mnr"> (+) </a>
+              <a onclick="copy();"> <span class="glyphicon glyphicon-copy" aria-hidden="true"> </span></a>
+              <input type="hidden" name="hbsit" id="hbst_neu" tal:attributes="value string:${unt.hbst}"/> 
+            </li>
+          </ul>
+        </div> 
+      </div>
     </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3> Journal </h3>
+  <br>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h3> Lehrgänge </h3>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th> Lehrgang </th>
+                <th> Teilnehmer </th>
+                <th> Status </th>
+                <th> Mitarbeiter, Branche </th>
+                <th> Ergebnis </th>
+                <!--          <th> Ergebnis (fixed) </th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="ktn kursteilnehmer">
+                <td> <a tal:attributes="href '%s/fernlehrgang/%s' %(view.application_url(), ktn.fernlehrgang.id)" tal:content="string: ${ktn.fernlehrgang.titel}"> </a> </td>
+                <td> <a tal:attributes="href '%s/fernlehrgang/%s/kursteilnehmer/%s' % (view.application_url(), ktn.fernlehrgang.id, ktn.id)" tal:content="ktn.teilnehmer.name"> </a> </td>
+                <td> <span tal:content="view.gLS(ktn.status)"></span> </td>
+                <td> <span tal:content="string: ${view.gU(ktn.un_klasse)}, ${view.gBR(ktn.branche)}"></span></td>
+                <td> <small tal:content="structure ktn.result['comment']"></small> </td>
+                <!--        <td> <small tal:content="structure ktn.fixed_results or ktn.result['comment']"></small> </td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <div class="panel-body">
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th> Typ </th>
-          <th> Lehrgang </th>
-          <th> Datum</th>
-          <th> Info </th>
-        </tr>
-      </thead>
-      <tbody>
-      <tr tal:repeat="result teilnehmer.journal_entries">
-        <td tal:content="view.getStatus(result.status)"> </td>
-        <td tal:content="result.kursteilnehmer.fernlehrgang.titel"> </td>
-        <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
-        <td tal:content="result.type"> </td>
-      </tr>
-      </tbody>
-    </table>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h3> Journal </h3>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th> Typ </th>
+                <th> Lehrgang </th>
+                <th> Datum</th>
+                <th> Info </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="result teilnehmer.journal_entries">
+                <td tal:content="view.getStatus(result.status)"> </td>
+                <td tal:content="result.kursteilnehmer.fernlehrgang.titel"> </td>
+                <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
+                <td tal:content="result.type"> </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </fieldset>
-</body>
+  </body>
 </html>

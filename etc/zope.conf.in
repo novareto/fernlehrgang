@@ -48,7 +48,7 @@ site-definition ${site_zcml:output}
 
 # Comment this line to disable developer mode.  This should be done in
 # production
-devmode on
+devmode off
 
 # Extra configuration lines can be added to zope_conf's extra option. Put for 
 # instance productconf sections in here.

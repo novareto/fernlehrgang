@@ -9,24 +9,24 @@ from fernlehrgang import log
 from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
-import logging
 
-config = getProductConfiguration('database')
+config = getProductConfiguration("database")
 try:
-    DSN = config['dsn']
-except:
+    DSN = config["dsn"]
+except Exception:
     DSN = "postgresql+psycopg2://flg:flg@localhost/flg"
-log(DSN)
+
+# More VERBOSE Logging
+# import logging
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 
-import logging
-logging.basicConfig()
-#logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
+log('DSN -> %s' %DSN)
 
-
-# FIX: engine_factory = EngineFactory(DSN, convert_unicode=True, encoding='utf-8', optimize_limits=True, echo=False)
 engine_factory = EngineFactory(
-    DSN, convert_unicode=False, encoding='utf-8', echo=False, pool_recycle=60)
+    DSN, convert_unicode=False, encoding="utf-8", echo=False, pool_recycle=60
+)
 scoped_session = GloballyScopedSession()
 
 grok.global_utility(engine_factory, direct=True)
