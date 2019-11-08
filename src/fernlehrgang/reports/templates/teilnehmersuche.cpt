@@ -35,8 +35,8 @@
 
 <fieldset tal:condition="teilnehmer">
   <legend> Ergebnisse </legend>
-  <div class="row col-md-6">
-  <div class="panel panel-default">
+  <div class="row">
+  <div class="panel col-sm panel-default">
     <div class="panel-heading">
       <h3>
         Teilnehmer
@@ -56,8 +56,8 @@
     </div> 
   </div>
   </div>
-  <div class="col-md-6">
-  <div class="panel panel-default">
+  <div class="">
+  <div class="col-smpanel panel-default">
     <div class="panel-heading">
       <h3> Unternehmen </h3>
     </div>

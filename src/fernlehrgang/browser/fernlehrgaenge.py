@@ -7,7 +7,6 @@ import grok
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from fernlehrgang.browser import AddForm, EditForm, DefaultView
 
 from megrok.traject import locate
@@ -19,8 +18,7 @@ from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang.viewlets import NavEntry, AddEntry, ObjectEntry
 
-grok.templatedir('templates')
-
+grok.templatedir("templates")
 
 
 class NaviEntryFlg(NavEntry):
@@ -28,21 +26,21 @@ class NaviEntryFlg(NavEntry):
     title = u"Fernlehrgänge"
 
     def url(self):
-        return self.view.url(self.context, 'fernlehrgang_listing')
+        return self.view.url(self.context, "fernlehrgang_listing")
 
 
 class FernlehrgangListing(TablePage):
     grok.context(IFernlehrgangApp)
-    grok.name('fernlehrgang_listing')
+    grok.name("fernlehrgang_listing")
     grok.title(u"Fernlehrgänge")
     grok.order(10)
 
-    template = ChameleonPageTemplateFile('templates/base_listing.cpt')
+    template = ChameleonPageTemplateFile("templates/base_listing.cpt")
 
     label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
 
-    cssClasses = {'table': 'table table-striped table-bordered table-condensed'}
+    cssClasses = {"table": "table table-striped table-bordered table-condensed"}
     status = None
 
     @property
@@ -56,22 +54,21 @@ class FernlehrgangListing(TablePage):
 
 class AddEntryFlg(AddEntry):
     grok.context(IFernlehrgangApp)
-    grok.name('addentryflg')
+    grok.name("addentryflg")
     title = u"Fernlehrgang"
 
     def url(self):
-        return self.view.url(self.context, 'addfernlehrgang')
+        return self.view.url(self.context, "addfernlehrgang")
 
 
-#@menuentry(AddMenu)
 class AddFernlehrgang(AddForm):
     grok.context(IFernlehrgangApp)
-    grok.title(u'Fernlehrgang')
-    title = u'Fernlehrgang'
-    label = u'Fernlehrgang anlegen'
+    grok.title(u"Fernlehrgang")
+    title = u"Fernlehrgang"
+    label = u"Fernlehrgang anlegen"
     description = u""
 
-    fields = Fields(IFernlehrgang).omit('id')
+    fields = Fields(IFernlehrgang).omit("id")
 
     def create(self, data):
         return Fernlehrgang(**data)
@@ -81,39 +78,38 @@ class AddFernlehrgang(AddForm):
         session.add(object)
 
     def nextURL(self):
-        self.flash(u'Der Fernlehrgang wurde erfolgreich angelegt.')
+        self.flash(u"Der Fernlehrgang wurde erfolgreich angelegt.")
         url = self.url(self.context)
         return url
 
 
 class DisplayEntryFlg(ObjectEntry):
     grok.context(IFernlehrgang)
-    grok.name('displayflg')
+    grok.name("displayflg")
     title = u"Anzeigen"
 
     def url(self):
         return self.view.url(self.context)
 
-#@menuentry(NavigationMenu)
+
 class Index(DefaultView):
-    grok.title('Fernlehrgang')
+    grok.title("Fernlehrgang")
     grok.context(IFernlehrgang)
 
-    fields = Fields(IFernlehrgang).omit('id')
+    fields = Fields(IFernlehrgang).omit("id")
 
     @property
     def label(self):
-        return u"Fernlehrgang: %s (%s)" % (
-            self.context.titel, self.context.id)
+        return u"Fernlehrgang: %s (%s)" % (self.context.titel, self.context.id)
 
 
 class EditEntryFlg(ObjectEntry):
     grok.context(IFernlehrgang)
-    grok.name('edit_entry_flg')
+    grok.name("edit_entry_flg")
     title = u"Bearbeiten"
 
     def url(self):
-        return self.view.url(self.context, 'edit')
+        return self.view.url(self.context, "edit")
 
 
 class Edit(EditForm):
@@ -121,13 +117,14 @@ class Edit(EditForm):
 
     label = u"Fernlehrgang bearbeiten"
     description = u"Hier können Sie Ihren Fernlehrgang bearbeiten"
-    fields = Fields(IFernlehrgang).omit('id')
+    fields = Fields(IFernlehrgang).omit("id")
 
 
 # Spalten
 
+
 class ID(GetAttrColumn):
-    grok.name('Id')
+    grok.name("Id")
     grok.context(IFernlehrgangApp)
     weight = 5
     header = u"Id"
@@ -135,7 +132,7 @@ class ID(GetAttrColumn):
 
 
 class Title(LinkColumn):
-    grok.name('titel')
+    grok.name("titel")
     grok.context(IFernlehrgangApp)
     weight = 10
     header = u"Titel"
@@ -146,7 +143,7 @@ class Title(LinkColumn):
 
 
 class Jahr(GetAttrColumn):
-    grok.name('Jahr')
+    grok.name("Jahr")
     grok.context(IFernlehrgangApp)
     weight = 20
     header = u"Jahr"
@@ -154,9 +151,9 @@ class Jahr(GetAttrColumn):
 
 
 class Typ(GetAttrColumn):
-    grok.name('Typ')
+    grok.name("Typ")
     grok.context(IFernlehrgangApp)
-    weight = 15 
+    weight = 15
     header = u"Typ"
 
     def renderCell(self, item):
@@ -164,4 +161,3 @@ class Typ(GetAttrColumn):
         if item.typ:
             return typ(None).getTerm(item.typ).title
         return "N/A"
-            
