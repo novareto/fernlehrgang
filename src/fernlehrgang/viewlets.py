@@ -128,13 +128,10 @@ class AddMenu(uvc.menus.components.Menu):
 
 
 class AddEntry(uvc.menus.components.MenuItem):
-    grok.name('dummy')
     grok.context(Interface)
     uvc.menus.directives.menu(AddMenu)
     grok.baseclass()
 
-    title = "Fernlehrgang"
-    
 
 class AddMenuRenderer(grok.Viewlet):
     grok.context(Interface)

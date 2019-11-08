@@ -1,4 +1,5 @@
-<div class="btn-group">
+<div class="btn-group context-menu"
+     tal:condition="viewlet.menus.get('addmenu', None)">
   <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Hinzufügen 
   </button>
@@ -11,7 +12,8 @@
     </a>
   </div>
 </div>
-<div class="btn-group">
+<div class="btn-group  context-menu"
+     tal:condition="viewlet.menus.get('objectmenu', None)">
   <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Aktionen 
   </button>
