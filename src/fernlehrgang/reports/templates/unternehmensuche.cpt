@@ -1,7 +1,7 @@
 <html>
   <body>
     <div metal:use-macro="path: context/@@formmacros/template/macros/editform" />
-    <table class="table table-striped table-bordered table-condensed"
+    <table class="table table-striped table-bordered table-sm"
            tal:define="results view.results" tal:condition="results">
       <tr>
         <th> Fernlehrgang </th>

@@ -7,7 +7,7 @@ import grok
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
-from fernlehrgang.browser import AddForm, EditForm, DefaultView
+from fernlehrgang.browser import AddForm, EditForm, Display 
 
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
@@ -23,7 +23,10 @@ grok.templatedir("templates")
 
 class NaviEntryFlg(NavEntry):
     grok.context(IFernlehrgangApp)
+    grok.order(20)
+
     title = u"Fernlehrgänge"
+    icon = "fas fa-list-ol"
 
     def url(self):
         return self.view.url(self.context, "fernlehrgang_listing")
@@ -40,7 +43,7 @@ class FernlehrgangListing(TablePage):
     label = u"Fernlehrgänge"
     description = u"Hier können Sie die Fernlehrgänge der BG verwalten."
 
-    cssClasses = {"table": "table table-striped table-bordered table-condensed"}
+    cssClasses = {"table": "table table-striped table-bordered table-sm"}
     status = None
 
     @property
@@ -92,7 +95,7 @@ class DisplayEntryFlg(ObjectEntry):
         return self.view.url(self.context)
 
 
-class Index(DefaultView):
+class Index(Display):
     grok.title("Fernlehrgang")
     grok.context(IFernlehrgang)
 

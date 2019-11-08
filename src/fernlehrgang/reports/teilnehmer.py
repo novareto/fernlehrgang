@@ -6,6 +6,7 @@ import grok
 
 # from profilehooks import profile
 # from sqlalchemy.orm import joinedload
+from zope.interface import Interface
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
@@ -28,10 +29,13 @@ grok.templatedir("templates")
 class NaviEntryHome(NavEntry):
     grok.context(IFernlehrgangApp)
     grok.name("navi_entry_home")
-    title = u"Teilnehmer"
+    grok.order(10)
+
+    title = u"Teilnehmer suchen"
+    icon = "fas fa-search"
 
     def url(self):
-        return self.view.url(self.context)
+        return self.view.url(grok.getApplication())
 
 
 class TeilnehmerSuche(Form):
@@ -100,7 +104,7 @@ class TeilnehmerSuche(Form):
         if value:
             try:
                 return IJournalEntry.get("status").source(None).getTerm(value).title
-            except:
+            except Exception:
                 return u"--> %s" % value
 
     def getLG(self, je):

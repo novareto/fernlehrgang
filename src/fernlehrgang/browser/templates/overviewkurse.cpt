@@ -1,20 +1,24 @@
-<div tal:condition="viewlet.res" class="portlet">
-  <dl>
-    <dt> Name Vorname Geburtsdatum</dt>
-    <dd> 
-    <span tal:content="context.name"> </span> 
-    <span tal:content="context.vorname"> </span>
-    <span tal:content="context.geburtsdatum"> </span>
-    </dd> 
-    <dt> Der Teilnehmer ist beschäftigt bei dem Unternehmen: <dt>
-    <dd>
-    <span tal:content="context.unternehmen_mnr"> </span> <br>
-    <!-- <span tal:content="context.unternehmen.name"> </span>-->
-    </dd>
-    <dt> Der Teilnehmer ist bei folgenden Lehrgängen angemeldet: </dt>
-    <dd tal:repeat="ktl viewlet.res">
-    <span tal:content="ktl.fernlehrgang.titel"> </span> 
-    <span tal:content="ktl.fernlehrgang.jahr"></span>
-    </dd>
-  </dl>
+<div tal:condition="viewlet.res" class="card">
+  <div class="card-header">
+    Informationen zum Teilnehmer
+  </div>
+  <div class="card-body">
+    <dl>
+      <dt> Name Vorname Geburtsdatum</dt>
+      <dd> 
+        <span tal:content="context.name"> </span> 
+        <span tal:content="context.vorname"> </span>
+        <span tal:content="context.geburtsdatum"> </span>
+      </dd> 
+      <dt> Der Teilnehmer ist beschäftigt bei dem Unternehmen: </dt>
+      <dd>
+        <span tal:content="context.unternehmen_mnr"> </span> 
+      </dd>
+      <dt> Der Teilnehmer ist bei folgenden Lehrgängen angemeldet: </dt>
+      <dd tal:repeat="ktl viewlet.res">
+        <span tal:content="ktl.fernlehrgang.titel"> </span> 
+        <span tal:content="ktl.fernlehrgang.jahr"></span>
+      </dd>
+    </dl>
+  </div>
 </div>
