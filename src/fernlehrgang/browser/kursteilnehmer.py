@@ -134,6 +134,7 @@ class KTNavEntry(NavEntry):
     grok.order(10)
 
     title = "Kursteilnehmer"
+    icon = "fas fa-user-tie"
 
     def url(self):
         return self.view.url(self.context)
@@ -164,7 +165,7 @@ class KTFristNavEntry(NavEntry):
     grok.order(20)
 
     title="Fristverlängerung"
-    icon = "fas-fa-calendar-alt"
+    icon = "fas fa-calendar-alt"
 
     def url(self):
         return self.view.url(self.context, 'extend_date')

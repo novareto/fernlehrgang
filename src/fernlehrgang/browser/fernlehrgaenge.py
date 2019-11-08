@@ -95,6 +95,16 @@ class DisplayEntryFlg(ObjectEntry):
         return self.view.url(self.context)
 
 
+class NavEntryFlg(NavEntry):
+    grok.context(IFernlehrgang)
+    grok.name("nav_entry_flg")
+    grok.order(1)
+    title = u"Fernlehrang"
+
+    def url(self):
+        return self.view.url(self.context)
+
+
 class Index(Display):
     grok.title("Fernlehrgang")
     grok.context(IFernlehrgang)

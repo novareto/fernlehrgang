@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs" id="navigation">
   <li class="nav-item" tal:repeat="entry viewlet.menus['navigation']">
-  <a class="nav-link" href="" tal:attributes="href entry.url();">
+  <a class="nav-link" tal:attributes="class entry.selected and 'nav-link active' or 'nav-link'; href entry.url();">
     <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
     <span tal:content="entry.title"> </span>
   </a>

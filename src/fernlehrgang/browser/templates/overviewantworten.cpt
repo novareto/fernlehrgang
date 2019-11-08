@@ -4,18 +4,18 @@
 
   <h3> Die einzelnen Lehrhefte </h3>
   <div id="accordion2" class="panel-group" role="tablist">
-    <div class="panel panel-default" tal:repeat="lh results">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-        <a class="accordion-toggle" href="#collapseOne" data-parent="#accordion2" data-toggle="collapse" 
+    <div class="card" tal:repeat="lh results">
+      <div class="card-header">
+        <h2 class="mb-0">
+        <button class="btn btn-link" href="#collapseOne" data-parent="#accordion2" data-toggle="collapse" 
           tal:attributes="href string:#collapse${repeat.lh.number}">
           <span tal:content="lh.titel"> </span> 
-        </a>
-        </h4>
+        </button>
+        </h2>
       </div>
       <div class="panel-collapse collapse" tal:attributes="id string:collapse${repeat.lh.number}">
-        <div class="panel-body">
-        <table class="table table-striped table-bordered table-condensed">
+        <div class="card-body">
+        <table class="table table-striped table-bordered table-sm">
           <tr>
             <th> Name </th>
             <th> Lehrheft </th>
