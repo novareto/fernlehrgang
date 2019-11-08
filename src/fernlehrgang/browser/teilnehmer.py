@@ -355,22 +355,6 @@ class SearchTeilnehmer(grok.View):
         session = Session()
         from fernlehrgang import models
         from sqlalchemy import func, or_, cast, String
-        #res = session.query(models.Teilnehmer, models.Unternehmen).filter(
-        #    models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr,
-        #    or_(
-        #    cast(models.Teilnehmer.id, String).like(self.term+"%"),
-        #    cast(models.Teilnehmer.unternehmen_mnr, String).like(self.term+"%"),
-        #    models.Unternehmen.hbst.like(self.term+"%s"),
-        #    func.concat(func.concat(models.Teilnehmer.name, " "),
-        #               models.Teilnehmer.vorname
-        #              ).ilike("%" + self.term + "%"))).order_by(models.Teilnehmer.name, models.Teilnehmer.vorname)
-
-
-        sql = session.query(models.Teilnehmer, models.Unternehmen).filter(
-            models.Teilnehmer.unternehmen_mnr == self.term
-        )
-        import pdb; pdb.set_trace()
-
         sql = session.query(models.Teilnehmer, models.Unternehmen).filter(
             models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr, 
             or_(
