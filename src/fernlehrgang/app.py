@@ -31,6 +31,7 @@ from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
 from zeam.form.base.markers import NO_VALUE
 from zope.error.error import RootErrorReportingUtility
 from zope.error.interfaces import IErrorReportingUtility
+from grokcore.content.interfaces import IContext
 
 
 class ErrorUtility(RootErrorReportingUtility, grok.GlobalUtility):
@@ -43,7 +44,7 @@ grok.templatedir('templates')
 
 from megrok.nozodb import ApplicationRoot
 class FernlehrgangApp(ApplicationRoot):
-    grok.implements(IFernlehrgangApp)
+    grok.implements(IFernlehrgangApp, IContext)
     grok.traversable(attr='benutzer')
 
 

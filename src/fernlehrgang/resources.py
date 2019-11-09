@@ -8,7 +8,6 @@ import grok
 from fanstatic import Library, Resource
 from zope.interface import Interface
 from fernlehrgang.slots.interfaces import IHeaders
-from js.bootstrap import bootstrap_js
 from js.jquery import jquery
 
 
@@ -20,9 +19,9 @@ btchosen = Resource(library, "chosen.bootstrap.css", depends=[chosen_css])
 chosen_ajax = Resource(library, "chosen.ajaxaddition.jquery.js", depends=[chosen_js])
 
 css = Resource(library, "flg.css")
-responsive = Resource(library, "responsive.css")
-tabs = Resource(library, "tabs.js", depends=[responsive, bootstrap_js, jquery])
-# js = Resource(library, "flg.js", depends=[tabs, btchosen])
+# responsive = Resource(library, "responsive.css")
+# tabs = Resource(library, "tabs.js", depends=[responsive, bootstrap_js, jquery])
+js = Resource(library, "flg.js", depends=[jquery])
 register_js = Resource(library, "register.js", depends=[jquery])
 
 
@@ -32,7 +31,7 @@ class FernlehrgangResourceViewlet(grok.Viewlet):
 
     def update(self):
         css.need()
-        # js.need()
+        js.need()
 
     def render(self):
         return u""

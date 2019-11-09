@@ -361,7 +361,7 @@ class Register(Form):
 
 
 class TeilnehmerJSONViews(grok.JSON):
-    grok.context(ITeilnehmer)
+    grok.context(Interface)
 
     def get_kursteilnehmer(self, ktn_id):
         session = Session()
@@ -369,14 +369,6 @@ class TeilnehmerJSONViews(grok.JSON):
 
         ktn_id, flg_id = ktn_id.split(",")
         ktn = session.query(Kursteilnehmer).get(ktn_id)
-        print(
-            {
-                "status": ktn.status,
-                "un_klasse": ktn.un_klasse,
-                "branche": ktn.branche,
-                "gespraech": ktn.gespraech,
-            }
-        )
         return {
             "status": ktn.status,
             "un_klasse": ktn.un_klasse,

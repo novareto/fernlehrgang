@@ -54,11 +54,10 @@ setup_console_handler = False
 logger_name = wsgi
 
 [app:grok]
-#use = egg:grokcore.startup
 use = egg:megrok.nozodb#nozodb
 
 [pipeline:main]
-pipeline = translogger gzip fanstatic ddbg grok
+pipeline = translogger gzip fanstatic grok
 
 
 [filter:gzip]

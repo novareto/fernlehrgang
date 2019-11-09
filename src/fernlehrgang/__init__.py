@@ -3,7 +3,6 @@
 # cklinger@novareto.de 
 
 import logging
-from ibm_db_sa.base import DB2Compiler
 
 
 logger = logging.getLogger('fernlehrgang')
@@ -27,5 +26,8 @@ def visit_sequence(self, sequence):
         nn = "%s.%s" %(sequence.metadata.schema, nn)
     return "NEXT VALUE FOR %s" % nn
 
-
-DB2Compiler.visit_sequence = visit_sequence 
+try:
+    from ibm_db_sa.base import DB2Compiler
+    DB2Compiler.visit_sequence = visit_sequence 
+except Exception:
+    pass

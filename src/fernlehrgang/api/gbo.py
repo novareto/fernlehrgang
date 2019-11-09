@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
+
+
 import json
 import requests
 from zope.app.appsetup.product import getProductConfiguration
 
-config = getProductConfiguration('gbo')
-GBO_URL = config.get('gbo_url')
+config = getProductConfiguration("gbo")
+GBO_URL = config.get("gbo_url")
 
 PRODJSON = u"""{
   "token": "218FD67F-1B71-48D0-9254-FF97E4091264",
@@ -383,16 +385,14 @@ TESTJSON = u"""{
 }
 """
 
+
 class GBOAPI(object):
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/beta/flg"
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/flg"
     url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
     url = "https://gefaehrdungsbeurteilung.bghw.de/data/flg/"
     url = GBO_URL
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-        }
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
     def get_info(self, mnr):
         url = "%s/import/clients/%s/info" % (self.url, mnr)
@@ -401,33 +401,27 @@ class GBOAPI(object):
 
     def set_data(self, data):
         url = "%simport/clients" % self.url
-        r = requests.post(
-            url,
-            json=data,
-            headers=self.headers
-        )
+        r = requests.post(url, json=data, headers=self.headers)
         return r
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     gboapi = GBOAPI()
 
-    t = gboapi.get_info('995000102')
-    #t = gboapi.get_info('100000020')
+    t = gboapi.get_info("995000102")
+    # t = gboapi.get_info('100000020')
 
     import logging
 
     import httplib as http_client
+
     http_client.HTTPConnection.debuglevel = 1
 
-# You must initialize logging, otherwise you'll not see debug output.
+    # You must initialize logging, otherwise you'll not see debug output.
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     requests_log = logging.getLogger("requests.packages.urllib3")
     requests_log.setLevel(logging.DEBUG)
     requests_log.propagate = True
 
-    t= gboapi.set_data(json.loads(PRODJSON))
-
+    t = gboapi.set_data(json.loads(PRODJSON))
