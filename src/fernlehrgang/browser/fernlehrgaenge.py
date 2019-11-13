@@ -13,6 +13,7 @@ from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from megrok.z3ctable import GetAttrColumn, LinkColumn
 from fernlehrgang.browser import TablePage
+from fernlehrgang.models import IContent
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
@@ -87,7 +88,7 @@ class AddFernlehrgang(AddForm):
 
 
 class DisplayEntryFlg(ObjectEntry):
-    grok.context(IFernlehrgang)
+    grok.context(IContent)
     grok.name("displayflg")
     title = u"Anzeigen"
 
@@ -117,7 +118,7 @@ class Index(Display):
 
 
 class EditEntryFlg(ObjectEntry):
-    grok.context(IFernlehrgang)
+    grok.context(IContent)
     grok.name("edit_entry_flg")
     title = u"Bearbeiten"
 

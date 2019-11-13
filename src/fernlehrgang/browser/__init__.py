@@ -13,6 +13,7 @@ from grok.components import ViewSupportMixin
 from grok.interfaces import IGrokView
 from grokcore.layout import Page as BasePage
 from grokcore.layout.components import LayoutAware
+from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.z3ctable import TablePage
 from zeam.form import base
 from zeam.form.base import DISPLAY, Action, Actions, FAILURE, SUCCESS
@@ -21,6 +22,8 @@ from zeam.form.ztk.widgets.date import DateField
 from zeam.form.ztk.actions import CancelAction
 from zope.interface import implementer
 from .utils import apply_data_event
+
+grok.templatedir('templates')
 
 
 DateField.valueLength = "medium"
@@ -97,8 +100,27 @@ class EditForm(Form):
 
 class DefaultView(Form):
     grok.baseclass()
+    mode = DISPLAY
+    template = ChameleonPageTemplateFile("templates/display.cpt")
+    ignoreRequest = True
+    ignoreContent = False
+
+    @property
+    def label(self):
+        dc = IDCDescriptiveProperties(self.context, None)
+        if dc is not None and dc.title:
+            return dc.title
+        return getattr(self.context, '__name__', u'')
+    
+    def update(self):
+        super().update()
+        for widget in self.fieldWidgets:
+            widget.defaultHtmlClass.append('form-control-plaintext')
 
 
+Display = DefaultView
+
+            
 class AddForm(Form):
     grok.baseclass()
     _finishedAdd = False
@@ -135,23 +157,6 @@ class AddForm(Form):
             self.request.response.redirect(self.nextURL())
             return ""
         return super(AddForm, self).render()
-
-
-class Display(Form):
-    grok.baseclass()
-    grok.title("View")
-
-    title = ""
-    mode = DISPLAY
-    ignoreRequest = True
-    ignoreContent = False
-
-    @property
-    def label(self):
-        dc = IDCDescriptiveProperties(self.context, None)
-        if dc is not None and dc.title:
-            return dc.title
-        return getattr(self.context, '__name__', u'')
 
 
 @implementer(IGrokView)
