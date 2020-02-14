@@ -37,7 +37,7 @@ class HelperAPI(grok.XMLRPC):
         session = Session()
         ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
                 Kursteilnehmer.teilnehmer_id == teilnehmer_id,
-                Kursteilnehmer.status != 'Z1')
+                Kursteilnehmer.status.in_(('A1', 'A2')))
         return ret.all()
 
     def getFrageIds(self, lehrheft_id):

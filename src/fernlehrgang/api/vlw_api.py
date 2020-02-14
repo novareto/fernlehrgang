@@ -163,8 +163,13 @@ class APILernwelten(grok.JSON):
         teilnehmer.journal_entries.append(je)
         ftf = NamedTemporaryFile()
         from datetime import datetime
+        pdate = datetime.now().strftime('%d.%m.%Y')
+        try:
+            pdate = ktn.antworten[0].datum.strftime('%d.%m.%Y')
+        except:
+            print "COULD NOT FORMAT DATE"
         fh = createpdf(ftf, {
-            'druckdatum': datetime.now().strftime('%d.%m.%Y'), 
+            'druckdatum': pdate, 
             'flg_titel': ktn.fernlehrgang.titel, 
             'teilnehmer_id': teilnehmer_id,
             'mnr': teilnehmer.stamm_mnr or '',

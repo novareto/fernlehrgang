@@ -245,7 +245,7 @@ class Worker(ConsumerMixin):
         result['an_gbo_uebermittelt'] = gbo_u
         result['gbo_comment'] = gbo_status
         status = "1"
-        if result['comment'] == u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.':
+        if u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.;' in result['comment']:
             status = "4"
         je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status=status, kursteilnehmer_id=ktn.id)
         ktn.teilnehmer.journal_entries.append(je)
@@ -263,7 +263,7 @@ class Worker(ConsumerMixin):
         from fernlehrgang import models
         typ = log_entry.pop('typ')
         if typ == "ausstattung":
-            log_entry['type'] = u"Büro %s, Lager %s, Verwaltung %s" % (
+            log_entry['type'] = u"Büro %s, Lager %s, Verkauf %s" % (
                 true_false(log_entry.pop('buero')),
                 true_false(log_entry.pop('lager')),
                 true_false(log_entry.pop('verkauf')))
@@ -274,15 +274,20 @@ class Worker(ConsumerMixin):
             if 'title' not in log_entry:
                 log_entry['title'] = ''
 
-            log_entry['type'] = u"Lernfortschritt: %s (%s) zu %s % abgeschlossen." % (
+            log_entry['type'] = u"Lernfortschritt: %s (%s) zu %s Prozent abgeschlossen." % (
                 log_entry.pop('title'),
                 log_entry.pop('key'),
-                int(log_entry.pop('progress')))
+                log_entry.pop('progress'))
             log_entry['type'] = log_entry['type'][:400]
-        elif typ == "druck":
-             log_entry['type'] = u"Das Abschluss-Zertifkat wurde gedruckt."
+        elif typ == "druck" or typ == "abschluss-druck":
+            log_entry['type'] = u"Druck Dokumentation"
+        elif typ == "zertifikat-druck":
+            log_entry['type'] = u"Druck Teilnahmebescheinigung" 
         if 'kursteilnehmer_id' in log_entry and log_entry['kursteilnehmer_id']:
-            log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
+            if isinstance(log_entry['kursteilnehmer_id'], list):
+                log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'][0])
+            else:
+                log_entry['kursteilnehmer_id'] = int(log_entry['kursteilnehmer_id'])
         try:
             with transaction.manager as tm:
                 session = Session()
