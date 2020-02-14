@@ -62,10 +62,12 @@ Einrichten der Benutzer
    >>> teil1 = Teilnehmer(name="Lars Walther", passwort="passwort")
    >>> teil2 = Teilnehmer(name="Bernd Probst")
    >>> teil3 = Teilnehmer(name="MaxMustermann", passwort="MMPasswort")
+   >>> teil4 = Teilnehmer(name="Hans Meier", passwort="passwort")
 
    >>> unt1.teilnehmer.append(teil1)
    >>> unt2.teilnehmer.append(teil2)
    >>> unt1.teilnehmer.append(teil3)
+   >>> unt1.teilnehmer.append(teil4)
 
 
 Einrichten von Kursteilnehmern und von Antwortbögen
@@ -73,12 +75,18 @@ Einrichten von Kursteilnehmern und von Antwortbögen
 
    >>> from fernlehrgang.models import Kursteilnehmer, Antwort
    >>> kt1 = Kursteilnehmer()
+   >>> kt1.status = "A1"
    >>> kt2 = Kursteilnehmer()
+   >>> kt2.status = "A1"
    >>> kt3 = Kursteilnehmer()
+   >>> kt3.status = "A1"
+   >>> kt4 = Kursteilnehmer()
+   >>> kt4.status = "Z1"
 
    >>> flg = session.query(Fernlehrgang).get(1)
    >>> flg.kursteilnehmer.append(kt1)
    >>> flg.kursteilnehmer.append(kt2)
+   >>> flg.kursteilnehmer.append(kt4)
 
    >>> flg = session.query(Fernlehrgang).get(2)
    >>> flg.kursteilnehmer.append(kt3)
@@ -86,7 +94,7 @@ Einrichten von Kursteilnehmern und von Antwortbögen
 
    >>> session = Session()
    >>> flg = session.query(Fernlehrgang).get(1)
-   >>> kut1, kut2 = flg.kursteilnehmer
+   >>> kut1, kut2, kut4 = flg.kursteilnehmer
 
    >>> flg = session.query(Fernlehrgang).get(2)
    >>> kut3 = flg.kursteilnehmer
@@ -94,6 +102,7 @@ Einrichten von Kursteilnehmern und von Antwortbögen
    >>> kut1.teilnehmer = teil1
    >>> kut2.teilnehmer = teil2
    >>> kut3.teilnehmer = teil3
+   >>> kut4.teilnehmer = teil4
 
    >>> import transaction; transaction.commit()
 
@@ -159,6 +168,18 @@ Anmeldung Falsches PW
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
    '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+
+Anmeldung Falscher Status
+   
+   >>> print teil4.name
+   Hans Meier
+   >>> data = {'teilnehmer_id': teil4.id, 'passwort': teil4.passwort}
+   >>> data
+   {'teilnehmer_id': 3, 'passwort': 'passwort'}
+   >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
+   >>> browser.contents
+   '{"gbo": false, "teilnehmer_id": 3, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+
 
 Get Teilneher --> Teilnehmer nicht vorhanden
    

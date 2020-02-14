@@ -63,7 +63,8 @@ class APILernwelten(grok.JSON):
     def checkAuth(self):
         def isVLWTeilnehmer(teilnehmer):
             for ktn in teilnehmer.kursteilnehmer:
-                if ktn.fernlehrgang.typ == "4":
+                print ktn.status
+                if ktn.fernlehrgang.typ == "4" and ktn.status in ('A1', 'A2'):
                     return True
             return False
         ret = {}
