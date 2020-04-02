@@ -28,6 +28,7 @@ try:
     GBO_TOKEN = config.get('gbo_token')
 except:
     GBO_TOKEN = "218FD67F-1B71-48D0-9254-FF97E4091264"
+    GBO_TOKEN = "772F0828-5EB3-4FAF-96C1-99A46A3D7F36"
 
 
 class Message(object):
@@ -174,6 +175,7 @@ class Worker(ConsumerMixin):
             #message.ack()
             logger.exception('IntegryError')
         except:
+            #message.ack()
             logger.exception('Error')
 
     def createGBODaten(self, ktn, orgas):
@@ -212,6 +214,8 @@ class Worker(ConsumerMixin):
         from fernlehrgang import models
         session = Session()
         data = simplejson.loads(body)
+        logger.info('GET NEW RESULT')
+        logger.info(data)
         teilnehmer_id = data.pop('teilnehmer_id')
         ktn = session.query(models.Kursteilnehmer).get(int(data.get('kursteilnehmer_id')))
         data['datum'] = datetime.now()
@@ -220,15 +224,16 @@ class Worker(ConsumerMixin):
         orgas = data.pop('orgas')
         gbo_daten = self.createGBODaten(ktn, orgas)
         data['gbo_daten'] = simplejson.dumps(gbo_daten)
-        data['lehrheft_id'] = 1137 
-        data['frage_id'] = 10720
+        data['lehrheft_id'] = ktn.fernlehrgang.lehrhefte[0].id 
+        data['frage_id'] = ktn.fernlehrgang.lehrhefte[0].fragen[0].id
         gbo_u = data.pop('gbo_uebermittlung')
         data.pop('status')
         antwort = models.Antwort(**data)
-        ktn.antworten.append(antwort)
+        if len(ktn.antworten) == 0:
+            ktn.antworten.append(antwort)
 
         je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="1", kursteilnehmer_id=ktn.id)
-        #ktn.teilnehmer.journal_entries.append(je)
+        ktn.teilnehmer.journal_entries.append(je)
         gbo_status=""
         if gbo_u:
             from fernlehrgang.api.gbo import GBOAPI
@@ -244,6 +249,7 @@ class Worker(ConsumerMixin):
         result['ist_gespeichert'] = True
         result['an_gbo_uebermittelt'] = gbo_u
         result['gbo_comment'] = gbo_status
+        result['fernlehrgang_id'] = ktn.fernlehrgang.id 
         status = "1"
         if u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.;' in result['comment']:
             status = "4"
