@@ -90,8 +90,6 @@ class TeilnehmerSuche(Form):
                 return u"--> %s" % value
 
     def getLG(self, je):
-        if je.id == 5086:
-            import pdb; pdb.set_trace()
         return je.id
 
     def getSession(self):

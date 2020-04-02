@@ -7,7 +7,6 @@ from sqlalchemy.connectors.mxodbc import MxODBCConnector
 class MyDB2Compiler(DB2Compiler):
 
     def visit_sequence(self, sequence):
-        import pdb; pdb.set_trace()
         nn = sequence.name
         if sequence.metadata.schema:
             nn = "%s.%s" %(sequence.metadata.schema, nn)

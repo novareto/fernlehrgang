@@ -69,8 +69,9 @@ class ResultateVLW(Page):
 
     def getAntwort(self):
         for antwort in self.context.antworten:
-            if antwort.gbo.upper().strip() == "OK":
-                return antwort
+            if antwort.gbo:
+                if antwort.gbo.upper().strip() == "OK":
+                    return antwort
         return None
 
     def fmtJson(self, daten):
@@ -222,7 +223,7 @@ class CalculateResultsVLW(grok.Adapter):
 
     def getResults(self):
         for antwort in self.context.antworten:
-            if antwort.gbo.upper().strip() == "OK":
+            if antwort.gbo and antwort.gbo.upper().strip() == "OK":
                 return True
         return False
 

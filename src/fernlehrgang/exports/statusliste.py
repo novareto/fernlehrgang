@@ -6,7 +6,7 @@ import grok
 
 from dolmen.menu import menuentry
 from fernlehrgang import models
-from fernlehrgang.browser.ergebnisse import CalculateResults
+from fernlehrgang.browser.ergebnisse import ICalculateResults
 from fernlehrgang.exports.menus import ExportItems
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.exports.versandliste_fortbildung import nN
@@ -79,7 +79,7 @@ def createRows(rc, session, flg_id):
     for teilnehmer, unternehmen, ktn in page_query(result):
         if i in range(0,100000, 1000):
             print i
-        cal_res = CalculateResults(ktn)
+        cal_res = ICalculateResults(ktn)
         summary = cal_res.summary(lehrhefte)
         liste = []
         teilnehmer = ktn.teilnehmer
