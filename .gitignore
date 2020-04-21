@@ -49,3 +49,4 @@ parts/
 pip-selfcheck.json
 src/fernlehrgang.egg-info/
 var/
+cache/
