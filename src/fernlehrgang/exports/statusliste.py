@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2011 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
 
 from fernlehrgang import models
-from fernlehrgang.browser.ergebnisse import CalculateResults
+from fernlehrgang.browser.ergebnisse import ICalculateResults
 from fernlehrgang.exports.menus import ExportItems
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.exports.versandliste_fortbildung import nN
@@ -77,7 +77,6 @@ def createRows(rc, session, flg_id):
     i=1
     for teilnehmer, unternehmen, ktn in page_query(result):
         if i in range(0,100000, 1000):
-            print(i)
         cal_res = CalculateResults(ktn)
         summary = cal_res.summary(lehrhefte)
         liste = []
@@ -110,7 +109,7 @@ def createRows(rc, session, flg_id):
             liste.append(nN(unternehmen.str))
             liste.append(nN(unternehmen.plz))
             liste.append(nN(unternehmen.ort))
- 
+
             if teilnehmer.name:
                 liste.append('ja')
             else:
@@ -137,7 +136,7 @@ def export(flg_id, mail):
     fn = "/tmp/statusliste_%s.xlsx" % flg_id
     book, adressen, rc = getXLSBases()
     createRows(rc, session, flg_id)
-    ws = adressen 
+    ws = adressen
     for i, zeile in enumerate(rc):
         ws.append(zeile)
     book.save(fn)

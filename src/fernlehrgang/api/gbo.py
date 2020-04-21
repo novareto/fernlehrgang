@@ -407,11 +407,22 @@ class GBOAPI(object):
 
 if __name__ == "__main__":
     gboapi = GBOAPI()
+    gboapi.url =  "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
 
     t = gboapi.get_info("995000102")
     # t = gboapi.get_info('100000020')
 
-    import logging
+    #import logging
+#
+#    import httplib as http_client
+#    http_client.HTTPConnection.debuglevel = 1
+#
+## You must initialize logging, otherwise you'll not see debug output.
+#    logging.basicConfig()
+#    logging.getLogger().setLevel(logging.DEBUG)
+#    requests_log = logging.getLogger("requests.packages.urllib3")
+#    requests_log.setLevel(logging.DEBUG)
+#    requests_log.propagate = True
 
     import httplib as http_client
 

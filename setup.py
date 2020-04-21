@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
-version = '0.0'
+version = '1.1.dev0'
 
 test_extras = [
           'gocept.httpserverlayer',
           'gocept.selenium',
           'zope.app.testing',
-        
-        
+
+
 ]
 
 setup(name='fernlehrgang',

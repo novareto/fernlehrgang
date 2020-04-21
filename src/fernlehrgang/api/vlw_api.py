@@ -64,7 +64,7 @@ class APILernwelten(grok.JSON):
     def checkAuth(self):
         def isVLWTeilnehmer(teilnehmer):
             for ktn in teilnehmer.kursteilnehmer:
-                if ktn.fernlehrgang.typ == "4":
+                if ktn.fernlehrgang.typ == "4" and ktn.status in ('A1', 'A2'):
                     return True
             return False
 
@@ -166,19 +166,21 @@ class APILernwelten(grok.JSON):
         ftf = NamedTemporaryFile()
         from datetime import datetime
 
-        fh = createpdf(
-            ftf,
-            {
-                "druckdatum": datetime.now().strftime("%d.%m.%Y"),
-                "flg_titel": ktn.fernlehrgang.titel,
-                "teilnehmer_id": teilnehmer_id,
-                "anrede": teilnehmer.anrede,
-                "flg_id": str(ktn.fernlehrgang.id),
-                "mnr": teilnehmer.unternehmen[0].mnr,
-                "vorname": teilnehmer.vorname,
-                "name": teilnehmer.name,
-            },
-        )
+        try:
+            pdate = ktn.antworten[0].datum.strftime('%d.%m.%Y')
+        except:
+            pdate = datetime.now().strftime('%d.%m.%Y')
+
+        fh = createpdf(ftf, {
+            "druckdatum": pdate,
+            "flg_titel": ktn.fernlehrgang.titel,
+            "teilnehmer_id": teilnehmer_id,
+            "anrede": teilnehmer.anrede,
+            "flg_id": str(ktn.fernlehrgang.id),
+            "mnr": teilnehmer.stamm_mnr or '',
+            "vorname": teilnehmer.vorname,
+            "name": teilnehmer.name,
+        })
         fh.seek(0)
         return encodestring(fh.read())
 

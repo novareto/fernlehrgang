@@ -14,7 +14,7 @@ from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
 @grok.provider(IContextSourceBinder)
 def jahre(context):
     items = []
-    for jahr in range(2011, 2020, 1):
+    for jahr in range(2011, 2025, 1):
         jahr = str(jahr)
         items.append(SimpleTerm(jahr, jahr, jahr))
     return SimpleVocabulary(items)
