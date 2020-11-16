@@ -101,7 +101,7 @@ class EditForm(Form):
 class DefaultView(Form):
     grok.baseclass()
     mode = DISPLAY
-    template = ChameleonPageTemplateFile("templates/display.cpt")
+#    template = ChameleonPageTemplateFile("templates/display.cpt")
     ignoreRequest = True
     ignoreContent = False
 
@@ -114,8 +114,10 @@ class DefaultView(Form):
     
     def update(self):
         super().update()
+        import pdb; pdb.set_trace()
         for widget in self.fieldWidgets:
             widget.defaultHtmlClass.append('form-control-plaintext')
+
 
 
 Display = DefaultView

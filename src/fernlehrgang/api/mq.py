@@ -233,7 +233,6 @@ class Worker(ConsumerMixin):
             ktn.antworten.append(antwort)
 
         je = models.JournalEntry(type="Abschluss Virtuelle Lernwelt", status="1", kursteilnehmer_id=ktn.id)
-        ktn.teilnehmer.journal_entries.append(je)
         gbo_status=""
         if gbo_u:
             from fernlehrgang.api.gbo import GBOAPI
