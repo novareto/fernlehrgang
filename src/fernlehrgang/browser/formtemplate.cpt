@@ -1,0 +1,54 @@
+<form
+   role="form"
+   noValidate="true"
+   method="post"
+   enctype="multipart/form-data"
+   novalidate="novalidate"
+   i18n:domain="zeam.form.base"
+   metal:define-macro="editform"
+   tal:attributes="action request.URL">
+
+  <h1 tal:condition="view.label" tal:content="view.label" />
+  <p tal:condition="view.description" tal:content="view.description" />
+
+  <p class="alert-message block-message"
+     tal:condition="view.status"
+     tal:content="view.status">Status</p>
+
+ <div metal:define-macro="form-fieldset">
+
+   <div id="extrainfo"
+        tal:replace="structure provider: uvcsite.extrainfo" />
+
+    <tal:fields condition="view.fieldWidgets">
+      <div tal:repeat="widget view.fieldWidgets"
+           tal:attributes="id 'field-' + widget.htmlId();
+                           class widget.error and view.classes['group-error']
+                           or view.classes['group']">
+
+        <tal:presentation tal:condition="widget.isVisible()">
+          <label for="#" tal:attributes="for widget.htmlId()">
+            <span tal:content="widget.title" />
+            <span tal:condition="widget.required">*</span> 
+          </label>
+        </tal:presentation>
+
+        <tal:widget tal:content="structure widget.render()" />
+
+        <tal:presentation tal:condition="widget.isVisible()">
+          <small class="form-text text-muted"
+                 tal:condition="widget.description"
+                 tal:content="structure widget.description"
+                 tal:attributes="for widget.htmlId()">&nbsp;</small>
+          <div class="invalid-feedback" tal:condition="widget.error">
+            <span tal:replace="structure widget.error.title"> Error </span>
+          </div>
+        </tal:presentation>
+      </div>
+    </tal:fields>
+    <div class="form-group" tal:condition="view.actionWidgets">
+      <tal:widget tal:repeat="widget view.actionWidgets"
+                  tal:content="structure widget.render()" />
+    </div>
+ </div>
+</form>
