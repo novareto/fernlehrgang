@@ -28,6 +28,7 @@ setup(name='fernlehrgang',
       zip_safe=False,
       install_requires=[
           'dolmen.beaker',
+          'dolmen.security.policies',
           'grok',
           'grokcore.startup',
           'js.bootstrap',
