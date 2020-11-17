@@ -56,11 +56,9 @@ class Login(Form):
             self.status = "Login failed"
             return FAILURE
 
-        self.flash(
-            "You are now logged in as ${name}",
-              mapping={"name": principal.id})
+        self.flash(u'Sie sind nun erfolgreich angemeldet')
 
-        #grok.notify(UserLoggedInEvent(principal))
+        # grok.notify(UserLoggedInEvent(principal))
         camefrom = self.request.get("camefrom", None)
         if not camefrom:
             if ILocation.providedBy(principal):
@@ -75,7 +73,7 @@ class Login(Form):
 class Logout(grok.View):
     grok.context(zope.interface.Interface)
     grok.require('zope.Public')
-    
+
     def update(self):
         auth = zope.component.queryUtility(IAuthentication)
         ILogout(auth).logout(self.request)

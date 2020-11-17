@@ -31,7 +31,9 @@ from zeam.form.ztk.widgets.date import DateFieldWidget, DateFieldDisplayWidget
 from zeam.form.base.markers import NO_VALUE
 from zope.error.error import RootErrorReportingUtility
 from zope.error.interfaces import IErrorReportingUtility
+from megrok.nozodb import ApplicationRoot
 from grokcore.content.interfaces import IContext
+from zope.pluggableauth import PluggableAuthentication
 
 
 class ErrorUtility(RootErrorReportingUtility, grok.GlobalUtility):
@@ -41,12 +43,19 @@ class ErrorUtility(RootErrorReportingUtility, grok.GlobalUtility):
 grok.templatedir('templates')
 
 
+class PAU(PluggableAuthentication, grok.GlobalUtility):
+    grok.provides(IAuthentication)
+#    grok.name('pau')
 
-from megrok.nozodb import ApplicationRoot
+    def __init__(self, *args, **kwargs):
+        super(PAU, self).__init__(*args, **kwargs)
+        self.authenticatorPlugins = ('principals', )
+        self.credentialsPlugins = ("cookies", "No Challenge if Authenticated")
+
+
 class FernlehrgangApp(ApplicationRoot):
     grok.implements(IFernlehrgangApp, IContext)
     grok.traversable(attr='benutzer')
-
 
     def benutzer(self):
         return getUtility(IAuthenticatorPlugin, 'principals').user_folder
@@ -54,18 +63,11 @@ class FernlehrgangApp(ApplicationRoot):
     def get(self, key):
         return None
 
+
 grok.global_utility(
     UserAuthenticatorPlugin, provides=IAuthenticatorPlugin,
     name='principals',
     )
-
-class PAU(PluggableAuthentication, grok.GlobalUtility):
-    grok.provides(IAuthentication)
-    grok.name('pau')
-    def __init__(self, *args, **kwargs):
-        super(PAU, self).__init__(*args, **kwargs)
-        self.authenticatorPlugins = ('principals', )
-        self.credentialsPlugins = ("cookies", "No Challenge if Authenticated")
 
 
 class Index(Page):
