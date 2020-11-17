@@ -59,28 +59,9 @@ class UserAuthenticatorPlugin(object):
         return self.session.query(Account).get(login)
 
     def addUser(self, username, email, password, real_name, role):
-        if username not in self.user_folder:
-            user = Account(username, email, password, real_name, role)
+        if username not in [x.login for x in self.listUsers()]:
+            user = Account(login=username, email=email, password=password, real_name=real_name, role=role)
             self.session.add(user)
-            # role_manager = IPrincipalRoleManager(grok.getSite())
-            # role_manager.assignRoleToPrincipal(role, username)
 
     def listUsers(self):
-        return self.sessions.query(Account).all()
-
-
-from zope.interface import Interface
-from dolmen.security.policies import ExtraRolePermissionMap
-from zope.securitypolicy.interfaces import Allow, Deny
-from zope.securitypolicy.securitymap import SecurityMap
-from dolmen.security.policies.principalrole import ExtraRoleMap
-
-
-class HomepageRolePermissionManager(ExtraRoleMap):
-    grok.context(Interface)
-
-    def _compute_extra_data(self):
-        extra_map = SecurityMap()
-        import pdb; pdb.set_trace()
-        extra_map.addCell('zope.ManageContent', 'test.role', Deny)
-        return extra_map
+        return self.session.query(Account).all()

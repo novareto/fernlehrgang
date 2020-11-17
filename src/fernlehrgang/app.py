@@ -55,10 +55,6 @@ class PAU(PluggableAuthentication, grok.GlobalUtility):
 
 class FernlehrgangApp(ApplicationRoot):
     grok.implements(IFernlehrgangApp, IContext)
-    grok.traversable(attr='benutzer')
-
-    def benutzer(self):
-        return getUtility(IAuthenticatorPlugin, 'principals').user_folder
 
     def get(self, key):
         return None

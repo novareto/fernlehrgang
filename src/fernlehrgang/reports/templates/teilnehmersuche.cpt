@@ -53,7 +53,7 @@ $('select#teilnehmer_id').ajaxChosen({
           <p tal:content="teilnehmer.vorname"> </p> 
           <p tal:condition="teilnehmer.geburtsdatum" tal:content="teilnehmer.geburtsdatum.strftime('%d.%m.%Y')"> </p> 
           <p tal:content="teilnehmer.email"> </p> 
-          <p tal:content="view.gKV(teilnehmer.kategorie)"> </p> 
+          <p tal:content="view.gKV(teilnehmer.kompetenzzentrum)"> </p> 
         </div> 
       </div>
     </div>
@@ -66,11 +66,11 @@ $('select#teilnehmer_id').ajaxChosen({
           <ul tal:repeat="unt unternehmen">
             <li>
               <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} [${unt.hbst}]- ${unt.name}"/> 
-                <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </span>
-                <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </span>
+                <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <i class="fas fa-home"></i>  </span>
+                <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <i class="fas fa-sign-in-alt"></i> </span>
               </a>
               <a href="" tal:attributes="href '%s/unternehmen/%s/teilnehmer/%s/setdefaultmnr?mnr=%s' %(view.application_url(), teilnehmer.unternehmen_mnr, teilnehmer.id, unt.mnr)" tal:condition="unt.mnr != teilnehmer.unternehmen_mnr"> (+) </a>
-              <a onclick="copy();"> <span class="glyphicon glyphicon-copy" aria-hidden="true"> </span></a>
+              <a href="" onclick="copy();">  <i class="far fa-copy"></i>  </a>
               <input type="hidden" name="hbsit" id="hbst_neu" tal:attributes="value string:${unt.hbst}"/> 
             </li>
           </ul>

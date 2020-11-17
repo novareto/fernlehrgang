@@ -83,7 +83,7 @@ class TeilnehmerSuche(Form):
 
     def gKV(self, value):
         if value:
-            return ITeilnehmer.get("kategorie").source.by_value.get(str(value)).title
+            return ITeilnehmer.get("kompetenzzentrum").source.by_value.get(str(value)).title
 
     def gU(self, value):
         if value:
