@@ -75,6 +75,7 @@ class AddFernlehrgang(AddForm):
     fields = Fields(IFernlehrgang).omit("id")
 
     def create(self, data):
+        import pdb; pdb.set_trace()
         return Fernlehrgang(**data)
 
     def add(self, object):

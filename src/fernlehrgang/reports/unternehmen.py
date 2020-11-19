@@ -50,7 +50,7 @@ class USNavEntry(NavEntry):
     icon = "fas fa-search"
 
     def url(self):
-        return self.view.url(self.context, 'unternehmensuche')
+        return self.view.url(self.context, 'unternehmen_listing')
 
 
 class UnternehmenSuche(Form):

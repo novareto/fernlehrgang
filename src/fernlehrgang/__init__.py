@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import logging
 
@@ -11,9 +11,10 @@ logger = logging.getLogger('fernlehrgang')
 def log(message, summary='', severity=logging.INFO):
     logger.log(severity, '%s %s', summary, message)
 
+
 # SQLAlchemy LOGGING --> INFO for echo=True
-#logging.basicConfig()
-#logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
 
 
 def fmtDate(d):
@@ -23,11 +24,12 @@ def fmtDate(d):
 def visit_sequence(self, sequence):
     nn = sequence.name
     if sequence.metadata.schema:
-        nn = "%s.%s" %(sequence.metadata.schema, nn)
+        nn = "%s.%s" % (sequence.metadata.schema, nn)
     return "NEXT VALUE FOR %s" % nn
+
 
 try:
     from ibm_db_sa.base import DB2Compiler
-    DB2Compiler.visit_sequence = visit_sequence 
+    DB2Compiler.visit_sequence = visit_sequence
 except Exception:
     pass

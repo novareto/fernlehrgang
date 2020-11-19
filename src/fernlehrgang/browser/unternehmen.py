@@ -10,13 +10,10 @@ from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.models import Unternehmen
-from fernlehrgang.viewlets import AddMenu, NavigationMenu
-from fernlehrgang.viewlets import NavigationMenu
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
 from sqlalchemy import func
-from fernlehrgang.browser import Page
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
