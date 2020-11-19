@@ -11,7 +11,7 @@
     </tr>
     <tr tal:repeat="user view.users">
         <td tal:define="curl view.url(context)">
-          <a href="" tal:attributes="href string:${curl}/${user.login}/edit"> 
+          <a href="" tal:attributes="href string:${curl}/account/${user.login}/edit"> 
             <span tal:content="user.login">type </span>
           </a>  
         </td>

@@ -13,7 +13,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.models import Unternehmen, Teilnehmer
+from fernlehrgang.models import Unternehmen, Teilnehmer, JournalEntry
 from fernlehrgang.models import Kursteilnehmer, Fernlehrgang
 from fernlehrgang.resources import register_js
 from fernlehrgang.viewlets import NavEntry
@@ -332,8 +332,13 @@ class Register(Form):
                 .filter(Fernlehrgang.id == kursteilnehmer.fernlehrgang_id)
                 .one()
             )
-            print("ADD Kursteilnehmer to Fernlehrgang")
             fernlehrgang.kursteilnehmer.append(kursteilnehmer)
+            self.context.journal_entries.append(
+                JournalEntry(
+                    status="info",
+                    type="Registriert für Lehrgang %s" % (kursteilnehmer.fernlehrgang_id),
+                    teilnehmer_id=self.context.id,
+                    kursteilnehmer_id=kursteilnehmer.id))
             self.flash(
                 "Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt."
                 % kursteilnehmer.id

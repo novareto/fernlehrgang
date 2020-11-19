@@ -24,6 +24,7 @@
   <include package="uvc.siguvtheme" />
   <include package="uvc.menus" file="meta.zcml" />
   <include package="grokcore.chameleon" />
+  <include package="grokcore.message" />
 
   <browser:defaultSkin name="siguvtheme" />
   <grok:grok package="." />

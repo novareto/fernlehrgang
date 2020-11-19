@@ -37,6 +37,7 @@ class AddUser(Form):
             self.flash(u"Es ist ein Fehler aufgetreten", "warning")
             return
         users = component.getUtility(IAuthenticatorPlugin, "principals")
+        import pdb; pdb.set_trace()
         users.addUser(
             data["login"],
             data["email"],

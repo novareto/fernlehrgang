@@ -114,7 +114,6 @@ class DefaultView(Form):
     
     def update(self):
         super().update()
-        import pdb; pdb.set_trace()
         for widget in self.fieldWidgets:
             widget.defaultHtmlClass.append('form-control-plaintext')
 

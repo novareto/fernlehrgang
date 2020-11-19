@@ -25,7 +25,7 @@ except Exception:
 log('DSN -> %s' %DSN)
 
 engine_factory = EngineFactory(
-    DSN, convert_unicode=False, encoding="utf-8", echo=False, pool_recycle=60
+    DSN, convert_unicode=True, encoding="utf-8", echo=False, pool_recycle=60
 )
 scoped_session = GloballyScopedSession()
 
