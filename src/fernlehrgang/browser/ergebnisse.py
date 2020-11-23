@@ -275,11 +275,16 @@ class CalculateResultsVLW(grok.Adapter):
                     elif context.gespraech == "0" or context.gespraech is None:
                         comment = u"Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde."
             elif branche == "nein":
-                if un_klasse == "G2" or un_klasse == "G":
+                if un_klasse == "G2":
                     if context.gespraech == "2":
                         comment = u"Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
                     elif context.gespraech == "0" or context.gespraech is None:
                         comment = u"Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde."
+                elif un_klasse == "G":
+                    if context.gespraech == "2":
+                        comment = u"Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde."
+                    elif context.gespraech == "0" or context.gespraech is None:
+                        comment = u"Nicht Bestanden, da noch kein Abschlussseminar besucht wurde."
         self.context.fixed_results = comment
         if comment == "Bestanden":
             klass = "text-success"
