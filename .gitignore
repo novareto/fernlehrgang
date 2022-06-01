@@ -50,3 +50,6 @@ pip-selfcheck.json
 src/fernlehrgang.egg-info/
 var/
 cache/
+.python-version
+eggs/
+pyvenv.cfg
