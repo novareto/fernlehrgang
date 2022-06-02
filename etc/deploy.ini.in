@@ -14,7 +14,7 @@ keys = generic, accesslog
 
 [logger_root]
 level = INFO
-handlers = console
+#handlers = console
 
 
 [filter:sqltap]

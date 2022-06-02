@@ -44,6 +44,7 @@ class IUnternehmenSearch(Interface):
 class USNavEntry(NavEntry):
     grok.context(IFernlehrgangApp)
     grok.name('usnaventry')
+    grok.require('zope.View')
     grok.order(40)
 
     title = u"Statusabfrage Unternehmen"

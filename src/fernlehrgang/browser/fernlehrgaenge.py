@@ -7,7 +7,7 @@ import grok
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.models import Fernlehrgang
-from fernlehrgang.browser import AddForm, EditForm, Display 
+from fernlehrgang.browser import AddForm, EditForm, Display
 
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
@@ -24,6 +24,7 @@ grok.templatedir("templates")
 
 class NaviEntryFlg(NavEntry):
     grok.context(IFernlehrgangApp)
+    grok.require("zope.View")
     grok.order(20)
 
     title = u"Fernlehrgänge"
@@ -59,6 +60,7 @@ class FernlehrgangListing(TablePage):
 class AddEntryFlg(AddEntry):
     grok.context(IFernlehrgangApp)
     grok.name("addentryflg")
+    grok.require('zope.View')
     title = u"Fernlehrgang"
 
     def url(self):
@@ -100,6 +102,7 @@ class DisplayEntryFlg(ObjectEntry):
 class NavEntryFlg(NavEntry):
     grok.context(IFernlehrgang)
     grok.name("nav_entry_flg")
+    grok.require("zope.View")
     grok.order(1)
     title = u"Fernlehrang"
 

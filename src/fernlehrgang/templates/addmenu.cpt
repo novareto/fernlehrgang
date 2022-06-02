@@ -1,11 +1,16 @@
 <div class="btn-group context-menu"
-     tal:condition="viewlet.menus.get('addmenu', None)">
-  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Hinzufügen 
+     tal:define="menu viewlet.menus.get('addmenu', None)"
+     tal:condition="menu and menu.entries">
+  <button class="btn btn-primary dropdown-toggle"
+          type="button" id="dropdownMenuButton"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false">
+    Hinzufügen
   </button>
   <div class="dropdown-menu">
     <a class="dropdown-item"
-       tal:repeat="entry viewlet.menus['addmenu']"
+       tal:repeat="entry menu.entries"
        href="" tal:attributes="href entry.url();">
       <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
       <span tal:content="entry.title"> </span>
@@ -13,13 +18,19 @@
   </div>
 </div>
 <div class="btn-group  context-menu"
-     tal:condition="viewlet.menus.get('objectmenu', None)">
-  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Aktionen 
+     tal:define="menu viewlet.menus.get('objectmenu', None)"
+     tal:condition="menu and menu.entries">
+  <button class="btn btn-primary dropdown-toggle"
+          type="button"
+          id="dropdownMenuButton"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false">
+    Aktionen
   </button>
   <div class="dropdown-menu">
     <a class="dropdown-item"
-       tal:repeat="entry viewlet.menus['objectmenu']"
+       tal:repeat="entry menu.entries"
        tal:attributes="href entry.url();">
       <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
       <span tal:content="entry.title"> </span>

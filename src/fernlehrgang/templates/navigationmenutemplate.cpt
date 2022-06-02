@@ -1,7 +1,8 @@
 <div class="tabbable responsive">
-  <ul tal:define="viewlets viewletmanager.viewlets" 
-      tal:condition="viewlets" 
-      tal:attributes="id viewletmanager.id; class viewletmanager.menu_class;">
+  <ul tal:define="viewlets viewletmanager.viewlets"
+      tal:condition="viewlets"
+      tal:attributes="id viewletmanager.id;
+                      class viewletmanager.menu_class;">
     <li tal:attributes="class action[1]"
 	tal:repeat="action viewletmanager.entries()">
       <tal:entry content="structure action[0].render()" />
