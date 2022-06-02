@@ -42,6 +42,7 @@ class ITeilnehmer(Interface):
         description = u'Bitte wählen Sie eine Anrede.',
         required = True,
         vocabulary = vocabulary(
+            ('0', '0', 'unbekannt'),
             ('1', '1', 'Herr'),
             ('2', '2', 'Frau'),)
         )
