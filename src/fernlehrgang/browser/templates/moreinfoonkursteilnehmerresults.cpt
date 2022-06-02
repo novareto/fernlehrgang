@@ -1,0 +1,12 @@
+<h2> Antworten </h2>
+
+<div tal:define="antwort view.context.antworten[0]">
+<b> System </b>
+<pre tal:content="antwort.system"> </pre>
+<b> Datum </b>
+<pre tal:content="antwort.datum"> </pre>
+<b> GBO Daten </b>
+<pre> <code tal:content="antwort.gbo_daten"> </code> </pre>
+<br>
+<hr>
+</div>

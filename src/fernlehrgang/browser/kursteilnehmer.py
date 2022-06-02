@@ -164,7 +164,7 @@ class KTFristNavEntry(NavEntry):
     grok.name('kt_fristnav_entry')
     grok.order(20)
 
-    title="Fristverlängerung"
+    title = "Fristverlängerung"
     icon = "fas fa-calendar-alt"
 
     def url(self):
@@ -232,3 +232,58 @@ class MoreInfoOnKursteilnehmer(grok.Viewlet):
             self.context.teilnehmer.name,
             self.context.teilnehmer.vorname,
         )
+
+
+class KTReseendNavEntry(NavEntry):
+    grok.context(IKursteilnehmer)
+    grok.name('kt_resend_entry')
+    grok.order(30)
+
+    title = "Übertrag GBGO"
+    icon = "fas fa-calendar-alt"
+
+    def url(self):
+        return self.view.url(self.context, 'transfer_gbo')
+
+class ReSendGBO(Form):
+    grok.context(IKursteilnehmer)
+    grok.title(u'Übertragung - GBO')
+    grok.name('transfer_gbo')
+
+    title = u"Ergebnisübermittlung - GBO"
+    description = u"Hier können Sie erneut Ergebnisse an die GBO übertragen."
+
+    def update(self):
+        if not self.context.fernlehrgang.typ == '4':
+            self.flash(u'Die Übertragung der Datzen zu GBO funktioniert nur für Lehrgänge vom Type "Virtuelle Lernwelt"')
+            self.redirect(self.url(self.context))
+
+        elif len(self.context.antworten) == 0:
+            self.flash(u'Dieser Teilnehemr hat noch keine Antworten von der Virtuellen Lernwelt übermittelt')
+            self.redirect(self.url(self.context))
+
+    @action(u'Ergebnisse übertragen')
+    def handle_transfer(self):
+        data, errors = self.extractData()
+        if errors:
+            return
+        from simplejson import loads
+        gbo_daten = loads(self.context.antworten[0].gbo_daten)
+        from fernlehrgang.api.gbo import GBOAPI
+        gbo_api = GBOAPI()
+        r = gbo_api.set_data(gbo_daten)
+        gbo_status = r.status_code
+        je = JournalEntry(type="Daten manuell zur GBO gesendet", status=gbo_status, kursteilnehmer_id=self.context.id)
+        self.context.teilnehmer.journal_entries.append(je)
+        self.flash(u'Die Ergebnisse für den Teilnehmer %s wurden erneut an die GBO übertragen' % self.context.teilnehmer_id)
+
+    @action(u'Abbrechen')
+    def handle_cancel(self):
+        self.flash(u'Die Aktion wurde abgebrochen')
+        self.redirect(self.url(self.context))
+
+
+class MoreInfoOnKursteilnehmerResults(grok.Viewlet):
+    grok.viewletmanager(IExtraInfo)
+    grok.context(IKursteilnehmer)
+    grok.view(ReSendGBO)
