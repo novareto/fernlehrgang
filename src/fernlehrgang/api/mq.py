@@ -184,7 +184,7 @@ class Worker(ConsumerMixin):
             result['points'] = 0
             result['resultpoints'] = 0
             result['comment'] = "GBO fehlerhaft 1"
-            print result
+            print(result)
             newmessage = Message('results', data=result)
             with transaction.manager as tm:
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:

@@ -33,7 +33,7 @@ class UnternehmenListing(Form):
     grok.title(u"Unternehmen verwalten")
     grok.order(20)
 
-    fields = Fields(IUnternehmen).select('mnr', 'hbst', 'name', 'str', 'plz', 'ort', 'mnr_g_alt')
+    fields = Fields(IUnternehmen).select('mnr', 'unternehmensnummer', 'hbst', 'name', 'str', 'plz', 'ort', 'mnr_g_alt')
 
     label = u"Unternehmen verwalten"
     description = u"Hier können Sie die am Fernlehrgang teilnehmenden Unternehmen verwalten"
@@ -58,6 +58,9 @@ class UnternehmenListing(Form):
         sql = session.query(Unternehmen)
         if data.get('mnr') != NO_VALUE:
             sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
+            v = True
+        if data.get('unternehmensnummer') != NO_VALUE:
+            sql = sql.filter(Unternehmen.unternehmensnummer == data.get('unternehmensnummer'))
             v = True
         if data.get('hbst') != NO_VALUE:
             sql = sql.filter(Unternehmen.hbst == data.get('hbst'))

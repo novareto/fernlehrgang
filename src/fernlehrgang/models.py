@@ -151,6 +151,7 @@ class Unternehmen(Base, RDBMixin):
 
     #id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", String(11), primary_key=True, index=True)
+    unternehmensnummer = Column("UNTERNEHMENSNUMMER", String(15), primary_key=True, index=True)
     name = Column("NAME1", String(33))
     name2 = Column("NAME2", String(33))
     name3 = Column("NAME3", String(33))

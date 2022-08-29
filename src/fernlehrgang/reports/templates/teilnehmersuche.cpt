@@ -65,7 +65,7 @@ $('select#teilnehmer_id').ajaxChosen({
         <div class="card-body">
           <ul tal:repeat="unt unternehmen">
             <li>
-              <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} [${unt.hbst}]- ${unt.name}"/> 
+              <a href="" tal:attributes="href '%s/unternehmen/%s' %(view.application_url(), unt.mnr)"> <span tal:content="string: ${unt.mnr} [${unt.unternehmensnummer}/${unt.hbst}]- ${unt.name}"/> 
                 <span tal:condition="teilnehmer.stamm_mnr == unt.mnr"> <i class="fas fa-home"></i>  </span>
                 <span tal:condition="teilnehmer.unternehmen_mnr == unt.mnr"> <i class="fas fa-sign-in-alt"></i> </span>
               </a>

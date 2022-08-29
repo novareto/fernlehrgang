@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import decimal
 
 from fernlehrgang import models
 from fernlehrgang.browser.ergebnisse import ICalculateResults
@@ -32,6 +33,8 @@ def nN(value):
         return ''
     if isinstance(value, int):
         return str(value)
+    if isinstance(value, decimal.Decimal):
+        return str(value)
     return value.replace('\x1a', '')
 
 
@@ -51,7 +54,7 @@ def un_helper(term):
 
 
 spalten = ['TEILNEHMER_ID', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT', 'EMail',
-    'Mitgliedsnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Registriert', 'Kategorie', 'Lieferstopps',
+    'Mitgliedsnummer', 'Unternehmensnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Registriert', 'Kategorie', 'Lieferstopps',
     'Mitarbeiteranzahl', 'Branche (Schrotthandel etc..)', u'Abschlussgespräch', 'Status', 'Punktzahl',
     u'Antwortbögen'
 ]
@@ -77,7 +80,7 @@ def createRows(rc, session, flg_id):
     i=1
     for teilnehmer, unternehmen, ktn in page_query(result):
         if i in range(0,100000, 1000):
-            cal_res = CalculateResults(ktn)
+            cal_res = ICalculateResults(ktn)
             summary = cal_res.summary(lehrhefte)
             liste = []
             teilnehmer = ktn.teilnehmer
@@ -103,6 +106,7 @@ def createRows(rc, session, flg_id):
                 liste.append(nN(teilnehmer.ort))
                 liste.append(nN(teilnehmer.email))
                 liste.append(nN(unternehmen.mnr))
+                liste.append(nN(unternehmen.unternehmensnummer))
                 liste.append(nN(unternehmen.name))
                 liste.append(nN(unternehmen.name2))
                 liste.append(nN(unternehmen.name3))
@@ -156,9 +160,9 @@ class XLSReport(grok.View):
 
     def update(self):
         mail = getUserEmail(self.request.principal.id)
-        #fn = export(self.context.id, mail)
-        fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=6000)
-        print(fn)
+        fn = export(self.context.id, mail)
+        #fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=6000)
+        #print(fn)
 
     def render(self):
         self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')

@@ -410,6 +410,7 @@ class SearchTeilnehmer(grok.View):
                     ),
                     cast(models.Teilnehmer.id, String).like(self.term + "%"),
                     models.Unternehmen.hbst.like(self.term + "%"),
+                    models.Unternehmen.unternehmensnummer.like(self.term + "%"),
                     func.concat(
                         func.concat(models.Teilnehmer.name, " "),
                         models.Teilnehmer.vorname,
@@ -429,13 +430,14 @@ class SearchTeilnehmer(grok.View):
             terms.append(
                 {
                     "id": x.id,
-                    "text": "%s - %s %s %s - %s (%s)"
+                    "text": "%s - %s %s %s - %s (%s/%s)"
                     % (
                         x.id,
                         x.name,
                         x.vorname,
                         gebdat,
                         x.unternehmen_mnr,
+                        unternehmen.unternehmensnummer,
                         unternehmen.hbst,
                     ),
                 }

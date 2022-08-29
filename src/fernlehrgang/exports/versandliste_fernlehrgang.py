@@ -25,7 +25,7 @@ from openpyxl.workbook import Workbook
 
 spalten = [(
     'FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID',
-    'VERSANDANSCHRIFT', 'PLZ', 'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE',
+    'VERSANDANSCHRIFT', 'PLZ', 'MITGLNRMIT', 'UNTERNEHMENSNUMMER', 'FIRMA', 'FIRMA2', 'ANREDE',
     'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM', 'STRASSE', 'WOHNORT',
     'PASSWORT', 'R_VORNAME', 'R_NAME')]
 
@@ -79,6 +79,7 @@ def createRows(session, flg_id):
             row.append(versandanschrift(teilnehmer))
             row.append(nN(teilnehmer.plz or unternehmen.plz))
             row.append(nN(unternehmen.mnr))
+            row.append(nN(unternehmen.unternehmensnummer))
             row.append(nN(unternehmen.name))
             row.append(nN(unternehmen.name2))
             row.append(nN(teilnehmer.anrede))

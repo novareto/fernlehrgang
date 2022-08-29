@@ -17,6 +17,7 @@ grok.templatedir("templates")
 class UserList(Page):
     grok.name("users")
     grok.context(IFernlehrgangApp)
+    grok.require('zope.Public')
 
     def update(self):
         users = component.getUtility(IAuthenticatorPlugin, "principals")

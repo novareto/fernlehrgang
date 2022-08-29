@@ -25,7 +25,7 @@ from fernlehrgang.exports import q
 
 
 spalten = ['FLG_ID', 'TITEL FERNLEHRGANG', 'TEILNEHMER_ID', 'LEHRHEFT_ID', 'VERSANDANSCHRIFT', 'PLZ',
-    'MITGLNRMIT', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM',
+    'MITGLNRMIT', 'UNTERNEHMENSNUMMER', 'FIRMA', 'FIRMA2', 'ANREDE', 'TITEL', 'VORNAME', 'NAME', 'GEBURTSDATUM',
     'STRASSE', 'WOHNORT', 'PASSWORT', 'BELIEFART', 'R_DATUM', 'RSENDUNG', 'PUNKTZAHL',
     'STICHTAG', 'LEHRHEFT', 'R_TITEL', 'R_VORNAME', 'R_NAME', 'L1_F_1', 'L1_F_2',
     'L1_F_3', 'L1_F_4', 'L1_F_5', 'L1_F_6', 'L1_F_7', 'L1_F_8', 'L1_F_9', 'L1_F_10',
@@ -96,6 +96,7 @@ def createRows(session, rc, flg_ids, stichtag):
                 liste.append(nN(versandanschrift(teilnehmer)))
                 liste.append(nN(teilnehmer.plz or unternehmen.plz))
                 liste.append(nN(unternehmen.mnr))
+                liste.append(nN(unternehmen.unternehmensnummer))
                 liste.append(nN(unternehmen.name))
                 liste.append(nN(unternehmen.name2))
                 liste.append(nN(teilnehmer.anrede))

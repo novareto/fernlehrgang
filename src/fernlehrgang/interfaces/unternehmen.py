@@ -37,6 +37,13 @@ class IUnternehmen(Interface):
         readonly = False, 
         )
 
+    unternehmensnummer = TextLine(
+        title = u'Unternehmensnummer',
+        description = u'Unternehmensnummer des Unternehmens',
+        required = False,
+        readonly = False, 
+        )
+
     name = TextLine(
         title = u'Name',
         description = u'Name des Unternehmens',
