@@ -87,7 +87,7 @@ class Account(Base, RDBMixin):
     email = Column(String(50))
     real_name = Column(String(100))
     role = Column(String(100))
-    password = Column(String(100))
+    password = Column('kennwort', String(100))
 
     def checkPassword(self, password):
         if password == self.password:

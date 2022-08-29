@@ -37,7 +37,6 @@ class AddUser(Form):
             self.flash(u"Es ist ein Fehler aufgetreten", "warning")
             return
         users = component.getUtility(IAuthenticatorPlugin, "principals")
-        import pdb; pdb.set_trace()
         users.addUser(
             data["login"],
             data["email"],
@@ -71,10 +70,10 @@ class EditUser(Form):
             self.flash(u"Es ist ein Fehler aufgetreten", "warning")
             return
         apply_data_event(self.fields, self.context, data)
-        self.redirect(self.url(grok.getSite(), "/benutzer"))
+        self.redirect(self.url(grok.getSite(), "/users"))
 
     @action(u"Entfernen")
     def handle_delete(self):
         data, errors = self.extractData()
         del self.context.__parent__[self.context.__name__]
-        self.redirect(self.url(grok.getSite(), "/benutzer"))
+        self.redirect(self.url(grok.getSite(), "/users"))

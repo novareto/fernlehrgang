@@ -9,7 +9,7 @@
 
   <utility
      provides="zope.authentication.interfaces.IAuthentication"
-     component="zope.principalregistry.principalRegistry"
+     component="zope.principalregistry.principalregistry.principalRegistry"
    />
 
   </unconfigure>
