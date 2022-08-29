@@ -50,6 +50,7 @@ def get_status(context):
         SimpleTerm('4', 'Abschluss Gespräch', u'Abschluss Gespräch'),
         SimpleTerm('5', 'Erinnerungsmail', u'Erinnerungsmail'),
         SimpleTerm('409', 'GBO nicht angelegt', u'GBO nicht angelegt. Eintrag schon vorhanden'),
+        SimpleTerm('400', 'GBO uebertrag fehlerhaft', u'GBO Uebertrag war fehlerhaft'),
         SimpleTerm('1000', 'manuell geloest', u'Manuell gelöst'),
     ]
     return TolerantVocabulary(rc)

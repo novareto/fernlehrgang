@@ -42,6 +42,7 @@ class ChangeWf(grok.View):
 class SBNavEntry(NavEntry):
     grok.context(IFernlehrgangApp)
     grok.name('svnaventry')
+    grok.require('zope.View')
     grok.order(30)
 
     title = u"Sachbearbeitung"

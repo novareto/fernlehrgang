@@ -1,4 +1,5 @@
-<div id="uvc-global-menu" class="" tal:define="flgs viewlet.flgs" tal:condition="flgs">
+<div id="uvc-global-menu" class=""
+     tal:define="flgs viewlet.flgs" tal:condition="flgs">
   <ul class="nav navbar-nav">
     <li class="dropdown" tal:repeat="flg sorted(flgs.keys())">
     <a class="dropdown-toggle" data-toggle="dropdown"> <span tal:content="flg"> </span> <b class="caret"></b></a>

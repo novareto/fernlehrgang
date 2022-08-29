@@ -3,6 +3,7 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
+from time import strftime, gmtime
 
 
 image = "/home/teamweb/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Bescheinigung_Ansicht_Image.jpg"
@@ -25,6 +26,7 @@ def createpdf(filehandle, data):
     # Variablen
     schriftart = "Helvetica"
     schriftartfett = "Helvetica-Bold"
+    datum = strftime("%d.%m.%Y",gmtime())
 
     anrede = {"1": "Herr", "2": "Frau"}
     titel = {"0": "", "1": "Dr.", "2": "Prof."}

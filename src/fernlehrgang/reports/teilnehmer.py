@@ -29,6 +29,7 @@ grok.templatedir("templates")
 class NaviEntryHome(NavEntry):
     grok.context(IFernlehrgangApp)
     grok.name("navi_entry_home")
+    grok.require("zope.View")
     grok.order(10)
 
     title = u"Teilnehmer suchen"

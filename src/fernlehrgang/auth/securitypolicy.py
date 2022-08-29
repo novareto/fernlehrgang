@@ -59,7 +59,7 @@ def roles(context):
     items = []
     for name, utility in getUtilitiesFor(IRole, context):
         if name.startswith("uvc"):
-            items.append((grok.title.bind().get(utility), name))
+            items.append((name, name, grok.title.bind().get(utility)))
     return SimpleVocabulary.fromItems(items)
 
 

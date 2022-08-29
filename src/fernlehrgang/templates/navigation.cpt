@@ -1,8 +1,11 @@
-<ul class="nav nav-tabs" id="navigation">
-  <li class="nav-item" tal:repeat="entry viewlet.menus['navigation']">
-  <a class="nav-link" tal:attributes="class entry.selected and 'nav-link active' or 'nav-link'; href entry.url();">
-    <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
-    <span tal:content="entry.title"> </span>
-  </a>
+<ul class="nav nav-tabs" id="navigation"
+    tal:define="menu viewlet.menus.get('navigation', None)"
+    tal:condition="menu and menu.entries">
+  <li class="nav-item" tal:repeat="entry menu.entries">
+    <a class="nav-link"
+       tal:attributes="class entry.selected and 'nav-link active' or 'nav-link'; href entry.url();">
+      <i class="fas fa-bullseye" tal:attributes="class entry.icon"></i>
+      <span tal:content="entry.title"> </span>
+    </a>
   </li>
 </ul>

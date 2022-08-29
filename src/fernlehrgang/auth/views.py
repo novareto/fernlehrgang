@@ -25,7 +25,7 @@ class UserList(Page):
 
 class AddUser(Form):
     grok.context(IFernlehrgangApp)
-    #grok.require("zope.ManageApplication")
+    grok.require("zope.Public")
     label = u"Benutzer anlegen"
 
     fields = Fields(IAddUserForm)

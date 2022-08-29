@@ -169,8 +169,31 @@ class Worker(ConsumerMixin):
                 message.ack()
         except StandardError:
             logger.error('task raised exception: %r', e)
-            #message.ack()
+            session = Session()
             logger.exception('ERRROR')
+            result = {}
+            data = simplejson.loads(body)
+            from fernlehrgang import models
+            ktn = session.query(models.Kursteilnehmer).get(int(data.get('kursteilnehmer_id')))
+            result['kursteilnehmer_id'] = data.get('kursteilnehmer_id')
+            result['teilnehmer_id'] = data.get('teilnehmer_id')
+            result['ist_gespeichert'] = False
+            result['an_gbo_uebermittelt'] = True
+            result['gbo_comment'] = '400'
+            result['fernlehrgang_id'] = '116' #ktn.fernlehrgang.id
+            result['points'] = 0
+            result['resultpoints'] = 0
+            result['comment'] = "GBO fehlerhaft 1"
+            print result
+            newmessage = Message('results', data=result)
+            with transaction.manager as tm:
+                with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
+                    mqtm.createMessage(newmessage)
+
+                session = Session()
+                ktn = session.query(models.Kursteilnehmer).get(int(data.get('kursteilnehmer_id')))
+                je = models.JournalEntry(type="Fehler GBO gesendet", status="400", kursteilnehmer_id=ktn.id)
+                ktn.teilnehmer.journal_entries.append(je)
         except IntegrityError:
             #message.ack()
             logger.exception('IntegryError')
@@ -248,7 +271,7 @@ class Worker(ConsumerMixin):
         result['ist_gespeichert'] = True
         result['an_gbo_uebermittelt'] = gbo_u
         result['gbo_comment'] = gbo_status
-        result['fernlehrgang_id'] = ktn.fernlehrgang.id 
+        result['fernlehrgang_id'] = "116"  # ktn.fernlehrgang.id 
         status = "1"
         if u'Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.;' in result['comment']:
             status = "4"
