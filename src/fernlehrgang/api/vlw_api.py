@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import grok
+import datetime
 import simplejson
 
 from .gbo import GBOAPI
@@ -105,10 +106,11 @@ class APILernwelten(grok.JSON):
                 return
             for ktn in teilnehmer.kursteilnehmer:
                 if ktn.fernlehrgang.typ == "4":
+                    flg_id = 116
                     ktns.append(
                         dict(
                             kursteilnehmer_id=ktn.id,
-                            fernlehrgang_id=ktn.fernlehrgang_id,
+                            fernlehrgang_id=flg_id,
                             titel=ktn.fernlehrgang.titel,
                             jahr=ktn.fernlehrgang.jahr,
                         )
@@ -133,7 +135,7 @@ class APILernwelten(grok.JSON):
         # request = self.request
         teilnehmer_id = request.get("teilnehmer_id")
         teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
-
+        print(request)
         if teilnehmer:
             for field in ITeilnehmer:
                 value = request.get(field)
@@ -147,6 +149,10 @@ class APILernwelten(grok.JSON):
             branche = request.get("branche")
             if branche:
                 IKursteilnehmer.get("branche").set(oktn, branche)
+            #  STATIC SET DATE AND STATUS
+            IKursteilnehmer.get("status").set(oktn, 'A1')
+            IKursteilnehmer.get("erstell_datum").set(oktn, datetime.datetime.now())
+
             if not teilnehmer.name or not teilnehmer.email or not teilnehmer.telefon:
                 ret["muss_stammdaten_ergaenzen"] = "true"
             else:

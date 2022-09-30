@@ -18,12 +18,37 @@ from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
+from fernlehrgang.viewlets import NavEntry
 
 
 NO_VALUE = ""
 
 
 grok.templatedir('templates')
+
+
+
+class UNNavItem(NavEntry):
+    grok.context(IUnternehmen)
+    grok.order(10)
+
+    title = "Unternehmen"
+    icon = "fas fa-user-tie"
+
+    def url(self):
+        return self.view.url(self.context)
+
+
+class UNNavItem1(NavEntry):
+    grok.context(IUnternehmen)
+    grok.name('unnav1')
+    grok.order(20)
+
+    title = "Teilnehmer"
+    icon = "fas fa-user-tie"
+
+    def url(self):
+        return self.view.url(self.context, 'teilnehmer_listing')
 
 
 #@menuentry(NavigationMenu)

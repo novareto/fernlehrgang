@@ -64,8 +64,9 @@ class MyStringType(TypeDecorator):
 
 @grok.subscribe(IEngineCreatedEvent)
 def setUpDatabase(event):
+    print("Engine Created Event")
     metadata = Base.metadata
-    metadata.create_all(event.engine, checkfirst=True)
+    #metadata.create_all(event.engine, checkfirst=True)
 
 
 @implementer(IContent)
@@ -114,7 +115,6 @@ class Fernlehrgang(Base, RDBMixin):
     traject.pattern("fernlehrgang/:fernlehrgang_id")
 
     __tablename__ = 'fernlehrgang'
-
     id = Column(Integer, Sequence('fernlehrgang_seq', start=100, increment=1, schema=SCHEMA), primary_key=True)
     jahr = Column(String(50))
     titel = Column(String(256))
@@ -123,6 +123,7 @@ class Fernlehrgang(Base, RDBMixin):
     punktzahl = Column(Integer())
     beginn = Column(Date)
     ende = Column(Date)
+    id_mapping = Column(Integer())
 
     @property
     def title(self):
@@ -151,7 +152,7 @@ class Unternehmen(Base, RDBMixin):
 
     #id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", String(11), primary_key=True, index=True)
-    unternehmensnummer = Column("UNTERNEHMENSNUMMER", String(15), primary_key=True, index=True)
+    unternehmensnummer = Column("UNTERNEHMENSNUMMER", Integer(), primary_key=True, index=True)
     name = Column("NAME1", String(33))
     name2 = Column("NAME2", String(33))
     name3 = Column("NAME3", String(33))
@@ -428,7 +429,7 @@ class JournalEntry(Base, RDBMixin):
 
     __tablename__ = 'journal'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('journal_seq', start=1000000, increment=1, schema=SCHEMA), primary_key=True)
     teilnehmer_id = Column(Integer, ForeignKey(Teilnehmer.id))
     creation_date = Column(DateTime, default=datetime.datetime.now)
     status = Column(String(50))

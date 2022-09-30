@@ -33,6 +33,7 @@ from fernlehrgang.resources import chosen_js, chosen_css, chosen_ajax
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, janein
 from zope.event import notify
 from grok import ObjectAddedEvent
+from fernlehrgang.viewlets import AddEntry
 
 
 grok.templatedir("templates")
@@ -78,8 +79,18 @@ class TeilnehmerListing(TablePage):
     @property
     def values(self):
         tns = self.context.teilnehmer
-        vv = sorted(tns, key=lambda t: t.name)
+        vv = sorted(tns, key=lambda t: str(t.name))
         return vv
+
+
+class AddEntryTN(AddEntry):
+    grok.context(IUnternehmen)
+    grok.name("addentryTN")
+    grok.require('zope.View')
+    title = u"Teilnehmer"
+
+    def url(self):
+        return self.view.url(self.context, "addteilnehmer")
 
 
 # @menuentry(AddMenu)
@@ -88,7 +99,7 @@ class AddTeilnehmer(AddForm):
     grok.title(u"Teilnehmer")
     label = u"Teilnehmer anlegen für Unternehmen"
 
-    fields = Fields(ITeilnehmer).omit("id") + Fields(IKursteilnehmer).select(
+    fields = Fields(ITeilnehmer).omit("id", "strasse", "nr", "plz", "ort", "adresszusatz") + Fields(IKursteilnehmer).select(
         "branche", "un_klasse"
     )
     fields["kompetenzzentrum"].mode = "radio"
@@ -126,7 +137,7 @@ class Index(Display):
     description = u"Details zu Ihrem Unternehmen"
     __name__ = "index"
 
-    fields = Fields(ITeilnehmer).omit(id, "lehrgang")
+    fields = Fields(ITeilnehmer).omit(id, "lehrgang", "strasse", "nr", "plz", "ort", "adresszusatz")
 
 
 class SetDefaultMNR(grok.View):
@@ -144,7 +155,7 @@ class Edit(EditForm):
     grok.name("edit")
     label = u"Teilnehmer"
 
-    fields = Fields(ITeilnehmer).omit("id")
+    fields = Fields(ITeilnehmer).omit("id", "strasse", "nr", "plz", "ort", "adresszusatz")
     fields["kompetenzzentrum"].mode = "radio"
 
     @action("Speichern")
@@ -157,7 +168,7 @@ class Edit(EditForm):
             if data[x] == NO_VALUE:
                 data[x] = ""
         apply_data_event(self.fields, self.getContentData(), data)
-        self.flash(_(u"Content updated"))
+        self.flash(u"Teilnehmer wurde erfolgreich bearbeitet.")
         self.redirect(self.url(self.context))
 
     @action("Abbrechen")
@@ -405,10 +416,10 @@ class SearchTeilnehmer(grok.View):
             .filter(
                 models.Unternehmen.mnr == models.Teilnehmer.unternehmen_mnr,
                 or_(
-                    cast(models.Teilnehmer.unternehmen_mnr, String).like(
+                    cast(models.Teilnehmer.unternehmen_mnr, String(100)).like(
                         self.term + "%"
                     ),
-                    cast(models.Teilnehmer.id, String).like(self.term + "%"),
+                    cast(models.Teilnehmer.id, String(100)).like(self.term + "%"),
                     models.Unternehmen.hbst.like(self.term + "%"),
                     models.Unternehmen.unternehmensnummer.like(self.term + "%"),
                     func.concat(
@@ -437,8 +448,8 @@ class SearchTeilnehmer(grok.View):
                         x.vorname,
                         gebdat,
                         x.unternehmen_mnr,
-                        unternehmen.unternehmensnummer,
-                        unternehmen.hbst,
+                        unternehmen.unternehmensnummer or '',
+                        unternehmen.hbst or '',
                     ),
                 }
             )

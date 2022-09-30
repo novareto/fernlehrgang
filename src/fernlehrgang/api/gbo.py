@@ -7,11 +7,13 @@ import json
 import requests
 from zope.app.appsetup.product import getProductConfiguration
 
-config = getProductConfiguration("gbo")
-GBO_URL = config.get("gbo_url")
+#config = getProductConfiguration("gbo")
+#GBO_URL = config.get("gbo_url")
 
+GBO_URL = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
+GBO_URL = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
 PRODJSON = u"""{
-  "token": "218FD67F-1B71-48D0-9254-FF97E4091264",
+  "token": "772F0828-5EB3-4FAF-96C1-99A46A3D7F36",
   "client": {
     "number": "111222444",
     "mainnumber": "111222444",
@@ -387,10 +389,6 @@ TESTJSON = u"""{
 
 
 class GBOAPI(object):
-    url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/beta/flg"
-    url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/flg"
-    url = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
-    url = "https://gefaehrdungsbeurteilung.bghw.de/data/flg/"
     url = GBO_URL
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
@@ -400,8 +398,19 @@ class GBOAPI(object):
         return r
 
     def set_data(self, data):
+        from requests.adapters import HTTPAdapter
+        from requests.packages.urllib3.util.retry import Retry
+        session = requests.Session()
+        retries = Retry(total=5, backoff_factor=1, status_forcelist=[ 502, 503, 504 ])
+        session.mount('https://', HTTPAdapter(max_retries=retries))
         url = "%simport/clients" % self.url
-        r = requests.post(url, json=data, headers=self.headers)
+        print(url)
+        r = session.post(
+            url,
+            json=data,
+            headers=self.headers
+        )
+        #r = requests.post(url, json=data, headers=self.headers)
         return r
 
 
@@ -410,9 +419,11 @@ if __name__ == "__main__":
     gboapi.url =  "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
 
     t = gboapi.get_info("995000102")
+    import pdb; pdb.set_trace()
+    print(t)
     # t = gboapi.get_info('100000020')
 
-    #import logging
+    import logging
 #
 #    import httplib as http_client
 #    http_client.HTTPConnection.debuglevel = 1
@@ -424,9 +435,9 @@ if __name__ == "__main__":
 #    requests_log.setLevel(logging.DEBUG)
 #    requests_log.propagate = True
 
-    import httplib as http_client
+    #import httplib as http_client
 
-    http_client.HTTPConnection.debuglevel = 1
+    #http_client.HTTPConnection.debuglevel = 1
 
     # You must initialize logging, otherwise you'll not see debug output.
     logging.basicConfig()

@@ -45,7 +45,8 @@ class AddUser(Form):
             data["real_name"],
             data["role"],
         )
-        self.redirect(self.url(grok.getSite(), "/users"))
+        self.flash('Der Benutzer wurde angelegt.')
+        self.redirect(self.url(grok.getSite(), "users"))
 
 
 class EditUser(Form):

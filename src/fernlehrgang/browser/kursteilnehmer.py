@@ -283,6 +283,57 @@ class ReSendGBO(Form):
         self.redirect(self.url(self.context))
 
 
+class KTDeleteProcessEntry(NavEntry):
+    grok.context(IKursteilnehmer)
+    grok.name('delete_progress_vlw')
+    grok.order(30)
+
+    title = "GBG zurücksetzen"
+    icon = "fas fa-calendar-alt"
+
+    def url(self):
+        return self.view.url(self.context, 'delete_progress_vlw')
+
+
+class DeleteProgressCreate(Form):
+    grok.context(IKursteilnehmer)
+    grok.title(u'Lehrgang zurück setzen')
+    grok.name('delete_progress_vlw')
+
+    title = u"Lehrgangsfortschrit Virtuelle Lernwelt zurück setzen"
+    description = u"Hier können Sie den Lehrgangfortschritt in der Virtuellen Lernwelt zurück setzen."
+
+    @action(u'Zurücksetzen')
+    def handle_transfer(self):
+        data, errors = self.extractData()
+        if errors:
+            return
+        ktn = self.context
+        teilnehmer = ktn.teilnehmer
+        results = {
+            'teilnehmer_id': teilnehmer.id,
+            'kursteilnehmer_id': ktn.id,
+            'fernlehrgang_id': '116'
+        }
+        from kombu import Connection
+        import json
+        with Connection('amqp://guest:guest@localhost:5672//') as conn:
+            simple_queue = conn.SimpleQueue('vlwd.reset_progress')
+            message = json.dumps(results)
+            simple_queue.put(message)
+            print('Sent: %s' % message)
+            simple_queue.close()
+        self.flash(u'Der Lehrgangs Fortschritt wurde in der Virtuellen Lernwelt zurückgesetzt')
+        self.redirect(self.url(self.context))
+
+    @action(u'Abbrechen')
+    def handle_cancel(self):
+        self.flash(u'Die Aktion wurde abgebrochen')
+        self.redirect(self.url(self.context))
+
+
+
+
 class MoreInfoOnKursteilnehmerResults(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IKursteilnehmer)

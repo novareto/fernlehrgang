@@ -55,9 +55,13 @@ class PAU(PluggableAuthentication, grok.GlobalUtility):
 
 class FernlehrgangApp(ApplicationRoot):
     grok.implements(IFernlehrgangApp, IContext)
+    grok.traversable('app')
 
     def get(self, key):
         return None
+
+    def app(self):
+        return grok.getSite()
 
 
 grok.global_utility(
@@ -128,7 +132,7 @@ class NotFound(Page, grok.components.NotFoundView):
         return ""
 
 
-class SystemError(Page, grok.components.ExceptionView):
+class SystemError(grok.components.ExceptionView):
     """Custom System Error for UVCSITE
     """
 
@@ -173,4 +177,9 @@ class HAProxyStatus(grok.View):
     grok.require('zope.Public')
 
     def render(self):
-        return "OK"
+        from z3c.saconfig import Session
+        session = Session()
+        flg = session.query(Fernlehrgang).get(100)
+        if flg:
+            return "OK"
+        return "NOT OK"

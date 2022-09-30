@@ -82,3 +82,9 @@ class IFernlehrgang(Interface):
         description = u'Zu welchem Datum soll der Fernlehrgang enden?',
         required = True
         )
+
+    id_mapping = Int(
+        title = u'VLW-ID-Mapping',
+        description = u'Bitte geben Sie hier eine alternative ID an, die '
+                       'der Teilnehmer an die VLW idnetifiziert.',
+    )

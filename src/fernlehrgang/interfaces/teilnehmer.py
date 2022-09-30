@@ -25,7 +25,7 @@ def generatePassword():
     pool = string.ascii_letters + string.digits
     for c in ['o', 'O', '0', 'L', 'i', 'l', 'I', 'q', 'g']:
         pool = pool.replace(c, '')
-    return unicode(''.join([choice(pool) for i in range(8)]))
+    return ''.join([choice(pool) for i in range(8)])
 
 
 class ITeilnehmer(Interface):

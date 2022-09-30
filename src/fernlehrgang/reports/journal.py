@@ -66,6 +66,12 @@ class JournalListing(Form):
     description = u""
 
     def update(self):
+        session = Session()
+        if self.request.method == "POST":
+            for jid in  self.request.form.get('ids', []):
+                session.delete(session.query(models.JournalEntry).get(jid))
+                self.flash('Eintrage %s entfernt!' % jid)
+        session.flush()
         for field in self.fields:
             field.required = False
             field.readonly = False
@@ -75,7 +81,6 @@ class JournalListing(Form):
             status = [status]
         else:
             status = [u"4", u"409"]
-        session = Session()
         self.results = (
             session.query(models.JournalEntry)
             .filter(models.JournalEntry.status.in_(status))

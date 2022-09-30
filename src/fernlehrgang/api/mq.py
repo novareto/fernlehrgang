@@ -134,6 +134,8 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
+logger.info('START')
+
 
 QUEUES = {'results': status_queue, 'results_error': status_queue_error}
 
@@ -149,25 +151,25 @@ class Worker(ConsumerMixin):
 
     def get_consumers(self, Consumer, channel):
         return [
-            Consumer(queues=[vlw_queue, ], accept=['pickle', 'json'], callbacks=[self.run_task]),
-            Consumer(queues=[log_queue, ], accept=['pickle', 'json'], callbacks=[self.setLogEntry]),
+            Consumer(queues=[vlw_queue, ], accept=['pickle', 'json', 'text/plain'], callbacks=[self.run_task]),
+            Consumer(queues=[log_queue, ], accept=['pickle', 'json', 'text/plain'], callbacks=[self.setLogEntry]),
         ]
 
     def run_task(self, body, message):
         logger.info('START ADDING RESULTS')
-        connection = self.zodb.open()
-        root = connection.root()
+        #connection = self.zodb.open()
+        #root = connection.root()
         try:
             with transaction.manager as tm:
-                app = root['Application']['app']
-                setSite(app)
+                #app = root['Application']['app']
+                setSite(self.zodb)
                 results = self.saveResult(body)
                 logger.info(results)
                 newmessage = Message('results', data=results)
                 with MQTransaction(self.url, QUEUES, transaction_manager=tm) as mqtm:
                     mqtm.createMessage(newmessage)
                 message.ack()
-        except StandardError:
+        except BaseException as e:
             logger.error('task raised exception: %r', e)
             session = Session()
             logger.exception('ERRROR')
@@ -246,7 +248,7 @@ class Worker(ConsumerMixin):
         data['gbo'] = "OK"
         orgas = data.pop('orgas')
         gbo_daten = self.createGBODaten(ktn, orgas)
-        data['gbo_daten'] = simplejson.dumps(gbo_daten)
+        data['gbo_daten'] = simplejson.dumps(gbo_daten).encode('utf-8')
         data['lehrheft_id'] = ktn.fernlehrgang.lehrhefte[0].id 
         data['frage_id'] = ktn.fernlehrgang.lehrhefte[0].fragen[0].id
         gbo_u = data.pop('gbo_uebermittlung')
@@ -331,7 +333,10 @@ class Worker(ConsumerMixin):
 
 
 def main(url, conf):
-    db = zope.app.wsgi.config(conf)
+    from megrok.nozodb.utils import config, NOZODBWSGIPublisherApplication
+    from kombu.utils.debug import setup_logging
+    setup_logging(loglevel='INFO', loggers=[''])
+    db = config(conf)
     with Connection(url) as conn:
         try:
             worker = Worker(conn, db, url)

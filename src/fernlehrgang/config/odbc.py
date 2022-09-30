@@ -16,9 +16,9 @@ try:
     #class AS400Dialect_pyodbc(MxODBCConnector, AS400Dialect_pyodbc):
     class AS400Dialect_pyodbc(AS400Dialect_pyodbc):
 
-        _reflector_cls = ibm_reflection.AS400Reflector
-        execution_ctx_cls = DB2ExecutionContext_pyodbc
-        statement_compiler = DB2Compiler
+        #_reflector_cls = ibm_reflection.AS400Reflector
+        #execution_ctx_cls = DB2ExecutionContext_pyodbc
+        #statement_compiler = DB2Compiler
 
         def initialize(self, connection):
             import pdb; pdb.set_trace()

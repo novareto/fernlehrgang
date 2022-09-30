@@ -46,9 +46,9 @@ class TeilnehmerSuche(Form):
     grok.require("zope.View")
     grok.order(1500)
 
-    label = u"Statusabfrage Teilnehmer."
-    description = u"Bitte geben Sie die Kriterien ein \
-    um den Teilnehmer zu finden."
+    label = u"Statusabfrage Teilnehmer"
+    description = u"Bitte geben Sie die Kriterien ein: \
+        (Name, Benutzer-ID, HSNR, MGLNR, UNR)"
 
     fields = Fields(ISearch).select("id")
     fields["id"].title = u"Teilnehmer"

@@ -3,7 +3,7 @@
 from redis import Redis
 from rq import Queue
 from rq.worker import SimpleWorker
-from zope.app.wsgi import config
+from megrok.nozodb.nozodb import config
 
 q = Queue(connection=Redis())
 
@@ -12,6 +12,6 @@ class ZCAWorker(SimpleWorker):
 
     def __init__(self, *args, **kwargs):
         super(ZCAWorker, self).__init__(*args, **kwargs)
-        config('/home/teamweb/fernlehrgang/parts/etc/zope.conf')
+        config('/home/bghw/fernlehrgang/parts/etc/zope.conf')
 
 

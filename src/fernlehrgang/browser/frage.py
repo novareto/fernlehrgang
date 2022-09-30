@@ -16,9 +16,31 @@ from fernlehrgang.viewlets import AddMenu, NavigationMenu
 from zeam.form.base import Fields
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from fernlehrgang.browser import AddForm, TablePage, DefaultView, EditForm
+from fernlehrgang.viewlets import AddEntry
+from fernlehrgang.viewlets import NavEntry
 
 
 grok.templatedir('templates')
+
+
+class FRNavEntry(NavEntry):
+    grok.context(IFrage)
+    grok.order(30)
+    grok.name('fr-nav-entry')
+
+    title = "Frage"
+
+    def url(self):
+        return self.view.url(self.context)
+
+
+class FRNavEntry1(FRNavEntry):
+    grok.context(ILehrheft)
+    grok.order(40)
+    title = "Fragen"
+
+    def url(self):
+        return self.view.url(self.context, 'frage_listing')
 
 
 #@menuentry(NavigationMenu, order=20)
@@ -49,6 +71,16 @@ class FrageListing(TablePage):
             locate(root, x, DefaultModel)
         dd = sorted(self.context.fragen, key=lambda x: int(x.frage))
         return dd 
+
+
+class AddEntryFrage(AddEntry):
+    grok.context(ILehrheft)
+    grok.name("addentryFrage")
+    grok.require('zope.View')
+    title = u"Frage"
+
+    def url(self):
+        return self.view.url(self.context, "addfrage")
 
 
 #@menuentry(AddMenu)

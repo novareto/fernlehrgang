@@ -1,6 +1,5 @@
 <form
    role="form"
-   noValidate="true"
    method="post"
    enctype="multipart/form-data"
    novalidate="novalidate"

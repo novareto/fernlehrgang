@@ -76,7 +76,7 @@ class NavigationMenuRenderer(grok.Viewlet):
     grok.context(Interface)
     grok.template('navigation')
     grok.viewletmanager(AboveContent)
-    grok.order(00)
+    grok.order(10)
 
     bound_menus = ('navigation',)
 
@@ -87,7 +87,7 @@ class NavigationMenuRenderer(grok.Viewlet):
 
 
 class FlashMessages(grok.Viewlet):
-    grok.order(200)
+    grok.order(00)
     grok.context(Interface)
     grok.name('uvcsite.messages')
     grok.viewletmanager(AboveContent)

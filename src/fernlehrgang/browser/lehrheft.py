@@ -16,17 +16,26 @@ from megrok.traject.components import DefaultModel
 from megrok.z3ctable import LinkColumn, GetAttrColumn
 from zeam.form.base import Fields
 from zope.interface import implementer
+from fernlehrgang.viewlets import AddEntry
 
 
 grok.templatedir("templates")
 
 
 class LHNavEntry(NavEntry):
-    grok.context(IFernlehrgang)
+    grok.context(ILehrheft)
     grok.order(30)
     grok.name('lh-nav-entry')
 
-    title = "Lehrhefte verwalten"
+    title = "Lehrheft"
+
+    def url(self):
+        return self.view.url(self.context)
+
+
+class LHNavEntry1(LHNavEntry):
+    grok.context(IFernlehrgang)
+    title = "Lehrhefte"
 
     def url(self):
         return self.view.url(self.context, 'lehrheft_listing')
@@ -57,6 +66,16 @@ class LehrheftListing(TablePage):
         for x in self.context.lehrhefte:
             locate(root, x, DefaultModel)
         return self.context.lehrhefte
+
+
+class AddEntryLH(AddEntry):
+    grok.context(IFernlehrgang)
+    grok.name("addentryLH")
+    grok.require('zope.View')
+    title = u"Lehrheft"
+
+    def url(self):
+        return self.view.url(self.context, "addlehrheft")
 
 
 class AddLehrheft(AddForm):

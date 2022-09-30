@@ -1,0 +1,8 @@
+<input type="hidden" value="#" id="#" class="#"
+       tal:attributes="name widget/identifier;
+                       value python: widget.getTermValue(widget.inputValue());
+                       id widget/htmlId;
+                       "/>
+
+<span tal:content="python: widget.inputValue()"/>
+<span tal:content="python: widget.getTermValue(widget.inputValue())"/>

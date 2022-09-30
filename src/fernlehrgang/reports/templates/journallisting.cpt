@@ -22,13 +22,15 @@
   <legend> Journal </legend>
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3> Journal </h3>
     </div>
     <div class="panel-body">
+
+      <form tal:attributes="action view.url('journal_listing')" method="post" enctype="multipart/form-data" >
 
       <table class="table">
         <thead>
           <tr>
+            <th> </th>
             <th> Teilnehmer </th>
             <th> Typ </th>
             <th> Datum</th>
@@ -38,6 +40,7 @@
         </thead>
         <tbody>
           <tr tal:repeat="result view.results">
+            <td> <input type="checkbox" name="ids:list" tal:attributes="value result.id"> </td>
             <td> <a href="" tal:attributes="href '%s?form.field.id=%s&form.action.suchen=Suche' % (view.application_url(), result.teilnehmer_id)" tal:content="'%s' % result.teilnehmer_id"> </a> </td>
             <td tal:content="view.getStatus(result.status)"> </td>
             <td tal:content="result.creation_date.strftime('%d.%m.%Y %H:%M')"> </td>
@@ -53,6 +56,9 @@
           </tr>
         </tbody>
       </table>
+
+      <input class="btn btn-danger" type="submit" value="Entfernen">
+      </form>
     </div>
   </fieldset>
 </body>

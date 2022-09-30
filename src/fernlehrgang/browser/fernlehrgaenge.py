@@ -77,12 +77,12 @@ class AddFernlehrgang(AddForm):
     fields = Fields(IFernlehrgang).omit("id")
 
     def create(self, data):
-        import pdb; pdb.set_trace()
         return Fernlehrgang(**data)
 
-    def add(self, object):
+    def add(self, obj):
         session = Session()
-        session.add(object)
+        session.add(obj)
+        session.flush()
 
     def nextURL(self):
         self.flash(u"Der Fernlehrgang wurde erfolgreich angelegt.")
