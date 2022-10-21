@@ -7,8 +7,37 @@ import json
 import requests
 from zope.app.appsetup.product import getProductConfiguration
 
-#config = getProductConfiguration("gbo")
-#GBO_URL = config.get("gbo_url")
+config = getProductConfiguration("gbo")
+GBO_URL = config.get("gbo_url")
+
+
+class GBOAPI(object):
+    url = GBO_URL
+    headers = {"Accept": "application/json", "Content-Type": "application/json", 'User-agent': 'Mozilla/5.0'}
+
+    def get_info(self, mnr):
+        url = "%s/import/clients/%s/info" % (self.url, mnr)
+        r = requests.get(url, headers=self.headers)
+        return r
+
+    def set_data(self, data):
+        from requests.adapters import HTTPAdapter
+        from requests.packages.urllib3.util.retry import Retry
+        session = requests.Session()
+        retries = Retry(total=5, backoff_factor=1, status_forcelist=[ 502, 503, 504 ])
+        session.mount('https://', HTTPAdapter(max_retries=retries))
+        url = "%simport/clients" % self.url
+
+        print(url)
+        r = session.post(
+            url,
+            json=data,
+            headers=self.headers
+        )
+        #r = requests.post(url, json=data, headers=self.headers)
+        print(r.text)
+        return r
+
 
 GBO_URL = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
 GBO_URL = "https://gefaehrdungsbeurteilung-test-dmz-s1-nsd.neusta.de/data/flg/"
@@ -387,31 +416,6 @@ TESTJSON = u"""{
 }
 """
 
-
-class GBOAPI(object):
-    url = GBO_URL
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
-
-    def get_info(self, mnr):
-        url = "%s/import/clients/%s/info" % (self.url, mnr)
-        r = requests.get(url, headers=self.headers)
-        return r
-
-    def set_data(self, data):
-        from requests.adapters import HTTPAdapter
-        from requests.packages.urllib3.util.retry import Retry
-        session = requests.Session()
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[ 502, 503, 504 ])
-        session.mount('https://', HTTPAdapter(max_retries=retries))
-        url = "%simport/clients" % self.url
-        print(url)
-        r = session.post(
-            url,
-            json=data,
-            headers=self.headers
-        )
-        #r = requests.post(url, json=data, headers=self.headers)
-        return r
 
 
 if __name__ == "__main__":

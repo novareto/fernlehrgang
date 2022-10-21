@@ -21,6 +21,13 @@ from zeam.form.base import action
 from zope.i18nmessageid import MessageFactory
 from fernlehrgang.browser import Form, Display, EditForm
 
+from zope.app.appsetup.product import getProductConfiguration
+config = getProductConfiguration('gbo')
+try:
+    GBO_TOKEN = config.get('gbo_token')
+except:
+    raise "NO GBO TOKEN"
+
 
 _ = MessageFactory("zeam.form.base")
 
@@ -239,11 +246,12 @@ class KTReseendNavEntry(NavEntry):
     grok.name('kt_resend_entry')
     grok.order(30)
 
-    title = "Übertrag GBGO"
+    title = "Übertrag GBO"
     icon = "fas fa-calendar-alt"
 
     def url(self):
         return self.view.url(self.context, 'transfer_gbo')
+
 
 class ReSendGBO(Form):
     grok.context(IKursteilnehmer)
@@ -262,6 +270,41 @@ class ReSendGBO(Form):
             self.flash(u'Dieser Teilnehemr hat noch keine Antworten von der Virtuellen Lernwelt übermittelt')
             self.redirect(self.url(self.context))
 
+
+    def generateGBOData(self, gbo_daten):
+        ktn = self.context
+        teilnehmer = ktn.teilnehmer
+        unternehmen = teilnehmer.unternehmen[0]
+        ftitel = teilnehmer.titel
+        if ftitel == '0':
+            ftitel = ''
+        res = dict()
+        res['token'] = GBO_TOKEN
+        res['client'] = dict(
+            #number = teilnehmer.unternehmen_mnr,
+            #mainnumber = teilnehmer.unternehmen_mnr,
+            unternehmensnummer = unternehmen.unternehmensnummer,
+            unternehmens_az=unternehmen.mnr,
+            betriebsstaetten_az=unternehmen.hbst,
+            name = unternehmen.name,
+            zip = unternehmen.plz,
+            city = unternehmen.ort,
+            street = unternehmen.str,
+            compcenter = 0,
+        )
+        res['user'] = dict(
+            login = str(teilnehmer.id),
+            salutation=int(teilnehmer.anrede),
+            title=ftitel,
+            firstname=teilnehmer.vorname,
+            lastname=teilnehmer.name,
+            phone=teilnehmer.telefon or '',
+            email=teilnehmer.email or ''
+        )
+        res['orgas'] = gbo_daten['orgas']
+        return res
+
+
     @action(u'Ergebnisse übertragen')
     def handle_transfer(self):
         data, errors = self.extractData()
@@ -269,13 +312,18 @@ class ReSendGBO(Form):
             return
         from simplejson import loads
         gbo_daten = loads(self.context.antworten[0].gbo_daten)
+        if not 'token' in gbo_daten:
+            print("We have to create the REAL REQUEST")
+        gbo_daten = self.generateGBOData(gbo_daten)
+
         from fernlehrgang.api.gbo import GBOAPI
         gbo_api = GBOAPI()
         r = gbo_api.set_data(gbo_daten)
+        print(r)
         gbo_status = r.status_code
         je = JournalEntry(type="Daten manuell zur GBO gesendet", status=gbo_status, kursteilnehmer_id=self.context.id)
         self.context.teilnehmer.journal_entries.append(je)
-        self.flash(u'Die Ergebnisse für den Teilnehmer %s wurden erneut an die GBO übertragen' % self.context.teilnehmer_id)
+        self.flash(u'Die Ergebnisse für den Teilnehmer %s wurden erneut an die GBO übertragen. %s' % (self.context.teilnehmer_id, gbo_status))
 
     @action(u'Abbrechen')
     def handle_cancel(self):
@@ -288,7 +336,7 @@ class KTDeleteProcessEntry(NavEntry):
     grok.name('delete_progress_vlw')
     grok.order(30)
 
-    title = "GBG zurücksetzen"
+    title = "VLW zurücksetzen"
     icon = "fas fa-calendar-alt"
 
     def url(self):
