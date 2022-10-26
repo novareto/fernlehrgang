@@ -183,7 +183,7 @@ class APILernwelten(grok.JSON):
             "teilnehmer_id": teilnehmer_id,
             "anrede": teilnehmer.anrede,
             "flg_id": str(ktn.fernlehrgang.id),
-            "mnr": teilnehmer.stamm_mnr or '',
+            "mnr": teilnehmer.unternehmen.unternehmensnummer or '',
             "vorname": teilnehmer.vorname,
             "name": teilnehmer.name,
         })

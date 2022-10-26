@@ -16,6 +16,7 @@ from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.z3ctable import Column, LinkColumn
 from z3c.saconfig import Session
 from zeam.form.base import Fields, action
+from fernlehrgang.viewlets import AddEntry
 
 
 class JNavEntry(NavEntry):
@@ -107,6 +108,16 @@ class Index(DefaultView):
     __name__ = "index"
 
     fields = Fields(IJournalEntry)
+
+
+class AddEntryJournal(AddEntry):
+    grok.context(ITeilnehmer)
+    grok.name("addentry_journal")
+    grok.require('zope.View')
+    title = u"Journal Eintrag"
+
+    def url(self):
+        return self.view.url(self.context, "addjournalentry")
 
 
 # @menuentry(AddMenu)
