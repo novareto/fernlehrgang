@@ -188,7 +188,7 @@ class APILernwelten(grok.JSON):
             "name": teilnehmer.name,
         })
         fh.seek(0)
-        return encodestring(fh.read())
+        return encodestring(fh.read()).decode('utf-8')
 
     def getResults(self):
         data = simplejson.loads(self.body)

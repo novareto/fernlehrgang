@@ -169,6 +169,18 @@ class GermanBrowserLangugage(grok.Adapter):
 
 
 
+from zope.traversing.interfaces import IBeforeTraverseEvent
+
+@grok.subscribe(IFernlehrgangApp, IBeforeTraverseEvent)
+def check_app_segment(site, event):
+    """
+    """
+    request = event.request
+    stack = request.getTraversalStack()
+    if 'app' in stack:
+        stack.remove('app')
+        request.setTraversalStack(stack)
+        print('APP SEGMENT')
 
 
 class HAProxyStatus(grok.View):

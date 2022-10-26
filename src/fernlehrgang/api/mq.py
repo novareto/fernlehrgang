@@ -212,8 +212,11 @@ class Worker(ConsumerMixin):
         res = dict()
         res['token'] = GBO_TOKEN 
         res['client'] = dict(
-            number = teilnehmer.unternehmen_mnr,
-            mainnumber = teilnehmer.unternehmen_mnr,
+            #number = teilnehmer.unternehmen_mnr,
+            #mainnumber = teilnehmer.unternehmen_mnr,
+            unternehmensnummer = unternehmen.unternehmensnummer,
+            unternemens_az=teilnehmer.unternehmen_mnr,
+            betriebsstaetten_az=unternehmen.hbst,
             name = unternehmen.name,
             zip = unternehmen.plz,
             city = unternehmen.ort,

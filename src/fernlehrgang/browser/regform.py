@@ -35,7 +35,13 @@ class AutoRegForm(Form):
         super(AutoRegForm, self).updateForm()
         self.fields['passwort'].defaultValue = generatePassword()
         self.fields['erstell_datum'].defaultValue = date.today() 
-        mnr = self.request.get('form.field.mnr')
+        mnr_or_unrs = self.request.get('form.field.mnr_or_unrs')
+        if len(mnr_or_unrs) == 15:
+            session = Session()
+            unternehmen = session.query(Unternehmen).filter(Unternehmen.unternehmensnummer == mnr_or_unrs).one()
+            self.fields['mnr'].defaultValue = mnr = unternehmen.mnr
+        else:
+            self.fields['mnr'].defaultValue = mnr = mnr_or_unrs
         if mnr:
             r = gboapi.get_info(mnr)
             if r.status_code == 200:

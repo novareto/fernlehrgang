@@ -6,7 +6,7 @@ from reportlab.lib.units import cm
 from time import strftime, gmtime
 
 
-image = "/home/teamweb/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Bescheinigung_Ansicht_Image.jpg"
+image = "/home/bghw/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Bescheinigung_Ansicht_Image.jpg"
 
 
 # Definition einer Funktion
