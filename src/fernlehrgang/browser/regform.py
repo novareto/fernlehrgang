@@ -13,7 +13,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
+from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer, JournalEntry
 from z3c.saconfig import Session
 from zeam.form.base import action, Fields
 
@@ -33,7 +33,7 @@ class AutoRegForm(Form):
     ignoreContent = False
 
     def getContentData(self):
-        mnr = None 
+        mnr = None
         mnr_or_unrs = self.request.get('form.field.mnr_or_unrs')
         if len(mnr_or_unrs) == 15:
             session = Session()
@@ -41,12 +41,8 @@ class AutoRegForm(Form):
             mnr = unternehmen.mnr
         else:
             mnr = mnr_or_unrs
-        return {'mnr': mnr}
+        return {'mnr': mnr, 'status': 'A1', 'passwort': generatePassword(), 'erstell_datum': date.today()}
 
-    def updateForm(self):
-        super(AutoRegForm, self).updateForm()
-        self.fields['passwort'].defaultValue = generatePassword()
-        self.fields['erstell_datum'].defaultValue = date.today() 
 
     @action('Teilnehmer anlegen')
     def handle_save(self):
@@ -92,4 +88,11 @@ class AutoRegForm(Form):
         from zope.event import notify
         from zope.lifecycleevent import ObjectAddedEvent
         notify(ObjectAddedEvent(tn))
+        tn.journal_entries.append(
+            JournalEntry(
+                status="info",
+                type="Registriert für Lehrgang:  %s" % (flg.titel),
+                teilnehmer_id=tn.id,
+                kursteilnehmer_id=kursteilnehmer.id))
         self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % tn.id )
+

@@ -29,6 +29,7 @@ try:
 except:
     GBO_TOKEN = "218FD67F-1B71-48D0-9254-FF97E4091264"
     GBO_TOKEN = "772F0828-5EB3-4FAF-96C1-99A46A3D7F36"
+    GBO_TOKEN = "218FD67F-1B71-48D0-9254-FF97E4091264"
 
 
 class Message(object):
@@ -176,6 +177,7 @@ class Worker(ConsumerMixin):
             result = {}
             data = simplejson.loads(body)
             from fernlehrgang import models
+            print(data)
             ktn = session.query(models.Kursteilnehmer).get(int(data.get('kursteilnehmer_id')))
             result['kursteilnehmer_id'] = data.get('kursteilnehmer_id')
             result['teilnehmer_id'] = data.get('teilnehmer_id')
@@ -211,12 +213,16 @@ class Worker(ConsumerMixin):
             ftitel = ''
         res = dict()
         res['token'] = GBO_TOKEN 
+        anrede = teilnehmer.anrede
+        if not anrede:
+            anrede = 0 
+        unr = unternehmen.unternehmensnummer or ''
         res['client'] = dict(
             #number = teilnehmer.unternehmen_mnr,
             #mainnumber = teilnehmer.unternehmen_mnr,
-            unternehmensnummer = unternehmen.unternehmensnummer,
-            unternemens_az=teilnehmer.unternehmen_mnr,
-            betriebsstaetten_az=unternehmen.hbst,
+            unternehmensnummer = str(unr),
+            unternehmens_az=teilnehmer.unternehmen_mnr,
+            betriebsstaetten_az=unternehmen.hbst or '',
             name = unternehmen.name,
             zip = unternehmen.plz,
             city = unternehmen.ort,
@@ -225,7 +231,7 @@ class Worker(ConsumerMixin):
         )
         res['user'] = dict(
             login = str(teilnehmer.id),
-            salutation=int(teilnehmer.anrede),
+            salutation=anrede,
             title=ftitel,
             firstname=teilnehmer.vorname,
             lastname=teilnehmer.name,
@@ -265,8 +271,10 @@ class Worker(ConsumerMixin):
         if gbo_u:
             from fernlehrgang.api.gbo import GBOAPI
             gbo_api = GBOAPI()
+            logger.info('SENT GBO-DATA')
+            logger.info(gbo_daten)
             r = gbo_api.set_data(gbo_daten)
-            logger.info(r.text)
+            logger.info('ResponseTExt %s, %s' %(r.text, r.status_code))
             gbo_status = r.status_code
             je = models.JournalEntry(type="Daten nach GBO gesendet", status=gbo_status, kursteilnehmer_id=ktn.id)
             ktn.teilnehmer.journal_entries.append(je)
@@ -330,7 +338,7 @@ class Worker(ConsumerMixin):
                     je = models.JournalEntry(**log_entry)
                     teilnehmer.journal_entries.append(je)
                     message.ack()
-        except StandardError:
+        except Exception:
             logger.error('Error in Logging %r', e)
             logger.exception('Error')
 

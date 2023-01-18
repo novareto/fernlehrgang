@@ -315,6 +315,7 @@ class ReSendGBO(Form):
         if not 'token' in gbo_daten:
             print("We have to create the REAL REQUEST")
         gbo_daten = self.generateGBOData(gbo_daten)
+        print(gbo_daten)
 
         from fernlehrgang.api.gbo import GBOAPI
         gbo_api = GBOAPI()
@@ -333,6 +334,7 @@ class ReSendGBO(Form):
 
 class KTDeleteProcessEntry(NavEntry):
     grok.context(IKursteilnehmer)
+    grok.baseclass()
     grok.name('delete_progress_vlw')
     grok.order(30)
 

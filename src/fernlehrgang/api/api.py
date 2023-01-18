@@ -27,8 +27,7 @@ class HelperAPI(grok.XMLRPC):
         ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
                 Kursteilnehmer.teilnehmer_id == teilnehmer_id,
                 Kursteilnehmer.status.in_(('A1', 'A2')))
-
-        return ret.all()
+        return [(x[0],) for x in ret.all()]
 
     def getFrageIds(self, lehrheft_id):
         # log('getFrageIds %s' % lehrheft_id, 'performance_analyse')
@@ -101,6 +100,7 @@ class UnternehmenAPI(grok.REST):
             STRASSE=self.context.str,
             PLZ=self.context.plz,
             ORT=self.context.ort,
+            UNR=str(self.context.unternehmensnummer),
         )
         return json.dumps(unternehmen)
 
@@ -160,6 +160,7 @@ class TeilnehmerAPI(grok.REST):
                 ktm.un_klasse = un_klasse
                 ktm.branche = branche
                 ktm.status = "A1"
+        self.request.response.setHeader("Content-type", "application/json")
         return "1"
 
 

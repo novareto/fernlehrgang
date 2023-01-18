@@ -51,33 +51,48 @@ def send_mail(send_from, send_to, subject, text, files=[], server="mail.bghw.de"
     assert isinstance(send_to, (list, tuple, set))
     assert isinstance(files, (list, tuple, set))
 
-    msg = MIMEMultipart()
-
     # headers
-    msg['From'] = send_from
-    msg['To'] = COMMASPACE.join(send_to)
-    msg['Date'] = formatdate(localtime=True)
-    msg['Subject'] = Header(subject, 'utf-8')
+    #msg = MIMEText(text.encode('UTF-8'), 'plain', 'UTF-8')
+    #msg['From'] = send_from
+    #msg['To'] = COMMASPACE.join(send_to)
+    #msg['Subject'] = Header(subject, 'utf-8')
 
     # body
-    txt = MIMEText(text, 'plain', 'utf-8')
-    msg.attach(txt)
+    #txt = MIMEText(text, ('plain'), 'utf-8')
+    #msg.attach(txt)
 
-    for f in files:
-        part = MIMEBase('application', "octet-stream")
-        with open(f, 'rb') as fd:
-            part.set_payload(fd.read())
-        encoders.encode_base64(part)
-        part.add_header(
-            'Content-Disposition',
-            'attachment; filename="%s"' % os.path.basename(f))
-        msg.attach(part)
+    #for f in files:
+    #    part = MIMEBase('application', "octet-stream")
+    #    with open(f, 'rb') as fd:
+    #        part.set_payload(fd.read())
+    #    encoders.encode_base64(part)
+     #   part.add_header(
+     #       'Content-Disposition',
+     #       'attachment; filename="%s"' % os.path.basename(f))
+    #    msg.attach(part)
+
+
+
+    # Mime: multipart/alternative.
+    msg = MIMEMultipart('mixed')
+    msg['Subject'] = subject
+    msg['From'] = send_from
+    msg['To'] = COMMASPACE.join(send_to)
+
+    # Create the body of the message (a plain-text and an HTML version).
+    textpart = MIMEText(text, 'plain', _charset='utf-8')
+    textpart = MIMEText(text, 'plain')
+    msg.attach(textpart)
+
+
 
     mailer = zope.component.getUtility(
         zope.sendmail.interfaces.IMailDelivery,
         name=u'flg.maildelivery'
         )
-    mailer.send(send_from, send_to, msg.as_string())
+    msg = msg.as_bytes()
+    msg = msg.replace(b"\n", b"\r\n")
+    mailer.send(send_from, send_to, msg)
 
 
 grok.global_utility(
