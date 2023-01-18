@@ -34,13 +34,13 @@ def createpdf(filehandle, data):
     c.drawImage(image, 0 * cm, 0 * cm, width=20.993 * cm, height=29.693 * cm)
 
     c.setFont(schriftart, 12)
-    c.drawString(14 * cm, 22 * cm, data.get("flg_titel", u" "))
-    c.drawString(14 * cm, 21 * cm, u"Benutzername:")
-    c.drawString(14 * cm, 20.5 * cm, u"FLG-ID:")
-    c.drawString(14 * cm, 20 * cm, u"Mitgl.-Nr.:")
-    c.drawRightString(20 * cm, 21 * cm, data.get("teilnehmer_id", u" "))
-    c.drawRightString(20 * cm, 20.5 * cm, data.get("flg_id", u" "))
-    c.drawRightString(20 * cm, 20 * cm, data.get("mnr", u" "))
+    c.drawString(13.8 * cm, 23.52 * cm, data.get("flg_titel", u" "))
+    c.drawString(13.8 * cm, 22.92 * cm, u"Benutzer-Nr.: %s " % data.get("teilnehmer_id", u" "))
+    #c.drawString(14 * cm, 20.5 * cm, u"FLG-ID:")
+    #c.drawString(14 * cm, 20 * cm, u"Mitgl.-Nr.:")
+    #c.drawRightString(20 * cm, 22.92 * cm, data.get("teilnehmer_id", u" "))
+    #c.drawRightString(20 * cm, 20.5 * cm, data.get("flg_id", u" "))
+    #c.drawRightString(20 * cm, 20 * cm, data.get("mnr", u" "))
 
     fullname = "%s %s %s %s" % (
         anrede[data.get("anrede", "1")],
@@ -50,10 +50,17 @@ def createpdf(filehandle, data):
     )
 
     c.setFont(schriftartfett, 20)
-    c.drawString(2.2 * cm, 18 * cm, fullname)
+    c.drawString(2.15 * cm, 18 * cm, ' '.join(fullname.split(' ')).strip())
 
     c.setFont(schriftart, 12)
-    c.drawString(2.2 * cm, 5.5 * cm, data.get("druckdatum"))
+    from datetime import datetime
+    import locale
+    locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
+    try:
+        dd = datetime.strptime(data.get("druckdatum"), '%d.%m.%Y').strftime('Bonn, %d. %B %Y')
+    except:
+        dd = data.get("druckdatum")
+    c.drawString(2.15 * cm, 5.5 * cm, dd)
     c.showPage()
     c.save()
     return filehandle

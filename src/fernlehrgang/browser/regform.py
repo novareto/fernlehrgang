@@ -30,22 +30,23 @@ class AutoRegForm(Form):
     fields += Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'gespraech')
 
     ignoreRequest = False
+    ignoreContent = False
+
+    def getContentData(self):
+        mnr = None 
+        mnr_or_unrs = self.request.get('form.field.mnr_or_unrs')
+        if len(mnr_or_unrs) == 15:
+            session = Session()
+            unternehmen = session.query(Unternehmen).filter(Unternehmen.unternehmensnummer == mnr_or_unrs).one()
+            mnr = unternehmen.mnr
+        else:
+            mnr = mnr_or_unrs
+        return {'mnr': mnr}
 
     def updateForm(self):
         super(AutoRegForm, self).updateForm()
         self.fields['passwort'].defaultValue = generatePassword()
         self.fields['erstell_datum'].defaultValue = date.today() 
-        mnr_or_unrs = self.request.get('form.field.mnr_or_unrs')
-        if len(mnr_or_unrs) == 15:
-            session = Session()
-            unternehmen = session.query(Unternehmen).filter(Unternehmen.unternehmensnummer == mnr_or_unrs).one()
-            self.fields['mnr'].defaultValue = mnr = unternehmen.mnr
-        else:
-            self.fields['mnr'].defaultValue = mnr = mnr_or_unrs
-        if mnr:
-            r = gboapi.get_info(mnr)
-            if r.status_code == 200:
-                self.flash(u'Das Unternehmen dieses Teilnehmers ist bereits in der GBO registriert.')
 
     @action('Teilnehmer anlegen')
     def handle_save(self):
