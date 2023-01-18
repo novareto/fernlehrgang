@@ -11,3 +11,9 @@ div#uvc-inner-body {
     background-color: #d1ecf1;
     border-color: #bee5eb;
 }
+
+
+div#teilnehmer_id_chosen {
+  display: block;
+  font-size: 23px;
+}

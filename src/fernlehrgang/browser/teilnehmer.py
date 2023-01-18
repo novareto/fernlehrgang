@@ -165,7 +165,7 @@ class Edit(EditForm):
             self.submissionError = errors
             return FAILURE
         for x in ["adresszusatz", "ort", "plz", "nr", "email", "strasse", "telefon"]:
-            if data[x] == NO_VALUE:
+            if x in data and data[x] == NO_VALUE:
                 data[x] = ""
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(u"Teilnehmer wurde erfolgreich bearbeitet.")
@@ -286,7 +286,7 @@ class AssignCompany(EditForm):
         teilnehmer = self.getContentData()
         apply_data_event(self.fields, teilnehmer, data)
         teilnehmer = teilnehmer.getContent()
-        self.flash(_(u"Content updated"))
+        self.flash(u"Der Teilnehmer wurde aktualisiert!")
         self.redirect(
             self.application_url()
             + "?form.field.id=%s&form.action.suchen=Suchen" % teilnehmer.id
@@ -347,7 +347,7 @@ class Register(Form):
             self.context.journal_entries.append(
                 JournalEntry(
                     status="info",
-                    type="Registriert für Lehrgang %s" % (kursteilnehmer.fernlehrgang_id),
+                    type="Registriert für Lehrgang:  %s" % (fernlehrgang.titel),
                     teilnehmer_id=self.context.id,
                     kursteilnehmer_id=kursteilnehmer.id))
             self.flash(
@@ -472,31 +472,19 @@ class SearchUnternehmen(grok.View):
         from fernlehrgang import models
         from sqlalchemy import func, or_, cast, String
 
-        print("*" * 20)
-        print(self.term)
         res = session.query(models.Unternehmen).filter(
             or_(
-                cast(models.Unternehmen.mnr, String).like(self.term + "%"),
+                cast(models.Unternehmen.mnr, String(100)).like(self.term + "%"),
                 models.Unternehmen.name.like(self.term + "%"),
+                models.Unternehmen.unternehmensnummer.like(self.term + "%"),
             )
         )
         for x in res:
-            terms.append({"id": x.mnr, "text": "%s - %s" % (x.mnr, x.name)})
+            terms.append({"id": x.mnr, "text": "%s / %s - %s" % (x.mnr, x.unternehmensnummer, x.name)})
         print(terms)
-        # for item in self.vocabulary:
-        #    if matcher in item.title.lower():
-        #        terms.append({'id': item.token, 'text': item.title})
         return json.dumps({"q": self.term, "results": terms})
 
 
-#    def render(self):
-#        self.request.response.setHeader('Content-Type', 'application/json')
-#        terms = []
-#        matcher = self.term.lower()
-#        for item in self.vocabulary:
-#            if matcher in item.title.lower():
-#                terms.append({'id': item.token, 'text': item.title})
-#        return json.dumps({'q': self.term, 'results': terms})
 
 
 class OverviewKurse(grok.Viewlet):

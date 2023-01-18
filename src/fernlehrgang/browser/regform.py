@@ -13,7 +13,7 @@ from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer, generatePassword
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
-from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer
+from fernlehrgang.models import Fernlehrgang, Unternehmen, Teilnehmer, Kursteilnehmer, JournalEntry
 from z3c.saconfig import Session
 from zeam.form.base import action, Fields
 
@@ -30,22 +30,23 @@ class AutoRegForm(Form):
     fields += Fields(IKursteilnehmer).omit('id', 'teilnehmer_id', 'gespraech')
 
     ignoreRequest = False
+    ignoreContent = False
 
-    def updateForm(self):
-        super(AutoRegForm, self).updateForm()
-        self.fields['passwort'].defaultValue = generatePassword()
-        self.fields['erstell_datum'].defaultValue = date.today() 
+    def getContentData(self):
+        mnr = None
         mnr_or_unrs = self.request.get('form.field.mnr_or_unrs')
         if len(mnr_or_unrs) == 15:
             session = Session()
             unternehmen = session.query(Unternehmen).filter(Unternehmen.unternehmensnummer == mnr_or_unrs).one()
-            self.fields['mnr'].defaultValue = mnr = unternehmen.mnr
+            mnr = unternehmen.mnr
         else:
-            self.fields['mnr'].defaultValue = mnr = mnr_or_unrs
-        if mnr:
-            r = gboapi.get_info(mnr)
-            if r.status_code == 200:
-                self.flash(u'Das Unternehmen dieses Teilnehmers ist bereits in der GBO registriert.')
+            mnr = mnr_or_unrs
+        return {'mnr': mnr, 'status': 'A1', 'passwort': generatePassword(), 'erstell_datum': date.today()}
+
+#    def updateForm(self):
+#        super(AutoRegForm, self).updateForm()
+#        self.fields['passwort'].defaultValue = generatePassword()
+#        self.fields['erstell_datum'].defaultValue = date.today() 
 
     @action('Teilnehmer anlegen')
     def handle_save(self):
@@ -91,4 +92,11 @@ class AutoRegForm(Form):
         from zope.event import notify
         from zope.lifecycleevent import ObjectAddedEvent
         notify(ObjectAddedEvent(tn))
+        tn.journal_entries.append(
+            JournalEntry(
+                status="info",
+                type="Registriert für Lehrgang:  %s" % (flg.titel),
+                teilnehmer_id=tn.id,
+                kursteilnehmer_id=kursteilnehmer.id))
         self.flash('Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt.' % tn.id )
+

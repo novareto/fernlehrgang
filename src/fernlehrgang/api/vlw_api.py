@@ -18,6 +18,7 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 import zope.errorview.browser
+from fernlehrgang import logger 
 
 
 class IVLWSkinLayer(grok.IDefaultBrowserLayer):
@@ -70,6 +71,7 @@ class APILernwelten(grok.JSON):
             return False
 
         ret = {}
+        logger.info(self.body)
         data = simplejson.loads(self.body)
         teilnehmer_id = data.get("teilnehmer_id")
         ret["teilnehmer_id"] = teilnehmer_id
@@ -97,8 +99,10 @@ class APILernwelten(grok.JSON):
     def getTeilnehmer(self):
         ret = dict()
         ktns = []
+        logger.info(self.body)
         data = simplejson.loads(self.body)
         teilnehmer_id = data.get("teilnehmer_id")
+        print(teilnehmer_id)
         if teilnehmer_id:
             teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
             if not teilnehmer:
@@ -133,9 +137,10 @@ class APILernwelten(grok.JSON):
         ret = {}
         request = simplejson.loads(self.body)
         # request = self.request
+        logger.info('setTeilnehmer')
+        logger.info(request)
         teilnehmer_id = request.get("teilnehmer_id")
         teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
-        print(request)
         if teilnehmer:
             for field in ITeilnehmer:
                 value = request.get(field)
@@ -157,6 +162,9 @@ class APILernwelten(grok.JSON):
                 ret["muss_stammdaten_ergaenzen"] = "true"
             else:
                 ret["muss_stammdaten_ergaenzen"] = "false"
+            teilnehmer.journal_entries.append(
+                models.JournalEntry(type='Teilnehmer von VLW registriert.', status="1", kursteilnehmer_id=oktn.id)
+            )
         else:
             ret = u"Kein Teilnehmer gefunden"
         return ret
@@ -177,13 +185,17 @@ class APILernwelten(grok.JSON):
         except:
             pdate = datetime.now().strftime('%d.%m.%Y')
 
+        unr = ""
+        if teilnehmer.unternehmen[0].unternehmensnummer:
+            unr = str(teilnehmer.unternehmen[0].unternehmensnummer)
+
         fh = createpdf(ftf, {
             "druckdatum": pdate,
             "flg_titel": ktn.fernlehrgang.titel,
             "teilnehmer_id": teilnehmer_id,
             "anrede": teilnehmer.anrede,
             "flg_id": str(ktn.fernlehrgang.id),
-            "mnr": teilnehmer.unternehmen.unternehmensnummer or '',
+            "mnr": unr,
             "vorname": teilnehmer.vorname,
             "name": teilnehmer.name,
         })

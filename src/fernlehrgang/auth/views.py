@@ -77,5 +77,8 @@ class EditUser(Form):
     @action(u"Entfernen")
     def handle_delete(self):
         data, errors = self.extractData()
-        del self.context.__parent__[self.context.__name__]
+        from z3c.saconfig import Session
+        session = Session()
+        session.delete(self.context)
+        self.flash('Der Benutzer wurde gelöscht')
         self.redirect(self.url(grok.getSite(), "/users"))

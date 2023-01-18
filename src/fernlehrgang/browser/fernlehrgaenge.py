@@ -60,7 +60,7 @@ class FernlehrgangListing(TablePage):
 class AddEntryFlg(AddEntry):
     grok.context(IFernlehrgangApp)
     grok.name("addentryflg")
-    grok.require('zope.View')
+    grok.require('uvc.managefernlehrgang')
     title = u"Fernlehrgang"
 
     def url(self):

@@ -22,6 +22,7 @@ from fernlehrgang.interfaces.antwort import IAntwort
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.models import Antwort, Frage
 from fernlehrgang.viewlets import NavEntry
+from fernlehrgang.viewlets import AddEntry
 
 
 grok.templatedir("templates")
@@ -61,6 +62,19 @@ class AntwortListing(TablePage):
         return sorted(rc, key=lambda antwort: antwort.frage.frage)
 
 
+
+
+class AddEntryAntwort(AddEntry):
+    grok.context(IKursteilnehmer)
+    grok.name("addquestionan")
+    grok.require('zope.View')
+    title = u"Antworte eingeben"
+
+    def url(self):
+        return self.view.url(self.context, "addantwort")
+
+
+
 class AddAntwort(AddForm):
     grok.context(IKursteilnehmer)
     grok.title(u"Antwort")
@@ -80,6 +94,7 @@ class AddAntwort(AddForm):
 
 
 class SaveTableAction(Action):
+    postOnly = False
     def __call__(self, form, content, line):
         setattr(
             content,
@@ -91,10 +106,26 @@ class SaveTableAction(Action):
 
 
 # @menuentry(AddMenu)
+class AddEntryAntworten(AddEntry):
+    grok.context(IKursteilnehmer)
+    grok.name("addquestionanall")
+    grok.require('zope.View')
+    title = u"Alle Antworten"
+
+    def url(self):
+        return self.view.url(self.context, "addantworten")
+
+
 class AddAntworten(ComposedForm, Form):
     grok.context(IKursteilnehmer)
     grok.title("Alle Antworten eingeben")
     label = u"Alle Antworten eingeben"
+
+    def __init__(self, context, request):
+        super(AddAntworten, self).__init__(context, request)
+        self.subforms = self.allSubforms
+        print(self.subforms, self.allSubforms)
+
 
 
 class LHDummy(object):

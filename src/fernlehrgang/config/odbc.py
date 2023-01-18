@@ -21,7 +21,6 @@ try:
         #statement_compiler = DB2Compiler
 
         def initialize(self, connection):
-            import pdb; pdb.set_trace()
             super(default.DefaultDialect, self).initialize(connection)
             try:
                 self.dbms_ver = connection.connection.dbms_ver
