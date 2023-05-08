@@ -16,7 +16,9 @@ uma alle Utilities zur Verfügung zu haben.
    >>> from fernlehrgang.app import FernlehrgangApp
    >>> from z3c.saconfig import Session
    >>> root = getRootFolder()
-   >>> root['app'] = app = FernlehrgangApp()
+   >>> root = {}
+   >>> app = FernlehrgangApp()
+   >>> root['app'] = FernlehrgangApp()
    
 
 Einrichten des Fernlehrgangs
@@ -25,7 +27,7 @@ Einrichten des Fernlehrgangs
    >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
 
    >>> import datetime
-   >>> beginn = datetime.date(2010,01,01)
+   >>> beginn = datetime.date(2010,1,1)
    >>> ende = datetime.date(2010,12,31)
 
    >>> flg09 = Fernlehrgang(jahr="2009", titel="Fernlehrgang",
@@ -124,8 +126,12 @@ das traject System aufrufen können.
    >>> from zope.testbrowser.wsgi import Browser
    >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
    >>> from zope.app import wsgi
-   >>> db =  root._p_jar.db()
-   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+
+   >>> import pdb; pdb.set_trace()
+   >>> #db = root.db()
+   >>> from megrok.nozodb.utils import config, NOZODBWSGIPublisherApplication
+   >>> wsgi_app = NOZODBWSGIPublisherApplication(handle_errors = True)
+   >>> #wsgi_app = wsgi.WSGIPublisherApplication({}, HTTPPublicationRequestFactory, True)
    >>> import zope.testbrowser.wsgi
    >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
    >>> browser = Browser(wsgi_app=app)

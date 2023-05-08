@@ -59,6 +59,7 @@ setup(name='fernlehrgang',
           'zeam.form.layout',
           'zope.pluggableauth',
           'zope.sendmail',
+          'zope.testbrowser',
       ],
       extras_require={
           'oracle': ['cx_Oracle',],

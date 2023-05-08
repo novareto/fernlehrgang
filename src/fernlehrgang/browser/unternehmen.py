@@ -9,6 +9,7 @@ from fernlehrgang.browser import Display, Form, AddForm, EditForm
 from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
+from fernlehrgang.interfaces.cusa_result import ICusaResult
 from fernlehrgang.models import Unternehmen
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
@@ -19,6 +20,7 @@ from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
 from zeam.form.base import action
 from fernlehrgang.viewlets import NavEntry
+from fernlehrgang.browser import Page
 
 
 NO_VALUE = ""
@@ -49,6 +51,18 @@ class UNNavItem1(NavEntry):
 
     def url(self):
         return self.view.url(self.context, 'teilnehmer_listing')
+
+
+class UNavItemCusa(NavEntry):
+    grok.context(IUnternehmen)
+    grok.name('unnavcusa')
+    grok.order(30)
+
+    title = "Cusa Integration"
+    icon = "fas fa-user-tie"
+
+    def url(self):
+        return self.view.url(self.context, 'cusa')
 
 
 #@menuentry(NavigationMenu)
@@ -85,7 +99,7 @@ class UnternehmenListing(Form):
             sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
             v = True
         if data.get('unternehmensnummer') != NO_VALUE:
-            sql = sql.filter(Unternehmen.unternehmensnummer == data.get('unternehmensnummer'))
+            sql = sql.filter(Unternehmen.unternehmensnummer == data.get('unternehmensnummer').replace(' ', ''))
             v = True
         if data.get('hbst') != NO_VALUE:
             sql = sql.filter(Unternehmen.hbst == data.get('hbst'))
@@ -172,3 +186,11 @@ class Edit(EditForm):
     grok.context(IUnternehmen)
     grok.implements(IListing)
     template = grok.PageTemplateFile('templates/unternehmen_edit.cpt')
+
+
+class Cusa(Page):
+    grok.context(IUnternehmen)
+    template = grok.PageTemplateFile('templates/cusa.cpt')
+
+    def results(self):
+        return ICusaResult(self.context).persist()

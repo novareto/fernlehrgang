@@ -4,7 +4,7 @@ Do a functional doctest test on the app.
 Let's first create an instance of Fernlehrgang at the top level:
 
    >>> from fernlehrgang.app import FernlehrgangApp
-   >>> root = getRootFolder()
+   >>> root = {} 
    >>> root['app'] = app = FernlehrgangApp()
 
    >>> from fernlehrgang.interfaces.app import IFernlehrgangApp

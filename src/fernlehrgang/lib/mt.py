@@ -242,3 +242,101 @@ Mit freundlichen Grüßen
 BGHW Fernlehrgangsbetreuung
 """
 
+#
+###  Virtuelle Lernwelt NEU
+#
+
+
+TEXTVLW01N = u"""
+Guten Tag %s %s,
+
+
+Sie haben sich zu unserem Online-Fernlehrgang Arbeitssicherheit und Gesundheitsschutz
+registriert. Vielen Dank dafür! In der Zwischenzeit haben Sie Ihre Zugangsdaten per Mail erhalten.
+
+
+Mit dem Fernlehrgang haben Sie sich für eine alternative Betreuungsform im Arbeitsschutz entschieden.
+Das heißt, dass Sie als Unternehmerin oder Unternehmer damit in die Lage versetzt werden, den wichtigsten
+Anforderungen im Arbeitsschutz selbst nachzukommen. Voraussetzung dafür ist diese Qualifizierung,
+für die Sie 3 Monate Zeit haben.
+Voraussetzung dafür ist diese Qualifizierung, für die Sie 3 Monate Zeit haben.
+Ziel des Fernlehrgangs ist es, die Gesundheit und die Leistungsfähigkeit ihrer Mitarbeiterinnen und
+Mitarbeiter zu verbessern bzw. zu erhalten.
+
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in der Zeit
+Montag bis Freitag zwischen 8:30 Uhr und 12:30 Uhr zur Verfügung.
+
+
+Mit freundlichen Grüßen
+Ihre Fernlehrgangsbetreuung der BGHW
+"""
+
+
+TEXTVLW02N = u"""
+Guten Tag %s %s,
+
+
+vor 6 Wochen haben Sie sich zu unserem Fernlehrgang Arbeitssicherheit und Gesundheitsschutz registriert
+und wir haben Ihnen Ihre Zugangsdaten per E-Mail zur Verfügung gestellt.
+Mit dieser E-Mail möchten wir Sie an die Teilnahme erinnern.
+Die Bearbeitungszeit endet 3 Monate nach Ihrer Registrierung.
+
+
+Der Fernlehrgang ist erfolgreich absolviert, wenn Sie alle Lernbücher bearbeitet
+und alle Fragen zu Ihrer Gefährdungsermittlung beantwortet haben.
+
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in der Zeit
+Montag bis Freitag zwischen 8:30 Uhr und 12:30 Uhr zur Verfügung.
+
+
+Mit freundlichen Grüßen
+Ihre Fernlehrgangsbetreuung der BGHW
+"""
+
+TEXTVLW03N = u"""
+Guten Tag %s %s,
+
+
+die Bearbeitungsfrist von 3 Monaten für den Fernlehrgang Arbeitssicherheit und Gesundheitsschutz ist abgelaufen.
+Um Ihnen eine abschließende Teilnahme zu ermöglichen, haben wir Ihre Bearbeitungszeit um 4 Wochen verlängert.
+Nach Ablauf dieser Verlängerung wird der Zugang gesperrt. Ihr Unternehmen unterliegt dann der Regelbetreuung
+und Sie werden aufgefordert einen Nachweis darüber zu erbringen (Betreuungsurkunde oder Vertrag
+mit einem Dienstleister).
+
+
+Der Fernlehrgang ist erfolgreich absolviert, wenn Sie alle Lernbücher bearbeitet
+und alle Fragen zu Ihrer Gefährdungsermittlung beantwortet haben.
+
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in der Zeit
+Montag bis Freitag zwischen 8:30 Uhr und 12:30 Uhr zur Verfügung.
+
+
+Mit freundlichen Grüßen
+Ihre Fernlehrgangsbetreuung der BGHW
+"""
+
+TEXTVLW04N = u"""
+Guten Tag %s %s,
+
+
+vor einem Monat sind Sie über die Beendigung der Bearbeitungsfrist für den Fernlehrgang informiert worden.
+Die Verlängerungsfrist von 4 Wochen haben Sie auch nicht in Anspruch genommen.
+Ihr Zugang wurde für die weitere Nutzung gesperrt, für Sie gelten ab sofort die Anforderungen der
+Regelbetreuung.
+
+
+Der Arbeitsschutz ist in Deutschland rechtlich verpflichtend. Wir bitten Sie daher  (,) uns einen Nachweis über
+die Regelbetreuung zu erbringen (DGUV Vorschrift 2 §2 Abs. 1, z.B. Betreuungsurkunde oder Vertrag
+mit einem Dienstleister). Vielen Dank für Ihr Verständnis!
+
+
+Für Fragen stehen wir Ihnen unter fernlehrgang@bghw.de und telefonisch unter 0800/1013742 in der Zeit
+Montag bis Freitag zwischen 8:30 Uhr und 12:30 Uhr zur Verfügung.
+
+
+Mit freundlichen Grüßen
+Ihre Fernlehrgangsbetreuung der BGHW
+"""

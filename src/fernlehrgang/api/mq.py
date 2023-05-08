@@ -208,14 +208,23 @@ class Worker(ConsumerMixin):
     def createGBODaten(self, ktn, orgas):
         teilnehmer = ktn.teilnehmer
         unternehmen = teilnehmer.unternehmen[0]
-        ftitel = teilnehmer.titel
-        if ftitel == '0':
-            ftitel = ''
+
+        def gVt(value):
+            if value:
+                return ITeilnehmer.get("titel").source.getTermByToken(value).title
+            return value
+        try:
+            ftitel = gVt(teilnehmer.titel)
+        except:
+            ftitel = ""
         res = dict()
         res['token'] = GBO_TOKEN 
         anrede = teilnehmer.anrede
+
+
         if not anrede:
             anrede = 0 
+
         unr = unternehmen.unternehmensnummer or ''
         res['client'] = dict(
             #number = teilnehmer.unternehmen_mnr,

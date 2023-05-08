@@ -40,6 +40,7 @@ class UpdateAction(Action):
             return FAILURE
 
         apply_data_event(form.fields, form.getContentData(), data)
+        #grok.notify(zope.lifecycleevent.ObjectModifiedEvent(form.context))
         form.flash(u"Content updated")
         form.redirect(form.url(form.context))
 

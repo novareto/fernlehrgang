@@ -264,7 +264,7 @@ class CalculateResultsVLW(grok.Adapter):
         un_klasse = context.un_klasse
         if comment == "Bestanden":
             if branche == "ja":
-                if un_klasse == "G2" or un_klasse == "G":
+                if un_klasse == "G2" or un_klasse == "G1":
                     if context.gespraech == "2":
                         comment = u"Nicht Bestanden, da das Abschlussseminar noch nicht erfolgreich abgeschlossen wurde."
                     elif context.gespraech == "0" or context.gespraech is None:

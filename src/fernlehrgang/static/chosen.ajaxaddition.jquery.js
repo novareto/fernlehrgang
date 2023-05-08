@@ -167,6 +167,7 @@
       bind('keyup', processValue).
       bind('paste', function (e) {
         var that = this;
+          console.log(that)
         setTimeout(function() {
           processValue.call(that, e);
         }, 50);
@@ -175,6 +176,12 @@
     function processValue(e) {
 			var field = $(this),
 					q = field.val();
+
+            console.log(q)
+            q = q.replace(/\s+/g, '');
+            console.log(q)
+
+
 
 			//don't fire ajax if...
 			if ((e.type === 'paste' && field.is(':not(:focus)')) ||

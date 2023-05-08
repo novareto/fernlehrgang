@@ -94,6 +94,7 @@ class APILernwelten(grok.JSON):
             info = self.gbo.get_info(str(mnr))
             if info.status_code == 200:
                 ret["gbo"] = True
+        print('getAuth', ret)
         return ret
 
     def getTeilnehmer(self):
@@ -131,6 +132,7 @@ class APILernwelten(grok.JSON):
                 ret["kurse"] = ktns
                 ret["un_klasse"] = oktn.un_klasse
                 ret["branche"] = oktn.branche
+        print("Teilnhemer", ret)
         return ret
 
     def setTeilnehmer(self):

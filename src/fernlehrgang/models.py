@@ -141,6 +141,16 @@ class Fernlehrgang(Base, RDBMixin):
         return dict(fernlehrgang_id = fernlehrgang.id)
 
 
+
+from dataclasses import dataclass
+
+@dataclass
+class CUSAResult:
+    message: str = ""
+
+
+
+
 @implementer(IUnternehmen, IDCDescriptiveProperties)
 class Unternehmen(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
@@ -459,3 +469,30 @@ class JournalEntry(Base, RDBMixin):
             jid=entry.id,
             id=entry.teilnehmer.id,
             unternehmen_mnr=entry.teilnehmer.unternehmen_mnr)
+
+
+
+class CUSAResult(Base, RDBMixin):
+    grok.context(IUnternehmen)
+    traject.pattern("unternehmen/:unternehmen_mnr/cusaresult/:id")
+
+    __tablename__ = 'flg_prv2'
+    #id = Column(Integer, Sequence('journal_seq', start=1000000, increment=1, schema=SCHEMA), primary_key=True)
+    datum = Column(DateTime, default=datetime.datetime.now)
+
+    ergebnis = Column(String(256))
+    fernlehrgang_jahr = Column(String(256))
+    kompetenzzentrum = Column(String(256))
+    lehrgang = Column(String(256))
+    name = Column(String(256))
+    status = Column(String(256))
+    unternehmen_mnr = Column(String(256), ForeignKey(Unternehmen.mnr), primary_key=True)
+
+
+    def factory(id, unternehmen_mnr):
+        session = Session()
+        return session.query(CUSAResult).filter(
+            and_(CUSAResult.id == int(id), CUSAResult.unternehmen_mnr == unternehmen_mnr)).one()
+
+    def arguments(cusaresult):
+        return dict(id = cusaresult.id, unternehmen_mnr = cusaresult.unternehmen_mnr)
