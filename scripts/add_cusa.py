@@ -17,7 +17,7 @@ def worker(app, root):
     #flg = root['app']
     setSite(root)
     session = Session()
-    q_unternehmen = session.query(models.Unternehmen).filter(models.Unternehmen.mnr.startswith('1'))
+    q_unternehmen = session.query(models.Unternehmen).filter(models.Unternehmen.mnr.startswith('9'))
     i = 1
     print (q_unternehmen.count())
     sp_range = [x for x in range(0, 500000, 1000)]

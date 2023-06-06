@@ -202,7 +202,7 @@ Gruppe: G
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b> "}
 
 
 Branche: nein 
@@ -232,7 +232,7 @@ Gruppe: G
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b> "}
 
 
 Fortbildung

@@ -62,7 +62,7 @@ Unternehmen mit keinen Teilnehmern
 
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='nicht angelegt', message='Kein Unternehmermodel BGHW')
+   CUSAResult(status='nicht angelegt', message='Kein Unternehmermodel BGHW', flg='', kompetenzzentrum='', titel='', name='')
 
 
 Unternehmen mit Teilnehmern angelegt
@@ -87,7 +87,7 @@ Teilnehmer nicht registriert
 
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='nicht registriert', message='kein TN angemeldet')
+   CUSAResult(status='nicht registriert', message='nicht bestanden (kein TN angemeldet)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L1" 
@@ -95,7 +95,7 @@ Teilnehmer mit Status "L1"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L1"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='UN-Modell anderer UV-Träger', message='Teilnahme nicht erforderlich')
+   CUSAResult(status='UN-Modell anderer UV-Träger', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L2" 
@@ -103,7 +103,7 @@ Teilnehmer mit Status "L2"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L2"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Grund- bzw. Regelbetreuung', message='Teilnahme nicht erforderlich')
+   CUSAResult(status='Grund- bzw. Regelbetreuung', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L3" 
@@ -111,7 +111,7 @@ Teilnehmer mit Status "L3"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L3"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Keine Beschäftigten', message='Teilnahme nicht erforderlich')
+   CUSAResult(status='Keine Beschäftigten', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L4" 
@@ -119,7 +119,7 @@ Teilnehmer mit Status "L4"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L4"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Teilnahme aus pers. Gründen verschoben', message='nicht bestanden')
+   CUSAResult(status='Teilnahme aus pers. Gründen verschoben', message='nicht bestanden', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L5" 
@@ -127,7 +127,7 @@ Teilnehmer mit Status "L5"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L5"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Teilnahme ist bereits erfolgt', message='Teilnahme nicht erforderlich')
+   CUSAResult(status='Teilnahme ist bereits erfolgt', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L6" 
@@ -135,7 +135,7 @@ Teilnehmer mit Status "L6"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L6"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Aufgabe des Unternehmens', message='Teilnahme nicht erforderlich')
+   CUSAResult(status='Aufgabe des Unternehmens', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L7" 
@@ -143,7 +143,7 @@ Teilnehmer mit Status "L7"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L7"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Teilnehmer nicht mehr im Unternehmen', message='nicht mehr gültig')
+   CUSAResult(status='Teilnehmer nicht mehr im Unternehmen', message='nicht bestanden (Teilnehmer ausgeschieden)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L8" 
@@ -151,7 +151,7 @@ Teilnehmer mit Status "L8"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L8"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Unternehmer nicht aktiv im Betriebsgeschehen', message='Teilnahme nicht möglich')
+   CUSAResult(status='Unternehmer nicht aktiv im Betriebsgeschehen', message='nicht bestanden (keine Berechtigung)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "S1" 
@@ -159,7 +159,7 @@ Teilnehmer mit Status "S1"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "S1"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Interner Fehler', message='nicht bestanden (Export Notiz)')
+   CUSAResult(status='Interner Fehler', message='nicht bestanden (Export Notiz)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "Z1" 
@@ -167,7 +167,7 @@ Teilnehmer mit Status "Z1"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "Z1"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Bearbeitungsfrist abgelaufen', message='Teilnahme nicht erforderlich')
+   CUSAResult(status='Bearbeitungsfrist abgelaufen', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "A2" 
@@ -175,7 +175,7 @@ Teilnehmer mit Status "A2"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "A2"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='nicht registriert', message='kein TN angemeldet')
+   CUSAResult(status='nicht registriert', message='nicht bestanden (kein TN angemeldet)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 
@@ -200,11 +200,11 @@ Teilnehmer mit Antworten
    <fernlehrgang.browser.ergebnisse.CalculateResultsVLW object at ...>
    
    >>> results.summary()
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden (Noch keine Antwort aus der VLW); </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden (VLW noch nicht vollständig bearbeitet); </span> </b> "}
 
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='angemeldet', message="<b> <span class='text-danger'> Nicht Bestanden (Noch keine Antwort aus der VLW); </span> </b> ")
+   CUSAResult(status='angemeldet', message="<b> <span class='text-danger'> Nicht Bestanden (VLW noch nicht vollständig bearbeitet); </span> </b> ", flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
   
    >>> antwort = models.Antwort(lehrheft_id=lheft1.id, frage_id=frage1.id, gbo="OK")
    >>> ktn1.antworten.append(antwort) 
@@ -216,7 +216,7 @@ Teilnehmer mit Antworten
    >>> unt1 = session.query(models.Unternehmen).get('0000-00025')
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='angemeldet', message="<b> <span class='text-success'> Bestanden; </span> </b> ")
+   CUSAResult(status='angemeldet', message="<b> <span class='text-success'> Bestanden; </span> </b> ", flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
    >>> kt2 = Kursteilnehmer(status="A1")
@@ -231,4 +231,4 @@ Teilnehmer mit Antworten
    >>> cusa_result.get_kursteilnehmer()
    [<Kursteilnehmer(id='2', fernlehrgangid='1')>, <Kursteilnehmer(id='1', fernlehrgangid='1')>]
    >>> cusa_result.calculate()
-   CUSAResult(status='angemeldet', message="<b> <span class='text-success'> Bestanden; </span> </b> ")
+   CUSAResult(status='angemeldet', message="<b> <span class='text-success'> Bestanden; </span> </b> ", flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')

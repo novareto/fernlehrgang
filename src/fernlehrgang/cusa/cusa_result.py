@@ -87,7 +87,7 @@ class CusaResult(grok.Adapter):
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
                 else:
@@ -97,40 +97,40 @@ class CusaResult(grok.Adapter):
                         kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                         flg=ktn.fernlehrgang.jahr,
                         titel=ktn.fernlehrgang.titel,
-                        name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                        name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                     )
             elif wrongStatus(ktn):
                 if ktn.status == "A2":
                     result.append(
                         CUSAResult(
                             status=wrongStatus(ktn),
-                            message="kein TN angemeldet",
+                            message="nicht bestanden (kein TN angemeldet)",
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
                 elif ktn.status == "L8":
                     result.append(
                         CUSAResult(
                             status=wrongStatus(ktn),
-                            message="Teilnahme nicht möglich",
+                            message="nicht bestanden (keine Berechtigung)",
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
                 elif ktn.status == "L7":
                     result.append(
                         CUSAResult(
                             status=wrongStatus(ktn),
-                            message="nicht mehr gültig",
+                            message="nicht bestanden (Teilnehmer ausgeschieden)",
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
                 elif ktn.status == "L4":
@@ -141,7 +141,7 @@ class CusaResult(grok.Adapter):
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
                 elif ktn.status == "S1":
@@ -152,7 +152,18 @@ class CusaResult(grok.Adapter):
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
+                        )
+                    )
+                elif ktn.status == "Z1":
+                    result.append(
+                        CUSAResult(
+                            status=wrongStatus(ktn),
+                            message="nicht bestanden",
+                            kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
+                            flg=ktn.fernlehrgang.jahr,
+                            titel=ktn.fernlehrgang.titel,
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
                 else:
@@ -163,7 +174,7 @@ class CusaResult(grok.Adapter):
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,
-                            name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                            name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                         )
                     )
             else:
@@ -174,22 +185,28 @@ class CusaResult(grok.Adapter):
                         kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                         flg=ktn.fernlehrgang.jahr,
                         titel=ktn.fernlehrgang.titel,
-                        name="%s %s" % (ktn.teilnehmer.vorname, ktn.teilnehmer.name)
+                        name="%s, %s" % (ktn.teilnehmer.name, ktn.teilnehmer.vorname)
                     )
                 )
         return result.pop()
 
+
+
     def persist(self):
         result = self.calculate()
         session = Session()
+        def kzentrum(kzentrum):
+            if kzentrum:
+                return kzentrum.capitalize()
+            return kzentrum
         cr = models.CUSAResult(
-            ergebnis=strip_tags(result.message),
+            ergebnis=' '.join(strip_tags(result.message).strip()),
             status=strip_tags(result.status),
             unternehmen_mnr=self.context.mnr,
             fernlehrgang_jahr=result.flg,
             lehrgang=result.titel,
             name=result.name,
-            kompetenzzentrum=result.kompetenzzentrum,
+            kompetenzzentrum=kzentrum(result.kompetenzzentrum),
         )
         #import pdb; pdb.set_trace()
         session.merge(cr)
