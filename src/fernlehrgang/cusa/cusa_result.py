@@ -200,7 +200,7 @@ class CusaResult(grok.Adapter):
                 return kzentrum.capitalize()
             return kzentrum
         cr = models.CUSAResult(
-            ergebnis=' '.join(strip_tags(result.message).strip()),
+            ergebnis=''.join(strip_tags(result.message).strip()),
             status=strip_tags(result.status),
             unternehmen_mnr=self.context.mnr,
             fernlehrgang_jahr=result.flg,
