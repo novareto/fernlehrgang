@@ -57,7 +57,7 @@ class CusaResult(grok.Adapter):
     def calculate(self):
         if len(self.context.teilnehmer) == 0:
             result = CUSAResult(
-                status="nicht angelegt", message="Kein Unternehmermodel BGHW"
+                status="nicht angelegt", message="Kein Unternehmermodell BGHW"
             )
             return result
 
@@ -126,7 +126,7 @@ class CusaResult(grok.Adapter):
                     result.append(
                         CUSAResult(
                             status=wrongStatus(ktn),
-                            message="nicht bestanden (Teilnehmer ausgeschieden)",
+                            message="nicht bestanden (TN ausgeschieden)",
                             kompetenzzentrum=ktn.teilnehmer.kompetenzzentrum,
                             flg=ktn.fernlehrgang.jahr,
                             titel=ktn.fernlehrgang.titel,

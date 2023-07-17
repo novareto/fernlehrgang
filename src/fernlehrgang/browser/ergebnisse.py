@@ -160,46 +160,49 @@ class CalculateResults(grok.Adapter):
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
         punkte = 0
-        comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
+        comment = "nicht bestanden (Punktzahl nicht erreicht)"
         context = self.context
         mindest_punktzahl = context.fernlehrgang.punktzahl
         lehrhefte = self.lehrhefte(lehrhefte, session)
         for lehrheft in lehrhefte:
             punkte += lehrheft["punkte"]
         if context.status in POSTVERSANDSPERRE:
-            comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
+            comment = "nicht bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
-            comment = "Bestanden"
+            comment = "bestanden"
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         # Abschlussgespräch Seminar
         if not unternehmen:
             unternehmen = context.unternehmen
             branche = context.branche
             un_klasse = context.un_klasse
-            if "Nicht Bestanden" not in comment:
+            if "nicht bestanden" not in comment:
                 if branche == "ja":
                     if un_klasse == "G2" or un_klasse == "G":
                         if context.gespraech == "2":
-                            comment = u"Nicht Bestanden, da das Abschlussseminar nicht erfolgreich abgeschlossen wurde."
+                            #comment = u"nicht bestanden, da das Abschlussseminar nicht erfolgreich abgeschlossen wurde."
+                            comment = u"nicht bestanden (Seminar offen)"
                         elif context.gespraech == "0" or context.gespraech is None:
-                            comment = u"Nicht bestanden (Seminar offen)"
+                            comment = u"nicht bestanden (Seminar offen)"
                     if un_klasse == "G3":
                         if context.gespraech == "2":
-                            comment = u"Nicht Bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
+                            #comment = u"nicht bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
+                            comment = u"nicht bestanden (Abschlussgespräch offen)"
                         elif context.gespraech == "0" or context.gespraech is None:
-                            comment = u"Nicht Bestanden (Abschlussgespräch offen)."
+                            comment = u"nicht bestanden (Abschlussgespräch offen)"
                 elif branche == "nein":
                     if un_klasse == "G2" or un_klasse == "G":
                         if context.gespraech == "2":
-                            comment = u"Nicht Bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
+                            #comment = u"nicht bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
+                            comment = u"nicht bestanden (Abschlussgespräch offen)"
                         elif context.gespraech == "0" or context.gespraech is None:
-                            comment = u"Nicht Bestanden (Abschlussgespräch offen)."
+                            comment = u"nicht bestanden (Abschlussgespräch offen)"
         self.context.fixed_results = comment
-        if comment == "Bestanden":
+        if comment == "bestanden":
             klass = "text-success"
         else:
             klass = "text-danger"
-        comment = "<b> <span class='%s'> %s;  </span> </b> %s" % (
+        comment = "<b> <span class='%s'> %s </span> </b> %s" % (
             klass,
             comment,
             c_punkte,
@@ -214,24 +217,24 @@ class CalculateResultsFortbildung(CalculateResults):
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
         punkte = 0
-        comment = "Nicht Bestanden (Punktzahl nicht erreicht)"
+        comment = "nicht bestanden (Punktzahl nicht erreicht)"
         context = self.context
         mindest_punktzahl = context.fernlehrgang.punktzahl
         lehrhefte = self.lehrhefte(lehrhefte, session)
         for lehrheft in lehrhefte:
             punkte += lehrheft["punkte"]
         if context.status in POSTVERSANDSPERRE:
-            comment = "Nicht Bestanden da Postversandsperre: %s" % context.status
+            comment = "nicht bestanden da Postversandsperre: %s" % context.status
         elif punkte >= mindest_punktzahl:
-            comment = "Bestanden"
+            comment = "bestanden"
         c_punkte = " Punktzahl (%s/%s)" % (punkte, mindest_punktzahl)
         # comment = "%s" %(comment, c_punkte)
         self.context.fixed_results = comment
-        if comment.startswith("Bestanden"):
+        if comment.startswith("bestanden"):
             klass = "text-success"
         else:
             klass = "text-danger"
-        comment = "<b> <span class='%s'> %s; </span> </b> %s" % (
+        comment = "<b> <span class='%s'> %s </span> </b> %s" % (
             klass,
             comment,
             c_punkte,
@@ -254,41 +257,43 @@ class CalculateResultsVLW(grok.Adapter):
         return False
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
-        comment = u"Nicht Bestanden (VLW noch nicht vollständig bearbeitet)"
+        comment = u"nicht bestanden (VLW noch nicht vollständig bearbeitet)"
         context = self.context
         if context.status in POSTVERSANDSPERRE:
-            comment = "Nicht Bestanden"
+            comment = "nicht bestanden"
         elif self.getResults():
-            comment = "Bestanden"
+            comment = "bestanden"
         branche = context.branche
         un_klasse = context.un_klasse
-        if comment == "Bestanden":
+        if comment == "bestanden":
             if branche == "ja":
                 if un_klasse == "G2" or un_klasse == "G1":
                     if context.gespraech == "2":
-                        comment = u"Nicht Bestanden (Seminar offen)"
+                        comment = u"nicht bestanden (Seminar offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"Nicht bestanden (Seminar offen)"
+                        comment = u"nicht bestanden (Seminar offen)"
                 if un_klasse == "G3":
                     if context.gespraech == "2":
-                        comment = u"Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
+                        #comment = u"nicht bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
+                        comment = u"nicht bestanden (Abschlussgespräch offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"Nicht Bestanden (Abschlussgespräch offen)."
+                        comment = u"nicht bestanden (Abschlussgespräch offen)"
             elif branche == "nein":
                 if un_klasse == "G2":
                     if context.gespraech == "2":
-                        comment = u"Nicht Bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
+                        #comment = u"nicht bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
+                        comment = u"nicht bestanden (Abschlussgespräch offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"Nicht Bestanden (Abschlussgespräch offen)."
+                        comment = u"nicht bestanden (Abschlussgespräch offen)"
                 elif un_klasse == "G1":
                     if context.gespraech == "2":
-                        comment = u"Nicht Bestanden (Seminar offen)"
+                        comment = u"nicht bestanden (Seminar offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"Nicht bestanden (Seminar offen)"
+                        comment = u"nicht bestanden (Seminar offen)"
         self.context.fixed_results = comment
-        if comment == "Bestanden":
+        if comment == "bestanden":
             klass = "text-success"
         else:
             klass = "text-danger"
-        comment = "<b> <span class='%s'> %s; </span> </b> " % (klass, comment)
+        comment = "<b> <span class='%s'> %s </span> </b> " % (klass, comment)
         return dict(points=0, resultpoints=0, comment=comment)

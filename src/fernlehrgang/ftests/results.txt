@@ -133,7 +133,7 @@ Antwort
    <fernlehrgang.browser.ergebnisse.CalculateResultsVLW object at ...>
    
    >>> results.summary()
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden (Noch keine Antwort aus der VLW); </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden (VLW noch nicht vollständig bearbeitet) </span> </b> "}
   
    >>> antwort = models.Antwort(lehrheft_id=lheft1.id, frage_id=frage1.id, gbo="OK")
    >>> ktn1.antworten.append(antwort) 
@@ -142,19 +142,17 @@ Antwort
    
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> bestanden </span> </b> "}
 
    # {'comment': "<b> <span class='text-success'> Bestanden; </span> </b> ", 'resultpoints': 0, 'points': 0}
 
    >>> ktn1.fixed_results
-   'Bestanden'
+   'bestanden'
 
    >>> ktn1.status = 'Z1'
    >>> results = ICalculateResults(ktn1)
    >>> results.summary()
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden da Postversandsperre: Z1; </span> </b> "}
-
-   #{'comment': "<b> <span class='text-danger'> Nicht Bestanden da Postversandsperre: Z1; </span> </b> ", 'resultpoints': 0, 'points': 0}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden </span> </b> "}
 
 
 
@@ -183,7 +181,7 @@ Gruppe: G2
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden, da noch kein Abschlussseminar besucht wurde.; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden (Seminar offen) </span> </b> "}
 
 Branche: ja
 Gruppe: G3 
@@ -192,7 +190,7 @@ Gruppe: G3
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden (Abschlussgespräch offen) </span> </b> "}
 
 
 Branche: ja
@@ -202,7 +200,7 @@ Gruppe: G
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> bestanden </span> </b> "}
 
 
 Branche: nein 
@@ -214,7 +212,7 @@ Gruppe: G2
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden, da das Abschlussgespräch noch nicht geführt wurde.; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden (Abschlussgespräch offen) </span> </b> "}
 
 Branche: nein 
 Gruppe: G3
@@ -223,7 +221,7 @@ Gruppe: G3
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> bestanden </span> </b> "}
 
 Branche: nein 
 Gruppe: G
@@ -232,7 +230,7 @@ Gruppe: G
    >>> results = ICalculateResults(ktn1)
    >>> res = results.summary()
    >>> res
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b> "}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> bestanden </span> </b> "}
 
 
 Fortbildung
@@ -255,20 +253,20 @@ Fortbildung
    <fernlehrgang.browser.ergebnisse.CalculateResultsFortbildung object at ...>
    
    >>> results.summary()
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b>  Punktzahl (0/0)"}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> bestanden </span> </b>  Punktzahl (0/0)"}
 
    >>> ktn4.status = "Z1"
    >>> results.summary()
-   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> Nicht Bestanden da Postversandsperre: Z1; </span> </b>  Punktzahl (0/0)"}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden da Postversandsperre: Z1 </span> </b>  Punktzahl (0/0)"}
   
    >>> antwort = models.Antwort(lehrheft_id=lheft1.id, frage_id=frage1.id, antwortschema="ab")
    >>> ktn4.antworten.append(antwort) 
    >>> ktn4.status = "A1"
    >>> results = ICalculateResults(ktn4)
    >>> results.summary()
-   {'points': 0, 'resultpoints': 1, 'comment': "<b> <span class='text-success'> Bestanden; </span> </b>  Punktzahl (1/0)"}
+   {'points': 0, 'resultpoints': 1, 'comment': "<b> <span class='text-success'> bestanden </span> </b>  Punktzahl (1/0)"}
 
    >>> ktn4.status = "Z1"
    >>> results.summary()
-   {'points': 0, 'resultpoints': 1, 'comment': "<b> <span class='text-danger'> Nicht Bestanden da Postversandsperre: Z1; </span> </b>  Punktzahl (1/0)"}
+   {'points': 0, 'resultpoints': 1, 'comment': "<b> <span class='text-danger'> nicht bestanden da Postversandsperre: Z1 </span> </b>  Punktzahl (1/0)"}
    >>> session.flush()
