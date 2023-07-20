@@ -33,6 +33,9 @@ Einrichten des Fernlehrgangs
    >>> flg09 = Fernlehrgang(jahr="2009", titel="Fernlehrgang", typ="4", punktzahl=1,
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
 
+   >>> flg10 = Fernlehrgang(jahr="2010", titel="Fernlehrgang", typ="4", punktzahl=1,
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+
    >>> lheft1 = Lehrheft(nummer=1)
 
    >>> frage1 = Frage(frage=1, antwortschema="ab")
@@ -43,6 +46,7 @@ Einrichten des Fernlehrgangs
 
    >>> session = Session()
    >>> session.add(flg09)
+   >>> session.add(flg10)
    >>> import transaction; transaction.commit()
 
     
@@ -228,13 +232,13 @@ Teilnehmer mit Antworten
    >>> kt2 = Kursteilnehmer(status="A1")
    >>> teilnehmer = session.query(models.Teilnehmer).get(1)
    >>> teilnehmer.kursteilnehmer.append(kt2)
-   >>> flg = session.query(Fernlehrgang).get(1)
+   >>> flg = session.query(Fernlehrgang).get(2)
    >>> flg.kursteilnehmer.append(kt2)
    >>> session.flush()
 
 
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.get_kursteilnehmer()
-   [<Kursteilnehmer(id='2', fernlehrgangid='1')>, <Kursteilnehmer(id='1', fernlehrgangid='1')>]
+   [<Kursteilnehmer(id='2', fernlehrgangid='2')>, <Kursteilnehmer(id='1', fernlehrgangid='1')>]
    >>> cusa_result.calculate()
-   CUSAResult(status='angemeldet', message="<b> <span class='text-danger'> nicht bestanden (Punktzahl nicht erreicht) </span> </b>  Punktzahl (0/1)", flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
+   CUSAResult(status='angemeldet', message="<b> <span class='text-danger'> nicht bestanden (Punktzahl nicht erreicht) </span> </b>  Punktzahl (0/1)", flg='2010', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')

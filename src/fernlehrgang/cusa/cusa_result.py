@@ -52,7 +52,7 @@ class CusaResult(grok.Adapter):
         for teilnehmer in self.context.teilnehmer:
             for ktn in teilnehmer.kursteilnehmer:
                 ktns.append(ktn)
-        return sorted(ktns, key=lambda x: x.id, reverse=True)
+        return sorted(ktns, key=lambda x: x.fernlehrgang_id, reverse=True)
 
     def calculate(self):
         if len(self.context.teilnehmer) == 0:
