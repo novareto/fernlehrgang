@@ -62,7 +62,7 @@ Unternehmen mit keinen Teilnehmern
 
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='nicht angelegt', message='Kein Unternehmermodell BGHW', flg='', kompetenzzentrum='', titel='', name='')
+   CUSAResult(status='nicht angelegt', message='kein Unternehmermodell BGHW', flg='', kompetenzzentrum='', titel='', name='')
 
 
 Unternehmen mit Teilnehmern angelegt
@@ -111,7 +111,7 @@ Teilnehmer mit Status "L3"
    >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L3"
    >>> cusa_result = ICusaResult(unt1)
    >>> cusa_result.calculate()
-   CUSAResult(status='Keine Beschäftigten', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
+   CUSAResult(status='keine Beschäftigten', message='Teilnahme nicht erforderlich', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 
 Teilnehmer mit Status "L4" 
@@ -153,6 +153,12 @@ Teilnehmer mit Status "L8"
    >>> cusa_result.calculate()
    CUSAResult(status='UN nicht aktiv im Betriebsgeschehen', message='nicht bestanden (keine Berechtigung)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
+Teilnehmer mit Status "L9" 
+
+   >>> unt1.teilnehmer[0].kursteilnehmer[0].status = "L9"
+   >>> cusa_result = ICusaResult(unt1)
+   >>> cusa_result.calculate()
+   CUSAResult(status='TN kein Unternehmer', message='nicht bestanden (keine Berechtigung)', flg='2009', kompetenzzentrum=None, titel='Fernlehrgang', name='Lars Walther, None')
 
 Teilnehmer mit Status "S1" 
 
