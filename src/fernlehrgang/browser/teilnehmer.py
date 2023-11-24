@@ -85,9 +85,9 @@ class TeilnehmerListing(TablePage):
 
 class AddEntryTN(AddEntry):
     grok.context(IUnternehmen)
-    grok.name("addentryTN")
     grok.require('zope.View')
     title = u"Teilnehmer"
+    grok.require('uvc.managefernlehrgang')
 
     def url(self):
         return self.view.url(self.context, "addteilnehmer")
@@ -154,6 +154,7 @@ class Edit(EditForm):
     grok.context(ITeilnehmer)
     grok.name("edit")
     label = u"Teilnehmer"
+    grok.require('uvc.managefernlehrgang')
 
     fields = Fields(ITeilnehmer).omit("id", "strasse", "nr", "plz", "ort", "adresszusatz")
     fields["kompetenzzentrum"].mode = "radio"

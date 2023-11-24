@@ -125,6 +125,7 @@ class EditEntryFlg(ObjectEntry):
     grok.context(IContent)
     grok.name("edit_entry_flg")
     title = u"Bearbeiten"
+    grok.require('uvc.managefernlehrgang')
 
     def url(self):
         return self.view.url(self.context, "edit")

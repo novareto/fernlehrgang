@@ -35,6 +35,7 @@ class AddMenu(uvc.menus.components.Menu):
     grok.name('addmenu')
     grok.context(Interface)
     grok.title('Hinzufgen')
+    grok.require('uvc.managefernlehrgang')
 
 
 class AddEntry(uvc.menus.components.MenuItem):
