@@ -7,7 +7,7 @@ import datetime
 import simplejson
 
 from .gbo import GBOAPI
-from .certpdf import createpdf
+from .certpdf import createpdf, createfortpdf
 from base64 import encodestring
 from fernlehrgang import models
 from z3c.saconfig import Session
@@ -94,16 +94,18 @@ class APILernwelten(grok.JSON):
             info = self.gbo.get_info(str(mnr))
             if info.status_code == 200:
                 ret["gbo"] = True
-        print('getAuth', ret)
         return ret
 
     def getTeilnehmer(self):
+        def check_result(comment):
+            if 'nicht bestanden' in comment:
+                return False
+            return True
         ret = dict()
         ktns = []
         logger.info(self.body)
         data = simplejson.loads(self.body)
         teilnehmer_id = data.get("teilnehmer_id")
-        print(teilnehmer_id)
         if teilnehmer_id:
             teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
             if not teilnehmer:
@@ -118,6 +120,7 @@ class APILernwelten(grok.JSON):
                             fernlehrgang_id=flg_id,
                             titel=ktn.fernlehrgang.titel,
                             jahr=ktn.fernlehrgang.jahr,
+                            bestanden=check_result(ktn.result['comment'])
                         )
                     )
             if teilnehmer:
@@ -132,7 +135,6 @@ class APILernwelten(grok.JSON):
                 ret["kurse"] = ktns
                 ret["un_klasse"] = oktn.un_klasse
                 ret["branche"] = oktn.branche
-        print("Teilnhemer", ret)
         return ret
 
     def setTeilnehmer(self):
@@ -172,9 +174,11 @@ class APILernwelten(grok.JSON):
         return ret
 
     def getCertificate(self):
-        teilnehmer_id = self.request.form.get("teilnehmer_id")
-        teilnehmer = self.session.query(models.Teilnehmer).get(int(teilnehmer_id))
-        ktn = teilnehmer.getVLWKTN()
+        kursteilnehmer_id = self.request.form.get("kursteilnehmer_id")
+        ktn = self.session.query(models.Kursteilnehmer).get(int(kursteilnehmer_id))
+        teilnehmer = ktn.teilnehmer
+        teilnehmer_id = ktn.teilnehmer.id
+        #ktn = teilnehmer.getVLWKTN()
         je = models.JournalEntry(
             type="Zertifikat gedrukt", status="1", kursteilnehmer_id=ktn.id
         )
@@ -190,17 +194,29 @@ class APILernwelten(grok.JSON):
         unr = ""
         if teilnehmer.unternehmen[0].unternehmensnummer:
             unr = str(teilnehmer.unternehmen[0].unternehmensnummer)
-
-        fh = createpdf(ftf, {
-            "druckdatum": pdate,
-            "flg_titel": ktn.fernlehrgang.titel,
-            "teilnehmer_id": teilnehmer_id,
-            "anrede": teilnehmer.anrede,
-            "flg_id": str(ktn.fernlehrgang.id),
-            "mnr": unr,
-            "vorname": teilnehmer.vorname,
-            "name": teilnehmer.name,
-        })
+        typ = ktn.fernlehrgang.typ
+        if typ in ("3", "5"):
+            fh = createfortpdf(ftf, {
+                "druckdatum": pdate,
+                "flg_titel": ktn.fernlehrgang.titel,
+                "teilnehmer_id": teilnehmer_id,
+                "anrede": teilnehmer.anrede,
+                "flg_id": str(ktn.fernlehrgang.id),
+                "mnr": unr,
+                "vorname": teilnehmer.vorname,
+                "name": teilnehmer.name,
+            })
+        else:
+            fh = createpdf(ftf, {
+                "druckdatum": pdate,
+                "flg_titel": ktn.fernlehrgang.titel,
+                "teilnehmer_id": teilnehmer_id,
+                "anrede": teilnehmer.anrede,
+                "flg_id": str(ktn.fernlehrgang.id),
+                "mnr": unr,
+                "vorname": teilnehmer.vorname,
+                "name": teilnehmer.name,
+            })
         fh.seek(0)
         return encodestring(fh.read()).decode('utf-8')
 

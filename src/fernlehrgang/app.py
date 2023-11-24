@@ -180,7 +180,6 @@ def check_app_segment(site, event):
     if 'app' in stack:
         stack.remove('app')
         request.setTraversalStack(stack)
-        print('APP SEGMENT')
 
 
 class HAProxyStatus(grok.View):
@@ -191,6 +190,10 @@ class HAProxyStatus(grok.View):
     def render(self):
         from z3c.saconfig import Session
         session = Session()
+        #try:
+        #    1 / 0
+        #except:
+        #    return self.request.response.setStatus(500)
         flg = session.query(Fernlehrgang).get(100)
         if flg:
             return "OK"

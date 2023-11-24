@@ -208,7 +208,7 @@ class CusaResult(grok.Adapter):
         session = Session()
         def kzentrum(kzentrum):
             if kzentrum:
-                return kzentrum.capitalize()
+                return kzentrum
             return kzentrum
         cr = models.CUSAResult(
             ergebnis=''.join(strip_tags(result.message).strip()),

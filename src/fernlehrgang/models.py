@@ -476,7 +476,7 @@ class CUSAResult(Base, RDBMixin):
     grok.context(IUnternehmen)
     traject.pattern("unternehmen/:unternehmen_mnr/cusaresult/:id")
 
-    __tablename__ = 'flg_prv2'
+    __tablename__ = 'flg_prv'
     #id = Column(Integer, Sequence('journal_seq', start=1000000, increment=1, schema=SCHEMA), primary_key=True)
     datum = Column(DateTime, default=datetime.datetime.now)
 

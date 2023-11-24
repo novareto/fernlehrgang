@@ -53,7 +53,7 @@ def un_helper(term):
     return ''
 
 
-spalten = ['TEILNEHMER_ID', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT', 'EMail',
+spalten = ['TEILNEHMER_ID', 'PASSWORT', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT', 'EMail',
     'Mitgliedsnummer', 'Unternehmensnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Registriert', 'Kategorie', 'Lieferstopps',
     'Mitarbeiteranzahl', 'Branche (Schrotthandel etc..)', u'Abschlussgespräch', 'Status', 'Punktzahl',
     u'Antwortbögen'
@@ -78,55 +78,56 @@ def createRows(rc, session, flg_id):
             models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
     print(result.count())
     i=1
-    for teilnehmer, unternehmen, ktn in page_query(result):
-        if i in range(0,100000, 1000):
-            cal_res = ICalculateResults(ktn)
-            summary = cal_res.summary(lehrhefte)
-            liste = []
-            teilnehmer = ktn.teilnehmer
-            ss = set([x.rlhid for x in ktn.antworten])
-            antworten = len(ss)
-            if teilnehmer:
-                gebdat = ""
-                if teilnehmer.geburtsdatum:
-                    try:
-                        gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
-                    except:
-                        gebdat = ""
-                #unternehmen = teilnehmer.unternehmen
-                liste.append(nN(teilnehmer.id))
-                liste.append(nN(teilnehmer.titel))
-                liste.append(nN(teilnehmer.anrede))
-                liste.append(nN(teilnehmer.name))
-                liste.append(nN(teilnehmer.vorname))
-                liste.append(gebdat)
-                liste.append(nN(teilnehmer.strasse))
-                liste.append(nN(teilnehmer.nr))
-                liste.append(nN(teilnehmer.plz))
-                liste.append(nN(teilnehmer.ort))
-                liste.append(nN(teilnehmer.email))
-                liste.append(nN(unternehmen.mnr))
-                liste.append(nN(unternehmen.unternehmensnummer))
-                liste.append(nN(unternehmen.name))
-                liste.append(nN(unternehmen.name2))
-                liste.append(nN(unternehmen.name3))
-                liste.append(nN(unternehmen.str))
-                liste.append(nN(unternehmen.plz))
-                liste.append(nN(unternehmen.ort))
+    for teilnehmer, unternehmen, ktn in result:
+        #if i in range(0,100000, 1000):
+        cal_res = ICalculateResults(ktn)
+        summary = cal_res.summary(lehrhefte)
+        liste = []
+        teilnehmer = ktn.teilnehmer
+        ss = set([x.rlhid for x in ktn.antworten])
+        antworten = len(ss)
+        if teilnehmer:
+            gebdat = ""
+            if teilnehmer.geburtsdatum:
+                try:
+                    gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
+                except:
+                    gebdat = ""
+            #unternehmen = teilnehmer.unternehmen
+            liste.append(nN(teilnehmer.id))
+            liste.append(nN(teilnehmer.password))
+            liste.append(nN(teilnehmer.titel))
+            liste.append(nN(teilnehmer.anrede))
+            liste.append(nN(teilnehmer.name))
+            liste.append(nN(teilnehmer.vorname))
+            liste.append(gebdat)
+            liste.append(nN(teilnehmer.strasse))
+            liste.append(nN(teilnehmer.nr))
+            liste.append(nN(teilnehmer.plz))
+            liste.append(nN(teilnehmer.ort))
+            liste.append(nN(teilnehmer.email))
+            liste.append(nN(unternehmen.mnr))
+            liste.append(nN(unternehmen.unternehmensnummer))
+            liste.append(nN(unternehmen.name))
+            liste.append(nN(unternehmen.name2))
+            liste.append(nN(unternehmen.name3))
+            liste.append(nN(unternehmen.str))
+            liste.append(nN(unternehmen.plz))
+            liste.append(nN(unternehmen.ort))
 
-                if teilnehmer.name:
-                    liste.append('ja')
-                else:
-                    liste.append('nein')
-                liste.append(nN(teilnehmer.kategorie))
-                liste.append(nN(ktn.status))
-                liste.append(un_helper(ktn.un_klasse))
-                liste.append(nN(ktn.branche))
-                liste.append(ges_helper(ktn.gespraech))
-                liste.append(cleanhtml(nN(summary['comment'])))
-                liste.append(nN(summary['resultpoints']))
-                liste.append(nN(antworten))
-            rc.append(liste)
+            if teilnehmer.name:
+                liste.append('ja')
+            else:
+                liste.append('nein')
+            liste.append(nN(teilnehmer.kategorie))
+            liste.append(nN(ktn.status))
+            liste.append(un_helper(ktn.un_klasse))
+            liste.append(nN(ktn.branche))
+            liste.append(ges_helper(ktn.gespraech))
+            liste.append(cleanhtml(nN(summary['comment'])))
+            liste.append(nN(summary['resultpoints']))
+            liste.append(nN(antworten))
+        rc.append(liste)
         i+=1
 
 

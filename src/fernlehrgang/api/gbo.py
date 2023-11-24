@@ -26,14 +26,14 @@ class GBOAPI(object):
         session = requests.Session()
         retries = Retry(total=5, backoff_factor=10, status_forcelist=[ 502, 503, 504 ])
         session.mount('https://', HTTPAdapter(max_retries=retries))
+        print(json.dumps(data, indent=2))
         url = "%simport/clients" % self.url
-
-        print(url)
         r = session.post(
             url,
-            json=data,
+            json=json.dumps(data),
             headers=self.headers
         )
+        #print(self.headers)
         #r = requests.post(url, json=data, headers=self.headers)
         print(r.text)
         return r
@@ -427,7 +427,6 @@ if __name__ == "__main__":
     print(t)
     # t = gboapi.get_info('100000020')
 
-    import logging
 #
 #    import httplib as http_client
 #    http_client.HTTPConnection.debuglevel = 1

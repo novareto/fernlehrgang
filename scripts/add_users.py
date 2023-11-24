@@ -34,25 +34,32 @@ def worker(app, root):
     #flg = root['app']
     setSite(root)
     session = Session()
-    fernlehrgang = session.query(models.Fernlehrgang).get('127')
-    with open('/tmp/import_users.csv', newline='') as csvfile:
+    fernlehrgang = session.query(models.Fernlehrgang).get('157')
+    with open('/tmp/flg_2023_endg.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
         for i, mnr in enumerate(reader):
-            print(i)
-            unternehmen = session.query(models.Unternehmen).filter(models.Unternehmen.unternehmensnummer ==  mnr['Unternehmensnummer']).all()
+            unternehmen = session.query(models.Unternehmen).filter(models.Unternehmen.mnr ==  mnr['MtglNr']).all()
             if unternehmen and len(unternehmen) == 1:
                 unt = unternehmen[0]
                 teilnehmer = unt.teilnehmer
                 if check_teilnehmer(teilnehmer):
                     OK += 1
-                    OK_S.append(('OK', mnr['Unternehmensnummer']))
-                    print('IMPORT OK', mnr['Hauptbetriebsstättennummer'])
+                    OK_S.append(('OK', mnr['MtglNr']))
+                    print('IMPORT OK', mnr['MtglNr'])
+                    teilnehmer = models.Teilnehmer()
+                    teilnehmer.passwort = "passwort" #generatePassword()
+                    teilnehmer.unternehmen_mnr = mnr['MtglNr']
+                    unt.teilnehmer.append(teilnehmer)
+                    session.flush()
+                    print(teilnehmer.id)
+                    kursteilnehmer = models.Kursteilnehmer(teilnehmer_id = teilnehmer.id, status="A2")
+                    fernlehrgang.kursteilnehmer.append(kursteilnehmer)
                 else:
-                    OK_S.append(('!OK', "Teilnnehmer bereits vorhanden %s" % mnr['Unternehmensnummer']))
-                    print('teilnehmer bereits vorhanden', mnr['Hauptbetriebsstättennummer'])
+                    OK_S.append(('!OK', "Teilnnehmer bereits vorhanden %s" % mnr['MtglNr']))
+                    print('teilnehmer bereits vorhanden', mnr['MtglNr'])
             else:
-                OK_S.append(('!OK', "Kein Unternehmen gefunden! %s" % mnr['Unternehmensnummer']))
-                print('Not Found', mnr['Hauptbetriebsstättennummer'])
+                OK_S.append(('!OK', "Kein Unternehmen gefunden! %s" % mnr['MtglNr']))
+                print('Not Found', mnr['MtglNr'])
                 #teilnehmer = models.Teilnehmer()
                 #teilnehmer.passwort = "passwort" #generatePassword()
                 #teilnehmer.unternehmen_mnr = MNR
@@ -61,7 +68,7 @@ def worker(app, root):
                 #print(teilnehmer.id)
                 #kursteilnehmer = models.Kursteilnehmer(teilnehmer_id = teilnehmer.id, status="A2")
                 #fernlehrgang.kursteilnehmer.append(kursteilnehmer)
-    #import transaction; transaction.commit(d)
+    import transaction; transaction.commit()
     with open('/tmp/output.csv', 'w') as f:
         for x in OK_S:
             f.write(','.join(x) + '\n')

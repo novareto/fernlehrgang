@@ -225,13 +225,22 @@ class Worker(ConsumerMixin):
         if not anrede:
             anrede = 0 
 
+        status = '0'
         unr = unternehmen.unternehmensnummer or ''
+        hbst = unternehmen.hbst or ''
+        if unternehmen.mnr in ('995000221', '995000230'):
+            status = '1'
+            unr = "2"
+            hbst = "2"
+            print('STATUS TEST')
+
         res['client'] = dict(
             #number = teilnehmer.unternehmen_mnr,
             #mainnumber = teilnehmer.unternehmen_mnr,
+            status = status,
             unternehmensnummer = str(unr),
             unternehmens_az=teilnehmer.unternehmen_mnr,
-            betriebsstaetten_az=unternehmen.hbst or '',
+            betriebsstaetten_az=hbst,
             name = unternehmen.name,
             zip = unternehmen.plz,
             city = unternehmen.ort,

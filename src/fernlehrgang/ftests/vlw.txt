@@ -16,6 +16,7 @@ uma alle Utilities zur Verfügung zu haben.
    >>> from fernlehrgang.app import FernlehrgangApp
    >>> from z3c.saconfig import Session
    >>> root = getRootFolder()
+   >>> root = {}
    >>> root['app'] = app = FernlehrgangApp()
    
 
@@ -25,13 +26,16 @@ Einrichten des Fernlehrgangs
    >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
 
    >>> import datetime
-   >>> beginn = datetime.date(2016, 01, 01)
+   >>> beginn = datetime.date(2016, 1, 1)
    >>> ende = datetime.date(2016, 12, 31)
 
    >>> flg09 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="4",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
 
    >>> flg10 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="1",
+   ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
+   
+   >>> fortbildung = Fernlehrgang(jahr="2016", titel="Fortbildung", typ="3",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)    
 
    >>> lheft1 = Lehrheft(nummer=1)
@@ -46,6 +50,7 @@ Einrichten des Fernlehrgangs
    >>> session = Session()
    >>> session.add(flg09)
    >>> session.add(flg10)
+   >>> session.add(fortbildung)
    >>> import transaction; transaction.commit()
 
     
@@ -59,10 +64,10 @@ Einrichten der Benutzer
    >>> unt1 = Unternehmen(mnr="0000-00025", name="Novareto")
    >>> unt2 = Unternehmen(mnr="0000-00026", name="Econtec")
 
-   >>> teil1 = Teilnehmer(name="Lars Walther", passwort="passwort")
-   >>> teil2 = Teilnehmer(name="Bernd Probst")
-   >>> teil3 = Teilnehmer(name="MaxMustermann", passwort="MMPasswort")
-   >>> teil4 = Teilnehmer(name="Hans Meier", passwort="passwort")
+   >>> teil1 = Teilnehmer(name="Lars Walther", passwort="passwort", anrede=1)
+   >>> teil2 = Teilnehmer(name="Bernd Probst", anrede=1)
+   >>> teil3 = Teilnehmer(name="MaxMustermann", passwort="MMPasswort", anrede=1)
+   >>> teil4 = Teilnehmer(name="Hans Meier", passwort="passwort", anrede=1)
 
    >>> unt1.teilnehmer.append(teil1)
    >>> unt2.teilnehmer.append(teil2)
@@ -82,6 +87,8 @@ Einrichten von Kursteilnehmern und von Antwortbögen
    >>> kt3.status = "A1"
    >>> kt4 = Kursteilnehmer()
    >>> kt4.status = "Z1"
+   >>> kt5 = Kursteilnehmer()
+   >>> kt5.status = "A1"
 
    >>> flg = session.query(Fernlehrgang).get(1)
    >>> flg.kursteilnehmer.append(kt1)
@@ -90,7 +97,13 @@ Einrichten von Kursteilnehmern und von Antwortbögen
 
    >>> flg = session.query(Fernlehrgang).get(2)
    >>> flg.kursteilnehmer.append(kt3)
+
+   >>> fortbildung = session.query(Fernlehrgang).get(3)
+   >>> fortbildung.kursteilnehmer.append(kt5)
+
    >>> import transaction; transaction.commit()
+
+
 
    >>> session = Session()
    >>> flg = session.query(Fernlehrgang).get(1)
@@ -121,8 +134,10 @@ Create a browser and visit the instance you just created:
    >>> from zope.testbrowser.wsgi import Browser
    >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
    >>> from zope.app import wsgi
-   >>> db =  root._p_jar.db()
-   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> #db =  root._p_jar.db()
+   >>> from megrok.nozodb.utils import config, NOZODBWSGIPublisherApplication
+   >>> #wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> wsgi_app = NOZODBWSGIPublisherApplication(True)
    >>> import zope.testbrowser.wsgi
    
    >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
@@ -137,7 +152,7 @@ Anmeldung OK
    >>> import simplejson
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
-   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "true"}'
+   b'{"teilnehmer_id": 1, "gbo": false, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "true"}'
   
 
 Anmeldung kein VLW
@@ -147,7 +162,7 @@ Anmeldung kein VLW
    {'teilnehmer_id': 2, 'passwort': 'MMPasswort'}
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
-   '{"gbo": false, "teilnehmer_id": 2, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+   b'{"teilnehmer_id": 2, "gbo": false, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
 
 Anmeldung kein VLW
 
@@ -167,18 +182,18 @@ Anmeldung Falsches PW
    >>> data['passwort']='WRONG'
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
-   '{"gbo": false, "teilnehmer_id": 1, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+   b'{"teilnehmer_id": 1, "gbo": false, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
 
 Anmeldung Falscher Status
    
-   >>> print teil4.name
+   >>> print(teil4.name)
    Hans Meier
    >>> data = {'teilnehmer_id': teil4.id, 'passwort': teil4.passwort}
    >>> data
    {'teilnehmer_id': 3, 'passwort': 'passwort'}
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
-   '{"gbo": false, "teilnehmer_id": 3, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
+   b'{"teilnehmer_id": 3, "gbo": false, "erfolgreich": "false", "muss_stammdaten_ergaenzen": "true"}'
 
 
 Get Teilneher --> Teilnehmer nicht vorhanden
@@ -195,18 +210,18 @@ Get Teilneher --> Teilnehmer nicht vorhanden
    >>> data = {'teilnehmer_id': teil1.id}
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
-   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Lars Walther", "un_klasse": null, "kurse": [{"jahr": "2016", "fernlehrgang_id": 1, "titel": "Fernlehrgang", "kursteilnehmer_id": 1}], "telefon": "None", "branche": null, "vorname": null, "unternehmen": "Novareto", "email": "None"}'
+   b'{"teilnehmer_id": 1, "name": "Lars Walther", "vorname": null, "geburtsdatum": "None", "email": "None", "telefon": "None", "unternehmen": "Novareto", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 116, "titel": "Fernlehrgang", "jahr": "2016", "bestanden": false}], "un_klasse": null, "branche": null}'
    
    >>> data = {'teilnehmer_id': teil1.id, 'name': 'Klinger', 'vorname': 'Christian'}
    >>> data
-   {'teilnehmer_id': 1, 'vorname': 'Christian', 'name': 'Klinger'}
+   {'teilnehmer_id': 1, 'name': 'Klinger', 'vorname': 'Christian'}
   
    >>> import json 
    >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(data))
-   >>> print browser.headers['Status']
+   >>> print(browser.headers['Status'])
    200 Ok
-   >>> print browser.contents
-   {"muss_stammdaten_ergaenzen": "true"}
+   >>> print(browser.contents)
+   b'{"muss_stammdaten_ergaenzen": "true"}'
  
    >>> daten = {
    ...   'teilnehmer_id': '1',
@@ -218,14 +233,14 @@ Get Teilneher --> Teilnehmer nicht vorhanden
    ...    'branche': 'nein'}
  
    >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(daten))
-   >>> print browser.headers['Status']
+   >>> print(browser.headers['Status'])
    200 Ok
-   >>> print browser.contents
-   {"muss_stammdaten_ergaenzen": "false"}
+   >>> print(browser.contents)
+   b'{"muss_stammdaten_ergaenzen": "false"}'
 
    >>> browser.open('http://localhost/++skin++vlw/app/getTeilnehmer', data=simplejson.dumps(data))
    >>> browser.contents
-   '{"geburtsdatum": "None", "teilnehmer_id": 1, "name": "Klinger", "un_klasse": "G3", "kurse": [{"jahr": "2016", "fernlehrgang_id": 1, "titel": "Fernlehrgang", "kursteilnehmer_id": 1}], "telefon": "09841/3644", "branche": "nein", "vorname": "Christian", "unternehmen": "Novareto", "email": "ck@novareto.de"}'
+   b'{"teilnehmer_id": 1, "name": "Klinger", "vorname": "Christian", "geburtsdatum": "None", "email": "ck@novareto.de", "telefon": "09841/3644", "unternehmen": "Novareto", "kurse": [{"kursteilnehmer_id": 1, "fernlehrgang_id": 116, "titel": "Fernlehrgang", "jahr": "2016", "bestanden": false}], "un_klasse": "G3", "branche": "nein"}'
 
 Antwort  
 -------
@@ -247,7 +262,7 @@ Antwort
    <fernlehrgang.browser.ergebnisse.CalculateResultsVLW object at ...>
    
    >>> results.summary()
-   {'comment': "<b> <span class='text-danger'> Nicht Bestanden (Noch keine Antwort aus der VLW); </span> </b> ", 'resultpoints': 0, 'points': 0}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-danger'> nicht bestanden (VLW noch nicht vollständig bearbeitet) </span> </b> "}
   
    >>> antwort = models.Antwort(lehrheft_id=lheft1.id, frage_id=frage1.id, gbo="OK")
    >>> ktn1.antworten.append(antwort) 
@@ -255,7 +270,7 @@ Antwort
    >>> antwort.datum
    
    >>> results.summary()
-   {'comment': "<b> <span class='text-success'> Bestanden; </span> </b> ", 'resultpoints': 0, 'points': 0}
+   {'points': 0, 'resultpoints': 0, 'comment': "<b> <span class='text-success'> bestanden </span> </b> "}
 
 Passwort Ändern
 ---------------
@@ -263,28 +278,52 @@ Passwort Ändern
    >>> session = Session()
    >>> tn = session.query(models.Teilnehmer).get(1)
    >>> tn.passwort
-   u'passwort'
+   'passwort'
 
    >>> daten = {
    ...   'teilnehmer_id': '1',
    ...    'passwort': 'NeuesPasswort'}
  
    >>> browser.post('http://localhost/++skin++vlw/app/setTeilnehmer', data=json.dumps(daten))
-   >>> print browser.headers['Status']
+   >>> print(browser.headers['Status'])
    200 Ok
 
    >>> session = Session()
    >>> tn = session.query(models.Teilnehmer).get(1)
    >>> tn.passwort
-   u'NeuesPasswort'
+   'NeuesPasswort'
 
 
 Teilnehmer hat einen Eintrag in der GBO?
 
    >>> data
-   {'teilnehmer_id': 1, 'vorname': 'Christian', 'name': 'Klinger'}
+   {'teilnehmer_id': 1, 'name': 'Klinger', 'vorname': 'Christian'}
 
    >>> import simplejson
    >>> browser.open('http://localhost/++skin++vlw/app/hasGBO', data=simplejson.dumps(data))   
    >>> simplejson.loads(browser.contents)
-   {'gbo': False, 'teilnehmer_id': 1}
+   {'teilnehmer_id': 1, 'gbo': False}
+
+
+Zertifikate
+-----------
+
+   >>> from base64 import b64decode
+   >>> browser.open('http://localhost/++skin++vlw/app/getCertificate', data={'kursteilnehmer_id': '1'})
+   >>> pdf = browser.contents 
+   >>> len(pdf) > 1
+   True
+   >>> pdf = b64decode(browser.contents)
+   >>> 'PDF'.encode('utf-8') in pdf
+   True
+
+
+   >>> session = Session()
+   >>> flg = session.query(Fernlehrgang).get(3)
+   >>> ktn, = flg.kursteilnehmer
+   >>> ktn.teilnehmer = teil4
+   >>> import transaction; transaction.commit()
+   >>> browser.open('http://localhost/++skin++vlw/app/getCertificate', data={'kursteilnehmer_id': ktn.id})
+   >>> pdf = b64decode(browser.contents)
+   >>> 'PDF'.encode('utf-8') in pdf
+   True

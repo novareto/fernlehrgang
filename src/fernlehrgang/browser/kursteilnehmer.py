@@ -278,14 +278,22 @@ class ReSendGBO(Form):
         ftitel = teilnehmer.titel
         if ftitel == '0':
             ftitel = ''
+
+        status = '0'
+        if unternehmen.mnr in ('995000221', '995000230'):
+            status = '1'
+            print('STATUS TEST')
+
         res = dict()
         res['token'] = GBO_TOKEN
+
         res['client'] = dict(
             #number = teilnehmer.unternehmen_mnr,
             #mainnumber = teilnehmer.unternehmen_mnr,
-            unternehmensnummer = unternehmen.unternehmensnummer,
+            status = status,
+            unternehmensnummer = unternehmen.unternehmensnummer or '2',
             unternehmens_az=unternehmen.mnr,
-            betriebsstaetten_az=unternehmen.hbst,
+            betriebsstaetten_az=unternehmen.hbst or '2',
             name = unternehmen.name,
             zip = unternehmen.plz,
             city = unternehmen.ort,
@@ -319,6 +327,7 @@ class ReSendGBO(Form):
 
         from fernlehrgang.api.gbo import GBOAPI
         gbo_api = GBOAPI()
+        print(gbo_api.url)
         r = gbo_api.set_data(gbo_daten)
         print(r)
         gbo_status = r.status_code
@@ -388,3 +397,71 @@ class MoreInfoOnKursteilnehmerResults(grok.Viewlet):
     grok.viewletmanager(IExtraInfo)
     grok.context(IKursteilnehmer)
     grok.view(ReSendGBO)
+
+
+class KTPrintNavEntry(NavEntry):
+    grok.context(IKursteilnehmer)
+    grok.name('kt_print_entry')
+    grok.order(30)
+
+    title = "Zertifikat"
+    icon = "fas fa-download"
+
+    def url(self):
+        return self.view.url(self.context, 'pdf')
+
+
+class PrintCertificate(grok.View):
+    grok.context(IKursteilnehmer)
+    grok.title(u'Zertifikat')
+    grok.name('pdf')
+
+    def render(self):
+        ktn = self.context
+        teilnehmer = ktn.teilnehmer
+        teilnehmer_id = ktn.teilnehmer.id
+        #ktn = teilnehmer.getVLWKTN()
+        from tempfile import NamedTemporaryFile
+        from base64 import encodestring
+        from fernlehrgang.api.certpdf import createpdf, createfortpdf
+        ftf = NamedTemporaryFile()
+        from datetime import datetime
+
+        try:
+            pdate = ktn.antworten[0].datum.strftime('%d.%m.%Y')
+        except:
+            pdate = datetime.now().strftime('%d.%m.%Y')
+
+        unr = ""
+        if teilnehmer.unternehmen[0].unternehmensnummer:
+            unr = str(teilnehmer.unternehmen[0].unternehmensnummer)
+        typ = ktn.fernlehrgang.typ
+        if typ in ("3", "5"):
+            fh = createfortpdf(ftf, {
+                "druckdatum": pdate,
+                "flg_titel": ktn.fernlehrgang.titel,
+                "teilnehmer_id": teilnehmer_id,
+                "anrede": teilnehmer.anrede,
+                "flg_id": str(ktn.fernlehrgang.id),
+                "mnr": unr,
+                "vorname": teilnehmer.vorname,
+                "name": teilnehmer.name,
+            })
+        else:
+            fh = createpdf(ftf, {
+                "druckdatum": pdate,
+                "flg_titel": ktn.fernlehrgang.titel,
+                "teilnehmer_id": teilnehmer_id,
+                "anrede": teilnehmer.anrede,
+                "flg_id": str(ktn.fernlehrgang.id),
+                "mnr": unr,
+                "vorname": teilnehmer.vorname,
+                "name": teilnehmer.name,
+            })
+        fh.seek(0)
+        content_type = "application/pdf"
+        RESPONSE = self.request.response
+        RESPONSE.setHeader('content-type', content_type )
+        RESPONSE.setHeader(
+        'content-disposition', 'attachment; filename=%s' % "Zertifikat.pdf")
+        return fh.read() 
