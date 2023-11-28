@@ -15,9 +15,10 @@ uma alle Utilities zur Verfügung zu haben.
 
    >>> from fernlehrgang.app import FernlehrgangApp
    >>> from z3c.saconfig import Session
-   >>> root = getRootFolder()
+   >>> root = {} 
    >>> root['app'] = app = FernlehrgangApp()
-   
+
+
 Resetting
 ---------
 

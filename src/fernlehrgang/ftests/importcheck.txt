@@ -15,7 +15,7 @@ uma alle Utilities zur Verfügung zu haben.
 
    >>> from fernlehrgang.app import FernlehrgangApp
    >>> from z3c.saconfig import Session
-   >>> root = getRootFolder()
+   >>> root = {} 
    >>> root['app'] = app = FernlehrgangApp()
    
 
@@ -25,7 +25,7 @@ Einrichten des Fernlehrgangs
    >>> from fernlehrgang.models import Fernlehrgang, Lehrheft, Frage
 
    >>> import datetime
-   >>> beginn = datetime.date(2016, 01, 01)
+   >>> beginn = datetime.date(2016, 1, 1)
    >>> ende = datetime.date(2016, 12, 31)
 
    >>> flg09 = Fernlehrgang(jahr="2010", titel="Fernlehrgang", typ="1",
@@ -131,7 +131,7 @@ Importcheck
    <fernlehrgang.browser.import_teilnehmer.ImportTeilnehmer object at 0...>
 
    >>> importer.getFernlehrgaenge()
-   [{'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(1)', 'description': u'Beschreibung', 'key': 1}, {'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(2)', 'description': u'Beschreibung', 'key': 2}]
+   [{'tn': 'XX', 'key': 1, 'jahr': '2010', 'description': 'Beschreibung', 'value': 'Fernlehrgang #(1)'}, {'tn': 'XX', 'key': 2, 'jahr': '2010', 'description': 'Beschreibung', 'value': 'Fernlehrgang #(2)'}]
 
    >>> flg11 = Fernlehrgang(jahr="2016", titel="Fernlehrgang", typ="2",
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)
@@ -140,7 +140,7 @@ Importcheck
    >>> import transaction; transaction.commit()
 
    >>> importer.getFernlehrgaenge()
-   [{'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(1)', 'description': u'Beschreibung', 'key': 1}, {'tn': 'XX', 'jahr': u'2010', 'value': u'Fernlehrgang #(2)', 'description': u'Beschreibung', 'key': 2}]
+   [{'tn': 'XX', 'key': 1, 'jahr': '2010', 'description': 'Beschreibung', 'value': 'Fernlehrgang #(1)'}, {'tn': 'XX', 'key': 2, 'jahr': '2010', 'description': 'Beschreibung', 'value': 'Fernlehrgang #(2)'}, {'tn': 'XX', 'key': 3, 'jahr': '2016', 'description': 'Beschreibung', 'value': 'Fernlehrgang #(3)'}]
 
    >>> len(flg2.kursteilnehmer)
    1

@@ -85,7 +85,6 @@ class TeilnehmerListing(TablePage):
 
 class AddEntryTN(AddEntry):
     grok.context(IUnternehmen)
-    grok.require('zope.View')
     title = u"Teilnehmer"
     grok.require('uvc.managefernlehrgang')
 

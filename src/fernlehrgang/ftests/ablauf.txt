@@ -19,7 +19,14 @@ uma alle Utilities zur Verfügung zu haben.
    >>> root = {}
    >>> app = FernlehrgangApp()
    >>> root['app'] = FernlehrgangApp()
-   
+
+Benutzer
+--------
+   >>> session = Session()
+   >>> from fernlehrgang.models import Account
+   >>> admin = Account(login="admin", email="admin@bg.de", real_name="Admin", role="uvc.bgeadministrator", password="admin" ) 
+   >>> session.add(admin)
+   >>> import transaction; transaction.commit()
 
 Einrichten des Fernlehrgangs
 ----------------------------
@@ -127,7 +134,6 @@ das traject System aufrufen können.
    >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
    >>> from zope.app import wsgi
 
-   >>> import pdb; pdb.set_trace()
    >>> #db = root.db()
    >>> from megrok.nozodb.utils import config, NOZODBWSGIPublisherApplication
    >>> wsgi_app = NOZODBWSGIPublisherApplication(handle_errors = True)
@@ -135,7 +141,12 @@ das traject System aufrufen können.
    >>> import zope.testbrowser.wsgi
    >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
    >>> browser = Browser(wsgi_app=app)
-   >>> browser.addHeader('Authorization', 'Basic user:user')
+   >>> browser.open('http://localhost/app/login')
+   >>> form = browser.getForm()
+   >>> form.getControl(name='login').value = "admin"
+   >>> form.getControl(name='password').value = "admin"
+   >>> form.submit()
+
    >>> browser.handleErrors = False
 
 Applikation

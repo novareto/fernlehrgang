@@ -51,6 +51,7 @@ SCHEMA = config['schema'] or None
 log('Database SCHEMA --> %s' % SCHEMA)
 Base = declarative_base()
 Base.metadata.schema = SCHEMA 
+#Base.metadata.create_all()
 
 
 class MyStringType(TypeDecorator):

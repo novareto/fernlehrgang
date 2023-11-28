@@ -4,7 +4,7 @@ Do a functional doctest test on the app.
 Let's first create an instance of Fernlehrgang at the top level:
 
    >>> from fernlehrgang.app import FernlehrgangApp
-   >>> root = getRootFolder()
+   >>> root = {} 
    >>> root['app'] = app = FernlehrgangApp()
    >>> import transaction; transaction.commit()
 
@@ -17,14 +17,13 @@ Run tests in the testbrowser
 
 Create a browser and visit the instance you just created:
 
-   >>> from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
-   >>> from zope.app import wsgi
-   >>> db =  root._p_jar.db()
-   >>> wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
+   >>> from megrok.nozodb.utils import config, NOZODBWSGIPublisherApplication
+   >>> wsgi_app = NOZODBWSGIPublisherApplication(handle_errors = True)
    >>> wsgi_app
-   <zope.app.wsgi.WSGIPublisherApplication object at 0...>
+   <megrok.nozodb.utils.NOZODBWSGIPublisherApplication object at ...>
 
-   >>> from infrae.testbrowser.selenium.browser import Browser
-   >>> with Browser(wsgi_app) as browser:
-   ...     browser.open('app')
-
+   >>> from zope.testbrowser.wsgi import Browser
+   >>> browser = Browser(wsgi_app=wsgi_app)
+   >>> browser.open('http://localhost/app')
+   >>> browser.headers['Status'].upper()
+   '200 OK'

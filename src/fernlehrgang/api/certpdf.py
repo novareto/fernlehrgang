@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # Import der benoetigten Bibliotheken
+import pathlib
+import fernlehrgang.api
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from time import strftime, gmtime
-
 
 
 
@@ -16,7 +18,7 @@ def createpdf(filehandle, data):
 
     # Pfad und Dateiname
     # c ist ein Objekt der Klasse Canvas
-    image = "/home/bghw/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Bescheinigung_Ansicht_Image.jpg"
+    image = pathlib.Path(fernlehrgang.api.__file__).resolve().parent / "FLG_Bescheinigung_Ansicht_Image.jpg"
     c = canvas.Canvas(filehandle, pagesize=A4)
 
     # Metainformationen fuer das PDF-Dokument
@@ -67,7 +69,7 @@ def createfortpdf(filehandle, data):
     """
 
     #Pfad und Dateiname
-    image = "/home/bghw/fernlehrgang/parts/omelette/fernlehrgang/api/FLG_Fortbildung_Ansicht_Image.jpg"
+    image = pathlib.Path(fernlehrgang.api.__file__).resolve().parent / "FLG_Fortbildung_Ansicht_Image.jpg"
     timestamp=strftime("%d%m%Y%H%M%S",gmtime()) #Ermitteln der aktuellen Uhrzeit und Formatierung eines Strings mit Zeitstempel
     dateiname = "/tmp/%s_certificate.pdf" %data.get('mnr','')
 

@@ -7,7 +7,7 @@ Zunächst müssen wir erneut eine Instanz von unserer Application anlegen,
 uma alle Utilities zur Verfügung zu haben.
 
    >>> from fernlehrgang.app import FernlehrgangApp
-   >>> root = getRootFolder()
+   >>> root = {} 
    >>> root['app'] = app = FernlehrgangApp()
 
 Für unsere Tests brauchen wir auch das Session Objekt:
@@ -23,7 +23,7 @@ Fernlehrgang
 Wir starten mit einer Instanz vom Fernlehrgang; diesen werden wir dann DB-Technisch durchtesten.
 
    >>> import datetime
-   >>> beginn = datetime.date(2010,01,01)
+   >>> beginn = datetime.date(2010,1,1)
    >>> ende = datetime.date(2010,12,31)
 
    >>> from fernlehrgang.models import Fernlehrgang

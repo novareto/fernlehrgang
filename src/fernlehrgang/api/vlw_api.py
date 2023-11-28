@@ -8,7 +8,7 @@ import simplejson
 
 from .gbo import GBOAPI
 from .certpdf import createpdf, createfortpdf
-from base64 import encodestring
+from base64 import encodebytes as encodestring
 from fernlehrgang import models
 from z3c.saconfig import Session
 from uvc.siguvtheme.skin import ISiguvThemeLayer
