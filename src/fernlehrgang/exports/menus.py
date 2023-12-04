@@ -19,7 +19,7 @@ class ExporteNA(NavEntry):
     grok.order(200)
     grok.name("nav_enty_exp")
 
-    title = u"Versandlisten"
+    title = "Versandlisten"
     icon = "fas fa-file-export"
 
     def url(self):
@@ -28,7 +28,6 @@ class ExporteNA(NavEntry):
 
 class Exporte(Page):
     grok.context(IFernlehrgang)
-
 
 
 class ExportItems(Menu):

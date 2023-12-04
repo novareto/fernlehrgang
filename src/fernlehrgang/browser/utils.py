@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import operator
 from zope.lifecycleevent import Attributes, ObjectModifiedEvent
-from zeam.form.base.actions import Actions
 from zeam.form.base.datamanager import ObjectDataManager
-from zeam.form.base.fields import Fields
 from zeam.form.base.interfaces import IDataManager
 from zeam.form.base.markers import NO_VALUE, NO_CHANGE
 from zope.event import notify
@@ -48,8 +44,7 @@ def notify_changes(content, changes, event=ObjectModifiedEvent):
 
 
 def apply_data_event(fields, content, data, event=ObjectModifiedEvent):
-    """ Updates the object with the data and sends an IObjectModifiedEvent
-    """
+    """Updates the object with the data and sends an IObjectModifiedEvent"""
     changes = set_fields_data(fields, content, data)
     if changes:
         if IDataManager.providedBy(content):

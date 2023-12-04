@@ -3,7 +3,7 @@ import zope.interface
 from fernlehrgang.slots import interfaces
 
 grok.context(zope.interface.Interface)
-grok.templatedir('templates')
+grok.templatedir("templates")
 
 
 class IHeader(zope.interface.Interface):
@@ -12,9 +12,9 @@ class IHeader(zope.interface.Interface):
 
 @zope.interface.implementer(interfaces.IHeaders)
 class Headers(grok.ViewletManager):
-    """Viewlet Manager for the Header
-    """
-    grok.name('headers')
+    """Viewlet Manager for the Header"""
+
+    grok.name("headers")
 
     def update(self):
         super().update()
@@ -23,14 +23,13 @@ class Headers(grok.ViewletManager):
                 viewlet.render()
 
     def render(self):
-        results = (
-            v.render() for v in self.viewlets if not IHeader.providedBy(v))
+        results = (v.render() for v in self.viewlets if not IHeader.providedBy(v))
         return "\n".join([r for r in results if r.strip()])
 
 
 @zope.interface.implementer(interfaces.ITabs)
 class Tabs(grok.ViewletManager):
-    grok.name('tabs')
+    grok.name("tabs")
 
     def content(self):
         results = [v.render() for v in self.viewlets]
@@ -39,38 +38,38 @@ class Tabs(grok.ViewletManager):
     def render(self):
         res = self.content()
         if not res:
-            return u""
+            return ""
         return f"<ul class='nav justify-content-end'>{res}</ul>"
 
 
 @zope.interface.implementer(interfaces.IAboveContent)
 class AboveContent(grok.ViewletManager):
-    grok.name('above-body')
+    grok.name("above-body")
 
 
 @zope.interface.implementer(interfaces.IBelowContent)
 class BelowContent(grok.ViewletManager):
-    grok.name('below-body')
+    grok.name("below-body")
 
 
 @zope.interface.implementer(interfaces.IPageTop)
 class PageTop(grok.ViewletManager):
-    grok.name('pagetop')
+    grok.name("pagetop")
 
 
 @zope.interface.implementer(interfaces.IFooter)
 class Footer(grok.ViewletManager):
-    grok.name('footer')
-    grok.require('zope.View')
+    grok.name("footer")
+    grok.require("zope.View")
 
 
 @zope.interface.implementer(interfaces.IBeforeActions)
 class BeforeActions(grok.ViewletManager):
-    grok.name('uvcsite.beforeactions')
-    grok.require('zope.View')
+    grok.name("uvcsite.beforeactions")
+    grok.require("zope.View")
 
 
 @zope.interface.implementer(interfaces.IExtraInfo)
 class ExtraInfo(grok.ViewletManager):
-    grok.name('uvcsite.extrainfo')
-    grok.require('zope.View')
+    grok.name("uvcsite.extrainfo")
+    grok.require("zope.View")

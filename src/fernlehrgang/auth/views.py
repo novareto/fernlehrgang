@@ -17,7 +17,7 @@ grok.templatedir("templates")
 class UserList(Page):
     grok.name("users")
     grok.context(IFernlehrgangApp)
-    grok.require('zope.Public')
+    grok.require("zope.Public")
 
     def update(self):
         users = component.getUtility(IAuthenticatorPlugin, "principals")
@@ -27,15 +27,15 @@ class UserList(Page):
 class AddUser(Form):
     grok.context(IFernlehrgangApp)
     grok.require("zope.Public")
-    label = u"Benutzer anlegen"
+    label = "Benutzer anlegen"
 
     fields = Fields(IAddUserForm)
 
-    @action(u"Anlegen")
+    @action("Anlegen")
     def handle_add(self):
         data, errors = self.extractData()
         if errors:
-            self.flash(u"Es ist ein Fehler aufgetreten", "warning")
+            self.flash("Es ist ein Fehler aufgetreten", "warning")
             return
         users = component.getUtility(IAuthenticatorPlugin, "principals")
         users.addUser(
@@ -45,15 +45,15 @@ class AddUser(Form):
             data["real_name"],
             data["role"],
         )
-        self.flash('Der Benutzer wurde angelegt.')
+        self.flash("Der Benutzer wurde angelegt.")
         self.redirect(self.url(grok.getSite(), "users"))
 
 
 class EditUser(Form):
     grok.name("edit")
     grok.context(Account)
-    #grok.require("zope.ManageApplication")
-    label = u"Benutzer bearbeiten"
+    # grok.require("zope.ManageApplication")
+    label = "Benutzer bearbeiten"
 
     fields = Fields(IAddUserForm)
     ignoreContent = False
@@ -65,20 +65,21 @@ class EditUser(Form):
         pw.template = ChameleonPageTemplateFile("templates/password.cpt")
         confirm.template = ChameleonPageTemplateFile("templates/password.cpt")
 
-    @action(u"Bearbeiten")
+    @action("Bearbeiten")
     def handle_add(self):
         data, errors = self.extractData()
         if errors:
-            self.flash(u"Es ist ein Fehler aufgetreten", "warning")
+            self.flash("Es ist ein Fehler aufgetreten", "warning")
             return
         apply_data_event(self.fields, self.context, data)
         self.redirect(self.url(grok.getSite(), "/users"))
 
-    @action(u"Entfernen")
+    @action("Entfernen")
     def handle_delete(self):
         data, errors = self.extractData()
         from z3c.saconfig import Session
+
         session = Session()
         session.delete(self.context)
-        self.flash('Der Benutzer wurde gelöscht')
+        self.flash("Der Benutzer wurde gelöscht")
         self.redirect(self.url(grok.getSite(), "/users"))

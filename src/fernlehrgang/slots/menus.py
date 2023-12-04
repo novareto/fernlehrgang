@@ -4,7 +4,6 @@
 
 import grok
 
-from megrok.pagetemplate import PageTemplate
 from .interfaces import (
     IGlobalMenu,
     IPersonalPreferences,
@@ -15,10 +14,8 @@ from .interfaces import (
     IQuickLinks,
     IFooter,
 )
-from zope.component import getMultiAdapter
 from zope.interface import Interface, implementer
-from zope.pagetemplate.interfaces import IPageTemplate
-from uvc.menus.components import MenuRenderer, Menu, IMenu
+from uvc.menus.components import MenuRenderer, Menu
 
 
 grok.templatedir("templates")
@@ -68,7 +65,7 @@ class PersonalMenuRenderer(MenuRenderer):
     grok.context(Interface)
     grok.name("personalmenu")
 
-    bound_menus = ('personal_menu', )
+    bound_menus = ("personal_menu",)
 
 
 class GlobalMenuRenderer(MenuRenderer):

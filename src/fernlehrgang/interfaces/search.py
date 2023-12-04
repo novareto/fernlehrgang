@@ -9,13 +9,13 @@ from zope.schema.interfaces import IContextSourceBinder
 
 VOCABULARY = None
 
+
 @grok.provider(IContextSourceBinder)
 def getTeilnehmerId(context):
     return VOCABULARY
 
 
 class ISearch(interface.Interface):
-
     id = schema.TextLine(
-        title=u"Teilnehmer ID",
-        )
+        title="Teilnehmer ID",
+    )

@@ -7,40 +7,39 @@ from fernlehrgang.auth.securitypolicy import roles
 
 
 class IAddUserForm(interface.Interface):
-
     login = schema.TextLine(
-        title=u"Anmeldename",
-        description=u"Bitte geben Sie hier den Anmeldenamen ein.",
+        title="Anmeldename",
+        description="Bitte geben Sie hier den Anmeldenamen ein.",
         required=True,
     )
 
     email = schema.TextLine(
-        title=u"EMail Adresse",
-        description=u"Bitte geben Sie hier die EMail Adresse des Benutzers ein.",
+        title="EMail Adresse",
+        description="Bitte geben Sie hier die EMail Adresse des Benutzers ein.",
         required=True,
     )
 
     password = schema.Password(
-        title=u"Passwort",
-        description=u"Bitte tragen Sie hier das Passwort ein.",
+        title="Passwort",
+        description="Bitte tragen Sie hier das Passwort ein.",
         required=True,
     )
 
     confirm_password = schema.Password(
-        title=u"Passwort bestätigen",
-        description=u"Bitte wiederholen Sie aus Sicherheitsgründen das Passwort.",
+        title="Passwort bestätigen",
+        description="Bitte wiederholen Sie aus Sicherheitsgründen das Passwort.",
         required=True,
     )
 
     real_name = schema.TextLine(
-        title=u"Vollständiger Name",
-        description=u"Bitte geben Sie den vollständigen Namen ein.",
+        title="Vollständiger Name",
+        description="Bitte geben Sie den vollständigen Namen ein.",
         required=True,
     )
 
     role = schema.Choice(
-        title=u"Rolle",
-        description=u"Bitte wählen Sie eine Rolle für den Benuzter aus.",
+        title="Rolle",
+        description="Bitte wählen Sie eine Rolle für den Benuzter aus.",
         source=roles,
         required=True,
     )

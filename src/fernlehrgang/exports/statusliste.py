@@ -7,35 +7,37 @@ import decimal
 
 from fernlehrgang import models
 from fernlehrgang.browser.ergebnisse import ICalculateResults
-from fernlehrgang.exports.menus import ExportItems
 from fernlehrgang.interfaces.flg import IFernlehrgang
 from fernlehrgang.exports.versandliste_fortbildung import nN
 from openpyxl.workbook import Workbook
 from sqlalchemy import and_
-from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.orm import joinedload
 from fernlehrgang.interfaces.kursteilnehmer import un_klasse, gespraech
-from fernlehrgang.exports.utils import page_query, makeZipFile, getUserEmail
+from fernlehrgang.exports.utils import makeZipFile, getUserEmail
 
 import re
-cleanr = re.compile('<.*?>')
+
+cleanr = re.compile("<.*?>")
+
 
 def cleanhtml(raw_html):
-    cleantext = re.sub(cleanr, '', raw_html)
+    cleantext = re.sub(cleanr, "", raw_html)
     return cleantext.strip()
 
 
 v_un_klasse = un_klasse(None)
 v_gespraech = gespraech(None)
 
+
 def nN(value):
-    """ Not None"""
+    """Not None"""
     if value == None:
-        return ''
+        return ""
     if isinstance(value, int):
         return str(value)
     if isinstance(value, decimal.Decimal):
         return str(value)
-    return value.replace('\x1a', '')
+    return value.replace("\x1a", "")
 
 
 def ges_helper(term):
@@ -43,20 +45,47 @@ def ges_helper(term):
         return v_gespraech.getTerm(term).title
     except:
         pass
-    return ''
+    return ""
+
 
 def un_helper(term):
     try:
         return v_un_klasse.getTerm(term).title
     except:
         pass
-    return ''
+    return ""
 
 
-spalten = ['TEILNEHMER_ID', 'PASSWORT', 'Titel', 'Anrede', 'Name', 'Vorname', 'Geburtsdatum', 'Strasse', 'Hausnummer', 'PLZ', 'ORT', 'EMail',
-    'Mitgliedsnummer', 'Unternehmensnummer', 'Unternehmen', ' ', ' ', 'Strasse', 'PLZ', 'Ort', 'Registriert', 'Kategorie', 'Lieferstopps',
-    'Mitarbeiteranzahl', 'Branche (Schrotthandel etc..)', u'Abschlussgespräch', 'Status', 'Punktzahl',
-    u'Antwortbögen'
+spalten = [
+    "TEILNEHMER_ID",
+    "PASSWORT",
+    "Titel",
+    "Anrede",
+    "Name",
+    "Vorname",
+    "Geburtsdatum",
+    "Strasse",
+    "Hausnummer",
+    "PLZ",
+    "ORT",
+    "EMail",
+    "Mitgliedsnummer",
+    "Unternehmensnummer",
+    "Unternehmen",
+    " ",
+    " ",
+    "Strasse",
+    "PLZ",
+    "Ort",
+    "Registriert",
+    "Kategorie",
+    "Lieferstopps",
+    "Mitarbeiteranzahl",
+    "Branche (Schrotthandel etc..)",
+    "Abschlussgespräch",
+    "Status",
+    "Punktzahl",
+    "Antwortbögen",
 ]
 
 
@@ -69,17 +98,26 @@ def getXLSBases():
 
 def createRows(rc, session, flg_id):
     FERNLEHRGANG_ID = flg_id
-    lehrhefte = session.query(models.Lehrheft).options(joinedload(models.Lehrheft.fragen)).filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID).all()
-    result = session.query(models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer).options(joinedload(models.Kursteilnehmer.antworten))
+    lehrhefte = (
+        session.query(models.Lehrheft)
+        .options(joinedload(models.Lehrheft.fragen))
+        .filter(models.Lehrheft.fernlehrgang_id == FERNLEHRGANG_ID)
+        .all()
+    )
+    result = session.query(
+        models.Teilnehmer, models.Unternehmen, models.Kursteilnehmer
+    ).options(joinedload(models.Kursteilnehmer.antworten))
     result = result.filter(
         and_(
             models.Kursteilnehmer.fernlehrgang_id == FERNLEHRGANG_ID,
             models.Kursteilnehmer.teilnehmer_id == models.Teilnehmer.id,
-            models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr)).order_by(models.Teilnehmer.id)
+            models.Teilnehmer.unternehmen_mnr == models.Unternehmen.mnr,
+        )
+    ).order_by(models.Teilnehmer.id)
     print(result.count())
-    i=1
+    i = 1
     for teilnehmer, unternehmen, ktn in result:
-        #if i in range(0,100000, 1000):
+        # if i in range(0,100000, 1000):
         cal_res = ICalculateResults(ktn)
         summary = cal_res.summary(lehrhefte)
         liste = []
@@ -90,10 +128,10 @@ def createRows(rc, session, flg_id):
             gebdat = ""
             if teilnehmer.geburtsdatum:
                 try:
-                    gebdat = teilnehmer.geburtsdatum.strftime('%d.%m.%Y')
+                    gebdat = teilnehmer.geburtsdatum.strftime("%d.%m.%Y")
                 except:
                     gebdat = ""
-            #unternehmen = teilnehmer.unternehmen
+            # unternehmen = teilnehmer.unternehmen
             liste.append(nN(teilnehmer.id))
             liste.append(nN(teilnehmer.password))
             liste.append(nN(teilnehmer.titel))
@@ -116,27 +154,28 @@ def createRows(rc, session, flg_id):
             liste.append(nN(unternehmen.ort))
 
             if teilnehmer.name:
-                liste.append('ja')
+                liste.append("ja")
             else:
-                liste.append('nein')
+                liste.append("nein")
             liste.append(nN(teilnehmer.kategorie))
             liste.append(nN(ktn.status))
             liste.append(un_helper(ktn.un_klasse))
             liste.append(nN(ktn.branche))
             liste.append(ges_helper(ktn.gespraech))
-            liste.append(cleanhtml(nN(summary['comment'])))
-            liste.append(nN(summary['resultpoints']))
+            liste.append(cleanhtml(nN(summary["comment"])))
+            liste.append(nN(summary["resultpoints"]))
             liste.append(nN(antworten))
         rc.append(liste)
-        i+=1
+        i += 1
 
 
 from fernlehrgang.lib.emailer import send_mail
-from fernlehrgang.exports import q
+
+
 def export(flg_id, mail):
-    """This should be the "shared" export function.
-    """
+    """This should be the "shared" export function."""
     from z3c.saconfig import Session
+
     session = Session()
     fn = "/tmp/statusliste_%s.xlsx" % flg_id
     book, adressen, rc = getXLSBases()
@@ -146,25 +185,34 @@ def export(flg_id, mail):
         ws.append(zeile)
     book.save(fn)
     fn = makeZipFile(fn)
-    text=u"Bitte öffen Sie die Datei im Anhang"
+    text = "Bitte öffen Sie die Datei im Anhang"
     import transaction
+
     with transaction.manager:
-        send_mail('flgapp@bghw.de', (mail,), "Statusliste", text, [fn,])
+        send_mail(
+            "flgapp@bghw.de",
+            (mail,),
+            "Statusliste",
+            text,
+            [
+                fn,
+            ],
+        )
     return fn
 
 
-#@menuentry(ExportItems)
+# @menuentry(ExportItems)
 class XLSReport(grok.View):
     grok.context(IFernlehrgang)
-    grok.name('xlsreport')
-    grok.title('Statusliste')
+    grok.name("xlsreport")
+    grok.title("Statusliste")
 
     def update(self):
         mail = getUserEmail(self.request.principal.id)
         fn = export(self.context.id, mail)
-        #fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=6000)
-        #print(fn)
+        # fn = q.enqueue_call(func=export, args=(self.context.id, mail), timeout=6000)
+        # print(fn)
 
     def render(self):
-        self.flash('Sie werden benachrichtigt wenn der Report erstellt ist')
+        self.flash("Sie werden benachrichtigt wenn der Report erstellt ist")
         self.redirect(self.application_url())

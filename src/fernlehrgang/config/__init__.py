@@ -1,3 +1,3 @@
 # Make me a package
 
-POSTVERSANDSPERRE = ['L3', '94', '95']
+POSTVERSANDSPERRE = ["L3", "94", "95"]

@@ -20,6 +20,7 @@
   <include package="megrok.pagetemplate" file="meta.zcml" />
   <include package="grokcore.layout" />
   <include package="megrok.z3ctable" />
+  <include package="megrok.traject" file="meta.zcml" />
   <include package="megrok.z3ctable" file="meta.zcml" />
 
   <include package="uvc.siguvtheme" />

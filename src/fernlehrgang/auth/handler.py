@@ -6,13 +6,9 @@ import grok
 
 from z3c.saconfig import Session
 from fernlehrgang.models import Account
-from zope import component, interface, schema
+from zope import component
 from fernlehrgang.interfaces.app import IFernlehrgangApp
-from zope.password.interfaces import IPasswordManager
-from zope.securitypolicy.interfaces import IPrincipalRoleManager
-from zope.securitypolicy.interfaces import IPrincipalPermissionManager
 from zope.pluggableauth.interfaces import IPrincipalInfo, IAuthenticatorPlugin
-from zope.pluggableauth.factories import Principal
 
 
 class PrincipalInfo(object):
@@ -61,7 +57,13 @@ class UserAuthenticatorPlugin(object):
 
     def addUser(self, username, email, password, real_name, role):
         if username not in [x.login for x in self.listUsers()]:
-            user = Account(login=username, email=email, password=password, real_name=real_name, role=role)
+            user = Account(
+                login=username,
+                email=email,
+                password=password,
+                real_name=real_name,
+                role=role,
+            )
             self.session.add(user)
 
     def listUsers(self):
@@ -72,10 +74,8 @@ class CheckRemote(grok.XMLRPC):
     grok.context(IFernlehrgangApp)
 
     def checkAuth(self, user, password):
-        plugin = component.getUtility(IAuthenticatorPlugin, 'principals')
-        principal = plugin.authenticateCredentials(dict(
-            login=user,
-            password=password))
+        plugin = component.getUtility(IAuthenticatorPlugin, "principals")
+        principal = plugin.authenticateCredentials(dict(login=user, password=password))
         if principal:
             return 1
         return 0

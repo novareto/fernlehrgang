@@ -19,11 +19,11 @@ COMMASPACE = ', '
 import zope.app.appsetup.product
 
 config = zope.app.appsetup.product.getProductConfiguration('mailer')
-queue_path = config.get('queue-path')
-hostname = config.get('hostname', 'localhost')
-port = int(config.get('port', 25))
-username = config.get('username', None) or None
-password = config.get('password', None) or None
+queue_path = config and config.get('queue-path') or '/tmp/queue'
+hostname = config and config.get('hostname', 'localhost') or 'localhost'
+port = config and int(config.get('port', 25)) or 25
+username = config and config.get('username', None) or None
+password = config and config.get('password', None) or None
 
 
 mailer_object = zope.sendmail.mailer.SMTPMailer(
@@ -103,4 +103,4 @@ grok.global_utility(
     delivery,
     zope.sendmail.interfaces.IMailDelivery,
     name='flg.maildelivery')
-start_processor_thread()
+#start_processor_thread()

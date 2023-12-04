@@ -6,7 +6,6 @@ import grok
 
 # from profilehooks import profile
 # from sqlalchemy.orm import joinedload
-from zope.interface import Interface
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
@@ -32,7 +31,7 @@ class NaviEntryHome(NavEntry):
     grok.require("zope.View")
     grok.order(10)
 
-    title = u"Teilnehmer suchen"
+    title = "Teilnehmer suchen"
     icon = "fas fa-search"
 
     def url(self):
@@ -42,17 +41,19 @@ class NaviEntryHome(NavEntry):
 class TeilnehmerSuche(Form):
     grok.name("index")
     grok.context(IFernlehrgangApp)
-    grok.title(u"Statusabfrage KursTeilnehmer")
+    grok.title("Statusabfrage KursTeilnehmer")
     grok.require("zope.View")
     grok.order(1500)
 
-    label = u"Statusabfrage Teilnehmer"
-    description = u"Bitte geben Sie die Kriterien ein: \
-        (Name, Benutzer-ID, HSNR, MGLNR, UNR)"
+    label = "Statusabfrage Teilnehmer"
+    description = (
+        "Bitte geben Sie die Kriterien ein:         (Name, Benutzer-ID, HSNR, MGLNR,"
+        " UNR)"
+    )
 
     fields = Fields(ISearch).select("id")
-    fields["id"].title = u"Teilnehmer"
-    fields["id"].description = u"Hier können Sie einen Teilnehmer suchen."
+    fields["id"].title = "Teilnehmer"
+    fields["id"].description = "Hier können Sie einen Teilnehmer suchen."
 
     ignoreRequest = False
     postOnly = False
@@ -84,7 +85,11 @@ class TeilnehmerSuche(Form):
 
     def gKV(self, value):
         if value:
-            return ITeilnehmer.get("kompetenzzentrum").source.by_value.get(str(value)).title
+            return (
+                ITeilnehmer.get("kompetenzzentrum")
+                .source.by_value.get(str(value))
+                .title
+            )
 
     def gU(self, value):
         if value:
@@ -106,7 +111,7 @@ class TeilnehmerSuche(Form):
             try:
                 return IJournalEntry.get("status").source(None).getTerm(value).title
             except Exception:
-                return u"--> %s" % value
+                return "--> %s" % value
 
     def getLG(self, je):
         return je.id
@@ -135,7 +140,7 @@ class TeilnehmerSuche(Form):
                 ktns.append(ktn)
         return {"teilnehmer": tn, "unternehmen": unternehmenl, "kursteilnehmer": ktns}
 
-    @action(u"Suchen")
+    @action("Suchen")
     def handle_search(self):
         v = False
         data, errors = self.extractData()
@@ -147,7 +152,7 @@ class TeilnehmerSuche(Form):
             sql = sql.filter(Teilnehmer.id == data.get("id"))
             v = True
         if not v:
-            self.flash(u"Bitte geben Sie Suchkriterien ein.")
+            self.flash("Bitte geben Sie Suchkriterien ein.")
             return
         zs = self.getSession()
         zs["tn"] = data.get("id")

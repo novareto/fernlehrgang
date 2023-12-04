@@ -53,7 +53,6 @@ class FLGRolePermissionManager(SecurityMap, grok.Adapter):
         return self.queryCell(rowentry, colentry, default=None)
 
 
-
 @provider(IContextSourceBinder)
 def roles(context):
     items = []

@@ -34,16 +34,16 @@ class StatNavEntry(NavEntry):
 
 class FernlehrgangStatistik(Page):
     grok.context(IFernlehrgang)
-    grok.title(u"Statistik")
+    grok.title("Statistik")
 
-    title = u"Statistik Fernlehrgang"
+    title = "Statistik Fernlehrgang"
     alle_kursteilnehmer = 0
     kursteilnehmer_detail = []
 
     @property
     def description(self):
         return (
-            u"Hier Sie verschiedene Statstiken zum Fernlehrgang '%s' aufrufen"
+            "Hier Sie verschiedene Statstiken zum Fernlehrgang '%s' aufrufen"
             % self.context.titel
         )
 

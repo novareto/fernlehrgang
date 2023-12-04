@@ -3,27 +3,23 @@ import grok
 from zeam.form.ztk.widgets.textline import TextLineWidget
 from zeam.form.ztk.widgets.choice import ChoiceFieldWidget
 from zeam.form.ztk.widgets.bool import CheckBoxDisplayWidget
-from zeam.form.ztk.widgets.date import DateFieldWidget
 from zeam.form.ztk.widgets.number import NumberWidget
 from zeam.form.ztk.widgets.choice import RadioFieldWidget
 
 
-grok.templatedir('templates')
+grok.templatedir("templates")
 
 
 class UVCRadioFieldWidget(RadioFieldWidget):
-    """ Simple Override for removing <br> between choices
-    """
-
-
+    """Simple Override for removing <br> between choices"""
 
 
 class HiddenDisplayWidget(TextLineWidget):
-    grok.name('hiddendisplay')
+    grok.name("hiddendisplay")
 
 
 class ChoiceHiddenDisplayWidget(ChoiceFieldWidget):
-    grok.name('hiddendisplay')
+    grok.name("hiddendisplay")
 
     def getTermValue(self, value):
         return self.form.getContentData().get(self.component.identifier)
@@ -32,17 +28,17 @@ class ChoiceHiddenDisplayWidget(ChoiceFieldWidget):
         term = self.lookupTerm(value)
         if term is not None:
             return term.title
-        return u''
+        return ""
 
 
 class BoolHiddenDisplayWidget(CheckBoxDisplayWidget):
-    grok.name('hiddendisplay')
+    grok.name("hiddendisplay")
 
     def checkValue(self, value):
-        if value in ('No', ):
+        if value in ("No",):
             return False
         return True
 
 
 class NumberWidget(NumberWidget):
-        grok.name('hiddendisplay')
+    grok.name("hiddendisplay")

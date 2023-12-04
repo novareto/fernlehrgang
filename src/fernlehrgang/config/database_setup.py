@@ -22,11 +22,9 @@ except Exception:
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 
-log('DSN -> %s' %DSN)
+log("DSN -> %s" % DSN)
 
-engine_factory = EngineFactory(
-    DSN, convert_unicode=True, encoding="utf-8", echo=False
-)
+engine_factory = EngineFactory(DSN, convert_unicode=True, encoding="utf-8", echo=False)
 scoped_session = GloballyScopedSession()
 
 grok.global_utility(engine_factory, direct=True)

@@ -3,11 +3,10 @@ from setuptools import setup, find_packages
 version = '1.1.dev0'
 
 test_extras = [
-          'gocept.httpserverlayer',
-          'gocept.selenium',
-          'zope.app.testing',
-
-
+    'gocept.httpserverlayer',
+    'zope.app.testing',
+    'z3c.unconfigure',
+    'zope.testbrowser'
 ]
 
 setup(name='fernlehrgang',
@@ -27,31 +26,24 @@ setup(name='fernlehrgang',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'dolmen.beaker',
+          "dolmen.beaker",
           'grok',
           'grokcore.startup',
-          'js.bootstrap',
           'kombu',
           'megrok.nozodb',
           'megrok.traject',
           'megrok.z3ctable',
           'openpyxl',
-          'plone.memoize',
-          'profilehooks',
           'psycopg2-binary',
-          'python-gettext',
           'reportlab',
           'requests',
           'rq',
           'setuptools',
           'simplejson',
-          'timeout-decorator',
           'uvc.menus',
           'uvc.siguvtheme',
-          'waitress',
           'xlwt',
           'z3c.saconfig',
-          'z3c.unconfigure',
           'zeam.form.base',
           'zeam.form.composed',
           'zeam.form.table',
@@ -59,7 +51,6 @@ setup(name='fernlehrgang',
           'zeam.form.layout',
           'zope.pluggableauth',
           'zope.sendmail',
-          'zope.testbrowser',
       ],
       extras_require={
           'oracle': ['cx_Oracle',],

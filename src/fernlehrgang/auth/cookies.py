@@ -15,8 +15,7 @@ from zope.session.interfaces import ISession
 
 
 class ICookieCredentials(Interface):
-    """A Credentials Plugin based on cookies.
-    """
+    """A Credentials Plugin based on cookies."""
 
     cookie_name = ASCIILine(
         title="Cookie name",
@@ -45,7 +44,7 @@ class CookiesCredentials(grok.GlobalUtility, SessionCredentialsPlugin):
     @staticmethod
     def make_cookie(login, password):
         credstr = f"{login.decode('utf-8')}:{password.decode('utf-8')}"
-        val = base64.encodebytes(credstr.encode('utf-8'))
+        val = base64.encodebytes(credstr.encode("utf-8"))
         return urllib.parse.quote(val)
 
     def extractCredentials(self, request):
@@ -57,19 +56,17 @@ class CookiesCredentials(grok.GlobalUtility, SessionCredentialsPlugin):
         cookie = request.get(self.cookie_name, None)
 
         if login and password:
-            login = login.encode('utf-8')
-            password = password.encode('utf-8')
+            login = login.encode("utf-8")
+            password = password.encode("utf-8")
             cookie = self.make_cookie(login, password)
             request.response.setCookie(self.cookie_name, cookie, path="/")
         elif cookie:
-            val = base64.decodebytes(
-                urllib.parse.unquote(cookie).encode("utf-8"))
+            val = base64.decodebytes(urllib.parse.unquote(cookie).encode("utf-8"))
             login, password = val.split(b":")
         else:
             return
 
-        return {"login": login.decode('utf-8'),
-                "password": password.decode('utf-8')}
+        return {"login": login.decode("utf-8"), "password": password.decode("utf-8")}
 
     def logout(self, request):
         if not IHTTPRequest.providedBy(request):

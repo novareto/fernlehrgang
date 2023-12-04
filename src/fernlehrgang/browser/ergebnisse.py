@@ -24,14 +24,14 @@ grok.templatedir("templates")
 
 class ResNavEntry(NavEntry):
     grok.context(IKursteilnehmer)
-    grok.name('resnaventry')
+    grok.name("resnaventry")
     grok.order(50)
 
     title = "Ergebnisse"
     icon = "fas fa-chart-pie"
 
     def url(self):
-        return self.view.url(self.context, 'resultate')
+        return self.view.url(self.context, "resultate")
 
 
 class Resultate(Page):
@@ -39,13 +39,13 @@ class Resultate(Page):
     grok.title("Ergebnisse")
     grok.name("resultate")
 
-    title = u"Resultate"
+    title = "Resultate"
 
     @property
     def description(self):
         teilnehmer = self.context.teilnehmer
         return (
-            u"Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen."
+            "Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen."
             % (teilnehmer.name, teilnehmer.vorname, self.context.id)
         )
 
@@ -65,13 +65,13 @@ class ResultateVLW(Page):
     grok.title("Ergebnisse")
     grok.name("resultate")
 
-    title = u"Resultate"
+    title = "Resultate"
 
     @property
     def description(self):
         teilnehmer = self.context.teilnehmer
         return (
-            u"Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen."
+            "Hier Können Sie die Resultate des Kursteilnehmers %s %s KTID %s einsehen."
             % (teilnehmer.name, teilnehmer.vorname, self.context.id)
         )
 
@@ -180,23 +180,23 @@ class CalculateResults(grok.Adapter):
                 if branche == "ja":
                     if un_klasse == "G2" or un_klasse == "G":
                         if context.gespraech == "2":
-                            #comment = u"nicht bestanden, da das Abschlussseminar nicht erfolgreich abgeschlossen wurde."
-                            comment = u"nicht bestanden (Seminar offen)"
+                            # comment = u"nicht bestanden, da das Abschlussseminar nicht erfolgreich abgeschlossen wurde."
+                            comment = "nicht bestanden (Seminar offen)"
                         elif context.gespraech == "0" or context.gespraech is None:
-                            comment = u"nicht bestanden (Seminar offen)"
+                            comment = "nicht bestanden (Seminar offen)"
                     if un_klasse == "G3":
                         if context.gespraech == "2":
-                            #comment = u"nicht bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
-                            comment = u"nicht bestanden (Abschlussgespräch offen)"
+                            # comment = u"nicht bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
+                            comment = "nicht bestanden (Abschlussgespräch offen)"
                         elif context.gespraech == "0" or context.gespraech is None:
-                            comment = u"nicht bestanden (Abschlussgespräch offen)"
+                            comment = "nicht bestanden (Abschlussgespräch offen)"
                 elif branche == "nein":
                     if un_klasse == "G2" or un_klasse == "G":
                         if context.gespraech == "2":
-                            #comment = u"nicht bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
-                            comment = u"nicht bestanden (Abschlussgespräch offen)"
+                            # comment = u"nicht bestanden, da das Abschlussgespräch nicht erfolgreich absolviert wurde."
+                            comment = "nicht bestanden (Abschlussgespräch offen)"
                         elif context.gespraech == "0" or context.gespraech is None:
-                            comment = u"nicht bestanden (Abschlussgespräch offen)"
+                            comment = "nicht bestanden (Abschlussgespräch offen)"
         self.context.fixed_results = comment
         if comment == "bestanden":
             klass = "text-success"
@@ -257,7 +257,7 @@ class CalculateResultsVLW(grok.Adapter):
         return False
 
     def summary(self, lehrhefte=None, session=None, unternehmen=None):
-        comment = u"nicht bestanden (VLW noch nicht vollständig bearbeitet)"
+        comment = "nicht bestanden (VLW noch nicht vollständig bearbeitet)"
         context = self.context
         if context.status in POSTVERSANDSPERRE:
             comment = "nicht bestanden"
@@ -269,27 +269,27 @@ class CalculateResultsVLW(grok.Adapter):
             if branche == "ja":
                 if un_klasse == "G2" or un_klasse == "G1":
                     if context.gespraech == "2":
-                        comment = u"nicht bestanden (Seminar offen)"
+                        comment = "nicht bestanden (Seminar offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"nicht bestanden (Seminar offen)"
+                        comment = "nicht bestanden (Seminar offen)"
                 if un_klasse == "G3":
                     if context.gespraech == "2":
-                        #comment = u"nicht bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
-                        comment = u"nicht bestanden (Abschlussgespräch offen)"
+                        # comment = u"nicht bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
+                        comment = "nicht bestanden (Abschlussgespräch offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"nicht bestanden (Abschlussgespräch offen)"
+                        comment = "nicht bestanden (Abschlussgespräch offen)"
             elif branche == "nein":
                 if un_klasse == "G2":
                     if context.gespraech == "2":
-                        #comment = u"nicht bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
-                        comment = u"nicht bestanden (Abschlussgespräch offen)"
+                        # comment = u"nicht bestanden, da das Abschlussgespräch noch nicht erfolgreich absolviert wurde."
+                        comment = "nicht bestanden (Abschlussgespräch offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"nicht bestanden (Abschlussgespräch offen)"
+                        comment = "nicht bestanden (Abschlussgespräch offen)"
                 elif un_klasse == "G1":
                     if context.gespraech == "2":
-                        comment = u"nicht bestanden (Seminar offen)"
+                        comment = "nicht bestanden (Seminar offen)"
                     elif context.gespraech == "0" or context.gespraech is None:
-                        comment = u"nicht bestanden (Seminar offen)"
+                        comment = "nicht bestanden (Seminar offen)"
         self.context.fixed_results = comment
         if comment == "bestanden":
             klass = "text-success"

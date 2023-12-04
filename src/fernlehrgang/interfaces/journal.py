@@ -23,17 +23,13 @@ def getKursteilnehmer(context):
             SimpleTerm(
                 ktn.id,
                 ktn.id,
-                "%s-%s %s" % (
-                    ktn.fernlehrgang.titel,
-                    ktn.fernlehrgang.jahr,
-                    tn.name)
+                "%s-%s %s" % (ktn.fernlehrgang.titel, ktn.fernlehrgang.jahr, tn.name),
             )
         )
     return SimpleVocabulary(rc)
 
 
 class TolerantVocabulary(SimpleVocabulary):
-
     def getTerm(self, v):
         try:
             return super(TolerantVocabulary, self).getTerm(v)
@@ -41,52 +37,52 @@ class TolerantVocabulary(SimpleVocabulary):
             return SimpleTerm(v, v, v)
 
 
-
 @grok.provider(IContextSourceBinder)
 def get_status(context):
     rc = [
-        SimpleTerm('1', 'Info', u'Info'),
-        SimpleTerm('2', 'Lernfortschritt', u'Lernfortschritt'),
-        SimpleTerm('4', 'Abschluss Gespräch', u'Abschluss Gespräch'),
-        SimpleTerm('5', 'Erinnerungsmail', u'Erinnerungsmail'),
-        SimpleTerm('409', 'GBO nicht angelegt', u'GBO nicht angelegt. Eintrag schon vorhanden'),
-        SimpleTerm('400', 'GBO uebertrag fehlerhaft', u'GBO Uebertrag war fehlerhaft'),
-        SimpleTerm('1000', 'manuell geloest', u'Manuell gelöst'),
+        SimpleTerm("1", "Info", "Info"),
+        SimpleTerm("2", "Lernfortschritt", "Lernfortschritt"),
+        SimpleTerm("4", "Abschluss Gespräch", "Abschluss Gespräch"),
+        SimpleTerm("5", "Erinnerungsmail", "Erinnerungsmail"),
+        SimpleTerm(
+            "409", "GBO nicht angelegt", "GBO nicht angelegt. Eintrag schon vorhanden"
+        ),
+        SimpleTerm("400", "GBO uebertrag fehlerhaft", "GBO Uebertrag war fehlerhaft"),
+        SimpleTerm("1000", "manuell geloest", "Manuell gelöst"),
     ]
     return TolerantVocabulary(rc)
 
 
 class IJournalEntry(Interface):
-
     status = Choice(
-        title=u'Status',
+        title="Status",
         source=get_status,
         required=True,
     )
 
     type = TextLine(
-        title=u'Type',
+        title="Type",
         required=True,
     )
 
     kursteilnehmer_id = Choice(
-        title=u'Kursteilnehmer',
+        title="Kursteilnehmer",
         required=True,
         source=getKursteilnehmer,
     )
 
     # Filled automatically
     id = TextLine(
-        title=u'Unique identifier',
+        title="Unique identifier",
         required=True,
     )
 
     teilnehmer_id = Int(
-        title=u'Teilnehmer',
+        title="Teilnehmer",
         required=True,
     )
 
     date = Datetime(
-        title=u'Date',
+        title="Date",
         required=True,
     )

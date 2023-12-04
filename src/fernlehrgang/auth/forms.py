@@ -4,7 +4,10 @@ import zope.interface
 import zope.component
 
 from zope.authentication.interfaces import (
-    ILogout, IUnauthenticatedPrincipal, IAuthentication)
+    ILogout,
+    IUnauthenticatedPrincipal,
+    IAuthentication,
+)
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.location.interfaces import ILocation
 
@@ -14,25 +17,18 @@ from zeam.form.base.markers import SUCCESS, FAILURE
 
 
 class ILoginForm(zope.interface.Interface):
-    """A simple login form interface.
-    """
+    """A simple login form interface."""
 
-    login = zope.schema.TextLine(
-        title=("Username"),
-        required=True)
+    login = zope.schema.TextLine(title="Username", required=True)
 
-    password = zope.schema.Password(
-        title=("Password"),
-        required=True)
+    password = zope.schema.Password(title="Password", required=True)
 
-    camefrom = zope.schema.TextLine(
-        title=("TextLine"),
-        required=False)
+    camefrom = zope.schema.TextLine(title="TextLine", required=False)
 
 
 class Login(Form):
-    """A very basic implementation of a login form.
-    """
+    """A very basic implementation of a login form."""
+
     grok.title("Log in")
     grok.require("zope.Public")
     grok.context(zope.interface.Interface)
@@ -42,7 +38,7 @@ class Login(Form):
     form_name = "Login form"
 
     fields = Fields(ILoginForm)
-    fields['camefrom'].mode = 'hidden'
+    fields["camefrom"].mode = "hidden"
     for field in fields:
         field.prefix = ""
 
@@ -56,7 +52,7 @@ class Login(Form):
             self.status = "Login failed"
             return FAILURE
 
-        self.flash(u'Sie sind nun erfolgreich angemeldet')
+        self.flash("Sie sind nun erfolgreich angemeldet")
 
         # grok.notify(UserLoggedInEvent(principal))
         camefrom = self.request.get("camefrom", None)
@@ -72,7 +68,7 @@ class Login(Form):
 
 class Logout(grok.View):
     grok.context(zope.interface.Interface)
-    grok.require('zope.Public')
+    grok.require("zope.Public")
 
     def update(self):
         auth = zope.component.queryUtility(IAuthentication)

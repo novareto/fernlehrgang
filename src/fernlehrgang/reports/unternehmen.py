@@ -21,47 +21,45 @@ grok.templatedir("templates")
 
 
 class IUnternehmenSearch(Interface):
-
     mnr = TextLine(
-        title=u"Mitgliedsnummer",
-        description=u"Mitgliedsnummer des Unternehmens",
+        title="Mitgliedsnummer",
+        description="Mitgliedsnummer des Unternehmens",
         required=False,
     )
 
-    name = TextLine(
-        title=u"Name",
-        description=u"Name des Unternehmens",
-        required=False
-    )
+    name = TextLine(title="Name", description="Name des Unternehmens", required=False)
 
     mnr_g_alt = TextLine(
-        title=u"Mitgliedsnummer G Alt",
-        description=u"Alte Mitgliedsnummer der Sparte G",
+        title="Mitgliedsnummer G Alt",
+        description="Alte Mitgliedsnummer der Sparte G",
         required=False,
     )
 
 
 class USNavEntry(NavEntry):
     grok.context(IFernlehrgangApp)
-    grok.name('usnaventry')
-    grok.require('zope.View')
+    grok.name("usnaventry")
+    grok.require("zope.View")
     grok.order(40)
 
-    title = u"Statusabfrage Unternehmen"
+    title = "Statusabfrage Unternehmen"
     icon = "fas fa-search"
 
     def url(self):
-        return self.view.url(self.context, 'unternehmen_listing')
+        return self.view.url(self.context, "unternehmen_listing")
 
 
 class UnternehmenSuche(Form):
     grok.context(IFernlehrgangApp)
-    grok.title(u"Statusabfrage Unternehmen")
+    grok.title("Statusabfrage Unternehmen")
     grok.require("zope.View")
     grok.order(20)
 
-    label = u"Statusabfrage Unternehmen"
-    description = u"Bitte geben Sie Mitgliedsnummer für das Unternehmen ein, dass Sie suchen möchten"
+    label = "Statusabfrage Unternehmen"
+    description = (
+        "Bitte geben Sie Mitgliedsnummer für das Unternehmen ein, dass Sie suchen"
+        " möchten"
+    )
 
     results = []
 
@@ -71,7 +69,7 @@ class UnternehmenSuche(Form):
         site = grok.getSite()
         locate(site, obj, DefaultModel)
 
-    @action(u"Suchen")
+    @action("Suchen")
     def handle_search(self):
         rc = []
         v = False
@@ -95,7 +93,7 @@ class UnternehmenSuche(Form):
             constraint = "%%%s%%" % data.get("name")
             sql = sql.filter(Unternehmen.name.ilike(constraint))
         if not v:
-            self.flash(u"Bitte geben Sie entsprechende Kriterien ein.")
+            self.flash("Bitte geben Sie entsprechende Kriterien ein.")
             return
         for unternehmen, teilnehmer, kursteilnehmer in sql.all():
             results = ICalculateResults(kursteilnehmer).summary(unternehmen=unternehmen)

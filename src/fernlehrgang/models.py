@@ -26,7 +26,6 @@ from fernlehrgang.interfaces.lehrheft import ILehrheft
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from megrok import traject
-from plone.memoize import ram, instance
 from sqlalchemy import *
 from sqlalchemy import TypeDecorator
 from sqlalchemy.ext.declarative import declarative_base
@@ -37,7 +36,6 @@ from zope.container.contained import Contained
 from zope.dublincore.interfaces import IDCDescriptiveProperties
 from sqlalchemy import event
 from zope.interface import alsoProvides, Interface, implementer
-from z3c.saconfig import EngineFactory, GloballyScopedSession
 from zope.app.appsetup.product import getProductConfiguration
 
 
@@ -45,13 +43,13 @@ class IContent(Interface):
     pass
 
 
-config = getProductConfiguration('database')
-SCHEMA = config['schema'] or None 
-#SCHEMA = "FLGUTF8"
-log('Database SCHEMA --> %s' % SCHEMA)
+config = getProductConfiguration("database")
+SCHEMA = config and config["schema"] or None
+# SCHEMA = "FLGUTF8"
+log("Database SCHEMA --> %s" % SCHEMA)
 Base = declarative_base()
-Base.metadata.schema = SCHEMA 
-#Base.metadata.create_all()
+Base.metadata.schema = SCHEMA
+# Base.metadata.create_all()
 
 
 class MyStringType(TypeDecorator):
@@ -59,20 +57,20 @@ class MyStringType(TypeDecorator):
 
     def process_bind_param(self, value, dialect):
         if value is not None and dialect.name == "oracle":
-            value = value.encode('utf-8')
+            value = value.encode("utf-8")
         return value
 
 
 @grok.subscribe(IEngineCreatedEvent)
 def setUpDatabase(event):
-    print("Engine Created Event")
     metadata = Base.metadata
-    #metadata.create_all(event.engine, checkfirst=True)
+    # metadata.create_all(event.engine, checkfirst=True)
 
 
 @implementer(IContent)
 class RDBMixin(traject.Model, Contained):
-    """ Base Mixin for RDB-Base Classes """
+    """Base Mixin for RDB-Base Classes"""
+
     grok.baseclass()
 
     def __init__(self, **kwargs):
@@ -83,13 +81,13 @@ class RDBMixin(traject.Model, Contained):
 class Account(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("account/:user_id")
-    __tablename__ = 'accounts'
+    __tablename__ = "accounts"
 
     login = Column(String(50), primary_key=True)
     email = Column(String(50))
     real_name = Column(String(100))
     role = Column(String(100))
-    password = Column('kennwort', String(100))
+    password = Column("kennwort", String(100))
 
     def checkPassword(self, password):
         if password == self.password:
@@ -97,17 +95,16 @@ class Account(Base, RDBMixin):
         return False
 
     def getEmail(self):
-        if hasattr(self, 'email'):
+        if hasattr(self, "email"):
             return self.email
-        return ''
+        return ""
 
     def factory(user_id):
         session = Session()
-        return session.query(Account).filter(
-            Account.login == user_id).one()
+        return session.query(Account).filter(Account.login == user_id).one()
 
     def arguments(account):
-        return dict(login = account.login)
+        return dict(login=account.login)
 
 
 @implementer(IFernlehrgang, IDCDescriptiveProperties)
@@ -115,8 +112,12 @@ class Fernlehrgang(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id")
 
-    __tablename__ = 'fernlehrgang'
-    id = Column(Integer, Sequence('fernlehrgang_seq', start=100, increment=1, schema=SCHEMA), primary_key=True)
+    __tablename__ = "fernlehrgang"
+    id = Column(
+        Integer,
+        Sequence("fernlehrgang_seq", start=100, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
     jahr = Column(String(50))
     titel = Column(String(256))
     typ = Column(String(50))
@@ -131,39 +132,46 @@ class Fernlehrgang(Base, RDBMixin):
         return self.jahr
 
     def __repr__(self):
-        return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" %(self.id, self.jahr, self.titel)
+        return "<Fernlehrgang(id='%s', jahr='%s', titel='%s')>" % (
+            self.id,
+            self.jahr,
+            self.titel,
+        )
 
     def factory(fernlehrgang_id):
         session = Session()
-        return session.query(Fernlehrgang).filter(
-            Fernlehrgang.id == int(fernlehrgang_id)).one()
+        return (
+            session.query(Fernlehrgang)
+            .filter(Fernlehrgang.id == int(fernlehrgang_id))
+            .one()
+        )
 
     def arguments(fernlehrgang):
-        return dict(fernlehrgang_id = fernlehrgang.id)
-
+        return dict(fernlehrgang_id=fernlehrgang.id)
 
 
 from dataclasses import dataclass
+
 
 @dataclass
 class CUSAResult:
     message: str = ""
 
 
-
-
 @implementer(IUnternehmen, IDCDescriptiveProperties)
 class Unternehmen(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr")
-    #grok.traversable(attr='god_data')
+    # grok.traversable(attr='god_data')
 
-    __tablename__ = 'adr'
-    #__tablename__ = 'adr_transfer'
+    __tablename__ = "adr"
+    # __tablename__ = 'adr_transfer'
 
-    #id = Column("ID", Numeric, primary_key=True)
+    # id = Column("ID", Numeric, primary_key=True)
     mnr = Column("MNR", String(11), primary_key=True, index=True)
-    unternehmensnummer = Column("UNTERNEHMENSNUMMER", Integer(), primary_key=False, index=True)
+    unternehmensnummer = Column(
+        "UNTERNEHMENSNUMMER", Integer(), primary_key=False, index=True
+    )
     name = Column("NAME1", String(33))
     name2 = Column("NAME2", String(33))
     name3 = Column("NAME3", String(33))
@@ -174,31 +182,32 @@ class Unternehmen(Base, RDBMixin):
     mnr_e = Column("MNR_E", MyStringType(12))
     mnr_g_alt = Column("MNR_G_ALT", MyStringType(12))
     aktiv = Column("aktiv", Boolean())
-    b_groesse = Column('BETRIEBSGROESSE', String(240))
-    hbst = Column('HBST', String(9))
+    b_groesse = Column("BETRIEBSGROESSE", String(240))
+    hbst = Column("HBST", String(9))
 
     @property
     def title(self):
         return self.mnr
 
     def __repr__(self):
-        return "<Unternehmen(mnr='%s')>" %(self.mnr)
+        return "<Unternehmen(mnr='%s')>" % (self.mnr)
 
     def factory(unternehmen_mnr):
         session = Session()
-        return session.query(Unternehmen).filter(
-            Unternehmen.mnr == unternehmen_mnr).one()
+        return (
+            session.query(Unternehmen).filter(Unternehmen.mnr == unternehmen_mnr).one()
+        )
 
     def arguments(unternehmen):
-        return dict(unternehmen_mnr = unternehmen.mnr)
-
+        return dict(unternehmen_mnr=unternehmen.mnr)
 
 
 unternehmen_teilnehmer = Table(
-    'unternehmen_teilnehmer', Base.metadata,
-    Column('unternehmen_id', String(11), ForeignKey('adr.MNR')),
-    #Column('unternehmen_id', String(11), ForeignKey('adr_transfer.MNR')),
-    Column('teilnehmer_id', Integer, ForeignKey('teilnehmer.id'))
+    "unternehmen_teilnehmer",
+    Base.metadata,
+    Column("unternehmen_id", String(11), ForeignKey("adr.MNR")),
+    # Column('unternehmen_id', String(11), ForeignKey('adr_transfer.MNR')),
+    Column("teilnehmer_id", Integer, ForeignKey("teilnehmer.id")),
 )
 
 
@@ -207,9 +216,13 @@ class Teilnehmer(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr/teilnehmer/:id")
 
-    __tablename__ = 'teilnehmer'
+    __tablename__ = "teilnehmer"
 
-    id = Column(Integer, Sequence('teilnehmer_seq', start=100000, increment=1, schema=SCHEMA), primary_key=True)
+    id = Column(
+        Integer,
+        Sequence("teilnehmer_seq", start=100000, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
 
     anrede = Column(String(50))
     titel = Column(String(50))
@@ -227,36 +240,43 @@ class Teilnehmer(Base, RDBMixin):
     kategorie = Column(String(1))
     kompetenzzentrum = Column(String(5))
     stamm_mnr = Column(String(20))
-    
+
     unternehmen_mnr = Column(String(11), ForeignKey(Unternehmen.mnr))
 
-    #unternehmen = relation(Unternehmen,
+    # unternehmen = relation(Unternehmen,
     #                       backref = backref('teilnehmer', order_by=id))
 
     unternehmen = relationship(
-        "Unternehmen",
-        secondary=unternehmen_teilnehmer, backref="teilnehmer"
-        )
+        "Unternehmen", secondary=unternehmen_teilnehmer, backref="teilnehmer"
+    )
 
     @property
     def title(self):
         return "%s %s" % (self.name, self.vorname)
 
     def __repr__(self):
-        return "<Teilnehmer(id='%s', name='%s')>" %(self.id, self.id)
+        return "<Teilnehmer(id='%s', name='%s')>" % (self.id, self.id)
 
     def getVLWKTN(self):
         for ktn in self.kursteilnehmer:
-            if ktn.fernlehrgang.typ == '4':
+            if ktn.fernlehrgang.typ == "4":
                 return ktn
 
     def factory(id, unternehmen_mnr):
         session = Session()
-        return session.query(Teilnehmer).filter(
-            and_(Teilnehmer.id == int(id), Teilnehmer.unternehmen_mnr == unternehmen_mnr)).one()
+        return (
+            session.query(Teilnehmer)
+            .filter(
+                and_(
+                    Teilnehmer.id == int(id),
+                    Teilnehmer.unternehmen_mnr == unternehmen_mnr,
+                )
+            )
+            .one()
+        )
 
     def arguments(teilnehmer):
-        return dict(id = teilnehmer.id, unternehmen_mnr = teilnehmer.unternehmen_mnr)
+        return dict(id=teilnehmer.id, unternehmen_mnr=teilnehmer.unternehmen_mnr)
 
 
 @implementer(ILehrheft, IDCDescriptiveProperties)
@@ -264,70 +284,112 @@ class Lehrheft(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id")
 
-    __tablename__ = 'lehrheft'
+    __tablename__ = "lehrheft"
 
-    id = Column(Integer, Sequence('lehrheft_seq', start=1000, increment=1, schema=SCHEMA), primary_key=True)
+    id = Column(
+        Integer,
+        Sequence("lehrheft_seq", start=1000, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
     nummer = Column(String(5))
     titel = Column(String(256))
-    fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
+    fernlehrgang_id = Column(
+        Integer,
+        ForeignKey(
+            "fernlehrgang.id",
+        ),
+    )
 
-    fernlehrgang = relation(Fernlehrgang,
-                            backref = backref('lehrhefte', order_by=nummer.asc(), cascade="all,delete"),
-                           )
+    fernlehrgang = relation(
+        Fernlehrgang,
+        backref=backref("lehrhefte", order_by=nummer.asc(), cascade="all,delete"),
+    )
 
     @property
     def title(self):
         return self.titel
 
     def __repr__(self):
-        return "<Lehrgang(id='%s', nummer='%s', fernlehrgangid='%s')>" %(self.id, self.nummer, self.fernlehrgang_id)
+        return "<Lehrgang(id='%s', nummer='%s', fernlehrgangid='%s')>" % (
+            self.id,
+            self.nummer,
+            self.fernlehrgang_id,
+        )
 
     def factory(fernlehrgang_id, lehrheft_id):
         session = Session()
-        return  session.query(Lehrheft).filter(
-            and_( Lehrheft.fernlehrgang_id == int(fernlehrgang_id),
-                  Lehrheft.id == int(lehrheft_id))).one()
+        return (
+            session.query(Lehrheft)
+            .filter(
+                and_(
+                    Lehrheft.fernlehrgang_id == int(fernlehrgang_id),
+                    Lehrheft.id == int(lehrheft_id),
+                )
+            )
+            .one()
+        )
 
     def arguments(lehrheft):
-        return dict(fernlehrgang_id = lehrheft.fernlehrgang_id,
-                    lehrheft_id = lehrheft.id)
+        return dict(fernlehrgang_id=lehrheft.fernlehrgang_id, lehrheft_id=lehrheft.id)
 
 
 @implementer(IFrage, IDCDescriptiveProperties)
 class Frage(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
-    traject.pattern("fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/frage/:frage_id")
+    traject.pattern(
+        "fernlehrgang/:fernlehrgang_id/lehrheft/:lehrheft_id/frage/:frage_id"
+    )
 
-    __tablename__ = 'frage'
+    __tablename__ = "frage"
 
-    id = Column(Integer, Sequence('frage_seq', start=10000, increment=1, schema=SCHEMA), primary_key=True)
+    id = Column(
+        Integer,
+        Sequence("frage_seq", start=10000, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
     frage = Column(String(5))
     titel = Column(String(256))
     antwortschema = Column(String(50))
     gewichtung = Column(Integer)
-    lehrheft_id = Column(Integer, ForeignKey('lehrheft.id',))
+    lehrheft_id = Column(
+        Integer,
+        ForeignKey(
+            "lehrheft.id",
+        ),
+    )
 
-    lehrheft = relation(Lehrheft,
-                        backref = backref('fragen', order_by=frage, cascade="all,delete"),
-                        )
+    lehrheft = relation(
+        Lehrheft,
+        backref=backref("fragen", order_by=frage, cascade="all,delete"),
+    )
 
     @property
     def title(self):
         return self.titel
 
     def __repr__(self):
-        return "<Frage(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage, self.antwortschema)
+        return "<Frage(id='%s', frage='%s', antwort='%s')>" % (
+            self.id,
+            self.frage,
+            self.antwortschema,
+        )
 
     def factory(fernlehrgang_id, lehrheft_id, frage_id):
         session = Session()
-        return  session.query(Frage).filter(
-            and_( Frage.id == int(frage_id),
-                  Frage.lehrheft_id == int(lehrheft_id))).one()
+        return (
+            session.query(Frage)
+            .filter(
+                and_(Frage.id == int(frage_id), Frage.lehrheft_id == int(lehrheft_id))
+            )
+            .one()
+        )
 
     def arguments(frage):
-        return dict(frage_id = frage.id,
-                    lehrheft_id = frage.lehrheft_id,
-                    fernlehrgang_id = frage.lehrheft.fernlehrgang.id)
+        return dict(
+            frage_id=frage.id,
+            lehrheft_id=frage.lehrheft_id,
+            fernlehrgang_id=frage.lehrheft.fernlehrgang.id,
+        )
 
 
 @implementer(IKursteilnehmer, IDCDescriptiveProperties)
@@ -335,50 +397,86 @@ class Kursteilnehmer(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id")
 
-    __tablename__ = 'kursteilnehmer'
+    __tablename__ = "kursteilnehmer"
 
-    id = Column(Integer, Sequence('kursteilnehmer_seq', start=900000, increment=1, schema=SCHEMA), primary_key=True)
+    id = Column(
+        Integer,
+        Sequence("kursteilnehmer_seq", start=900000, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
     status = Column(String(50))
-    fernlehrgang_id = Column(Integer, ForeignKey('fernlehrgang.id',))
-    teilnehmer_id = Column(Integer, ForeignKey('teilnehmer.id',))
-    #unternehmen_mnr = Column(String(11), ForeignKey('adr_transfer.MNR',))
-    unternehmen_mnr = Column(String(11), ForeignKey('adr.MNR',))
+    fernlehrgang_id = Column(
+        Integer,
+        ForeignKey(
+            "fernlehrgang.id",
+        ),
+    )
+    teilnehmer_id = Column(
+        Integer,
+        ForeignKey(
+            "teilnehmer.id",
+        ),
+    )
+    # unternehmen_mnr = Column(String(11), ForeignKey('adr_transfer.MNR',))
+    unternehmen_mnr = Column(
+        String(11),
+        ForeignKey(
+            "adr.MNR",
+        ),
+    )
     erstell_datum = Column(DateTime, default=datetime.datetime.now)
     gespraech = Column(String(20))
     un_klasse = Column(String(20))
     branche = Column(String(20))
     fixed_results = Column(String(100))
-    #fixed_results = None
+    # fixed_results = None
 
-    fernlehrgang = relation(Fernlehrgang, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
-    teilnehmer = relation(Teilnehmer, backref = backref('kursteilnehmer', order_by=id), lazy="joined")
-    unternehmen = relation(Unternehmen, backref = backref('kursteilnehmer', order_by=id))
+    fernlehrgang = relation(
+        Fernlehrgang, backref=backref("kursteilnehmer", order_by=id), lazy="joined"
+    )
+    teilnehmer = relation(
+        Teilnehmer, backref=backref("kursteilnehmer", order_by=id), lazy="joined"
+    )
+    unternehmen = relation(Unternehmen, backref=backref("kursteilnehmer", order_by=id))
 
     @property
     def title(self):
         return "%s %s" % (self.teilnehmer.name, self.teilnehmer.vorname)
 
     def __repr__(self):
-        return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" %(self.id, self.fernlehrgang_id)
+        return "<Kursteilnehmer(id='%s', fernlehrgangid='%s')>" % (
+            self.id,
+            self.fernlehrgang_id,
+        )
 
     def factory(fernlehrgang_id, kursteilnehmer_id):
         session = Session()
-        return  session.query(Kursteilnehmer).filter(
-            and_( Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
-                  Kursteilnehmer.id == int(kursteilnehmer_id))).one()
+        return (
+            session.query(Kursteilnehmer)
+            .filter(
+                and_(
+                    Kursteilnehmer.fernlehrgang_id == int(fernlehrgang_id),
+                    Kursteilnehmer.id == int(kursteilnehmer_id),
+                )
+            )
+            .one()
+        )
 
     def arguments(kursteilnehmer):
-        return dict(fernlehrgang_id = kursteilnehmer.fernlehrgang_id,
-                    kursteilnehmer_id = kursteilnehmer.id)
+        return dict(
+            fernlehrgang_id=kursteilnehmer.fernlehrgang_id,
+            kursteilnehmer_id=kursteilnehmer.id,
+        )
 
     @property
     def result(self):
         from fernlehrgang.interfaces.resultate import ICalculateResults
+
         return ICalculateResults(self).summary()
 
 
 # standard decorator style
-@event.listens_for(Kursteilnehmer, 'load')
+@event.listens_for(Kursteilnehmer, "load")
 def receive_load(target, context):
     if target.fernlehrgang.typ == "4":
         alsoProvides(target, IVLWKursteilnehmer)
@@ -389,24 +487,38 @@ def receive_load(target, context):
 @implementer(IAntwort, IDCDescriptiveProperties)
 class Antwort(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
-    traject.pattern("fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id")
+    traject.pattern(
+        "fernlehrgang/:fernlehrgang_id/kursteilnehmer/:kursteilnehmer_id/antwort/:antwort_id"
+    )
 
-    __tablename__ = 'antwort'
-    #__table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
+    __tablename__ = "antwort"
+    # __table_args__ = (UniqueConstraint('frage_id', 'kursteilnehmer_id', name="unique_frage"), {})
 
-    id = Column(Integer, Sequence('antwort_seq', start=100000, increment=1, schema=SCHEMA), primary_key=True)
-    lehrheft_id = Column(Integer, ForeignKey('lehrheft.id'))
-    frage_id = Column(Integer, ForeignKey('frage.id'))
+    id = Column(
+        Integer,
+        Sequence("antwort_seq", start=100000, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
+    lehrheft_id = Column(Integer, ForeignKey("lehrheft.id"))
+    frage_id = Column(Integer, ForeignKey("frage.id"))
     antwortschema = Column(String(50))
     datum = Column(DateTime)
     system = Column("SYSTEMWERT", String(50))
     gbo = Column(String(50))
     gbo_daten = Column(LargeBinary)
-    kursteilnehmer_id = Column(Integer, ForeignKey('kursteilnehmer.id',))
+    kursteilnehmer_id = Column(
+        Integer,
+        ForeignKey(
+            "kursteilnehmer.id",
+        ),
+    )
 
-    kursteilnehmer = relation(Kursteilnehmer,
-                              backref = backref('antworten', lazy='joined', order_by=frage_id, cascade="all,delete"),
-                             )
+    kursteilnehmer = relation(
+        Kursteilnehmer,
+        backref=backref(
+            "antworten", lazy="joined", order_by=frage_id, cascade="all,delete"
+        ),
+    )
 
     frage = relation(Frage, lazy="joined")
 
@@ -419,18 +531,31 @@ class Antwort(Base, RDBMixin):
         return self.frage.lehrheft_id
 
     def __repr__(self):
-        return "<Antwort(id='%s', frage='%s', antwort='%s')>" %(self.id, self.frage_id, self.antwortschema)
+        return "<Antwort(id='%s', frage='%s', antwort='%s')>" % (
+            self.id,
+            self.frage_id,
+            self.antwortschema,
+        )
 
     def factory(fernlehrgang_id, kursteilnehmer_id, antwort_id):
         session = Session()
-        return  session.query(Antwort).filter(
-            and_( Antwort.id == int(antwort_id),
-                  Antwort.kursteilnehmer_id == int(kursteilnehmer_id))).one()
+        return (
+            session.query(Antwort)
+            .filter(
+                and_(
+                    Antwort.id == int(antwort_id),
+                    Antwort.kursteilnehmer_id == int(kursteilnehmer_id),
+                )
+            )
+            .one()
+        )
 
     def arguments(antwort):
-        return dict(antwort_id = antwort.id,
-                    kursteilnehmer_id = antwort.kursteilnehmer_id,
-                    fernlehrgang_id = antwort.kursteilnehmer.fernlehrgang.id)
+        return dict(
+            antwort_id=antwort.id,
+            kursteilnehmer_id=antwort.kursteilnehmer_id,
+            fernlehrgang_id=antwort.kursteilnehmer.fernlehrgang.id,
+        )
 
 
 @implementer(IJournalEntry)
@@ -438,15 +563,24 @@ class JournalEntry(Base, RDBMixin):
     grok.context(IFernlehrgangApp)
     traject.pattern("unternehmen/:unternehmen_mnr/teilnehmer/:id/journal/:jid")
 
-    __tablename__ = 'journal'
+    __tablename__ = "journal"
 
-    id = Column(Integer, Sequence('journal_seq', start=1000000, increment=1, schema=SCHEMA), primary_key=True)
+    id = Column(
+        Integer,
+        Sequence("journal_seq", start=1000000, increment=1, schema=SCHEMA),
+        primary_key=True,
+    )
     teilnehmer_id = Column(Integer, ForeignKey(Teilnehmer.id))
     creation_date = Column(DateTime, default=datetime.datetime.now)
     status = Column(String(50))
     type = Column(String(500))
     kursteilnehmer_id = Column(Integer, ForeignKey(Kursteilnehmer.id))
-    teilnehmer = relationship(Teilnehmer, backref=backref("journal_entries", order_by='JournalEntry.creation_date.desc()'))
+    teilnehmer = relationship(
+        Teilnehmer,
+        backref=backref(
+            "journal_entries", order_by="JournalEntry.creation_date.desc()"
+        ),
+    )
     kursteilnehmer = relationship(Kursteilnehmer)
 
     @property
@@ -455,30 +589,34 @@ class JournalEntry(Base, RDBMixin):
 
     def __repr__(self):
         return "<JournalEntry(id='%i', teilnehmer='%i')>" % (
-            self.id, self.teilnehmer_id)
+            self.id,
+            self.teilnehmer_id,
+        )
 
     def factory(unternehmen_mnr, id, jid):
         session = Session()
-        return session.query(JournalEntry).filter(
-            and_(JournalEntry.id == jid,
-                 JournalEntry.teilnehmer_id == id)).one()
+        return (
+            session.query(JournalEntry)
+            .filter(and_(JournalEntry.id == jid, JournalEntry.teilnehmer_id == id))
+            .one()
+        )
 
-            #     JournalEntry.teilnehmer.unternehmen_mnr==unternehmen_mnr)).one()
+        #     JournalEntry.teilnehmer.unternehmen_mnr==unternehmen_mnr)).one()
 
     def arguments(entry):
         return dict(
             jid=entry.id,
             id=entry.teilnehmer.id,
-            unternehmen_mnr=entry.teilnehmer.unternehmen_mnr)
-
+            unternehmen_mnr=entry.teilnehmer.unternehmen_mnr,
+        )
 
 
 class CUSAResult(Base, RDBMixin):
     grok.context(IUnternehmen)
     traject.pattern("unternehmen/:unternehmen_mnr/cusaresult/:id")
 
-    __tablename__ = 'flg_prv'
-    #id = Column(Integer, Sequence('journal_seq', start=1000000, increment=1, schema=SCHEMA), primary_key=True)
+    __tablename__ = "flg_prv"
+    # id = Column(Integer, Sequence('journal_seq', start=1000000, increment=1, schema=SCHEMA), primary_key=True)
     datum = Column(DateTime, default=datetime.datetime.now)
 
     ergebnis = Column(String(256))
@@ -489,11 +627,18 @@ class CUSAResult(Base, RDBMixin):
     status = Column(String(256))
     unternehmen_mnr = Column(String(256), ForeignKey(Unternehmen.mnr), primary_key=True)
 
-
     def factory(id, unternehmen_mnr):
         session = Session()
-        return session.query(CUSAResult).filter(
-            and_(CUSAResult.id == int(id), CUSAResult.unternehmen_mnr == unternehmen_mnr)).one()
+        return (
+            session.query(CUSAResult)
+            .filter(
+                and_(
+                    CUSAResult.id == int(id),
+                    CUSAResult.unternehmen_mnr == unternehmen_mnr,
+                )
+            )
+            .one()
+        )
 
     def arguments(cusaresult):
-        return dict(id = cusaresult.id, unternehmen_mnr = cusaresult.unternehmen_mnr)
+        return dict(id=cusaresult.id, unternehmen_mnr=cusaresult.unternehmen_mnr)

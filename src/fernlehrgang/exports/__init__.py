@@ -9,9 +9,6 @@ q = Queue(connection=Redis())
 
 
 class ZCAWorker(SimpleWorker):
-
     def __init__(self, *args, **kwargs):
         super(ZCAWorker, self).__init__(*args, **kwargs)
-        config('/home/bghw/fernlehrgang/parts/etc/zope.conf')
-
-
+        config("/home/cklinger/work/bghw/flg/fernlehrgang/parts/etc/zope.conf")

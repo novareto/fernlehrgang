@@ -4,28 +4,13 @@
 #
 
 [loggers]
-keys = root, wsgi
+keys = root,wsgi,fernlehrgang
 
 [handlers]
-keys = console, accesslog
+keys = console,accesslog
 
 [formatters]
-keys = generic, accesslog
-
-[logger_root]
-level = INFO
-handlers = console
-
-
-[filter:sqltap]
-use = egg:sqltap#sqltap
-
-
-[logger_wsgi]
-level = INFO
-handlers = accesslog
-qualname = wsgi
-propagate = 0
+keys = generic,accesslog
 
 [handler_console]
 ;class = FileHandler
@@ -37,8 +22,7 @@ formatter = generic
 
 [handler_accesslog]
 class = FileHandler
-args = (os.path.join(r'${zope_conf:logfiles}', 'access.log'),
-        'a')
+args = (os.path.join(r'${zope_conf:logfiles}', 'access.log'), 'a')
 level = INFO
 formatter = accesslog
 
@@ -47,6 +31,25 @@ format = %(asctime)s %(levelname)s [%(name)s] %(message)s
 
 [formatter_accesslog]
 format = %(message)s
+
+[logger_root]
+level = INFO
+handlers = console
+
+[logger_fernlehrgang]
+level = INFO
+handlers = console
+qualname = fernlehrgang
+propagate = 0
+
+[logger_wsgi]
+level = INFO
+handlers = accesslog
+qualname = wsgi
+propagate = 0
+
+[filter:sqltap]
+use = egg:sqltap#sqltap
 
 [filter:translogger]
 use = egg:Paste#translogger

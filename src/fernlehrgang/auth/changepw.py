@@ -5,14 +5,13 @@
 
 import grok
 
-from zope.component import getUtility
 from fernlehrgang.lib.emailer import send_mail
 from z3c.saconfig import Session
 from fernlehrgang import models
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 
 
-TEXT = u"""
+TEXT = """
 Sehr geehrte Damen und Herren,
 
 bitte öffnen Sie nachfolgenden Link um Ihr Passwort zurückzusetzen und ein neues Passwort zu vergeben.
@@ -26,7 +25,7 @@ Ihre Fernlehrgangsbetreuung
 """
 
 
-TEXT_CONFIRM = u"""
+TEXT_CONFIRM = """
 Sehr geehrte Damen und Herren,
 
 kürzlich wurde das Passwort für Ihren Zugang zum Fernlehrgang geändert.
@@ -42,45 +41,51 @@ Ihre Fernlehrgangsbetreuung
 
 """
 
+
 def getUser(teilnehmer_id):
     session = Session()
     return session.query(models.Teilnehmer).get(int(teilnehmer_id))
-
 
 
 class PasswordActions(grok.JSON):
     grok.context(IFernlehrgangApp)
 
     def get_user(self):
-        mnr = self.request.form.get('username', None)
+        mnr = self.request.form.get("username", None)
         if mnr and mnr.isdigit():
             user = getUser(mnr)
             if user:
                 return dict(mnr=str(user.id), passwort=user.passwort, email=user.email)
-        return {'auth': 0}
+        return {"auth": 0}
 
     def send_mail(self):
-        user = self.request.form.get('username')
-        mail = self.request.form.get('email')
-        hash = self.request.form.get('hash_value')
+        user = self.request.form.get("username")
+        mail = self.request.form.get("email")
+        hash = self.request.form.get("hash_value")
         text = TEXT % (user, hash)
-        send_mail('fernlehrgang@bghw.de', (mail, ), u"Fernlehrgang Passwortänderung", text)
-        return {'success': 'true'}
+        send_mail(
+            "fernlehrgang@bghw.de", (mail,), "Fernlehrgang Passwortänderung", text
+        )
+        return {"success": "true"}
 
     def set_user(self):
-        username = self.request.form.get('username')
-        password = self.request.form.get('password')
+        username = self.request.form.get("username")
+        password = self.request.form.get("password")
         if username and password:
             user = getUser(username)
             user.passwort = password
-            return {'success': 'true'}
-        return {'success': 'false'}
+            return {"success": "true"}
+        return {"success": "false"}
 
     def send_confirm(self):
-        user = self.request.form.get('username')
-        mail = self.request.form.get('email')
+        user = self.request.form.get("username")
+        mail = self.request.form.get("email")
         text = TEXT_CONFIRM % (user)
         userobject = getUser(user)
-        send_mail('fernlehrgang@bghw.de', (userobject.email, ), u"Fernlehrgang Passwortänderung", text)
-        return {'success': 'true'}
-
+        send_mail(
+            "fernlehrgang@bghw.de",
+            (userobject.email,),
+            "Fernlehrgang Passwortänderung",
+            text,
+        )
+        return {"success": "true"}

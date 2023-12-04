@@ -184,24 +184,24 @@ def importUsers(mail, flg_id, tids, flgids, context_id):
 class ITNavEntry(NavEntry):
     grok.context(IFernlehrgang)
     grok.order(80)
-    grok.name('itnaventry')
+    grok.name("itnaventry")
 
     title = "Import Teilnehmer"
     icon = "fas fa-user-plus"
 
     def url(self):
-        return self.view.url(self.context, 'importteilnehmer')
+        return self.view.url(self.context, "importteilnehmer")
 
 
 class ImportTeilnehmer(Page):
     grok.context(IFernlehrgang)
-    grok.title(u"Import Teilnehmer")
+    grok.title("Import Teilnehmer")
 
-    title = u"Import Teilnehmer"
+    title = "Import Teilnehmer"
 
     @property
     def description(self):
-        return u"für Fernlehrgang %s (%s)" % (self.context.titel, self.context.id)
+        return "für Fernlehrgang %s (%s)" % (self.context.titel, self.context.id)
 
     def getFernlehrgaenge(self):
         rc = []
@@ -232,7 +232,7 @@ class ImportTeilnehmer(Page):
         self.update()
         # Special Security BELT
         if self.request.principal.id not in ("cklinger", "bniedzwetzki"):
-            self.flash(u"Sie haben für diese Funktion keine Berechtigung")
+            self.flash("Sie haben für diese Funktion keine Berechtigung")
             self.redirect(self.url(self.context))
             return Page.__call__(self)
 

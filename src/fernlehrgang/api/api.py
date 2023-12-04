@@ -15,6 +15,7 @@ from fernlehrgang.interfaces.unternehmen import IUnternehmen
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
+
 # from fernlehrgang import log
 
 
@@ -25,8 +26,9 @@ class HelperAPI(grok.XMLRPC):
         # log('getFlgIds %s' % teilnehmer_id, 'performance_analyse')
         session = Session()
         ret = session.query(Kursteilnehmer.fernlehrgang_id).filter(
-                Kursteilnehmer.teilnehmer_id == teilnehmer_id,
-                Kursteilnehmer.status.in_(('A1', 'A2')))
+            Kursteilnehmer.teilnehmer_id == teilnehmer_id,
+            Kursteilnehmer.status.in_(("A1", "A2")),
+        )
         return [(x[0],) for x in ret.all()]
 
     def getFrageIds(self, lehrheft_id):

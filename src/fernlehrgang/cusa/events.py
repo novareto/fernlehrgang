@@ -1,6 +1,5 @@
 import grok
 
-from zope.interface.interfaces import IObjectEvent
 from fernlehrgang import log
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
@@ -22,7 +21,7 @@ def handle_cusa_result_on_edit(obj):
     elif IAntwort.providedBy(context):
         unternehmen = context.kursteilnehmer.unternehmen
     else:
-        log('No Handler CUSAResult for context %s on Edit' % context)
+        log("No Handler CUSAResult for context %s on Edit" % context)
     if unternehmen:
         ICusaResult(unternehmen).persist()
 
@@ -41,7 +40,7 @@ def handle_cusa_result_on_add(obj):
     elif IAntwort.providedBy(context):
         unternehmen = context.kursteilnehmer.unternehmen
     else:
-        log('No Handler CUSAResult for context %s on Add' % context)
+        log("No Handler CUSAResult for context %s on Add" % context)
 
     if unternehmen:
         ICusaResult(unternehmen).persist()

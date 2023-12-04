@@ -7,7 +7,6 @@ import grok
 from fernlehrgang.browser import Form, AddForm
 from fernlehrgang.browser.utils import apply_data_event
 from fernlehrgang import fmtDate
-from fernlehrgang.interfaces import IListing
 from fernlehrgang.interfaces.search import getTeilnehmerId
 from fernlehrgang.interfaces.app import IFernlehrgangApp
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
@@ -60,18 +59,18 @@ class TLNavItem(NavEntry):
 class TeilnehmerListing(TablePage):
     grok.context(IUnternehmen)
     grok.name("teilnehmer_listing")
-    grok.title(u"Teilnehmer verwalten")
+    grok.title("Teilnehmer verwalten")
 
     template = ChameleonPageTemplateFile("templates/base_listing.cpt")
 
-    label = u"Teilnehmer"
+    label = "Teilnehmer"
     batchSize = 150
     startBatchingAt = 150
     cssClasses = {"table": "table table-striped table-bordered table-sm"}
 
     @property
     def description(self):
-        return u"Hier können Sie die Teilnehmer zum Unternehmen '%s %s' verwalten." % (
+        return "Hier können Sie die Teilnehmer zum Unternehmen '%s %s' verwalten." % (
             self.context.mnr,
             self.context.name,
         )
@@ -85,8 +84,8 @@ class TeilnehmerListing(TablePage):
 
 class AddEntryTN(AddEntry):
     grok.context(IUnternehmen)
-    title = u"Teilnehmer"
-    grok.require('uvc.managefernlehrgang')
+    title = "Teilnehmer"
+    grok.require("uvc.managefernlehrgang")
 
     def url(self):
         return self.view.url(self.context, "addteilnehmer")
@@ -95,12 +94,12 @@ class AddEntryTN(AddEntry):
 # @menuentry(AddMenu)
 class AddTeilnehmer(AddForm):
     grok.context(IUnternehmen)
-    grok.title(u"Teilnehmer")
-    label = u"Teilnehmer anlegen für Unternehmen"
+    grok.title("Teilnehmer")
+    label = "Teilnehmer anlegen für Unternehmen"
 
-    fields = Fields(ITeilnehmer).omit("id", "strasse", "nr", "plz", "ort", "adresszusatz") + Fields(IKursteilnehmer).select(
-        "branche", "un_klasse"
-    )
+    fields = Fields(ITeilnehmer).omit(
+        "id", "strasse", "nr", "plz", "ort", "adresszusatz"
+    ) + Fields(IKursteilnehmer).select("branche", "un_klasse")
     fields["kompetenzzentrum"].mode = "radio"
 
     def updateForm(self):
@@ -125,18 +124,20 @@ class AddTeilnehmer(AddForm):
         notify(ObjectAddedEvent(teilnehmer))
 
     def nextURL(self):
-        self.flash(u"Der Teilnehmer wurde erfolgreich gespeichert")
+        self.flash("Der Teilnehmer wurde erfolgreich gespeichert")
         return "%s/teilnehmer/%s" % (self.url(), self.tn.id)
 
 
 # menuentry(NavigationMenu, order=10)
 class Index(Display):
     grok.context(ITeilnehmer)
-    title = label = u"Teilnehmer"
-    description = u"Details zu Ihrem Unternehmen"
+    title = label = "Teilnehmer"
+    description = "Details zu Ihrem Unternehmen"
     __name__ = "index"
 
-    fields = Fields(ITeilnehmer).omit(id, "lehrgang", "strasse", "nr", "plz", "ort", "adresszusatz")
+    fields = Fields(ITeilnehmer).omit(
+        id, "lehrgang", "strasse", "nr", "plz", "ort", "adresszusatz"
+    )
 
 
 class SetDefaultMNR(grok.View):
@@ -152,10 +153,12 @@ class SetDefaultMNR(grok.View):
 class Edit(EditForm):
     grok.context(ITeilnehmer)
     grok.name("edit")
-    label = u"Teilnehmer"
-    grok.require('uvc.managefernlehrgang')
+    label = "Teilnehmer"
+    grok.require("uvc.managefernlehrgang")
 
-    fields = Fields(ITeilnehmer).omit("id", "strasse", "nr", "plz", "ort", "adresszusatz")
+    fields = Fields(ITeilnehmer).omit(
+        "id", "strasse", "nr", "plz", "ort", "adresszusatz"
+    )
     fields["kompetenzzentrum"].mode = "radio"
 
     @action("Speichern")
@@ -168,12 +171,12 @@ class Edit(EditForm):
             if x in data and data[x] == NO_VALUE:
                 data[x] = ""
         apply_data_event(self.fields, self.getContentData(), data)
-        self.flash(u"Teilnehmer wurde erfolgreich bearbeitet.")
+        self.flash("Teilnehmer wurde erfolgreich bearbeitet.")
         self.redirect(self.url(self.context))
 
     @action("Abbrechen")
     def handle_cancel(self):
-        self.flash(u"Ihre Aktion wurde abgebrochen.")
+        self.flash("Ihre Aktion wurde abgebrochen.")
         self.redirect(self.url(self.context))
 
 
@@ -206,24 +209,23 @@ def voc_unternehmen(context):
 
 
 class ICompany(Interface):
-
     unternehmen = Set(
-        title=u"Unternehmen",
-        value_type=Choice(source=voc_unternehmen),
-        required=True
+        title="Unternehmen", value_type=Choice(source=voc_unternehmen), required=True
     )
 
     un_klasse = Choice(
-        title=u"Mitarbeiteranzahl",
-        description=u"Hier können Sie die Gruppe des Unternehmens festlegen.",
+        title="Mitarbeiteranzahl",
+        description="Hier können Sie die Gruppe des Unternehmens festlegen.",
         required=False,
         source=un_klasse,
     )
 
     branche = Choice(
-        title=u"Branche",
-        description=u"Betrieb ist ein Recyclingunternehmen, ein Motorradhandel \
-                oder ein Speditions- oder Umschalgunternehmen.",
+        title="Branche",
+        description=(
+            "Betrieb ist ein Recyclingunternehmen, ein Motorradhandel                "
+            " oder ein Speditions- oder Umschalgunternehmen."
+        ),
         required=True,
         source=janein,
         default="nein",
@@ -232,21 +234,21 @@ class ICompany(Interface):
 
 class ACNavEntry(NavEntry):
     grok.context(ITeilnehmer)
-    grok.name('ac_nav_entry')
+    grok.name("ac_nav_entry")
     grok.order(70)
 
     title = "Unternehmen des Teilnehmers"
     icon = "fas fa-building"
 
     def url(self):
-        return self.view.url(self.context, 'assign_company')
+        return self.view.url(self.context, "assign_company")
 
 
 class AssignCompany(EditForm):
     grok.context(ITeilnehmer)
     grok.name("assign_company")
-    grok.title(u"Unternehmen des Teilnehmers")
-    label = u"Teilnehmer"
+    grok.title("Unternehmen des Teilnehmers")
+    label = "Teilnehmer"
 
     fields = Fields(ICompany).select("unternehmen")
     fields["unternehmen"].mode = "multiselect"
@@ -286,7 +288,7 @@ class AssignCompany(EditForm):
         teilnehmer = self.getContentData()
         apply_data_event(self.fields, teilnehmer, data)
         teilnehmer = teilnehmer.getContent()
-        self.flash(u"Der Teilnehmer wurde aktualisiert!")
+        self.flash("Der Teilnehmer wurde aktualisiert!")
         self.redirect(
             self.application_url()
             + "?form.field.id=%s&form.action.suchen=Suchen" % teilnehmer.id
@@ -294,27 +296,27 @@ class AssignCompany(EditForm):
 
     @action("Abbrechen")
     def handle_cancel(self):
-        self.flash(u"Ihre Aktion wurde abgebrochen.")
+        self.flash("Ihre Aktion wurde abgebrochen.")
         self.redirect(self.url(self.context))
 
 
 class RegNavEntry(NavEntry):
     grok.context(ITeilnehmer)
-    grok.name('reg_nav_entry')
+    grok.name("reg_nav_entry")
     grok.order(80)
 
     title = "Registrierung"
     icon = "fas fa-sign-in-alt"
 
     def url(self):
-        return self.view.url(self.context, 'register')
+        return self.view.url(self.context, "register")
 
 
 class Register(Form):
     grok.context(ITeilnehmer)
     grok.name("register")
     grok.title("Registrierung")
-    label = u"Teilnehmer für Lehrgang registrieren"
+    label = "Teilnehmer für Lehrgang registrieren"
     __name__ = "register"
 
     fields = Fields(IKursteilnehmer).omit("id", "teilnehmer_id")
@@ -349,7 +351,9 @@ class Register(Form):
                     status="info",
                     type="Registriert für Lehrgang:  %s" % (fernlehrgang.titel),
                     teilnehmer_id=self.context.id,
-                    kursteilnehmer_id=kursteilnehmer.id))
+                    kursteilnehmer_id=kursteilnehmer.id,
+                )
+            )
             self.flash(
                 "Der Teilnehmer wurde als Kursteilnehmer mit der ID %s angelegt."
                 % kursteilnehmer.id
@@ -358,7 +362,7 @@ class Register(Form):
             self.flash("Es wurde kein Lehrgang spezifiziert.", type="warning")
         self.redirect(self.url(self.context))
 
-    @action(u"Registrierung ändern", identifier="reg-change")
+    @action("Registrierung ändern", identifier="reg-change")
     def handle_update(self):
         data, errors = self.extractData()
         if errors:
@@ -394,7 +398,6 @@ class TeilnehmerJSONViews(grok.JSON):
 
 
 import json
-from profilehooks import profile
 
 
 class SearchTeilnehmer(grok.View):
@@ -421,7 +424,7 @@ class SearchTeilnehmer(grok.View):
                     ),
                     cast(models.Teilnehmer.id, String(100)).like(self.term + "%"),
                     models.Unternehmen.hbst.like(self.term + "%"),
-                    models.Unternehmen.unternehmensnummer.like(self.term + "%"),
+                    cast(models.Unternehmen.unternehmensnummer, String(15)).like(self.term + "%"),
                     func.concat(
                         func.concat(models.Teilnehmer.name, " "),
                         models.Teilnehmer.vorname,
@@ -448,8 +451,8 @@ class SearchTeilnehmer(grok.View):
                         x.vorname,
                         gebdat,
                         x.unternehmen_mnr,
-                        unternehmen.unternehmensnummer or '',
-                        unternehmen.hbst or '',
+                        unternehmen.unternehmensnummer or "",
+                        unternehmen.hbst or "",
                     ),
                 }
             )
@@ -470,7 +473,7 @@ class SearchUnternehmen(grok.View):
         matcher = self.term.lower()
         session = Session()
         from fernlehrgang import models
-        from sqlalchemy import func, or_, cast, String
+        from sqlalchemy import or_, cast, String
 
         res = session.query(models.Unternehmen).filter(
             or_(
@@ -480,11 +483,14 @@ class SearchUnternehmen(grok.View):
             )
         )
         for x in res:
-            terms.append({"id": x.mnr, "text": "%s / %s - %s" % (x.mnr, x.unternehmensnummer, x.name)})
+            terms.append(
+                {
+                    "id": x.mnr,
+                    "text": "%s / %s - %s" % (x.mnr, x.unternehmensnummer, x.name),
+                }
+            )
         print(terms)
         return json.dumps({"q": self.term, "results": terms})
-
-
 
 
 class OverviewKurse(grok.Viewlet):
@@ -515,7 +521,7 @@ class ID(GetAttrColumn):
     grok.name("Id")
     grok.context(IUnternehmen)
     weight = 5
-    header = u"Id"
+    header = "Id"
     attrName = "id"
 
 
@@ -536,7 +542,7 @@ class VorName(GetAttrColumn):
     grok.name("VorName")
     grok.context(IUnternehmen)
     weight = 20
-    header = u"Vorname"
+    header = "Vorname"
     attrName = "vorname"
 
 
@@ -544,7 +550,7 @@ class Geburtsdatum(Column):
     grok.name("Geburtsdatum")
     grok.context(IUnternehmen)
     weight = 30
-    header = u"Geburtsdatum"
+    header = "Geburtsdatum"
 
     def renderCell(self, item):
         if item.geburtsdatum != None:

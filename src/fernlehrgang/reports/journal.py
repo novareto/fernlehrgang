@@ -28,10 +28,10 @@ class ChangeWf(grok.View):
         jid = str(self.request.form.get("jid"))
         session = Session()
         entry = session.query(models.JournalEntry).get(jid)
-        entry.status = u"1000"
+        entry.status = "1000"
 
     def render(self):
-        self.flash(u"Der Journal Eintrag wurde erfolgreich geändert!")
+        self.flash("Der Journal Eintrag wurde erfolgreich geändert!")
         status = self.request.form.get("form.field.status")
         url = "%s/journal_listing" % self.application_url()
         if status is not NO_VALUE:
@@ -41,36 +41,36 @@ class ChangeWf(grok.View):
 
 class SBNavEntry(NavEntry):
     grok.context(IFernlehrgangApp)
-    grok.name('svnaventry')
-    grok.require('zope.View')
+    grok.name("svnaventry")
+    grok.require("zope.View")
     grok.order(30)
 
-    title = u"Sachbearbeitung"
+    title = "Sachbearbeitung"
     icon = "fas fa-code-branch"
 
     def url(self):
-        return self.view.url(self.context, 'journal_listing')
+        return self.view.url(self.context, "journal_listing")
 
 
 class JournalListing(Form):
     grok.context(IFernlehrgangApp)
     grok.name("journal_listing")
-    grok.title(u"Sachbearbeitung")
+    grok.title("Sachbearbeitung")
     grok.order(30)
 
     ignoreRequest = False
 
     fields = Fields(IJournalEntry).select("status")
 
-    label = u"Sachbearbeitung"
-    description = u""
+    label = "Sachbearbeitung"
+    description = ""
 
     def update(self):
         session = Session()
         if self.request.method == "POST":
-            for jid in  self.request.form.get('ids', []):
+            for jid in self.request.form.get("ids", []):
                 session.delete(session.query(models.JournalEntry).get(jid))
-                self.flash('Eintrage %s entfernt!' % jid)
+                self.flash("Eintrage %s entfernt!" % jid)
         session.flush()
         for field in self.fields:
             field.required = False
@@ -80,7 +80,7 @@ class JournalListing(Form):
         if status is not NO_VALUE:
             status = [status]
         else:
-            status = [u"4", u"409"]
+            status = ["4", "409"]
         self.results = (
             session.query(models.JournalEntry)
             .filter(models.JournalEntry.status.in_(status))
@@ -104,9 +104,9 @@ class JournalListing(Form):
         if "status" in data.keys():
             href = "%s&form.field.status=%s" % (href, data["status"])
         if result.status in ["4", "409"]:
-            rc.append(dict(href=href % (base, result.id), title=u"Löschen"))
+            rc.append(dict(href=href % (base, result.id), title="Löschen"))
         return rc
 
-    @action(u"Suchen")
+    @action("Suchen")
     def handle_search(self):
-        self.flash(u"Ihre Suche wurde geändert")
+        self.flash("Ihre Suche wurde geändert")

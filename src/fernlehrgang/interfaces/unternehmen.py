@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2008 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grokcore.component as grok
 
 from zope.schema import *
 from zope.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from zope.schema.interfaces import IVocabularyFactory, IContextSourceBinder
+from zope.schema.interfaces import IContextSourceBinder
 
 
 BETRIEBSARTEN = (
-        ('', u'Keine Angabe'),
-        ('F', u'Filiale'),
-        ('E', u'Einzelbetrieb'),
-        ('Z', u'Zentrale'),
-        ('H', u'Hauptbetrieb'),
-        ('B', u'Betriebsteil')
-        )
+    ("", "Keine Angabe"),
+    ("F", "Filiale"),
+    ("E", "Einzelbetrieb"),
+    ("Z", "Zentrale"),
+    ("H", "Hauptbetrieb"),
+    ("B", "Betriebsteil"),
+)
 
 
 @grok.provider(IContextSourceBinder)
@@ -29,78 +29,57 @@ def voc_betriebsart(context):
 
 
 class IUnternehmen(Interface):
-
     mnr = TextLine(
-        title = u'Mitgliedsnummer',
-        description = u'Mitgliedsnummer des Unternehmens',
-        required = False,
-        readonly = False, 
-        )
+        title="Mitgliedsnummer",
+        description="Mitgliedsnummer des Unternehmens",
+        required=False,
+        readonly=False,
+    )
 
     unternehmensnummer = TextLine(
-        title = u'Unternehmensnummer',
-        description = u'Unternehmensnummer des Unternehmens',
-        required = False,
-        readonly = False, 
-        )
+        title="Unternehmensnummer",
+        description="Unternehmensnummer des Unternehmens",
+        required=False,
+        readonly=False,
+    )
 
-    name = TextLine(
-        title = u'Name',
-        description = u'Name des Unternehmens',
-        required = True
-        )
+    name = TextLine(title="Name", description="Name des Unternehmens", required=True)
 
-    name2 = TextLine(
-        title = u'Name2',
-        description = u'Name des Unternehmens',
-        required = True
-        )
+    name2 = TextLine(title="Name2", description="Name des Unternehmens", required=True)
 
-    name3 = TextLine(
-        title = u'Name3',
-        description = u'Name des Unternehmens',
-        required = True
-        )
+    name3 = TextLine(title="Name3", description="Name des Unternehmens", required=True)
 
     str = TextLine(
-        title = u'Strasse',
-        description = u'Strasse des Unternehmens',
-        required = True
-        )
+        title="Strasse", description="Strasse des Unternehmens", required=True
+    )
 
     plz = TextLine(
-        title = u'Postleitzahl',
-        description = u'Postleitzahl des Unternehmens',
-        required = True
-        )
+        title="Postleitzahl", description="Postleitzahl des Unternehmens", required=True
+    )
 
-    ort = TextLine(
-        title = u'Ort',
-        description = u'Ort des Unternehmens',
-        required = True
-        )
+    ort = TextLine(title="Ort", description="Ort des Unternehmens", required=True)
 
     betriebsart = Choice(
-        title = u'Betriebsart',
-        description = u'Betriebsart des Unternehmens',
-        source = voc_betriebsart,
-        required = True
-        )
+        title="Betriebsart",
+        description="Betriebsart des Unternehmens",
+        source=voc_betriebsart,
+        required=True,
+    )
 
     mnr_g_alt = TextLine(
-        title = u'Mitgliedsnummer G Alt',
-        description = u'Alte Mitgliedsnummern der Sparte G',
-        required = False, 
-        )
+        title="Mitgliedsnummer G Alt",
+        description="Alte Mitgliedsnummern der Sparte G",
+        required=False,
+    )
 
     b_groesse = TextLine(
-        title = u'Betriebsgröße',
-        description = u'Betriebsgröße (Zahlen von CUSA)',
-        required = False,
-        )
+        title="Betriebsgröße",
+        description="Betriebsgröße (Zahlen von CUSA)",
+        required=False,
+    )
 
     hbst = TextLine(
-        title = u'Hauptbetriebsstätte',
-        description = u'Hauptbetriebsstätte (ID der Hauptbetriebsstätte)',
-        required = False,
-        )
+        title="Hauptbetriebsstätte",
+        description="Hauptbetriebsstätte (ID der Hauptbetriebsstätte)",
+        required=False,
+    )

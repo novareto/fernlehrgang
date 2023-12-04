@@ -22,9 +22,10 @@ from zope.i18nmessageid import MessageFactory
 from fernlehrgang.browser import Form, Display, EditForm
 
 from zope.app.appsetup.product import getProductConfiguration
-config = getProductConfiguration('gbo')
+
+config = getProductConfiguration("gbo")
 try:
-    GBO_TOKEN = config.get('gbo_token')
+    GBO_TOKEN = config.get("gbo_token")
 except:
     raise "NO GBO TOKEN"
 
@@ -32,7 +33,6 @@ except:
 _ = MessageFactory("zeam.form.base")
 
 grok.templatedir("templates")
-
 
 
 class KursteilnehmerListing(Form):
@@ -43,8 +43,11 @@ class KursteilnehmerListing(Form):
 
     fields = Fields(ITeilnehmer).select("id", "name", "geburtsdatum")
 
-    label = u"Kursteilnehmer"
-    description = u"Hier können Sie die Kursteilnehmer für Ihren Fernlehrgang suchen und bearbeiten."
+    label = "Kursteilnehmer"
+    description = (
+        "Hier können Sie die Kursteilnehmer für Ihren Fernlehrgang suchen und"
+        " bearbeiten."
+    )
 
     results = []
 
@@ -78,7 +81,7 @@ class KursteilnehmerListing(Form):
             field.required = False
             field.readonly = False
 
-    @action(u"Suchen")
+    @action("Suchen")
     def handle_search(self):
         v = False
         data, errors = self.extractData()
@@ -102,7 +105,7 @@ class KursteilnehmerListing(Form):
             sql = sql.filter(Teilnehmer.geburtsdatum == data.get("geburtsdatum"))
             v = True
         if not v:
-            self.flash(u"Bitte geben Sie Suchkriterien ein.")
+            self.flash("Bitte geben Sie Suchkriterien ein.")
             return
         self.results = sql.all()
 
@@ -110,13 +113,13 @@ class KursteilnehmerListing(Form):
 # @menuentry(AddMenu)
 class AddKursteilnehmer(Form):
     grok.context(IFernlehrgang)
-    grok.title(u"Kursteilnehmer")
-    label = u"Kursteilnehmer anlegen"
-    description = u"Kursteilnehmer anlegen"
+    grok.title("Kursteilnehmer")
+    label = "Kursteilnehmer anlegen"
+    description = "Kursteilnehmer anlegen"
 
     fields = Fields(IKursteilnehmer).select("teilnehmer_id")
 
-    @action(u"Suchen und Registrieren")
+    @action("Suchen und Registrieren")
     def handleSearch(self):
         data, errors = self.extractData()
         if errors:
@@ -137,7 +140,7 @@ class AddKursteilnehmer(Form):
 
 class KTNavEntry(NavEntry):
     grok.context(IKursteilnehmer)
-    grok.name('ktnav_entry')
+    grok.name("ktnav_entry")
     grok.order(10)
 
     title = "Kursteilnehmer"
@@ -149,9 +152,9 @@ class KTNavEntry(NavEntry):
 
 class Index(Display):
     grok.context(IKursteilnehmer)
-    grok.title(u"View")
-    title = label = u"Kursteilnehmer"
-    description = u"Details zum Kursteilnehmer"
+    grok.title("View")
+    title = label = "Kursteilnehmer"
+    description = "Details zum Kursteilnehmer"
 
     fields = Fields(IKursteilnehmer).omit(id)
 
@@ -159,7 +162,7 @@ class Index(Display):
 class Edit(EditForm):
     grok.context(IKursteilnehmer)
     grok.name("edit")
-    grok.title(u"Edit")
+    grok.title("Edit")
 
     fields = Fields(IKursteilnehmer).omit("id")
     fields["teilnehmer_id"].mode = "hiddendisplay"
@@ -168,27 +171,27 @@ class Edit(EditForm):
 
 class KTFristNavEntry(NavEntry):
     grok.context(IKursteilnehmer)
-    grok.name('kt_fristnav_entry')
+    grok.name("kt_fristnav_entry")
     grok.order(20)
 
     title = "Fristverlängerung"
     icon = "fas fa-calendar-alt"
 
     def url(self):
-        return self.view.url(self.context, 'extend_date')
+        return self.view.url(self.context, "extend_date")
 
 
 class ExtendDate(Form):
     grok.context(IKursteilnehmer)
-    grok.title(u"Fristverlängerung")
+    grok.title("Fristverlängerung")
     grok.name("extend_date")
 
-    title = u"Fristverlängerung"
-    description = u"Hier können Sie die Frist für den OFLG neu setzen"
+    title = "Fristverlängerung"
+    description = "Hier können Sie die Frist für den OFLG neu setzen"
 
     fields = Fields(IKursteilnehmer).select("erstell_datum")
-    fields["erstell_datum"].title = u"Fristverlängerung"
-    fields["erstell_datum"].description = u"Fristverlängerung"
+    fields["erstell_datum"].title = "Fristverlängerung"
+    fields["erstell_datum"].description = "Fristverlängerung"
 
     def updateWidgets(self):
         super(ExtendDate, self).updateWidgets()
@@ -198,19 +201,19 @@ class ExtendDate(Form):
         now = datetime.datetime.now() + datetime.timedelta(days=30)
         dd.value = {"form.field.erstell_datum": now.strftime("%d.%m.%Y")}
 
-    @action(u"Frist verlängern")
+    @action("Frist verlängern")
     def handle_save(self):
         data, errors = self.extractData()
         if errors:
             return
-        self.context.status = u"A1"
+        self.context.status = "A1"
         self.context.erstell_datum = data["erstell_datum"] - datetime.timedelta(
             days=365
         )
         self.context.teilnehmer.journal_entries.append(
             JournalEntry(
                 status="info",
-                type=u"FL %s %s - %s"
+                type="FL %s %s - %s"
                 % (
                     self.context.fernlehrgang.titel,
                     self.context.fernlehrgang.jahr,
@@ -221,8 +224,8 @@ class ExtendDate(Form):
             )
         )
         self.flash(
-            u"Die Frist für die Fertigstellung des Online-Fernlehrgangs wurde bis zum %s verlängert"
-            % data["erstell_datum"].strftime("%d.%m.%Y")
+            "Die Frist für die Fertigstellung des Online-Fernlehrgangs wurde bis zum %s"
+            " verlängert" % data["erstell_datum"].strftime("%d.%m.%Y")
         )
 
 
@@ -243,126 +246,142 @@ class MoreInfoOnKursteilnehmer(grok.Viewlet):
 
 class KTReseendNavEntry(NavEntry):
     grok.context(IKursteilnehmer)
-    grok.name('kt_resend_entry')
+    grok.name("kt_resend_entry")
     grok.order(30)
 
     title = "Übertrag GBO"
     icon = "fas fa-calendar-alt"
 
     def url(self):
-        return self.view.url(self.context, 'transfer_gbo')
+        return self.view.url(self.context, "transfer_gbo")
 
 
 class ReSendGBO(Form):
     grok.context(IKursteilnehmer)
-    grok.title(u'Übertragung - GBO')
-    grok.name('transfer_gbo')
+    grok.title("Übertragung - GBO")
+    grok.name("transfer_gbo")
 
-    title = u"Ergebnisübermittlung - GBO"
-    description = u"Hier können Sie erneut Ergebnisse an die GBO übertragen."
+    title = "Ergebnisübermittlung - GBO"
+    description = "Hier können Sie erneut Ergebnisse an die GBO übertragen."
 
     def update(self):
-        if not self.context.fernlehrgang.typ == '4':
-            self.flash(u'Die Übertragung der Datzen zu GBO funktioniert nur für Lehrgänge vom Type "Virtuelle Lernwelt"')
+        if not self.context.fernlehrgang.typ == "4":
+            self.flash(
+                "Die Übertragung der Datzen zu GBO funktioniert nur für Lehrgänge vom"
+                ' Type "Virtuelle Lernwelt"'
+            )
             self.redirect(self.url(self.context))
 
         elif len(self.context.antworten) == 0:
-            self.flash(u'Dieser Teilnehemr hat noch keine Antworten von der Virtuellen Lernwelt übermittelt')
+            self.flash(
+                "Dieser Teilnehemr hat noch keine Antworten von der Virtuellen Lernwelt"
+                " übermittelt"
+            )
             self.redirect(self.url(self.context))
-
 
     def generateGBOData(self, gbo_daten):
         ktn = self.context
         teilnehmer = ktn.teilnehmer
         unternehmen = teilnehmer.unternehmen[0]
         ftitel = teilnehmer.titel
-        if ftitel == '0':
-            ftitel = ''
+        if ftitel == "0":
+            ftitel = ""
 
-        status = '0'
-        if unternehmen.mnr in ('995000221', '995000230'):
-            status = '1'
-            print('STATUS TEST')
+        status = "0"
+        if unternehmen.mnr in ("995000221", "995000230"):
+            status = "1"
+            print("STATUS TEST")
 
         res = dict()
-        res['token'] = GBO_TOKEN
+        res["token"] = GBO_TOKEN
 
-        res['client'] = dict(
-            #number = teilnehmer.unternehmen_mnr,
-            #mainnumber = teilnehmer.unternehmen_mnr,
-            status = status,
-            unternehmensnummer = unternehmen.unternehmensnummer or '2',
+        res["client"] = dict(
+            # number = teilnehmer.unternehmen_mnr,
+            # mainnumber = teilnehmer.unternehmen_mnr,
+            status=status,
+            unternehmensnummer=unternehmen.unternehmensnummer or "2",
             unternehmens_az=unternehmen.mnr,
-            betriebsstaetten_az=unternehmen.hbst or '2',
-            name = unternehmen.name,
-            zip = unternehmen.plz,
-            city = unternehmen.ort,
-            street = unternehmen.str,
-            compcenter = 0,
+            betriebsstaetten_az=unternehmen.hbst or "2",
+            name=unternehmen.name,
+            zip=unternehmen.plz,
+            city=unternehmen.ort,
+            street=unternehmen.str,
+            compcenter=0,
         )
-        res['user'] = dict(
-            login = str(teilnehmer.id),
+        res["user"] = dict(
+            login=str(teilnehmer.id),
             salutation=int(teilnehmer.anrede),
             title=ftitel,
             firstname=teilnehmer.vorname,
             lastname=teilnehmer.name,
-            phone=teilnehmer.telefon or '',
-            email=teilnehmer.email or ''
+            phone=teilnehmer.telefon or "",
+            email=teilnehmer.email or "",
         )
-        res['orgas'] = gbo_daten['orgas']
+        res["orgas"] = gbo_daten["orgas"]
         return res
 
-
-    @action(u'Ergebnisse übertragen')
+    @action("Ergebnisse übertragen")
     def handle_transfer(self):
         data, errors = self.extractData()
         if errors:
             return
         from simplejson import loads
+
         gbo_daten = loads(self.context.antworten[0].gbo_daten)
-        if not 'token' in gbo_daten:
+        if "token" not in gbo_daten:
             print("We have to create the REAL REQUEST")
         gbo_daten = self.generateGBOData(gbo_daten)
         print(gbo_daten)
 
         from fernlehrgang.api.gbo import GBOAPI
+
         gbo_api = GBOAPI()
         print(gbo_api.url)
         r = gbo_api.set_data(gbo_daten)
         print(r)
         gbo_status = r.status_code
-        je = JournalEntry(type="Daten manuell zur GBO gesendet", status=gbo_status, kursteilnehmer_id=self.context.id)
+        je = JournalEntry(
+            type="Daten manuell zur GBO gesendet",
+            status=gbo_status,
+            kursteilnehmer_id=self.context.id,
+        )
         self.context.teilnehmer.journal_entries.append(je)
-        self.flash(u'Die Ergebnisse für den Teilnehmer %s wurden erneut an die GBO übertragen. %s' % (self.context.teilnehmer_id, gbo_status))
+        self.flash(
+            "Die Ergebnisse für den Teilnehmer %s wurden erneut an die GBO"
+            " übertragen. %s" % (self.context.teilnehmer_id, gbo_status)
+        )
 
-    @action(u'Abbrechen')
+    @action("Abbrechen")
     def handle_cancel(self):
-        self.flash(u'Die Aktion wurde abgebrochen')
+        self.flash("Die Aktion wurde abgebrochen")
         self.redirect(self.url(self.context))
 
 
 class KTDeleteProcessEntry(NavEntry):
     grok.context(IKursteilnehmer)
     grok.baseclass()
-    grok.name('delete_progress_vlw')
+    grok.name("delete_progress_vlw")
     grok.order(30)
 
     title = "VLW zurücksetzen"
     icon = "fas fa-calendar-alt"
 
     def url(self):
-        return self.view.url(self.context, 'delete_progress_vlw')
+        return self.view.url(self.context, "delete_progress_vlw")
 
 
 class DeleteProgressCreate(Form):
     grok.context(IKursteilnehmer)
-    grok.title(u'Lehrgang zurück setzen')
-    grok.name('delete_progress_vlw')
+    grok.title("Lehrgang zurück setzen")
+    grok.name("delete_progress_vlw")
 
-    title = u"Lehrgangsfortschrit Virtuelle Lernwelt zurück setzen"
-    description = u"Hier können Sie den Lehrgangfortschritt in der Virtuellen Lernwelt zurück setzen."
+    title = "Lehrgangsfortschrit Virtuelle Lernwelt zurück setzen"
+    description = (
+        "Hier können Sie den Lehrgangfortschritt in der Virtuellen Lernwelt zurück"
+        " setzen."
+    )
 
-    @action(u'Zurücksetzen')
+    @action("Zurücksetzen")
     def handle_transfer(self):
         data, errors = self.extractData()
         if errors:
@@ -370,27 +389,28 @@ class DeleteProgressCreate(Form):
         ktn = self.context
         teilnehmer = ktn.teilnehmer
         results = {
-            'teilnehmer_id': teilnehmer.id,
-            'kursteilnehmer_id': ktn.id,
-            'fernlehrgang_id': '116'
+            "teilnehmer_id": teilnehmer.id,
+            "kursteilnehmer_id": ktn.id,
+            "fernlehrgang_id": "116",
         }
         from kombu import Connection
         import json
-        with Connection('amqp://guest:guest@localhost:5672//') as conn:
-            simple_queue = conn.SimpleQueue('vlwd.reset_progress')
+
+        with Connection("amqp://guest:guest@localhost:5672//") as conn:
+            simple_queue = conn.SimpleQueue("vlwd.reset_progress")
             message = json.dumps(results)
             simple_queue.put(message)
-            print('Sent: %s' % message)
+            print("Sent: %s" % message)
             simple_queue.close()
-        self.flash(u'Der Lehrgangs Fortschritt wurde in der Virtuellen Lernwelt zurückgesetzt')
+        self.flash(
+            "Der Lehrgangs Fortschritt wurde in der Virtuellen Lernwelt zurückgesetzt"
+        )
         self.redirect(self.url(self.context))
 
-    @action(u'Abbrechen')
+    @action("Abbrechen")
     def handle_cancel(self):
-        self.flash(u'Die Aktion wurde abgebrochen')
+        self.flash("Die Aktion wurde abgebrochen")
         self.redirect(self.url(self.context))
-
-
 
 
 class MoreInfoOnKursteilnehmerResults(grok.Viewlet):
@@ -401,67 +421,74 @@ class MoreInfoOnKursteilnehmerResults(grok.Viewlet):
 
 class KTPrintNavEntry(NavEntry):
     grok.context(IKursteilnehmer)
-    grok.name('kt_print_entry')
+    grok.name("kt_print_entry")
     grok.order(30)
 
     title = "Zertifikat"
     icon = "fas fa-download"
 
     def url(self):
-        return self.view.url(self.context, 'pdf')
+        return self.view.url(self.context, "pdf")
 
 
 class PrintCertificate(grok.View):
     grok.context(IKursteilnehmer)
-    grok.title(u'Zertifikat')
-    grok.name('pdf')
+    grok.title("Zertifikat")
+    grok.name("pdf")
 
     def render(self):
         ktn = self.context
         teilnehmer = ktn.teilnehmer
         teilnehmer_id = ktn.teilnehmer.id
-        #ktn = teilnehmer.getVLWKTN()
+        # ktn = teilnehmer.getVLWKTN()
         from tempfile import NamedTemporaryFile
-        from base64 import encodestring
         from fernlehrgang.api.certpdf import createpdf, createfortpdf
+
         ftf = NamedTemporaryFile()
         from datetime import datetime
 
         try:
-            pdate = ktn.antworten[0].datum.strftime('%d.%m.%Y')
+            pdate = ktn.antworten[0].datum.strftime("%d.%m.%Y")
         except:
-            pdate = datetime.now().strftime('%d.%m.%Y')
+            pdate = datetime.now().strftime("%d.%m.%Y")
 
         unr = ""
         if teilnehmer.unternehmen[0].unternehmensnummer:
             unr = str(teilnehmer.unternehmen[0].unternehmensnummer)
         typ = ktn.fernlehrgang.typ
         if typ in ("3", "5"):
-            fh = createfortpdf(ftf, {
-                "druckdatum": pdate,
-                "flg_titel": ktn.fernlehrgang.titel,
-                "teilnehmer_id": teilnehmer_id,
-                "anrede": teilnehmer.anrede,
-                "flg_id": str(ktn.fernlehrgang.id),
-                "mnr": unr,
-                "vorname": teilnehmer.vorname,
-                "name": teilnehmer.name,
-            })
+            fh = createfortpdf(
+                ftf,
+                {
+                    "druckdatum": pdate,
+                    "flg_titel": ktn.fernlehrgang.titel,
+                    "teilnehmer_id": teilnehmer_id,
+                    "anrede": teilnehmer.anrede,
+                    "flg_id": str(ktn.fernlehrgang.id),
+                    "mnr": unr,
+                    "vorname": teilnehmer.vorname,
+                    "name": teilnehmer.name,
+                },
+            )
         else:
-            fh = createpdf(ftf, {
-                "druckdatum": pdate,
-                "flg_titel": ktn.fernlehrgang.titel,
-                "teilnehmer_id": teilnehmer_id,
-                "anrede": teilnehmer.anrede,
-                "flg_id": str(ktn.fernlehrgang.id),
-                "mnr": unr,
-                "vorname": teilnehmer.vorname,
-                "name": teilnehmer.name,
-            })
+            fh = createpdf(
+                ftf,
+                {
+                    "druckdatum": pdate,
+                    "flg_titel": ktn.fernlehrgang.titel,
+                    "teilnehmer_id": teilnehmer_id,
+                    "anrede": teilnehmer.anrede,
+                    "flg_id": str(ktn.fernlehrgang.id),
+                    "mnr": unr,
+                    "vorname": teilnehmer.vorname,
+                    "name": teilnehmer.name,
+                },
+            )
         fh.seek(0)
         content_type = "application/pdf"
         RESPONSE = self.request.response
-        RESPONSE.setHeader('content-type', content_type )
+        RESPONSE.setHeader("content-type", content_type)
         RESPONSE.setHeader(
-        'content-disposition', 'attachment; filename=%s' % "Zertifikat.pdf")
-        return fh.read() 
+            "content-disposition", "attachment; filename=%s" % "Zertifikat.pdf"
+        )
+        return fh.read()

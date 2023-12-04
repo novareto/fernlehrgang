@@ -33,7 +33,7 @@ class KTNAntwortEntry(NavEntry):
     grok.order(14)
     grok.name("ktnantwortentry")
 
-    title = u"Antworten verwalten"
+    title = "Antworten verwalten"
     icon = "fas fa-check-circle"
 
     def url(self):
@@ -44,7 +44,7 @@ class KTNAntwortEntry(NavEntry):
 class AntwortListing(TablePage):
     grok.context(IKursteilnehmer)
     grok.name("antwort_listing")
-    grok.title(u"Antworten verwalten")
+    grok.title("Antworten verwalten")
     grok.baseclass()
 
     template = ChameleonPageTemplateFile("templates/base_listing.cpt")
@@ -62,24 +62,21 @@ class AntwortListing(TablePage):
         return sorted(rc, key=lambda antwort: antwort.frage.frage)
 
 
-
-
 class AddEntryAntwort(AddEntry):
     grok.context(IKursteilnehmer)
     grok.name("addquestionan")
-    grok.require('zope.View')
-    title = u"Antworte eingeben"
+    grok.require("zope.View")
+    title = "Antworte eingeben"
 
     def url(self):
         return self.view.url(self.context, "addantwort")
 
 
-
 class AddAntwort(AddForm):
     grok.context(IKursteilnehmer)
-    grok.title(u"Antwort")
+    grok.title("Antwort")
 
-    label = u"Antwort anlegen"
+    label = "Antwort anlegen"
     fields = Fields(IAntwort).omit("id", "gbo", "gbo_daten")
 
     def create(self, data):
@@ -95,6 +92,7 @@ class AddAntwort(AddForm):
 
 class SaveTableAction(Action):
     postOnly = False
+
     def __call__(self, form, content, line):
         setattr(
             content,
@@ -109,8 +107,8 @@ class SaveTableAction(Action):
 class AddEntryAntworten(AddEntry):
     grok.context(IKursteilnehmer)
     grok.name("addquestionanall")
-    grok.require('zope.View')
-    title = u"Alle Antworten"
+    grok.require("zope.View")
+    title = "Alle Antworten"
 
     def url(self):
         return self.view.url(self.context, "addantworten")
@@ -119,7 +117,7 @@ class AddEntryAntworten(AddEntry):
 class AddAntworten(ComposedForm, Form):
     grok.context(IKursteilnehmer)
     grok.title("Alle Antworten eingeben")
-    label = u"Alle Antworten eingeben"
+    label = "Alle Antworten eingeben"
 
     def __init__(self, context, request):
         super(AddAntworten, self).__init__(context, request)
@@ -127,15 +125,14 @@ class AddAntworten(ComposedForm, Form):
         print(self.subforms, self.allSubforms)
 
 
-
 class LHDummy(object):
     id = None
-    title = u"Bitte Auswahl Treffen"
+    title = "Bitte Auswahl Treffen"
     fragen = []
 
 
 class AddAntwortenTable(SubTableForm):
-    grok.title(u"Table Form")
+    grok.title("Table Form")
     grok.context(IKursteilnehmer)
     grok.view(AddAntworten)
     prefix = "G"
@@ -166,9 +163,9 @@ class AddAntwortenTable(SubTableForm):
                         Antwort(
                             lehrheft_id=lehrheft.id,
                             frage_id=frage.id,
-                            antwortschema=u"",
+                            antwortschema="",
                             datum=datetime.now(),
-                            system=u"FernlehrgangApp",
+                            system="FernlehrgangApp",
                         )
                     )
         return rc
@@ -185,8 +182,8 @@ class AddAntwortenTable(SubTableForm):
 class Index(DefaultView):
     grok.context(IAntwort)
     grok.title("Index")
-    title = label = u"Antwort"
-    description = u""  # Hier können Sie Deteils zu Ihren Antworten ansehen."
+    title = label = "Antwort"
+    description = ""  # Hier können Sie Deteils zu Ihren Antworten ansehen."
 
     fields = Fields(IAntwort).omit("id")
 
@@ -196,8 +193,8 @@ class Edit(EditForm):
     grok.title("Edit")
     grok.name("edit")
 
-    title = u"Antworten"
-    description = u"Hier können Sie die Antwort bearbeiten."
+    title = "Antworten"
+    description = "Hier können Sie die Antwort bearbeiten."
 
     fields = Fields(IAntwort).omit("id")
     fields["lehrheft_id"].mode = "hiddendisplay"
@@ -208,7 +205,7 @@ class Edit(EditForm):
 
 
 class JSON_Views(grok.JSON):
-    """ Ajax basiertes Wechseln der Jahre"""
+    """Ajax basiertes Wechseln der Jahre"""
 
     grok.context(IKursteilnehmer)
 
@@ -242,7 +239,7 @@ class Link(LinkColumn):
         return int(item.frage.lehrheft.nummer + item.frage.frage.zfill(2))
 
     def getLinkContent(self, item):
-        return u"Antwort auf Frage '%s'; %s" % (item.frage.frage, item.frage.titel)
+        return "Antwort auf Frage '%s'; %s" % (item.frage.frage, item.frage.titel)
 
 
 class Lehrheft(Column):
@@ -268,10 +265,10 @@ class Antworten(GetAttrColumn):
 class OverviewAntworten(Page):
     grok.context(IKursteilnehmer)
     grok.name("antwort_listing")
-    grok.title(u"Antworten verwalten")
+    grok.title("Antworten verwalten")
 
-    label = title = u"Antworten"
-    description = u"Hier können Sie die Antworten des Kursteilnehmers korrigieren."
+    label = title = "Antworten"
+    description = "Hier können Sie die Antworten des Kursteilnehmers korrigieren."
 
     def getResults(self):
         context = self.context
@@ -287,7 +284,7 @@ class OverviewAntworten(Page):
             fragen = []
             for antwort in context.antworten:
                 if antwort.frage.lehrheft_id == lehrheft_id:
-                    titel = u"Antwort auf Frage '%s'; '%s'" % (
+                    titel = "Antwort auf Frage '%s'; '%s'" % (
                         antwort.frage.frage,
                         antwort.frage.titel,
                     )

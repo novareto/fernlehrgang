@@ -18,7 +18,7 @@ from fernlehrgang.interfaces.teilnehmer import ITeilnehmer
 from fernlehrgang.interfaces.kursteilnehmer import IKursteilnehmer
 from fernlehrgang.interfaces.resultate import ICalculateResults
 import zope.errorview.browser
-from fernlehrgang import logger 
+from fernlehrgang import logger
 
 
 class IVLWSkinLayer(grok.IDefaultBrowserLayer):
@@ -30,8 +30,7 @@ class IVLWSkin(IVLWSkinLayer, ISiguvThemeLayer):
 
 
 class SystemError(grok.components.ExceptionView):
-    """Custom System Error for UVCSITE
-    """
+    """Custom System Error for UVCSITE"""
 
     grok.layer(IVLWSkinLayer)
 
@@ -66,7 +65,7 @@ class APILernwelten(grok.JSON):
     def checkAuth(self):
         def isVLWTeilnehmer(teilnehmer):
             for ktn in teilnehmer.kursteilnehmer:
-                if ktn.fernlehrgang.typ == "4" and ktn.status in ('A1', 'A2'):
+                if ktn.fernlehrgang.typ == "4" and ktn.status in ("A1", "A2"):
                     return True
             return False
 
@@ -98,9 +97,10 @@ class APILernwelten(grok.JSON):
 
     def getTeilnehmer(self):
         def check_result(comment):
-            if 'nicht bestanden' in comment:
+            if "nicht bestanden" in comment:
                 return False
             return True
+
         ret = dict()
         ktns = []
         logger.info(self.body)
@@ -120,7 +120,7 @@ class APILernwelten(grok.JSON):
                             fernlehrgang_id=flg_id,
                             titel=ktn.fernlehrgang.titel,
                             jahr=ktn.fernlehrgang.jahr,
-                            bestanden=check_result(ktn.result['comment'])
+                            bestanden=check_result(ktn.result["comment"]),
                         )
                     )
             if teilnehmer:
@@ -141,7 +141,7 @@ class APILernwelten(grok.JSON):
         ret = {}
         request = simplejson.loads(self.body)
         # request = self.request
-        logger.info('setTeilnehmer')
+        logger.info("setTeilnehmer")
         logger.info(request)
         teilnehmer_id = request.get("teilnehmer_id")
         teilnehmer = self.session.query(models.Teilnehmer).get(teilnehmer_id)
@@ -159,7 +159,7 @@ class APILernwelten(grok.JSON):
             if branche:
                 IKursteilnehmer.get("branche").set(oktn, branche)
             #  STATIC SET DATE AND STATUS
-            IKursteilnehmer.get("status").set(oktn, 'A1')
+            IKursteilnehmer.get("status").set(oktn, "A1")
             IKursteilnehmer.get("erstell_datum").set(oktn, datetime.datetime.now())
 
             if not teilnehmer.name or not teilnehmer.email or not teilnehmer.telefon:
@@ -167,10 +167,14 @@ class APILernwelten(grok.JSON):
             else:
                 ret["muss_stammdaten_ergaenzen"] = "false"
             teilnehmer.journal_entries.append(
-                models.JournalEntry(type='Teilnehmer von VLW registriert.', status="1", kursteilnehmer_id=oktn.id)
+                models.JournalEntry(
+                    type="Teilnehmer von VLW registriert.",
+                    status="1",
+                    kursteilnehmer_id=oktn.id,
+                )
             )
         else:
-            ret = u"Kein Teilnehmer gefunden"
+            ret = "Kein Teilnehmer gefunden"
         return ret
 
     def getCertificate(self):
@@ -178,7 +182,7 @@ class APILernwelten(grok.JSON):
         ktn = self.session.query(models.Kursteilnehmer).get(int(kursteilnehmer_id))
         teilnehmer = ktn.teilnehmer
         teilnehmer_id = ktn.teilnehmer.id
-        #ktn = teilnehmer.getVLWKTN()
+        # ktn = teilnehmer.getVLWKTN()
         je = models.JournalEntry(
             type="Zertifikat gedrukt", status="1", kursteilnehmer_id=ktn.id
         )
@@ -187,38 +191,44 @@ class APILernwelten(grok.JSON):
         from datetime import datetime
 
         try:
-            pdate = ktn.antworten[0].datum.strftime('%d.%m.%Y')
+            pdate = ktn.antworten[0].datum.strftime("%d.%m.%Y")
         except:
-            pdate = datetime.now().strftime('%d.%m.%Y')
+            pdate = datetime.now().strftime("%d.%m.%Y")
 
         unr = ""
         if teilnehmer.unternehmen[0].unternehmensnummer:
             unr = str(teilnehmer.unternehmen[0].unternehmensnummer)
         typ = ktn.fernlehrgang.typ
         if typ in ("3", "5"):
-            fh = createfortpdf(ftf, {
-                "druckdatum": pdate,
-                "flg_titel": ktn.fernlehrgang.titel,
-                "teilnehmer_id": teilnehmer_id,
-                "anrede": teilnehmer.anrede,
-                "flg_id": str(ktn.fernlehrgang.id),
-                "mnr": unr,
-                "vorname": teilnehmer.vorname,
-                "name": teilnehmer.name,
-            })
+            fh = createfortpdf(
+                ftf,
+                {
+                    "druckdatum": pdate,
+                    "flg_titel": ktn.fernlehrgang.titel,
+                    "teilnehmer_id": teilnehmer_id,
+                    "anrede": teilnehmer.anrede,
+                    "flg_id": str(ktn.fernlehrgang.id),
+                    "mnr": unr,
+                    "vorname": teilnehmer.vorname,
+                    "name": teilnehmer.name,
+                },
+            )
         else:
-            fh = createpdf(ftf, {
-                "druckdatum": pdate,
-                "flg_titel": ktn.fernlehrgang.titel,
-                "teilnehmer_id": teilnehmer_id,
-                "anrede": teilnehmer.anrede,
-                "flg_id": str(ktn.fernlehrgang.id),
-                "mnr": unr,
-                "vorname": teilnehmer.vorname,
-                "name": teilnehmer.name,
-            })
+            fh = createpdf(
+                ftf,
+                {
+                    "druckdatum": pdate,
+                    "flg_titel": ktn.fernlehrgang.titel,
+                    "teilnehmer_id": teilnehmer_id,
+                    "anrede": teilnehmer.anrede,
+                    "flg_id": str(ktn.fernlehrgang.id),
+                    "mnr": unr,
+                    "vorname": teilnehmer.vorname,
+                    "name": teilnehmer.name,
+                },
+            )
         fh.seek(0)
-        return encodestring(fh.read()).decode('utf-8')
+        return encodestring(fh.read()).decode("utf-8")
 
     def getResults(self):
         data = simplejson.loads(self.body)

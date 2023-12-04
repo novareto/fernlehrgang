@@ -25,7 +25,7 @@ grok.templatedir("templates")
 class LHNavEntry(NavEntry):
     grok.context(ILehrheft)
     grok.order(30)
-    grok.name('lh-nav-entry')
+    grok.name("lh-nav-entry")
 
     title = "Lehrheft"
 
@@ -38,22 +38,22 @@ class LHNavEntry1(LHNavEntry):
     title = "Lehrhefte"
 
     def url(self):
-        return self.view.url(self.context, 'lehrheft_listing')
+        return self.view.url(self.context, "lehrheft_listing")
 
 
 @implementer(IListing)
 class LehrheftListing(TablePage):
     grok.context(IFernlehrgang)
     grok.name("lehrheft_listing")
-    grok.title(u"Lehrhefte verwalten")
+    grok.title("Lehrhefte verwalten")
 
     template = ChameleonPageTemplateFile("templates/base_listing.cpt")
 
-    label = u"Lehrhefte"
+    label = "Lehrhefte"
 
     @property
     def description(self):
-        return u"Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." % (
+        return "Hier können Sie die Lehrhefte zum Fernlehrgang '%s %s' bearbeiten." % (
             self.context.titel,
             self.context.jahr,
         )
@@ -71,8 +71,8 @@ class LehrheftListing(TablePage):
 class AddEntryLH(AddEntry):
     grok.context(IFernlehrgang)
     grok.name("addentryLH")
-    grok.require('zope.View')
-    title = u"Lehrheft"
+    grok.require("zope.View")
+    title = "Lehrheft"
 
     def url(self):
         return self.view.url(self.context, "addlehrheft")
@@ -80,11 +80,11 @@ class AddEntryLH(AddEntry):
 
 class AddLehrheft(AddForm):
     grok.context(IFernlehrgang)
-    grok.title(u"Lehrheft")
+    grok.title("Lehrheft")
 
-    title = u"Lehrheft"
-    label = u"Lehrhefte"
-    description = u"Hier können Sie die Lehrhefte für den Fernlehrgang anlegen."
+    title = "Lehrheft"
+    label = "Lehrhefte"
+    description = "Hier können Sie die Lehrhefte für den Fernlehrgang anlegen."
 
     fields = Fields(ILehrheft).omit("id")
 
@@ -96,31 +96,31 @@ class AddLehrheft(AddForm):
         self.context.lehrhefte.append(object)
 
     def nextURL(self):
-        self.flash(u"Das Lehrheft wurde erfolgreich angelegt")
+        self.flash("Das Lehrheft wurde erfolgreich angelegt")
         return self.url(self.context, "lehrheft_listing")
 
 
 class Index(DefaultView):
     grok.context(ILehrheft)
     grok.name("index")
-    grok.title(u"Lehrheft")
+    grok.title("Lehrheft")
     grok.order(51)
 
-    title = label = u"Lehrheft"
-    description = u"Details zu Ihrem Lehrheft"
+    title = label = "Lehrheft"
+    description = "Details zu Ihrem Lehrheft"
     fields = Fields(ILehrheft).omit(id)
 
 
 class Edit(EditForm):
     grok.context(ILehrheft)
-    grok.title(u"Edit")
+    grok.title("Edit")
     grok.name("edit")
 
-    label = u"Bearbeiten"
+    label = "Bearbeiten"
 
     @property
     def description(self):
-        return u"Hier können Sie das '%s' vom Fernlehrgang '%s' bearbeiten." % (
+        return "Hier können Sie das '%s' vom Fernlehrgang '%s' bearbeiten." % (
             self.context.titel,
             "MUSS",
         )

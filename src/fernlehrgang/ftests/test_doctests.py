@@ -42,7 +42,7 @@ pc = """
 
 ftesting_zcml = os.path.join(
     os.path.dirname(fernlehrgang.__file__),
-    'ftesting.zcml',
+    "ftesting.zcml",
 )
 
 
@@ -51,19 +51,21 @@ class ZODBLayer(object):
 
     You can access the test database with layer.getRootFolder().
     """
+
     db = None
-    db_name = 'main'
+    db_name = "main"
     connection = None
     __bases__ = tuple()
-    
-    def __init__(self, config_file, module, name, allow_teardown=False,
-                 product_config=None):
+
+    def __init__(
+        self, config_file, module, name, allow_teardown=False, product_config=None
+    ):
         self.config_file = config_file
         self.__module__ = module
         self.__name__ = name
         self.allow_teardown = allow_teardown
         self.product_config = product_config
-    
+
     def getRootFolder(self):
         """This return the root object of the database or assert if
         the database have not been created yet.
@@ -83,20 +85,21 @@ class ZODBLayer(object):
         # Close the Database
         if self.db is not None:
             base = component.getGlobalSiteManager()
-            base.unregisterUtility(
-                self.db, ZODB.interfaces.IDatabase, self.db_name)
+            base.unregisterUtility(self.db, ZODB.interfaces.IDatabase, self.db_name)
             self.db.close()
             self.db = None
 
     def setUp(self):
         self.setup = FunctionalTestSetup(
-            self.config_file, product_config=self.product_config)
+            self.config_file, product_config=self.product_config
+        )
         self.db = createTestDB(self.db_name)
         self.base_storage = self.db._storage
         self._base_db_open = True
 
     def testSetUp(self):
         from fernlehrgang.models import Base
+
         session = Session()
         Base.metadata.create_all(session.connection().engine)
         transaction.commit()
@@ -108,6 +111,7 @@ class ZODBLayer(object):
     def testTearDown(self):
         self._close_db()
         from fernlehrgang.models import Base
+
         session = Session()
         Base.metadata.drop_all(session.connection().engine)
         transaction.commit()
@@ -119,26 +123,33 @@ class ZODBLayer(object):
             raise NotImplementedError
 
 
-LAYER = ZODBLayer(ftesting_zcml, "fernlehrgang", 'layer', product_config=pc)
+LAYER = ZODBLayer(ftesting_zcml, "fernlehrgang", "layer", product_config=pc)
 
 
 class WSGILayer(gocept.httpserverlayer.zopeappwsgi.Layer):
-
     defaultBases = (LAYER,)
 
     def get_current_zodb(self):
         return LAYER.db
 
 
-HTTP_LAYER = gocept.httpserverlayer.wsgi.Layer(
-    name='HTTPLayer', bases=(WSGILayer(),))
+HTTP_LAYER = gocept.httpserverlayer.wsgi.Layer(name="HTTPLayer", bases=(WSGILayer(),))
 
 
 @doctestcase.doctestfiles(
-    'accept.txt', 'notifications.txt', 'models.txt', 'vlw.txt', 'cusa_integration.txt', 'ablauf.txt', 'results.txt', 'importcheck.txt', optionflags=doctest.ELLIPSIS)
+    "accept.txt",
+    "notifications.txt",
+    "models.txt",
+    "vlw.txt",
+    "cusa_integration.txt",
+    "ablauf.txt",
+    "results.txt",
+    "importcheck.txt",
+    optionflags=doctest.ELLIPSIS,
+)
 class MoreTests(unittest.TestCase):
     layer = HTTP_LAYER
 
     def setUp(self):
-        self.globs = {'getRootFolder': LAYER.getRootFolder }
+        self.globs = {"getRootFolder": LAYER.getRootFolder}
         self.session = Session()

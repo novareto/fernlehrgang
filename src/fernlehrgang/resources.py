@@ -34,4 +34,4 @@ class FernlehrgangResourceViewlet(grok.Viewlet):
         js.need()
 
     def render(self):
-        return u""
+        return ""

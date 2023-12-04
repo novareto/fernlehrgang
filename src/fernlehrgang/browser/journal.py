@@ -34,12 +34,12 @@ class JNavEntry(NavEntry):
 class JournalListing(TablePage):
     grok.context(ITeilnehmer)
     grok.name("journal_listing")
-    grok.title(u"Journal")
+    grok.title("Journal")
 
     template = ChameleonPageTemplateFile("templates/base_listing.cpt")
     description = "Journal"
 
-    label = u"Journal"
+    label = "Journal"
     batchSize = 150
     startBatchingAt = 150
     cssClasses = {"table": "table table-striped table-bordered table-condensed"}
@@ -53,7 +53,7 @@ class ID(LinkColumn):
     grok.name("Id")
     grok.context(ITeilnehmer)
     weight = 5
-    header = u"Id"
+    header = "Id"
     attrName = "id"
 
     def getLinkURL(self, item):
@@ -67,7 +67,7 @@ class Status(Column):
     grok.name("Status")
     grok.context(ITeilnehmer)
     weight = 30
-    header = u"Status"
+    header = "Status"
     attrName = "status"
 
     def renderCell(self, item):
@@ -81,7 +81,7 @@ class Type(Column):
     grok.name("Type")
     grok.context(ITeilnehmer)
     weight = 20
-    header = u"Type"
+    header = "Type"
     attrName = "type"
 
     def renderCell(self, item):
@@ -92,7 +92,7 @@ class Date(Column):
     grok.name("Date")
     grok.context(ITeilnehmer)
     weight = 10
-    header = u"Date"
+    header = "Date"
 
     def renderCell(self, item):
         if item.date is not None:
@@ -103,8 +103,8 @@ class Date(Column):
 # menuentry(NavigationMenu, order=10)
 class Index(DefaultView):
     grok.context(IJournalEntry)
-    title = label = u"Nachricht"
-    description = u"Details zu Ihrem Nachricht"
+    title = label = "Nachricht"
+    description = "Details zu Ihrem Nachricht"
     __name__ = "index"
 
     fields = Fields(IJournalEntry)
@@ -113,8 +113,8 @@ class Index(DefaultView):
 class AddEntryJournal(AddEntry):
     grok.context(ITeilnehmer)
     grok.name("addentry_journal")
-    grok.require('zope.View')
-    title = u"Journal Eintrag"
+    grok.require("zope.View")
+    title = "Journal Eintrag"
 
     def url(self):
         return self.view.url(self.context, "addjournalentry")
@@ -123,8 +123,8 @@ class AddEntryJournal(AddEntry):
 # @menuentry(AddMenu)
 class AddJournalEntry(AddForm):
     grok.context(ITeilnehmer)
-    grok.title(u"Journal Eintrag")
-    label = u"Journal entry"
+    grok.title("Journal Eintrag")
+    label = "Journal entry"
 
     fields = Fields(IJournalEntry).omit("id", "teilnehmer_id", "date")
 
@@ -138,7 +138,7 @@ class AddJournalEntry(AddForm):
         session.add(entry)
 
     def nextURL(self):
-        self.flash(u"Journal entry added")
+        self.flash("Journal entry added")
         return "%s/journal_listing" % self.url()
 
 
@@ -146,8 +146,8 @@ class AddJournalEntry(AddForm):
 class EditJournalEntry(EditForm):
     grok.name("edit")
     grok.context(IJournalEntry)
-    grok.title(u"Neue Nachricht anlegen")
-    label = u"Neue Nachricht anlegen"
+    grok.title("Neue Nachricht anlegen")
+    label = "Neue Nachricht anlegen"
 
     fields = Fields(IJournalEntry).omit("id", "teilnehmer_id", "date")
 
@@ -155,12 +155,12 @@ class EditJournalEntry(EditForm):
     def handle_edit(self):
         data, errors = self.extractData()
         apply_data_event(self.fields, self.getContentData(), data)
-        self.flash(u"Content updated")
+        self.flash("Content updated")
         self.redirect(self.url(self.context))
 
     @action("Abbrechen")
     def handle_cancel(self):
-        self.flash(u"Ihre Aktion wurde abgebrochen.")
+        self.flash("Ihre Aktion wurde abgebrochen.")
         self.redirect(self.url(self.context))
 
 
@@ -168,8 +168,8 @@ class EditJournalEntry(EditForm):
 class DeleteJournalEntry(Form):
     grok.name("delete")
     grok.context(IJournalEntry)
-    grok.title(u"Nachricht löschen")
-    label = u"Nachricht aus dem Journal löschen."
+    grok.title("Nachricht löschen")
+    label = "Nachricht aus dem Journal löschen."
 
     fields = Fields()
 
@@ -181,5 +181,5 @@ class DeleteJournalEntry(Form):
 
     @action("Abbrechen")
     def handle_cancel(self):
-        self.flash(u"Ihre Aktion wurde abgebrochen.")
+        self.flash("Ihre Aktion wurde abgebrochen.")
         self.redirect(self.url(self.context))

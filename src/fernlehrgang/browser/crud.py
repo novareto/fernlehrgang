@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2007-2010 NovaReto GmbH
-# cklinger@novareto.de 
+# cklinger@novareto.de
 
 import grok
 
@@ -12,13 +12,12 @@ from fernlehrgang.models import RDBMixin
 
 
 class RDBDeleteAction(Action):
-
     def __call__(self, form):
         context = form.context
         session = Session()
         try:
             session.delete(context)
-            form.status = "OK" 
+            form.status = "OK"
             form.flash(form.status)
             form.redirect(form.url(context.__parent__))
             return SUCCESS
@@ -32,5 +31,6 @@ class RDBDeleteAction(Action):
 class Delete(Form):
     grok.context(RDBMixin)
     grok.baseclass()
-    actions = Actions(RDBDeleteAction("Delete"),)
-
+    actions = Actions(
+        RDBDeleteAction("Delete"),
+    )

@@ -2,8 +2,6 @@
 
 import grok
 import grokcore.message
-import logging
-import zeam.form.base
 import zope.lifecycleevent
 
 from grok import baseclass, View as BaseView
@@ -13,7 +11,6 @@ from grok.components import ViewSupportMixin
 from grok.interfaces import IGrokView
 from grokcore.layout import Page as BasePage
 from grokcore.layout.components import LayoutAware
-from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.z3ctable import TablePage
 from zeam.form import base
 from zeam.form.base import DISPLAY, Action, Actions, FAILURE, SUCCESS
@@ -23,15 +20,14 @@ from zeam.form.ztk.actions import CancelAction
 from zope.interface import implementer
 from .utils import apply_data_event
 
-grok.templatedir('templates')
+grok.templatedir("templates")
 
 
 DateField.valueLength = "medium"
 
 
 class UpdateAction(Action):
-    """Update action for any locatable object.
-    """
+    """Update action for any locatable object."""
 
     def __call__(self, form):
         data, errors = form.extractData()
@@ -40,8 +36,8 @@ class UpdateAction(Action):
             return FAILURE
 
         apply_data_event(form.fields, form.getContentData(), data)
-        #grok.notify(zope.lifecycleevent.ObjectModifiedEvent(form.context))
-        form.flash(u"Content updated")
+        # grok.notify(zope.lifecycleevent.ObjectModifiedEvent(form.context))
+        form.flash("Content updated")
         form.redirect(form.url(form.context))
 
         return SUCCESS
@@ -51,58 +47,57 @@ class Form(Form, LayoutAware):
     grok.baseclass()
 
     classes = {
-        'group': 'form-group',
-        'group-error': 'form-group alert-danger has-error',
-        'field': ['form-control'],
-        'field-error': ['form-control', 'is-invalid'],
-        'button': 'action btn',
+        "group": "form-group",
+        "group-error": "form-group alert-danger has-error",
+        "field": ["form-control"],
+        "field-error": ["form-control", "is-invalid"],
+        "button": "action btn",
     }
 
     def updateWidgets(self):
         super().updateWidgets()
         for widget in self.fieldWidgets:
             if widget.error:
-                widget.htmlClass = lambda: ' '.join(
-                    widget.defaultHtmlClass + self.classes['field-error'])
+                widget.htmlClass = lambda: " ".join(
+                    widget.defaultHtmlClass + self.classes["field-error"]
+                )
             else:
-                widget.htmlClass = lambda: ' '.join(
-                    widget.defaultHtmlClass + self.classes['field'])
+                widget.htmlClass = lambda: " ".join(
+                    widget.defaultHtmlClass + self.classes["field"]
+                )
 
         for widget in self.actionWidgets:
-            cls = self.classes['button']
+            cls = self.classes["button"]
             if widget.identifier in self.classes:
-                cls = '{} {}'.format(cls, self.classes[widget.identifier])
+                cls = "{} {}".format(cls, self.classes[widget.identifier])
             else:
-                cls = f'{cls} btn-primary'
+                cls = f"{cls} btn-primary"
             widget.htmlClass = lambda: cls
 
     def application_url(self, name=None, data={}):
-        """Return the URL of the nearest enclosing `grok.Application`.
-        """
+        """Return the URL of the nearest enclosing `grok.Application`."""
         return url(self.request, getApplication(), name=name, data=data)
 
-    def flash(self, message, type='message'):
-        """Send a short message to the user.
-        """
-        grokcore.message.send(message, type=type, name='session')
+    def flash(self, message, type="message"):
+        """Send a short message to the user."""
+        grokcore.message.send(message, type=type, name="session")
 
 
 class EditForm(Form):
     grok.baseclass()
-    grok.name('edit')
-    grok.title(u"Edit")
+    grok.name("edit")
+    grok.title("Edit")
 
     label = ""
     ignoreContent = False
     ignoreRequest = False
-    actions = Actions(UpdateAction(("Update")),
-                      CancelAction(("Cancel")))
-    
+    actions = Actions(UpdateAction("Update"), CancelAction("Cancel"))
+
 
 class DefaultView(Form):
     grok.baseclass()
     mode = DISPLAY
-#    template = ChameleonPageTemplateFile("templates/display.cpt")
+    #    template = ChameleonPageTemplateFile("templates/display.cpt")
     ignoreRequest = True
     ignoreContent = False
 
@@ -111,33 +106,32 @@ class DefaultView(Form):
         dc = IDCDescriptiveProperties(self.context, None)
         if dc is not None and dc.title:
             return dc.title
-        return getattr(self.context, '__name__', u'')
-    
+        return getattr(self.context, "__name__", "")
+
     def update(self):
         super().update()
         for widget in self.fieldWidgets:
-            widget.defaultHtmlClass.append('form-control-plaintext')
-
+            widget.defaultHtmlClass.append("form-control-plaintext")
 
 
 Display = DefaultView
 
-            
+
 class AddForm(Form):
     grok.baseclass()
     _finishedAdd = False
 
-    @base.action(u'Speichern', identifier="uvcsite.add")
+    @base.action("Speichern", identifier="uvcsite.add")
     def handleAdd(self):
         data, errors = self.extractData()
         if errors:
-            self.flash('Es sind Fehler aufgetreten')
+            self.flash("Es sind Fehler aufgetreten")
             return
         obj = self.createAndAdd(data)
         if obj is not None:
             # mark only as finished if we get the new object
             self._finishedAdd = True
-            #grok.notify(AfterSaveEvent(obj, self.request))
+            # grok.notify(AfterSaveEvent(obj, self.request))
 
     def createAndAdd(self, data):
         obj = self.create(data)

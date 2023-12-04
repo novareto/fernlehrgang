@@ -139,7 +139,7 @@ Create a browser and visit the instance you just created:
    >>> #wsgi_app = wsgi.WSGIPublisherApplication( db, HTTPPublicationRequestFactory, True)
    >>> wsgi_app = NOZODBWSGIPublisherApplication(True)
    >>> import zope.testbrowser.wsgi
-   
+
    >>> app = zope.testbrowser.wsgi.AuthorizationMiddleware(wsgi_app)
    >>> browser = Browser(wsgi_app=app)
    >>> browser.handleErrors = False
@@ -147,13 +147,13 @@ Create a browser and visit the instance you just created:
    >>> data
    {'teilnehmer_id': 1, 'passwort': 'passwort'}
 
-Anmeldung OK 
+Anmeldung OK
 
    >>> import simplejson
    >>> browser.open('http://localhost/++skin++vlw/app/checkAuth', data=simplejson.dumps(data))   
    >>> browser.contents
    b'{"teilnehmer_id": 1, "gbo": false, "erfolgreich": "true", "muss_stammdaten_ergaenzen": "true"}'
-  
+
 
 Anmeldung kein VLW
 

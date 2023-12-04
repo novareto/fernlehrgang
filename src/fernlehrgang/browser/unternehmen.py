@@ -14,7 +14,6 @@ from fernlehrgang.models import Unternehmen
 from grokcore.chameleon.components import ChameleonPageTemplateFile
 from megrok.traject import locate
 from megrok.traject.components import DefaultModel
-from sqlalchemy import func
 from z3c.saconfig import Session
 from zeam.form.base import Fields
 from zeam.form.base import NO_VALUE
@@ -26,8 +25,7 @@ from fernlehrgang.browser import Page
 NO_VALUE = ""
 
 
-grok.templatedir('templates')
-
+grok.templatedir("templates")
 
 
 class UNNavItem(NavEntry):
@@ -43,39 +41,43 @@ class UNNavItem(NavEntry):
 
 class UNNavItem1(NavEntry):
     grok.context(IUnternehmen)
-    grok.name('unnav1')
+    grok.name("unnav1")
     grok.order(20)
 
     title = "Teilnehmer"
     icon = "fas fa-user-tie"
 
     def url(self):
-        return self.view.url(self.context, 'teilnehmer_listing')
+        return self.view.url(self.context, "teilnehmer_listing")
 
 
 class UNavItemCusa(NavEntry):
     grok.context(IUnternehmen)
-    grok.name('unnavcusa')
+    grok.name("unnavcusa")
     grok.order(30)
 
     title = "Cusa Integration"
     icon = "fas fa-user-tie"
 
     def url(self):
-        return self.view.url(self.context, 'cusa')
+        return self.view.url(self.context, "cusa")
 
 
-#@menuentry(NavigationMenu)
+# @menuentry(NavigationMenu)
 class UnternehmenListing(Form):
     grok.context(IFernlehrgangApp)
-    grok.name('unternehmen_listing')
-    grok.title(u"Unternehmen verwalten")
+    grok.name("unternehmen_listing")
+    grok.title("Unternehmen verwalten")
     grok.order(20)
 
-    fields = Fields(IUnternehmen).select('mnr', 'unternehmensnummer', 'hbst', 'name', 'str', 'plz', 'ort', 'mnr_g_alt')
+    fields = Fields(IUnternehmen).select(
+        "mnr", "unternehmensnummer", "hbst", "name", "str", "plz", "ort", "mnr_g_alt"
+    )
 
-    label = u"Unternehmen verwalten"
-    description = u"Hier können Sie die am Fernlehrgang teilnehmenden Unternehmen verwalten"
+    label = "Unternehmen verwalten"
+    description = (
+        "Hier können Sie die am Fernlehrgang teilnehmenden Unternehmen verwalten"
+    )
 
     results = []
 
@@ -89,57 +91,60 @@ class UnternehmenListing(Form):
             locate(grok.getSite(), item, DefaultModel)
             yield item
 
-    @action(u"Suchen")
+    @action("Suchen")
     def handle_search(self):
         v = False
         data, errors = self.extractData()
         session = Session()
         sql = session.query(Unternehmen)
-        if data.get('mnr') != NO_VALUE:
-            sql = sql.filter(Unternehmen.mnr == data.get('mnr'))
+        if data.get("mnr") != NO_VALUE:
+            sql = sql.filter(Unternehmen.mnr == data.get("mnr"))
             v = True
-        if data.get('unternehmensnummer') != NO_VALUE:
-            sql = sql.filter(Unternehmen.unternehmensnummer == data.get('unternehmensnummer').replace(' ', ''))
+        if data.get("unternehmensnummer") != NO_VALUE:
+            sql = sql.filter(
+                Unternehmen.unternehmensnummer
+                == data.get("unternehmensnummer").replace(" ", "")
+            )
             v = True
-        if data.get('hbst') != NO_VALUE:
-            sql = sql.filter(Unternehmen.hbst == data.get('hbst'))
+        if data.get("hbst") != NO_VALUE:
+            sql = sql.filter(Unternehmen.hbst == data.get("hbst"))
             v = True
-        if data.get('mnr_g_alt') != NO_VALUE:
-            sql = sql.filter(Unternehmen.mnr_g_alt == data.get('mnr_g_alt'))
+        if data.get("mnr_g_alt") != NO_VALUE:
+            sql = sql.filter(Unternehmen.mnr_g_alt == data.get("mnr_g_alt"))
             v = True
-        if data.get('name') != NO_VALUE:
-            constraint = "%%%s%%" % data.get('name')
+        if data.get("name") != NO_VALUE:
+            constraint = "%%%s%%" % data.get("name")
             sql = sql.filter(Unternehmen.name.ilike(constraint))
             v = True
-        if data.get('str') != NO_VALUE:
-            constraint = "%%%s%%" % data.get('str')
+        if data.get("str") != NO_VALUE:
+            constraint = "%%%s%%" % data.get("str")
             sql = sql.filter(Unternehmen.str.ilike(constraint))
             v = True
-        if data.get('plz') != NO_VALUE:
-            sql = sql.filter(Unternehmen.plz == data.get('plz'))
+        if data.get("plz") != NO_VALUE:
+            sql = sql.filter(Unternehmen.plz == data.get("plz"))
             v = True
-        if data.get('ort') != NO_VALUE:
-            constraint = "%%%s%%" % data.get('ort')
+        if data.get("ort") != NO_VALUE:
+            constraint = "%%%s%%" % data.get("ort")
             sql = sql.filter(Unternehmen.ort.ilike(constraint))
             v = True
         if not v:
-            self.flash(u'Bitte geben Sie die Suchkriterien ein.')
+            self.flash("Bitte geben Sie die Suchkriterien ein.")
             return
         ### FIXME length between (100000000 and 1000000000) instead of --> sql = sql.filter(func.length(Unternehmen.mnr) == 9)
-        
+
         self.results = sql.order_by(Unternehmen.name).all()
 
 
-#@menuentry(NavigationMenu, order=1)
+# @menuentry(NavigationMenu, order=1)
 class Index(Display):
     grok.context(IUnternehmen)
-    grok.name('index')
-    grok.title('Unternehmen')
-    template = ChameleonPageTemplateFile('templates/unternehmen_view.cpt')
+    grok.name("index")
+    grok.title("Unternehmen")
+    template = ChameleonPageTemplateFile("templates/unternehmen_view.cpt")
 
-    title = u"Unternehmen"
-    label = u"Unternehmen"
-    description = u"Details zum Unternehmen"
+    title = "Unternehmen"
+    label = "Unternehmen"
+    description = "Details zum Unternehmen"
 
     fields = Fields(IUnternehmen)
 
@@ -149,25 +154,27 @@ class Index(Display):
             gebdat = ""
             if teilnehmer.geburtsdatum:
                 gebdat = fmtDate(teilnehmer.geburtsdatum)
-            person = dict(name = "%s %s" %(teilnehmer.name, teilnehmer.vorname),
-                          gebdat = gebdat,
-                          lehrgang = [])
+            person = dict(
+                name="%s %s" % (teilnehmer.name, teilnehmer.vorname),
+                gebdat=gebdat,
+                lehrgang=[],
+            )
             for kurs in teilnehmer.kursteilnehmer:
                 if kurs.fernlehrgang:
-                    person['lehrgang'].append(kurs.fernlehrgang.titel)
-            if not len(person['lehrgang']):
-                person['lehrgang'].append(u'Noch für keinen Fernlehrgang registriert.')
+                    person["lehrgang"].append(kurs.fernlehrgang.titel)
+            if not len(person["lehrgang"]):
+                person["lehrgang"].append("Noch für keinen Fernlehrgang registriert.")
             rc.append(person)
-        return sorted(rc, key=lambda v: v.get('name'))
+        return sorted(rc, key=lambda v: v.get("name"))
 
 
-#@menuentry(AddMenu)
+# @menuentry(AddMenu)
 class AddUnternehmen(AddForm):
     grok.context(IFernlehrgangApp)
-    grok.title(u'Unternehmen')
-    title = u'Unternehmen'
-    label = u'Unternehmen anlegen'
-    description = u"Unternehmen anlegen"
+    grok.title("Unternehmen")
+    title = "Unternehmen"
+    label = "Unternehmen anlegen"
+    description = "Unternehmen anlegen"
 
     fields = Fields(IUnternehmen)
 
@@ -179,18 +186,18 @@ class AddUnternehmen(AddForm):
         session.add(object)
 
     def nextURL(self):
-        return self.url(self.context, 'unternehmen_listing')
+        return self.url(self.context, "unternehmen_listing")
 
 
 class Edit(EditForm):
     grok.context(IUnternehmen)
     grok.implements(IListing)
-    template = grok.PageTemplateFile('templates/unternehmen_edit.cpt')
+    template = grok.PageTemplateFile("templates/unternehmen_edit.cpt")
 
 
 class Cusa(Page):
     grok.context(IUnternehmen)
-    template = grok.PageTemplateFile('templates/cusa.cpt')
+    template = grok.PageTemplateFile("templates/cusa.cpt")
 
     def results(self):
         return ICusaResult(self.context).persist()

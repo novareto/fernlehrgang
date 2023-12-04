@@ -14,13 +14,13 @@ from fernlehrgang.slots.managers import AboveContent
 from grokcore.message import receive
 
 
-grok.templatedir('templates')
+grok.templatedir("templates")
 
 
 class ObjectMenu(uvc.menus.components.Menu):
-    grok.name('objectmenu')
+    grok.name("objectmenu")
     grok.context(Interface)
-    grok.title('Object')
+    grok.title("Object")
 
 
 class ObjectEntry(uvc.menus.components.MenuItem):
@@ -32,10 +32,10 @@ class ObjectEntry(uvc.menus.components.MenuItem):
 
 
 class AddMenu(uvc.menus.components.Menu):
-    grok.name('addmenu')
+    grok.name("addmenu")
     grok.context(Interface)
-    grok.title('Hinzufgen')
-    grok.require('uvc.managefernlehrgang')
+    grok.title("Hinzufgen")
+    grok.require("uvc.managefernlehrgang")
 
 
 class AddEntry(uvc.menus.components.MenuItem):
@@ -46,26 +46,28 @@ class AddEntry(uvc.menus.components.MenuItem):
 
 class AddMenuRenderer(grok.Viewlet):
     grok.context(Interface)
-    grok.template('addmenu')
+    grok.template("addmenu")
     grok.viewletmanager(AboveContent)
     grok.order(10)
 
-    bound_menus = ('addmenu', 'objectmenu')
+    bound_menus = ("addmenu", "objectmenu")
 
     def update(self):
         self.menus = collections.OrderedDict(
             uvc.menus.components.menus_iterator(
-                self.context, self.request, self.view, *self.bound_menus))
+                self.context, self.request, self.view, *self.bound_menus
+            )
+        )
 
 
 class NavigationMenu(uvc.menus.components.Menu):
-    grok.name('navigation')
-    grok.title('Navigation')
+    grok.name("navigation")
+    grok.title("Navigation")
     grok.context(Interface)
 
 
 class NavEntry(uvc.menus.components.MenuItem):
-    grok.name('dummy')
+    grok.name("dummy")
     grok.context(Interface)
     uvc.menus.directives.menu(NavigationMenu)
     grok.baseclass()
@@ -75,22 +77,24 @@ class NavEntry(uvc.menus.components.MenuItem):
 
 class NavigationMenuRenderer(grok.Viewlet):
     grok.context(Interface)
-    grok.template('navigation')
+    grok.template("navigation")
     grok.viewletmanager(AboveContent)
     grok.order(10)
 
-    bound_menus = ('navigation',)
+    bound_menus = ("navigation",)
 
     def update(self):
         self.menus = collections.OrderedDict(
             uvc.menus.components.menus_iterator(
-                self.context, self.request, self.view, *self.bound_menus))
+                self.context, self.request, self.view, *self.bound_menus
+            )
+        )
 
 
 class FlashMessages(grok.Viewlet):
     grok.order(00)
     grok.context(Interface)
-    grok.name('uvcsite.messages')
+    grok.name("uvcsite.messages")
     grok.viewletmanager(AboveContent)
 
     def update(self):
@@ -99,10 +103,12 @@ class FlashMessages(grok.Viewlet):
             self.messages = list(received)
         else:
             self.messages = []
+
+
 #
 ## FavIcon
 #
 
-#class FavIcon(grok.Viewlet):
+# class FavIcon(grok.Viewlet):
 #    grok.viewletmanager(managers.Headers)
 #    grok.context(Interface)
