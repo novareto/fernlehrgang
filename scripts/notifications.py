@@ -81,8 +81,9 @@ class BNTest(grok.View):
             models.Kursteilnehmer.fernlehrgang_id == models.Fernlehrgang.id,
             models.Kursteilnehmer.status.in_(('A1', 'A2')),
             models.Fernlehrgang.typ == '2', where)
-
+        print(alle_ktns)
         found = alle_ktns.all()
+        import pdb; pdb.set_trace()
         with click.progressbar(found) as alle:
             for row in alle:
                 try:

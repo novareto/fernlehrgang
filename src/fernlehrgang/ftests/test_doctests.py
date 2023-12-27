@@ -145,6 +145,7 @@ HTTP_LAYER = gocept.httpserverlayer.wsgi.Layer(name="HTTPLayer", bases=(WSGILaye
     "ablauf.txt",
     "results.txt",
     "importcheck.txt",
+    "mq.txt",
     optionflags=doctest.ELLIPSIS,
 )
 class MoreTests(unittest.TestCase):

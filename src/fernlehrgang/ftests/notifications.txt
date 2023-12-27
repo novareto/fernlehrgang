@@ -19,7 +19,7 @@ Unternehmen & Teilnehmer
    >>> session = Session()
    >>> unt1 = Unternehmen(mnr="0000-00025", name="Novareto")
 
-   >>> teil1 = Teilnehmer(name="Lars Walther")
+   >>> teil1 = Teilnehmer(name="Lars Walther", anrede=1, email="lw@nn.de")
 
    >>> unt1.teilnehmer.append(teil1)
 
@@ -32,38 +32,46 @@ Fernlehrgang
 
    >>> from fernlehrgang.models import Kursteilnehmer, Fernlehrgang 
    >>> import datetime
-   >>> beginn = datetime.date(2010,1,1)
-   >>> ende = datetime.date(2010,12,31)
-   >>> vlw = Fernlehrgang(jahr="2022", titel="Fernlehrgang", typ=4,
+   >>> beginn = datetime.date(2023,1,1)
+   >>> ende = datetime.date(2023,12,31)
+   >>> vlw = Fernlehrgang(jahr="2022", titel="Fernlehrgang", typ=2,
    ...                      beschreibung="Beschreibung", beginn=beginn, ende=ende)
 
-   >>> kt1 = Kursteilnehmer(erstell_datum=datetime.datetime(2010,1,1,10,12), teilnehmer_id = teil1.id)
-   >>> #kt2 = Kursteilnehmer(erstell_datum=datetime.datetime(2012,1,1,10,12), teilnehmer_id = teil1.id)
+   >>> kt1 = Kursteilnehmer(status="A2", erstell_datum=datetime.datetime(2022,12,2,10,12), teilnehmer_id = teil1.id)
+   >>> kt2 = Kursteilnehmer(status="A2", erstell_datum=datetime.datetime(2022,7,5,10,12), teilnehmer_id = teil1.id)
+   >>> kt3 = Kursteilnehmer(status="A2", erstell_datum=datetime.datetime(2022,3,7,10,12), teilnehmer_id = teil1.id)
+   >>> kt4 = Kursteilnehmer(status="A2", erstell_datum=datetime.datetime(2022,1,1,10,12), teilnehmer_id = teil1.id)
 
    >>> vlw.kursteilnehmer.append(kt1)
-   >>> #vlw.kursteilnehmer.append(kt2)
+   >>> vlw.kursteilnehmer.append(kt2)
+   >>> vlw.kursteilnehmer.append(kt3)
+   >>> vlw.kursteilnehmer.append(kt4)
 
    >>> teil1.kursteilnehmer.append(kt1)
-   >>> #teil1.kursteilnehmer.append(kt2)
+   >>> teil1.kursteilnehmer.append(kt2)
+   >>> teil1.kursteilnehmer.append(kt3)
+   >>> teil1.kursteilnehmer.append(kt4)
 
    >>> import transaction; transaction.commit()
 
-
 Suche
 
-   >>> from sqlalchemy import func
-   >>> query = session.query(Teilnehmer).filter(
-   ...    func.DATE(Kursteilnehmer.erstell_datum) == beginn,
-   ...    Kursteilnehmer.teilnehmer_id == Teilnehmer.id)
+   >>> from fernlehrgang.lib.notifications import NotificationsUtility
 
-   >>> #query = session.query(Teilnehmer)
-   >>> qkt1 = query.one()
-   >>> print(qkt1)
-   <Teilnehmer(id='1', name='1')>
+   >>> n_util = NotificationsUtility(beginn)
 
-   >>> kt = qkt1
-   >>> kt.kursteilnehmer[0].erstell_datum
-   datetime.datetime(2010, 1, 1, 10, 12)
-
-   >>> kt1.id == qkt1.id
+   >>> teilnehmer = n_util.get_all()
+   >>> len(teilnehmer) == 4
    True
+
+   >>> teilnehmer[0]
+   (1, 1, 'Lars Walther', '1', 'lw@nn.de', None, 'T30', 0)
+
+   >>> teilnehmer[1]
+   (2, 1, 'Lars Walther', '1', 'lw@nn.de', None, 'T180', 0)
+
+   >>> teilnehmer[2]
+   (3, 1, 'Lars Walther', '1', 'lw@nn.de', None, 'T300', 0)
+
+   >>> teilnehmer[3]
+   (4, 1, 'Lars Walther', '1', 'lw@nn.de', None, 'T365', 0)
